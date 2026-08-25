@@ -91,8 +91,6 @@ export async function DELETE(request) {
     if (!targetUserId) return NextResponse.json({ error: 'Missing user ID' }, { status: 400 })
     if (targetUserId === user.id) return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 400 })
 
-    const serviceClient = createServiceClient()
-
     // Deleting the user from auth.users will cascade to public.profiles if foreign keys are set up correctly
     // But let's delete profile manually just in case
     await serviceClient.from('profiles').delete().eq('id', targetUserId)
