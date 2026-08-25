@@ -59,7 +59,12 @@ export default function DynamicKPI({ data, hospitalName = null }) {
       const criticalCounts = {}
       allCritical.forEach(r => {
         const key = (r.indicator || '').trim().toLowerCase()
-        criticalCounts[key] = (criticalCounts[key] || 0) + 1
+        const monthYear = `${r.month}-${r.year}`
+        
+        if (!criticalCounts[key]) {
+          criticalCounts[key] = new Set()
+        }
+        criticalCounts[key].add(monthYear)
       })
 
       // Find the latest year and month for this hospital OVERALL
@@ -72,13 +77,18 @@ export default function DynamicKPI({ data, hospitalName = null }) {
         else if (y === maxYear && m > maxMonth) { maxMonth = m }
       })
 
-      // Get the critical indicators for the LATEST month and add recurrences
-      const latestCritical = allCritical
-        .filter(r => parseInt(r.year) === maxYear && parseInt(r.month) === maxMonth)
-        .map(item => {
-          const key = (item.indicator || '').trim().toLowerCase()
-          return { ...item, recurrences: (criticalCounts[key] || 1) - 1 }
-        })
+      // Deduplicate indicators for the latest month (take the first one found or highest value)
+      const latestMonthRows = allCritical.filter(r => parseInt(r.year) === maxYear && parseInt(r.month) === maxMonth)
+      
+      const uniqueLatestMap = new Map()
+      latestMonthRows.forEach(item => {
+        const key = (item.indicator || '').trim().toLowerCase()
+        if (!uniqueLatestMap.has(key)) {
+          uniqueLatestMap.set(key, { ...item, recurrences: (criticalCounts[key]?.size || 1) - 1 })
+        }
+      })
+      
+      const latestCritical = Array.from(uniqueLatestMap.values())
 
       // Get previous months critical indicators and aggregate them
       const previousRows = allCritical.filter(r => {
