@@ -335,7 +335,7 @@ export default function DepartmentPage() {
                           <button className="btn btn-success btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}>
                             ✅ قبول (إغلاق)
                           </button>
-                          <button className="btn btn-danger btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'reject_resolution' })}>
+                          <button className="btn btn-danger btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'reject_hospital' })}>
                             ❌ رفض وإعادة
                           </button>
                         </>

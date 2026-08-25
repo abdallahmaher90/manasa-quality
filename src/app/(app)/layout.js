@@ -47,6 +47,16 @@ export default function AppLayout({ children }) {
     setLoading(false)
   }
 
+  useEffect(() => {
+    if (!profile) return
+    if (profile.role === 'hospital_user') {
+      const allowedPath = `/hospitals/${profile.hospital_id}`
+      if (!pathname.startsWith(allowedPath)) {
+        router.push(allowedPath)
+      }
+    }
+  }, [pathname, profile, router])
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/')
@@ -102,10 +112,12 @@ export default function AppLayout({ children }) {
           </div>
 
           <div className="header-actions">
-            <Link href="/upload" className="btn btn-primary btn-sm no-print" id="header-upload-btn">
-              <span>📤</span>
-              رفع تقرير
-            </Link>
+            {profile?.role !== 'hospital_user' && (
+              <Link href="/upload" className="btn btn-primary btn-sm no-print" id="header-upload-btn">
+                <span>📤</span>
+                رفع تقرير
+              </Link>
+            )}
             <button
               id="header-logout-btn"
               onClick={handleLogout}

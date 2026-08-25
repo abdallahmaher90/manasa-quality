@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 const navItems = [
   {
     section: 'الرئيسية',
+    roles: ['directorate_admin', 'directorate_member'],
     items: [
       { href: '/dashboard', icon: '📊', label: 'الرئيسية' },
       { href: '/recurring', icon: '🚨', label: 'السلبيات المتكررة' },
@@ -13,6 +14,7 @@ const navItems = [
   },
   {
     section: 'التقارير',
+    roles: ['directorate_admin', 'directorate_member'],
     items: [
       { href: '/upload', icon: '📤', label: 'رفع تقرير جديد' },
       { href: '/archive', icon: '🗂️', label: 'أرشيف التقارير' },
@@ -20,6 +22,7 @@ const navItems = [
   },
   {
     section: 'التحليلات',
+    roles: ['directorate_admin', 'directorate_member'],
     items: [
       { href: '/cross-report', icon: '📋', label: 'تقرير مقارن بالأقسام' },
       { href: '/statistics', icon: '📈', label: 'الإحصائيات' },
@@ -30,6 +33,7 @@ const navItems = [
     roles: ['directorate_admin', 'directorate_member'],
     items: [
       { href: '/settings', icon: '⚙️', label: 'الإعدادات' },
+      { href: '/users', icon: '👥', label: 'المستخدمين', roles: ['directorate_admin'] },
     ]
   }
 ]
@@ -68,18 +72,38 @@ export default function Sidebar({ user, isOpen, onClose }) {
 
       {/* Navigation */}
       <nav className="sidebar-nav">
+        {user?.role === 'hospital_user' && user?.hospital_id && (
+          <div className="sidebar-section">
+            <div className="sidebar-section-label">المستشفى</div>
+            <Link
+              href={`/hospitals/${user.hospital_id}`}
+              onClick={onClose}
+              className={`sidebar-link ${pathname.includes(`/hospitals/${user.hospital_id}`) ? 'active' : ''}`}
+            >
+              <span className="sidebar-link-icon">🏥</span>
+              <span>المستشفى الخاص بك</span>
+            </Link>
+          </div>
+        )}
+
         {navItems.map((section) => {
           if (section.roles && !section.roles.includes(user?.role)) return null
           
+          const allowedItems = section.items.filter(item => 
+            !item.roles || item.roles.includes(user?.role)
+          )
+
+          if (allowedItems.length === 0) return null
+
           return (
             <div key={section.section} className="sidebar-section">
               <div className="sidebar-section-label">{section.section}</div>
-              {section.items.map((item) => (
+              {allowedItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`sidebar-link ${pathname === item.href || pathname.startsWith(item.href + '/') ? 'active' : ''}`}
+                  className={`sidebar-link ${pathname === item.href || (pathname.startsWith(item.href + '/') && item.href !== '/') ? 'active' : ''}`}
                 >
                   <span className="sidebar-link-icon">{item.icon}</span>
                   <span>{item.label}</span>
