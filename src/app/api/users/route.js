@@ -19,9 +19,9 @@ export async function POST(request) {
     const serviceClient = createServiceClient()
 
     // 2. Check if user is directorate_admin
-    const { data: profile } = await serviceClient.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile, error: profileErr } = await serviceClient.from('profiles').select('role').eq('id', user.id).single()
     if (!profile || profile.role !== 'directorate_admin') {
-      return NextResponse.json({ error: 'Forbidden: Requires directorate_admin role' }, { status: 403 })
+      return NextResponse.json({ error: `Forbidden: Requires directorate_admin role. Debug: userId=${user.id}, profile=${JSON.stringify(profile)}, err=${profileErr?.message}` }, { status: 403 })
     }
 
     // 3. Parse request body
