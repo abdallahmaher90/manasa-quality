@@ -118,7 +118,7 @@ export default function Dashboard() {
       )}
 
       {/* Main Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-xl)' }}>
+      <div className="grid-responsive-2">
 
         {/* Top Hospitals */}
         <div className="card">

@@ -152,7 +152,7 @@ export default function RecurringPage() {
                   }}
                   onClick={() => setExpandedDept(expandedDept === dept.category ? null : dept.category)}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div className="flex-responsive-tabs" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>🏥 {dept.category}</span>
                     <span style={{ fontSize: 12, background: '#fee2e2', color: '#b91c1c', padding: '2px 8px', borderRadius: 100 }}>
                       {dept.findings.length} سلبيات مشتركة
