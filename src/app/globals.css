@@ -1341,13 +1341,6 @@ tbody tr {
     grid-template-columns: 1fr;
   }
 
-  table {
-    display: block !important;
-    width: 100% !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
-  }
 }
 
 .mobile-overlay {
@@ -1459,4 +1452,42 @@ tbody tr {
   .flex-responsive-tabs {
     flex-wrap: wrap;
   }
+
+  /* Table to Card layout for mobile */
+  .mobile-table-card table, 
+  .mobile-table-card thead, 
+  .mobile-table-card tbody, 
+  .mobile-table-card th, 
+  .mobile-table-card td, 
+  .mobile-table-card tr { 
+    display: block; 
+    width: 100% !important;
+  }
+  
+  .mobile-table-card thead tr { 
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  .mobile-table-card tr { 
+    border-bottom: 4px solid var(--border) !important; 
+    margin-bottom: 15px; 
+    padding-bottom: 5px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+  }
+  
+  .mobile-table-card td { 
+    border: none !important;
+    position: relative;
+    padding: 12px 15px !important;
+    text-align: right !important;
+    border-bottom: 1px solid var(--border-light) !important;
+  }
+  
+  .mobile-table-card td:last-child {
+    border-bottom: none !important;
+  }
 }
+

@@ -266,7 +266,7 @@ export default function DepartmentPage() {
           </p>
         </div>
       ) : (
-        <div style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+        <div className="mobile-table-card" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
