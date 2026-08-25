@@ -16,8 +16,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
+    const serviceClient = createServiceClient()
+
     // 2. Check if user is directorate_admin
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile } = await serviceClient.from('profiles').select('role').eq('id', user.id).single()
     if (!profile || profile.role !== 'directorate_admin') {
       return NextResponse.json({ error: 'Forbidden: Requires directorate_admin role' }, { status: 403 })
     }
@@ -78,7 +80,9 @@ export async function DELETE(request) {
     
     if (authError || !user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const serviceClient = createServiceClient()
+
+    const { data: profile } = await serviceClient.from('profiles').select('role').eq('id', user.id).single()
     if (!profile || profile.role !== 'directorate_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     const { searchParams } = new URL(request.url)
