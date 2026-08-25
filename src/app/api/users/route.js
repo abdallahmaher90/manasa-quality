@@ -1,6 +1,31 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient, supabase } from '@/lib/supabase'
 
+export async function GET(request) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    if (authError || !user) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+
+    const serviceClient = createServiceClient()
+    const { data: profile } = await serviceClient.from('profiles').select('role').eq('id', user.id).single()
+    if (!profile || profile.role !== 'directorate_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+    const { data: users, error: fetchError } = await serviceClient
+      .from('profiles')
+      .select('id, full_name, role, hospitals(name)')
+      .order('created_at', { ascending: false })
+
+    if (fetchError) return NextResponse.json({ error: fetchError.message }, { status: 500 })
+    return NextResponse.json(users)
+  } catch (err) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function POST(request) {
   try {
     // 1. Authenticate the request

@@ -34,14 +34,23 @@ export default function UsersPage() {
   }
 
   async function fetchUsers() {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, full_name, role, hospitals(name)')
-      .order('created_at', { ascending: false })
-    
-    // Auth users email isn't directly exposed in profiles unless we add it. 
-    // We'll just show names and roles.
-    setUsers(data || [])
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+
+      const res = await fetch('/api/users', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
+      if (!res.ok) throw new Error('فشل جلب المستخدمين')
+      
+      const data = await res.json()
+      setUsers(data || [])
+    } catch (err) {
+      console.error(err)
+      setUsers([])
+    }
   }
 
   async function fetchHospitals() {
