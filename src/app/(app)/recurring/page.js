@@ -147,25 +147,27 @@ export default function RecurringPage() {
                     background: 'var(--bg-secondary)', 
                     display: 'flex', 
                     justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
                     cursor: 'pointer',
                     fontWeight: 700
                   }}
                   onClick={() => setExpandedDept(expandedDept === dept.category ? null : dept.category)}
                 >
-                  <div className="flex-responsive-tabs" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 15, color: 'var(--text-primary)' }}>🏥 {dept.category}</span>
-                    <span style={{ fontSize: 12, background: '#fee2e2', color: '#b91c1c', padding: '2px 8px', borderRadius: 100 }}>
+                    <span style={{ fontSize: 12, background: '#fee2e2', color: '#b91c1c', padding: '2px 8px', borderRadius: 100, whiteSpace: 'nowrap' }}>
                       {dept.findings.length} سلبيات مشتركة
                     </span>
                   </div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{expandedDept === dept.category ? '🔼' : '🔽'}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12, flexShrink: 0 }}>{expandedDept === dept.category ? '🔼' : '🔽'}</div>
                 </div>
                 
                 {expandedDept === dept.category && (
                   <div style={{ padding: '12px', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {dept.findings.map((f, idx) => (
                       <div key={idx} style={{ borderRight: '3px solid var(--danger)', padding: '12px', display: 'flex', flexDirection: 'column', gap: 8, background: 'var(--bg-card)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', wordBreak: 'break-word' }}>
                           {f.text}
                         </div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
