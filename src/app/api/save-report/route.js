@@ -131,19 +131,25 @@ export async function POST(request) {
             // It's a recurring finding - increment count
             const { data: existingF } = await supabase
               .from('findings')
-              .select('repeat_count, status')
+              .select('repeat_count, status, last_seen_date, last_report_id')
               .eq('id', match.matchedId)
               .single()
 
-            await supabase
-              .from('findings')
-              .update({
-                repeat_count: (existingF?.repeat_count || 1) + 1,
-                status: 'recurring',
-                last_seen_date: parsedData.inspection_date,
-                last_report_id: report.id,
-              })
-              .eq('id', match.matchedId)
+            // Only increment if it hasn't been counted for this specific report or date yet
+            const isSameReport = existingF?.last_report_id === report.id
+            const isSameDate = existingF?.last_seen_date === parsedData.inspection_date
+
+            if (!isSameReport && !isSameDate) {
+              await supabase
+                .from('findings')
+                .update({
+                  repeat_count: (existingF?.repeat_count || 1) + 1,
+                  status: 'recurring',
+                  last_seen_date: parsedData.inspection_date,
+                  last_report_id: report.id,
+                })
+                .eq('id', match.matchedId)
+            }
 
             savedFindingId = match.matchedId
           }
