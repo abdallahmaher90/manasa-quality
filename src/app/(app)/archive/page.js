@@ -134,7 +134,7 @@ export default function ArchivePage() {
           ))}
         </select>
         
-        <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>من</span>
           <input
             type="date"

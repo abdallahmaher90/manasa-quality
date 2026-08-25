@@ -1489,5 +1489,27 @@ tbody tr {
   .mobile-table-card td:last-child {
     border-bottom: none !important;
   }
+
+  .archive-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .archive-date {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 12px;
+    min-width: unset;
+  }
+
+  .archive-day {
+    font-size: 16px;
+  }
+  
+  .archive-month {
+    font-size: 14px;
+  }
 }
 
