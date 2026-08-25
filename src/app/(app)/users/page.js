@@ -11,7 +11,7 @@ export default function UsersPage() {
   
   const [showAddForm, setShowAddForm] = useState(false)
   const [formData, setFormData] = useState({
-    full_name: '', email: '', password: '', role: 'hospital_user', hospital_id: ''
+    full_name: '', email: '', password: '', role: 'hospital_member', hospital_id: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -71,7 +71,7 @@ export default function UsersPage() {
       if (!res.ok) throw new Error(data.error || 'حدث خطأ أثناء الإنشاء')
 
       setShowAddForm(false)
-      setFormData({ full_name: '', email: '', password: '', role: 'hospital_user', hospital_id: '' })
+      setFormData({ full_name: '', email: '', password: '', role: 'hospital_member', hospital_id: '' })
       fetchUsers()
       alert('تم إنشاء المستخدم بنجاح!')
     } catch (err) {
@@ -114,7 +114,7 @@ export default function UsersPage() {
   const roleLabels = {
     'directorate_admin': 'مدير نظام',
     'directorate_member': 'فريق المديرية',
-    'hospital_user': 'مستخدم مستشفى'
+    'hospital_member': 'مستخدم مستشفى'
   }
 
   return (
@@ -145,12 +145,12 @@ export default function UsersPage() {
               <div className="form-group">
                 <label className="form-label">نوع الصلاحية</label>
                 <select className="form-select" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-                  <option value="hospital_user">مستخدم مستشفى (محدود)</option>
+                  <option value="hospital_member">مستخدم مستشفى (محدود)</option>
                   <option value="directorate_member">فريق المديرية (صلاحيات كاملة)</option>
                   <option value="directorate_admin">مدير نظام (مع إدارة الحسابات)</option>
                 </select>
               </div>
-              {formData.role === 'hospital_user' && (
+              {formData.role === 'hospital_member' && (
                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                   <label className="form-label">اختر المستشفى التابع له</label>
                   <select className="form-select" required value={formData.hospital_id} onChange={e => setFormData({...formData, hospital_id: e.target.value})}>
@@ -191,7 +191,7 @@ export default function UsersPage() {
                     </span>
                   </td>
                   <td style={{ padding: '12px', color: 'var(--text-muted)' }}>
-                    {u.role === 'hospital_user' ? (u.hospitals?.name || 'غير محدد') : 'المديرية'}
+                    {u.role === 'hospital_member' ? (u.hospitals?.name || 'غير محدد') : 'المديرية'}
                   </td>
                   <td style={{ padding: '12px' }}>
                     <button className="btn btn-danger btn-sm" onClick={() => handleDeleteUser(u.id, u.full_name)} title="حذف المستخدم">

@@ -72,7 +72,7 @@ export default function Sidebar({ user, isOpen, onClose }) {
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-        {user?.role === 'hospital_user' && user?.hospital_id && (
+        {user?.role === 'hospital_member' && user?.hospital_id && (
           <div className="sidebar-section">
             <div className="sidebar-section-label">المستشفى</div>
             <Link

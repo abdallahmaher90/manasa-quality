@@ -49,7 +49,7 @@ export default function AppLayout({ children }) {
 
   useEffect(() => {
     if (!profile) return
-    if (profile.role === 'hospital_user') {
+    if (profile.role === 'hospital_member') {
       const allowedPath = `/hospitals/${profile.hospital_id}`
       if (!pathname.startsWith(allowedPath)) {
         router.push(allowedPath)
@@ -112,7 +112,7 @@ export default function AppLayout({ children }) {
           </div>
 
           <div className="header-actions">
-            {profile?.role !== 'hospital_user' && (
+            {profile?.role !== 'hospital_member' && (
               <Link href="/upload" className="btn btn-primary btn-sm no-print" id="header-upload-btn">
                 <span>📤</span>
                 رفع تقرير

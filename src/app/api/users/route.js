@@ -30,7 +30,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    if (role === 'hospital_user' && !hospital_id) {
+    if (role === 'hospital_member' && !hospital_id) {
       return NextResponse.json({ error: 'Hospital ID is required for hospital users' }, { status: 400 })
     }
 
@@ -51,7 +51,7 @@ export async function POST(request) {
       id: newUser.user.id,
       full_name,
       role,
-      hospital_id: role === 'hospital_user' ? hospital_id : null
+      hospital_id: role === 'hospital_member' ? hospital_id : null
     })
 
     if (profileError) {
