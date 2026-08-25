@@ -101,17 +101,19 @@ export default function DynamicKPI({ data, hospitalName = null }) {
       previousRows.forEach(r => {
         const key = (r.indicator || '').trim().toLowerCase()
         if (!prevCounts[key]) {
-          prevCounts[key] = { indicator: r.indicator, count: 0, months: [] }
+          prevCounts[key] = { indicator: r.indicator, count: 0, months: new Set() }
         }
-        prevCounts[key].count++
         const monthStr = `${r.month}/${r.year}`
-        if (!prevCounts[key].months.includes(monthStr)) {
-          prevCounts[key].months.push(monthStr)
-        }
+        prevCounts[key].months.add(monthStr)
       })
 
-      // Take only the repeated ones from previous months
+      // Convert Sets back to arrays and calculate the true count
       const repeatedPrevious = Object.values(prevCounts)
+        .map(item => ({
+          ...item,
+          months: Array.from(item.months),
+          count: item.months.size
+        }))
         .filter(item => item.count > 1)
         .sort((a, b) => b.count - a.count)
 
