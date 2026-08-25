@@ -1,5 +1,6 @@
-import { createServiceClient } from '@/lib/supabase'
+import { createServiceClient } from '@/lib/supabase-server'
 import { normalizeFindingsBulk } from '@/lib/ai-parser'
+import { sendNewReportEmail } from '@/lib/email'
 
 function normalizeArabicName(name) {
   if (!name) return ''
@@ -188,8 +189,29 @@ export async function POST(request) {
         type: 'new_report',
         link: `/archive`
       })
+
+      // Send Emails
+      const { data: hospitalProfiles } = await supabase
+        .from('profiles')
+        .select('id, hospitals(name)')
+        .eq('hospital_id', hospitalId)
+
+      if (hospitalProfiles && hospitalProfiles.length > 0) {
+        const hospitalName = hospitalProfiles[0]?.hospitals?.name || 'المستشفى'
+        // Need absolute URL for the email link
+        const host = request.headers.get('host')
+        const protocol = host.includes('localhost') ? 'http' : 'https'
+        const reportUrl = `${protocol}://${host}/archive`
+
+        for (const profile of hospitalProfiles) {
+          const { data: { user } } = await supabase.auth.admin.getUserById(profile.id)
+          if (user?.email) {
+            await sendNewReportEmail(user.email, hospitalName, parsedData.inspection_date, reportUrl)
+          }
+        }
+      }
     } catch (notifError) {
-      console.error('Failed to create notification:', notifError)
+      console.error('Failed to create notification/email:', notifError)
     }
 
     return Response.json({ success: true, hospitalId, reportId: report.id })
