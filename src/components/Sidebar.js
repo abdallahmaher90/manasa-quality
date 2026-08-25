@@ -14,9 +14,9 @@ const navItems = [
   },
   {
     section: 'التقارير',
-    roles: ['directorate_admin', 'directorate_member'],
+    roles: ['directorate_admin', 'directorate_member', 'hospital_member'],
     items: [
-      { href: '/upload', icon: '📤', label: 'رفع تقرير جديد' },
+      { href: '/upload', icon: '📤', label: 'رفع تقرير جديد', roles: ['directorate_admin', 'directorate_member'] },
       { href: '/archive', icon: '🗂️', label: 'أرشيف التقارير' },
     ]
   },

@@ -51,7 +51,7 @@ export default function AppLayout({ children }) {
     if (!profile) return
     if (profile.role === 'hospital_member') {
       const allowedPath = `/hospitals/${profile.hospital_id}`
-      if (!pathname.startsWith(allowedPath)) {
+      if (!pathname.startsWith(allowedPath) && !pathname.startsWith('/archive')) {
         router.push(allowedPath)
       }
     }

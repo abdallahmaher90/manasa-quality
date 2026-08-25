@@ -15,34 +15,44 @@ export default function ArchivePage() {
   const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
-    fetchUser()
-    fetchReports()
-    fetchHospitals()
+    loadData()
   }, [])
 
-  const fetchUser = async () => {
+  const loadData = async () => {
+    // 1. Fetch User
+    let currentUser = null
     const { data: { user: authUser } } = await supabase.auth.getUser()
     if (authUser) {
       const { data } = await supabase.from('profiles').select('*').eq('id', authUser.id).single()
+      currentUser = data
       setUser(data)
     }
-  }
 
-  const fetchReports = async () => {
-    const { data } = await supabase
+    // 2. Fetch Reports
+    let reportsQuery = supabase
       .from('reports')
       .select(`
         id, inspection_date, inspector_name, file_name, created_at,
         hospitals(id, name, governorate)
       `)
       .order('inspection_date', { ascending: false })
-    setReports(data || [])
-    setLoading(false)
-  }
 
-  const fetchHospitals = async () => {
-    const { data } = await supabase.from('hospitals').select('id, name').order('name')
-    setHospitals(data || [])
+    if (currentUser?.role === 'hospital_member') {
+      reportsQuery = reportsQuery.eq('hospital_id', currentUser.hospital_id)
+    }
+
+    const { data: reportsData } = await reportsQuery
+    setReports(reportsData || [])
+
+    // 3. Fetch Hospitals
+    let hospitalsQuery = supabase.from('hospitals').select('id, name').order('name')
+    if (currentUser?.role === 'hospital_member') {
+      hospitalsQuery = hospitalsQuery.eq('id', currentUser.hospital_id)
+    }
+    const { data: hospitalsData } = await hospitalsQuery
+    setHospitals(hospitalsData || [])
+
+    setLoading(false)
   }
 
   const filtered = reports.filter(r => {
