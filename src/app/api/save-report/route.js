@@ -179,6 +179,19 @@ export async function POST(request) {
       }
     }
 
+    // --- CREATE NOTIFICATION FOR HOSPITAL ---
+    try {
+      await supabase.from('notifications').insert({
+        hospital_id: hospitalId,
+        title: 'تقرير مرور جديد 📋',
+        message: `تم رفع تقرير مرور جديد بتاريخ ${parsedData.inspection_date}`,
+        type: 'new_report',
+        link: `/archive`
+      })
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError)
+    }
+
     return Response.json({ success: true, hospitalId, reportId: report.id })
   } catch (error) {
     console.error('Save report error:', error)

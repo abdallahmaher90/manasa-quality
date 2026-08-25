@@ -335,3 +335,40 @@ WITH CHECK (
   bucket_id = 'reports_files' 
   AND auth.role() = 'authenticated'
 );
+
+-- =====================================================
+-- NOTIFICATIONS
+-- =====================================================
+CREATE TABLE notifications (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  hospital_id UUID REFERENCES hospitals(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(50) DEFAULT 'system',
+  link TEXT,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- Allow users to see notifications for their hospital or specifically targeted to them
+CREATE POLICY "Users can view their own notifications" ON notifications
+  FOR SELECT USING (
+    auth.uid() = user_id 
+    OR 
+    hospital_id = (SELECT hospital_id FROM profiles WHERE id = auth.uid())
+    OR
+    (SELECT role FROM profiles WHERE id = auth.uid()) = 'directorate_admin'
+  );
+
+-- Allow users to update their own notifications (e.g. mark as read)
+CREATE POLICY "Users can update their own notifications" ON notifications
+  FOR UPDATE USING (
+    auth.uid() = user_id 
+    OR 
+    hospital_id = (SELECT hospital_id FROM profiles WHERE id = auth.uid())
+  );
+

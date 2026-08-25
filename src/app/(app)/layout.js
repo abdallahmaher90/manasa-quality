@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
+import NotificationsDropdown from '@/components/NotificationsDropdown'
 
 const pageTitles = {
   '/dashboard': 'الرئيسية',
@@ -111,7 +112,9 @@ export default function AppLayout({ children }) {
             </div>
           </div>
 
-          <div className="header-actions">
+          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {profile && <NotificationsDropdown profile={profile} />}
+            
             {profile?.role !== 'hospital_member' && (
               <Link href="/upload" className="btn btn-primary btn-sm no-print" id="header-upload-btn">
                 <span>📤</span>
