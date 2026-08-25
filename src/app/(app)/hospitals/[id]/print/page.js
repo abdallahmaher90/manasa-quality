@@ -119,12 +119,6 @@ export default function PrintReport() {
                         <span className="print-badge"> (مكررة ×{finding.repeat_count})</span>
                       )}
                     </div>
-                    {finding.corrective_action && (
-                      <div className="finding-action">
-                        <strong>الإجراء التصحيحي المطلوب: </strong>
-                        {finding.corrective_action}
-                      </div>
-                    )}
                   </li>
                 ))}
               </ul>
