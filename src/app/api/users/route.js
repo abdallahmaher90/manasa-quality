@@ -34,8 +34,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Hospital ID is required for hospital users' }, { status: 400 })
     }
 
-    const serviceClient = createServiceClient()
-
     // 4. Create user via Admin API
     const { data: newUser, error: createError } = await serviceClient.auth.admin.createUser({
       email,
