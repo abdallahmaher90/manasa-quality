@@ -169,8 +169,8 @@ export default function DynamicKPI({ data, hospitalName = null }) {
             <h4 style={{ color: 'var(--danger)', marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 18 }}>
               <span>🚨</span> مؤشرات حرجة - شهر {maxMonth} ({maxYear})
             </h4>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+            <div className="table-responsive">
+              <table className="mobile-table-card" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
                     <th style={{ padding: '12px 8px' }}>المؤشر الحرج</th>
@@ -181,17 +181,17 @@ export default function DynamicKPI({ data, hospitalName = null }) {
                 <tbody>
                   {latestCritical.map((item, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-                      <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      <td data-label="المؤشر الحرج" style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
                         {item.indicator}
                       </td>
-                      <td style={{ padding: '12px 8px', textAlign: 'center' }}>
+                      <td data-label="تكرار سابق" style={{ padding: '12px 8px', textAlign: 'center' }}>
                         {item.recurrences > 0 ? (
                           <span style={{ fontSize: 11, background: '#fee2e2', color: '#b91c1c', padding: '4px 8px', borderRadius: 100, fontWeight: 600 }}>
                             ⚠️ تكرر {item.recurrences} مرة
                           </span>
                         ) : <span style={{ color: 'var(--text-muted)' }}>-</span>}
                       </td>
-                      <td style={{ padding: '12px 8px', textAlign: 'center', fontSize: 16, fontWeight: 800, color: 'var(--danger)' }}>
+                      <td data-label="القيمة الحالية" style={{ padding: '12px 8px', textAlign: 'center', fontSize: 16, fontWeight: 800, color: 'var(--danger)' }}>
                         {item.value}
                       </td>
                     </tr>
@@ -212,8 +212,8 @@ export default function DynamicKPI({ data, hospitalName = null }) {
             <h3 style={{ fontSize: 16, marginBottom: 'var(--space-md)', color: 'var(--text-secondary)' }}>
               🕒 الشهور السابقة (المؤشرات المتكررة فقط)
             </h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+            <div className="table-responsive">
+              <table className="mobile-table-card" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
                     <th style={{ padding: '12px 8px' }}>المؤشر المتكرر</th>
@@ -224,13 +224,13 @@ export default function DynamicKPI({ data, hospitalName = null }) {
                 <tbody>
                   {repeatedPrevious.map((item, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-                      <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      <td data-label="المؤشر المتكرر" style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
                         {item.indicator}
                       </td>
-                      <td style={{ padding: '12px 8px', color: 'var(--text-muted)', direction: 'ltr', textAlign: 'right' }}>
+                      <td data-label="شهور الظهور" style={{ padding: '12px 8px', color: 'var(--text-muted)', direction: 'ltr', textAlign: 'right' }}>
                         {item.months.join(' ، ')}
                       </td>
-                      <td style={{ padding: '12px 8px', textAlign: 'center' }}>
+                      <td data-label="إجمالي التكرار" style={{ padding: '12px 8px', textAlign: 'center' }}>
                         <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--warning-dark)', background: '#fef3c7', padding: '4px 8px', borderRadius: 100 }}>
                           {item.count} مرات
                         </span>
@@ -257,8 +257,8 @@ export default function DynamicKPI({ data, hospitalName = null }) {
       {numericKeys.length > 0 && (
         <div>
           <h3 style={{ marginBottom: 'var(--space-md)', fontSize: 16 }}>مؤشرات الشهر الأخير</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+          <div className="table-responsive">
+            <table className="mobile-table-card" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
                   <th style={{ padding: '12px 8px' }}>المؤشر</th>
@@ -268,8 +268,8 @@ export default function DynamicKPI({ data, hospitalName = null }) {
               <tbody>
                 {numericKeys.map((key, i) => (
                   <tr key={key} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px 8px', fontWeight: 600 }}>{key}</td>
-                    <td style={{ padding: '12px 8px', textAlign: 'center', fontWeight: 800, color: COLORS[i % COLORS.length] }}>
+                    <td data-label="المؤشر" style={{ padding: '12px 8px', fontWeight: 600 }}>{key}</td>
+                    <td data-label="القيمة" style={{ padding: '12px 8px', textAlign: 'center', fontWeight: 800, color: COLORS[i % COLORS.length] }}>
                       {latestRow[key]}
                     </td>
                   </tr>
