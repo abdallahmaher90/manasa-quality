@@ -43,6 +43,10 @@ export default function HospitalPage() {
   })
   const [newMember, setNewMember] = useState({ name: '', role: '', phone: '' })
 
+  const [userRole, setUserRole] = useState(null)
+  const [isEditingSat, setIsEditingSat] = useState(false)
+  const [tempSat, setTempSat] = useState('')
+
   useEffect(() => {
     fetchHospital()
   }, [id])
@@ -65,6 +69,13 @@ export default function HospitalPage() {
         quality_head_phone: hospRes.data.quality_head_phone || '',
         quality_team: hospRes.data.quality_team || []
       })
+      setTempSat(hospRes.data.last_sat_evaluation || '')
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+      if (profile) setUserRole(profile.role)
     }
 
     if (deptRes.data) {
@@ -141,6 +152,19 @@ export default function HospitalPage() {
     }))
   }
 
+  const handleSaveSat = async () => {
+    const { error } = await supabase.from('hospitals').update({
+      last_sat_evaluation: tempSat
+    }).eq('id', id)
+
+    if (!error) {
+      setHospital(prev => ({ ...prev, last_sat_evaluation: tempSat }))
+      setIsEditingSat(false)
+    } else {
+      alert('حدث خطأ أثناء حفظ النسبة')
+    }
+  }
+
   if (loading) {
     return <div className="loading-state"><div className="loading-spinner" /><span>جاري التحميل...</span></div>
   }
@@ -173,7 +197,39 @@ export default function HospitalPage() {
           }}>🏥</div>
           <div>
             <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: 'var(--text-main)' }}>{hospital.name}</h1>
-            <div style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 2 }}>📍 {hospital.governorate}</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>📈 نسبة تقييم آخر SAT:</span>
+              
+              {isEditingSat ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input 
+                    type="number" 
+                    className="form-input" 
+                    style={{ padding: '2px 8px', fontSize: 12, width: '80px', height: '24px', minHeight: 'unset' }} 
+                    value={tempSat} 
+                    onChange={e => setTempSat(e.target.value)} 
+                    placeholder="%"
+                  />
+                  <button className="btn btn-primary btn-sm" style={{ padding: '2px 8px', fontSize: 11, height: '24px', minHeight: 'unset' }} onClick={handleSaveSat}>حفظ</button>
+                  <button className="btn btn-ghost btn-sm" style={{ padding: '2px 8px', fontSize: 11, height: '24px', minHeight: 'unset' }} onClick={() => { setIsEditingSat(false); setTempSat(hospital.last_sat_evaluation || ''); }}>إلغاء</button>
+                </div>
+              ) : (
+                <>
+                  <strong style={{ color: 'var(--primary)' }}>
+                    {hospital.last_sat_evaluation ? `${hospital.last_sat_evaluation}%` : 'غير مسجل'}
+                  </strong>
+                  {(userRole === 'directorate_admin' || userRole === 'directorate_member') && (
+                    <button 
+                      onClick={() => setIsEditingSat(true)}
+                      className="btn btn-ghost btn-sm no-print" 
+                      style={{ padding: '2px 6px', fontSize: 11, height: '22px', minHeight: 'unset' }}
+                    >
+                      ✏️ تعديل
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex gap-sm no-print">

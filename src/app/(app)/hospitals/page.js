@@ -31,7 +31,7 @@ export default function HospitalsPage() {
     const { data } = await supabase
       .from('hospitals')
       .select(`
-        id, name, governorate,
+        id, name, governorate, last_sat_evaluation,
         findings!findings_hospital_id_fkey(id, status, repeat_count)
       `)
       .order('name')
@@ -188,6 +188,9 @@ export default function HospitalsPage() {
                         <span style={{ color: complianceRate >= 70 ? 'var(--success)' : complianceRate >= 40 ? 'var(--warning-dark)' : 'var(--danger)' }}>
                            نسبة الالتزام {complianceRate}%
                         </span>
+                        {hospital.last_sat_evaluation && (
+                          <> &nbsp;|&nbsp; <span style={{ color: 'var(--primary)', fontWeight: 600 }}>آخر SAT: {hospital.last_sat_evaluation}%</span></>
+                        )}
                       </div>
                     </div>
                   </div>
