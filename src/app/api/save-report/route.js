@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-server'
+import { createServiceClient } from '@/lib/supabase'
 import { normalizeFindingsBulk } from '@/lib/ai-parser'
 import { sendNewReportEmail } from '@/lib/email'
 
