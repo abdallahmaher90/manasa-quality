@@ -283,118 +283,8 @@ export default function HospitalPage() {
         </div>
       )}
 
-      {/* Stats Grid */}
-      <div className="stats-grid" style={{ marginBottom: '24px' }}>
-        <div className="stat-card danger">
-          <div className="stat-value">{totalOpen}</div>
-          <div className="stat-label">سلبيات مفتوحة</div>
-        </div>
-        <div className="stat-card warning">
-          <div className="stat-value">{totalRecurring}</div>
-          <div className="stat-label">سلبيات مكررة</div>
-        </div>
-        <div className="stat-card success">
-          <div className="stat-value">{totalResolved}</div>
-          <div className="stat-label">سلبيات محلولة</div>
-        </div>
-        <div className="stat-card primary">
-          <div className="stat-value">
-            {totalOpen + totalResolved > 0 
-              ? Math.round((totalResolved / (totalOpen + totalResolved)) * 100) 
-              : 0}%
-          </div>
-          <div className="stat-label">معدل الإنجاز</div>
-        </div>
-      </div>
-
-      {/* Urgent Action Items */}
-      {criticalFindings.length > 0 && (
-        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--danger)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.1)' }}>
-          <div className="card-header" style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-            <h2 className="card-title" style={{ color: 'var(--danger)' }}>⚠️ إجراءات عاجلة (سلبيات حرجة أو مكررة)</h2>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {criticalFindings.map(finding => (
-              <div key={finding.id} className={`finding-card ${finding.status}`} style={{ margin: 0 }}>
-                <div className="finding-header">
-                  <div className="finding-text">{finding.canonical_text || finding.original_text}</div>
-                </div>
-                <div className="finding-meta">
-                  <span className="badge badge-neutral">📍 {finding.departments?.name}</span>
-                  {finding.priority === 'high' && <span className="badge badge-danger">🔴 أولوية قصوى</span>}
-                  {finding.repeat_count > 1 && <span className="badge badge-repeat">🔁 مكررة {finding.repeat_count} مرات</span>}
-                  <Link href={`/hospitals/${id}/departments/${finding.departments?.id}`} className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto', padding: '2px 8px', fontSize: 11 }}>
-                    التفاصيل ←
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recent Reports */}
-      <div className="card" style={{ marginBottom: '24px' }}>
-        <div className="card-header">
-          <h2 className="card-title">📋 آخر تقارير المرور</h2>
-          <Link href={`/archive?hospital=${id}`} className="btn btn-ghost btn-sm">عرض كل التقارير</Link>
-        </div>
-        {recentReports.length === 0 ? (
-          <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
-            <span className="empty-state-icon" style={{ fontSize: 32 }}>📋</span>
-            <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '12px 8px' }}>التاريخ</th>
-                  <th style={{ padding: '12px 8px' }}>المفتش</th>
-                  <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentReports.map(report => (
-                  <tr key={report.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {new Date(report.inspection_date).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </td>
-                    <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>
-                      {report.inspector_name}
-                    </td>
-                    <td style={{ padding: '12px 8px', textAlign: 'left' }}>
-                      <Link href={`/archive/${report.id}`} className="btn btn-ghost btn-sm no-print" style={{ fontSize: 11, padding: '4px 8px' }}>
-                        عرض التقرير
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Accordions */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
-        {/* KPIs Accordion */}
-        <div className="no-print" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)' }}>
-          <div 
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 16px' }}
-            onClick={() => setShowKpi(!showKpi)}
-          >
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>📈 المؤشرات الشهرية (من جوجل شيت)</div>
-            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{showKpi ? '🔼' : '🔽'}</div>
-          </div>
-          {showKpi && (
-            <div style={{ padding: '16px', borderTop: '1px solid var(--border)' }}>
-              <DynamicKPI data={kpiData} hospitalName={hospital.name} />
-            </div>
-          )}
-        </div>
-
-        {/* Team Accordion */}
+      {/* Management and Quality Team Section (Top of Page) */}
+      <div style={{ marginBottom: '24px' }}>
         <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--bg-card)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
           <div 
             style={{ 
@@ -696,6 +586,115 @@ export default function HospitalPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="stats-grid" style={{ marginBottom: '24px' }}>
+        <div className="stat-card danger">
+          <div className="stat-value">{totalOpen}</div>
+          <div className="stat-label">سلبيات مفتوحة</div>
+        </div>
+        <div className="stat-card warning">
+          <div className="stat-value">{totalRecurring}</div>
+          <div className="stat-label">سلبيات مكررة</div>
+        </div>
+        <div className="stat-card success">
+          <div className="stat-value">{totalResolved}</div>
+          <div className="stat-label">سلبيات محلولة</div>
+        </div>
+        <div className="stat-card primary">
+          <div className="stat-value">
+            {totalOpen + totalResolved > 0 
+              ? Math.round((totalResolved / (totalOpen + totalResolved)) * 100) 
+              : 0}%
+          </div>
+          <div className="stat-label">معدل الإنجاز</div>
+        </div>
+      </div>
+
+      {/* Urgent Action Items */}
+      {criticalFindings.length > 0 && (
+        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--danger)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.1)' }}>
+          <div className="card-header" style={{ paddingBottom: '12px', marginBottom: '16px' }}>
+            <h2 className="card-title" style={{ color: 'var(--danger)' }}>⚠️ إجراءات عاجلة (سلبيات حرجة أو مكررة)</h2>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {criticalFindings.map(finding => (
+              <div key={finding.id} className={`finding-card ${finding.status}`} style={{ margin: 0 }}>
+                <div className="finding-header">
+                  <div className="finding-text">{finding.canonical_text || finding.original_text}</div>
+                </div>
+                <div className="finding-meta">
+                  <span className="badge badge-neutral">📍 {finding.departments?.name}</span>
+                  {finding.priority === 'high' && <span className="badge badge-danger">🔴 أولوية قصوى</span>}
+                  {finding.repeat_count > 1 && <span className="badge badge-repeat">🔁 مكررة {finding.repeat_count} مرات</span>}
+                  <Link href={`/hospitals/${id}/departments/${finding.departments?.id}`} className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto', padding: '2px 8px', fontSize: 11 }}>
+                    التفاصيل ←
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Reports */}
+      <div className="card" style={{ marginBottom: '24px' }}>
+        <div className="card-header">
+          <h2 className="card-title">📋 آخر تقارير المرور</h2>
+          <Link href={`/archive?hospital=${id}`} className="btn btn-ghost btn-sm">عرض كل التقارير</Link>
+        </div>
+        {recentReports.length === 0 ? (
+          <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
+            <span className="empty-state-icon" style={{ fontSize: 32 }}>📋</span>
+            <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '12px 8px' }}>التاريخ</th>
+                  <th style={{ padding: '12px 8px' }}>المفتش</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReports.map(report => (
+                  <tr key={report.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {new Date(report.inspection_date).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>
+                      {report.inspector_name}
+                    </td>
+                    <td style={{ padding: '12px 8px', textAlign: 'left' }}>
+                      <Link href={`/archive/${report.id}`} className="btn btn-ghost btn-sm no-print" style={{ fontSize: 11, padding: '4px 8px' }}>
+                        عرض التقرير
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* KPIs Accordion */}
+      <div className="no-print" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', marginBottom: '24px' }}>
+        <div 
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 16px' }}
+          onClick={() => setShowKpi(!showKpi)}
+        >
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>📈 المؤشرات الشهرية (من جوجل شيت)</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{showKpi ? '🔼' : '🔽'}</div>
+        </div>
+        {showKpi && (
+          <div style={{ padding: '16px', borderTop: '1px solid var(--border)' }}>
+            <DynamicKPI data={kpiData} hospitalName={hospital.name} />
+          </div>
+        )}
       </div>
 
       {/* Departments Grid - sorted by findings count */}
