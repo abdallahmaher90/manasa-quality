@@ -31,6 +31,9 @@ export default function HospitalPage() {
   const [showKpi, setShowKpi] = useState(false)
   const [showTeam, setShowTeam] = useState(false)
   
+  const [recentReports, setRecentReports] = useState([])
+  const [criticalFindings, setCriticalFindings] = useState([])
+  
   // Team Management State
   const [showEditTeamModal, setShowEditTeamModal] = useState(false)
   const [savingTeam, setSavingTeam] = useState(false)
@@ -52,12 +55,14 @@ export default function HospitalPage() {
   }, [id])
 
   const fetchHospital = async () => {
-    const [hospRes, deptRes] = await Promise.all([
+    const [hospRes, deptRes, reportsRes, criticalFindingsRes] = await Promise.all([
       supabase.from('hospitals').select('*').eq('id', id).single(),
       supabase.from('departments').select(`
         id, name,
         findings!findings_department_id_fkey(id, status, repeat_count, priority)
       `).eq('hospital_id', id).order('name'),
+      supabase.from('reports').select('id, inspection_date, inspector_name').eq('hospital_id', id).order('inspection_date', { ascending: false }).limit(5),
+      supabase.from('findings').select('id, original_text, canonical_text, priority, repeat_count, status, departments(name, id)').eq('hospital_id', id).in('status', ['open', 'recurring']).or('priority.eq.high,repeat_count.gte.3').order('repeat_count', { ascending: false }).limit(5)
     ])
 
     setHospital(hospRes.data)
@@ -98,6 +103,8 @@ export default function HospitalPage() {
       })
 
       setDepartments(processed)
+      if (reportsRes.data) setRecentReports(reportsRes.data)
+      if (criticalFindingsRes.data) setCriticalFindings(criticalFindingsRes.data)
       
       // Fetch KPI Data
       try {
@@ -119,28 +126,81 @@ export default function HospitalPage() {
 
   const handleSaveTeam = async () => {
     setSavingTeam(true)
-    const { error } = await supabase.from('hospitals').update({
-      director_name: editForm.director_name,
-      director_phone: editForm.director_phone,
-      quality_head_name: editForm.quality_head_name,
-      quality_head_phone: editForm.quality_head_phone,
-      quality_team: editForm.quality_team
-    }).eq('id', id)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
 
-    if (!error) {
-      setHospital(prev => ({ ...prev, ...editForm }))
-      setShowEditTeamModal(false)
-    } else {
-      alert('حدث خطأ أثناء الحفظ')
+      const res = await fetch('/api/update-hospital-team', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          hospitalId: id,
+          director_name: editForm.director_name,
+          director_phone: editForm.director_phone,
+          quality_head_name: editForm.quality_head_name,
+          quality_head_phone: editForm.quality_head_phone,
+          quality_team: editForm.quality_team || []
+        })
+      })
+
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setHospital(prev => ({ ...prev, ...editForm }))
+        setShowEditTeamModal(false)
+        return
+      }
+
+      // Fallback: Try direct Supabase update
+      const { error: directErr } = await supabase.from('hospitals').update({
+        director_name: editForm.director_name,
+        director_phone: editForm.director_phone,
+        quality_head_name: editForm.quality_head_name,
+        quality_head_phone: editForm.quality_head_phone,
+        quality_team: editForm.quality_team || []
+      }).eq('id', id)
+
+      if (!directErr) {
+        setHospital(prev => ({ ...prev, ...editForm }))
+        setShowEditTeamModal(false)
+      } else {
+        alert(data.error || directErr.message || 'حدث خطأ أثناء الحفظ')
+      }
+    } catch (err) {
+      console.error('Save team error:', err)
+      // Fallback to direct client update if API fetch failed
+      try {
+        const { error: directErr } = await supabase.from('hospitals').update({
+          director_name: editForm.director_name,
+          director_phone: editForm.director_phone,
+          quality_head_name: editForm.quality_head_name,
+          quality_head_phone: editForm.quality_head_phone,
+          quality_team: editForm.quality_team || []
+        }).eq('id', id)
+
+        if (!directErr) {
+          setHospital(prev => ({ ...prev, ...editForm }))
+          setShowEditTeamModal(false)
+          return
+        }
+      } catch (e) {}
+      alert('حدث خطأ أثناء حفظ البيانات: ' + (err.message || ''))
+    } finally {
+      setSavingTeam(false)
     }
-    setSavingTeam(false)
   }
 
   const handleAddTeamMember = () => {
-    if (!newMember.name) return
+    if (!newMember.name || !newMember.name.trim()) return
     setEditForm(prev => ({
       ...prev,
-      quality_team: [...prev.quality_team, newMember]
+      quality_team: [...(prev.quality_team || []), {
+        name: newMember.name.trim(),
+        role: newMember.role?.trim() || '',
+        phone: newMember.phone?.trim() || ''
+      }]
     }))
     setNewMember({ name: '', role: '', phone: '' })
   }
@@ -148,7 +208,7 @@ export default function HospitalPage() {
   const handleRemoveTeamMember = (index) => {
     setEditForm(prev => ({
       ...prev,
-      quality_team: prev.quality_team.filter((_, i) => i !== index)
+      quality_team: (prev.quality_team || []).filter((_, i) => i !== index)
     }))
   }
 
@@ -253,6 +313,99 @@ export default function HospitalPage() {
           <span><strong>{totalPending} سلبية</strong> أفاد فريق المستشفى بتلافيها - تحتاج تأكيد من المديرية</span>
         </div>
       )}
+
+      {/* Stats Grid */}
+      <div className="stats-grid" style={{ marginBottom: '24px' }}>
+        <div className="stat-card danger">
+          <div className="stat-value">{totalOpen}</div>
+          <div className="stat-label">سلبيات مفتوحة</div>
+        </div>
+        <div className="stat-card warning">
+          <div className="stat-value">{totalRecurring}</div>
+          <div className="stat-label">سلبيات مكررة</div>
+        </div>
+        <div className="stat-card success">
+          <div className="stat-value">{totalResolved}</div>
+          <div className="stat-label">سلبيات محلولة</div>
+        </div>
+        <div className="stat-card primary">
+          <div className="stat-value">
+            {totalOpen + totalResolved > 0 
+              ? Math.round((totalResolved / (totalOpen + totalResolved)) * 100) 
+              : 0}%
+          </div>
+          <div className="stat-label">معدل الإنجاز</div>
+        </div>
+      </div>
+
+      {/* Urgent Action Items */}
+      {criticalFindings.length > 0 && (
+        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--danger)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.1)' }}>
+          <div className="card-header" style={{ paddingBottom: '12px', marginBottom: '16px' }}>
+            <h2 className="card-title" style={{ color: 'var(--danger)' }}>⚠️ إجراءات عاجلة (سلبيات حرجة أو مكررة)</h2>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {criticalFindings.map(finding => (
+              <div key={finding.id} className={`finding-card ${finding.status}`} style={{ margin: 0 }}>
+                <div className="finding-header">
+                  <div className="finding-text">{finding.canonical_text || finding.original_text}</div>
+                </div>
+                <div className="finding-meta">
+                  <span className="badge badge-neutral">📍 {finding.departments?.name}</span>
+                  {finding.priority === 'high' && <span className="badge badge-danger">🔴 أولوية قصوى</span>}
+                  {finding.repeat_count > 1 && <span className="badge badge-repeat">🔁 مكررة {finding.repeat_count} مرات</span>}
+                  <Link href={`/hospitals/${id}/departments/${finding.departments?.id}`} className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto', padding: '2px 8px', fontSize: 11 }}>
+                    التفاصيل ←
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Reports */}
+      <div className="card" style={{ marginBottom: '24px' }}>
+        <div className="card-header">
+          <h2 className="card-title">📋 آخر تقارير المرور</h2>
+          <Link href={`/archive?hospital=${id}`} className="btn btn-ghost btn-sm">عرض كل التقارير</Link>
+        </div>
+        {recentReports.length === 0 ? (
+          <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
+            <span className="empty-state-icon" style={{ fontSize: 32 }}>📋</span>
+            <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '12px 8px' }}>التاريخ</th>
+                  <th style={{ padding: '12px 8px' }}>المفتش</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReports.map(report => (
+                  <tr key={report.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {new Date(report.inspection_date).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>
+                      {report.inspector_name}
+                    </td>
+                    <td style={{ padding: '12px 8px', textAlign: 'left' }}>
+                      <Link href={`/archive/${report.id}`} className="btn btn-ghost btn-sm no-print" style={{ fontSize: 11, padding: '4px 8px' }}>
+                        عرض التقرير
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Accordions */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
@@ -435,7 +588,7 @@ export default function HospitalPage() {
               <label className="form-label">أعضاء فريق الجودة</label>
               
               {/* Existing Members */}
-              {editForm.quality_team.length > 0 && (
+              {editForm.quality_team?.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginBottom: 'var(--space-md)' }}>
                   {editForm.quality_team.map((m, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--bg-secondary)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
@@ -453,19 +606,22 @@ export default function HospitalPage() {
                 <input 
                   type="text" className="form-input" placeholder="اسم العضو" 
                   value={newMember.name} onChange={(e) => setNewMember(p => ({...p, name: e.target.value}))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTeamMember(); } }}
                   style={{ flex: 2 }}
                 />
                 <input 
                   type="text" className="form-input" placeholder="دوره (اختياري)" 
                   value={newMember.role} onChange={(e) => setNewMember(p => ({...p, role: e.target.value}))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTeamMember(); } }}
                   style={{ flex: 1 }}
                 />
                 <input 
                   type="text" className="form-input" placeholder="الهاتف" 
                   value={newMember.phone} onChange={(e) => setNewMember(p => ({...p, phone: e.target.value}))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTeamMember(); } }}
                   style={{ flex: 1 }}
                 />
-                <button className="btn btn-ghost" onClick={handleAddTeamMember} type="button">
+                <button className="btn btn-ghost" onClick={handleAddTeamMember} type="button" title="إضافة عضو">
                   ➕
                 </button>
               </div>

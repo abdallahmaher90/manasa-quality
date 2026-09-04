@@ -1,35 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getCategory } from '@/lib/utils'
 
 export default function RecurringPage() {
   const [crossHospitalRecurring, setCrossHospitalRecurring] = useState([])
   const [expandedDept, setExpandedDept] = useState(null)
   const [loading, setLoading] = useState(true)
-
-  const getCategory = (name) => {
-    if (!name) return 'أخرى'
-    const n = name.toLowerCase()
-    if (n.includes('صيدلي')) return 'الصيدلة'
-    if (n.includes('كلى') || n.includes('غسيل كلو') || n.includes('كلي')) return 'الكلى'
-    if (n.includes('عناي') || n.includes('رعاي')) return 'العناية المركزة'
-    if (n.includes('معمل') || n.includes('بنك دم')) return 'المعامل'
-    if (n.includes('اشع') || n.includes('أشع') || n.includes('إشع')) return 'الأشعة'
-    if (n.includes('استقبال') || n.includes('طوارئ')) return 'الاستقبال والطوارئ'
-    if (n.includes('عمليات') || n.includes('افاقه') || n.includes('إفاقه')) return 'العمليات'
-    if (n.includes('حضانات') || n.includes('مبتسرين') || n.includes('مبتسر')) return 'الحضانات'
-    if (n.includes('داخلي') || n.includes('اقامة') || n.includes('إقامة')) return 'القسم الداخلي'
-    if (n.includes('عيادات') || n.includes('خارجيه')) return 'العيادات الخارجية'
-    if (n.includes('اسنان') || n.includes('أسنان')) return 'الأسنان'
-    if (n.includes('مخزن') || n.includes('مخازن') || n.includes('مستلزمات')) return 'المخازن'
-    if (n.includes('تذاكر') || n.includes('دخول') || n.includes('تسجيل')) return 'التذاكر والدخول'
-    if (n.includes('مطبخ') || n.includes('تغذيه') || n.includes('تغذية')) return 'التغذية والمطبخ'
-    if (n.includes('مغسله') || n.includes('مغسلة') || n.includes('مفروشات')) return 'المغسلة'
-    if (n.includes('نفايات') || n.includes('محرقه') || n.includes('محرقة')) return 'النفايات الطبية'
-    if (n.includes('تعقيم')) return 'التعقيم'
-    if (n.includes('علاج طبيعي')) return 'العلاج الطبيعي'
-    return 'أخرى'
-  }
 
   useEffect(() => {
     fetchCrossHospitalFindings()
@@ -56,7 +33,10 @@ export default function RecurringPage() {
         data.forEach(f => {
           if (!f.hospitals || !f.departments) return
           const category = getCategory(f.departments.name)
-          const textKey = (f.canonical_text || f.original_text).trim()
+          let textKey = (f.canonical_text || f.original_text).trim()
+          
+          // Remove bracketed sub-room prefixes (e.g. "[غرفة الدواء] ") to allow cross-hospital grouping
+          textKey = textKey.replace(/^\[.*?\]\s*/, '')
 
           if (!groupedByCategory[category]) {
             groupedByCategory[category] = {}

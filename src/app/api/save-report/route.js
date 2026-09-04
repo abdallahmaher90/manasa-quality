@@ -111,7 +111,7 @@ export async function POST(request) {
           .from('findings')
           .select('id, canonical_text')
           .eq('department_id', deptId)
-          .in('status', ['open', 'recurring'])
+          
 
         let matchResults = newFindings.map(f => ({ isNew: true, matchedId: null }))
 
@@ -148,6 +148,12 @@ export async function POST(request) {
                   status: 'recurring',
                   last_seen_date: parsedData.inspection_date,
                   last_report_id: report.id,
+                  // Clear resolution fields since it reoccurred
+                  resolved_by: null,
+                  resolved_date: null,
+                  resolution_note: null,
+                  hospital_resolution_note: null,
+                  hospital_resolution_date: null
                 })
                 .eq('id', match.matchedId)
             }

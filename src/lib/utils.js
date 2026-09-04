@@ -1,0 +1,23 @@
+export const getCategory = (name) => {
+  if (!name) return 'أخرى'
+  const n = name.toLowerCase()
+  if (n.includes('صيدل')) return 'الصيدلة'
+  if (n.includes('كلى') || n.includes('كلي') || n.includes('كلو')) return 'الكلى'
+  if (n.includes('عناي') || n.includes('رعاي')) return 'العناية المركزة'
+  if (n.includes('معمل') || n.includes('معامل') || n.includes('دم')) return 'المعامل'
+  if (n.includes('اشع') || n.includes('أشع') || n.includes('إشع')) return 'الأشعة'
+  if (n.includes('استقبال') || n.includes('طوار')) return 'الاستقبال والطوارئ'
+  if (n.includes('عمليات') || n.includes('افاق') || n.includes('إفاق')) return 'العمليات'
+  if (n.includes('حضان') || n.includes('مبتسر')) return 'الحضانات'
+  if (n.includes('داخلي') || n.includes('اقام') || n.includes('إقام')) return 'القسم الداخلي'
+  if (n.includes('عياد') || n.includes('خارجي')) return 'العيادات الخارجية'
+  if (n.includes('اسنان') || n.includes('أسنان')) return 'الأسنان'
+  if (n.includes('مخزن') || n.includes('مخازن') || n.includes('مستلزم')) return 'المخازن'
+  if (n.includes('تذاكر') || n.includes('دخول') || n.includes('تسجيل')) return 'التذاكر والدخول'
+  if (n.includes('مطبخ') || n.includes('تغذي')) return 'التغذية والمطبخ'
+  if (n.includes('مغسل') || n.includes('مفروش')) return 'المغسلة'
+  if (n.includes('نفاي') || n.includes('محرق')) return 'النفايات الطبية'
+  if (n.includes('تعقيم')) return 'التعقيم'
+  if (n.includes('طبيع')) return 'العلاج الطبيعي'
+  return 'أخرى'
+}

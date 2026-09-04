@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getCategory } from '@/lib/utils'
 
 export default function CrossReportPage() {
   const [departments, setDepartments] = useState([])
@@ -10,30 +11,6 @@ export default function CrossReportPage() {
   const [deptNames, setDeptNames] = useState([]) // These are now Categories
   const [statusFilter, setStatusFilter] = useState('active')
   const [printMode, setPrintMode] = useState(false)
-
-  const getCategory = (name) => {
-    if (!name) return 'أخرى'
-    const n = name.toLowerCase()
-    if (n.includes('صيدل')) return 'الصيدلة'
-    if (n.includes('كلى') || n.includes('كلي') || n.includes('كلو')) return 'الكلى'
-    if (n.includes('عناي') || n.includes('رعاي')) return 'العناية المركزة'
-    if (n.includes('معمل') || n.includes('معامل') || n.includes('دم')) return 'المعامل'
-    if (n.includes('اشع') || n.includes('أشع') || n.includes('إشع')) return 'الأشعة'
-    if (n.includes('استقبال') || n.includes('طوار')) return 'الاستقبال والطوارئ'
-    if (n.includes('عمليات') || n.includes('افاق') || n.includes('إفاق')) return 'العمليات'
-    if (n.includes('حضان') || n.includes('مبتسر')) return 'الحضانات'
-    if (n.includes('داخلي') || n.includes('اقام') || n.includes('إقام')) return 'القسم الداخلي'
-    if (n.includes('عياد') || n.includes('خارجي')) return 'العيادات الخارجية'
-    if (n.includes('اسنان') || n.includes('أسنان')) return 'الأسنان'
-    if (n.includes('مخزن') || n.includes('مخازن') || n.includes('مستلزم')) return 'المخازن'
-    if (n.includes('تذاكر') || n.includes('دخول') || n.includes('تسجيل')) return 'التذاكر والدخول'
-    if (n.includes('مطبخ') || n.includes('تغذي')) return 'التغذية والمطبخ'
-    if (n.includes('مغسل') || n.includes('مفروش')) return 'المغسلة'
-    if (n.includes('نفاي') || n.includes('محرق')) return 'النفايات الطبية'
-    if (n.includes('تعقيم')) return 'التعقيم'
-    if (n.includes('طبيع')) return 'العلاج الطبيعي'
-    return 'أخرى'
-  }
 
   useEffect(() => {
     fetchDeptNames()
@@ -136,7 +113,7 @@ export default function CrossReportPage() {
     results.forEach(r => {
       if (!r.departments) return // Safe-guard against old state during hot-reload
       // Use a Set to only count a finding once per hospital, even if repeated within the same hospital
-      const allTextsInHospital = r.departments.flatMap(d => d.filteredFindings.map(f => (f.canonical_text || f.original_text).trim()))
+      const allTextsInHospital = r.departments.flatMap(d => d.filteredFindings.map(f => (f.canonical_text || f.original_text).trim().replace(/^\[.*?\]\s*/, '')))
       const uniqueTextsInHospital = new Set(allTextsInHospital)
       uniqueTextsInHospital.forEach(text => {
         findingTextFrequencies[text] = (findingTextFrequencies[text] || 0) + 1
@@ -254,7 +231,8 @@ export default function CrossReportPage() {
                   <ol style={{ paddingRight: '20px', margin: 0, listStylePosition: 'outside' }}>
                     {dept.filteredFindings.map((f) => {
                       const text = (f.canonical_text || f.original_text).trim()
-                      const isCrossHospitalCommon = findingTextFrequencies[text] > 1
+                      const strippedText = text.replace(/^\[.*?\]\s*/, '')
+                      const isCrossHospitalCommon = findingTextFrequencies[strippedText] > 1
                       const isHospitalRecurring = f.status === 'recurring' || f.repeat_count > 1
                       
                       let fontWeight = 'normal'

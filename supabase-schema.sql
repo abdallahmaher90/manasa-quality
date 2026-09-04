@@ -222,6 +222,17 @@ CREATE POLICY "Directorate can manage hospitals" ON hospitals
     )
   );
 
+-- Hospital users can update their own hospital details (management & quality team)
+CREATE POLICY "Hospital users can update own hospital" ON hospitals
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE id = auth.uid()
+      AND hospital_id = hospitals.id
+      AND role IN ('hospital_admin', 'hospital_member')
+    )
+  );
+
 -- Departments: Same logic as hospitals
 CREATE POLICY "Directorate can view all departments" ON departments
   FOR SELECT USING (

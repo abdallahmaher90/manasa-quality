@@ -75,9 +75,32 @@ export default function AppLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="loading-state" style={{ minHeight: '100vh' }}>
-        <div className="loading-spinner" />
-        <span>جاري التحقق من الهوية...</span>
+      <div className="app-layout">
+        {/* Skeleton Sidebar */}
+        <div className="sidebar" style={{ opacity: 0.7 }}>
+          <div className="sidebar-logo">
+            <div className="sidebar-logo-icon skeleton" style={{ width: 42, height: 42, borderRadius: 8, background: 'var(--border)' }}></div>
+            <div className="sidebar-logo-text" style={{ flex: 1, gap: 8, display: 'flex', flexDirection: 'column' }}>
+              <div className="skeleton" style={{ height: 16, width: '80%', background: 'var(--border)', borderRadius: 4 }}></div>
+              <div className="skeleton" style={{ height: 10, width: '50%', background: 'var(--border)', borderRadius: 4 }}></div>
+            </div>
+          </div>
+          <div className="sidebar-nav" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="skeleton" style={{ height: 20, width: '100%', background: 'var(--border)', borderRadius: 4 }}></div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="main-content">
+          {/* Skeleton Header */}
+          <header className="header" style={{ opacity: 0.7 }}>
+            <div className="skeleton" style={{ height: 24, width: 200, background: 'var(--border)', borderRadius: 4 }}></div>
+          </header>
+          <main className="page-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="loading-spinner" />
+          </main>
+        </div>
       </div>
     )
   }

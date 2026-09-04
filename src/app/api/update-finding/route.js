@@ -34,7 +34,7 @@ export async function POST(request) {
         updateData = {
           status: 'recurring',
           repeat_count: (f?.repeat_count || 1) + 1,
-          resolved_by: null,
+          resolved_by: null, hospital_resolution_note: null, hospital_resolution_date: null,
         }
         break
       case 'mark_recurring':
