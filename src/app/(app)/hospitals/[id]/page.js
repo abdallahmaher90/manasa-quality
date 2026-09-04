@@ -151,7 +151,7 @@ export default function HospitalPage() {
         setHospital(prev => ({ ...prev, ...editForm }))
         setShowEditTeamModal(false)
       } else {
-        alert(data.error || 'حدث خطأ أثناء الحفظ. يرجى التأكد من الصلاحيات.')
+        alert('API Error: ' + (data.error || 'حدث خطأ أثناء الحفظ. يرجى التأكد من الصلاحيات.'))
       }
     } catch (err) {
       console.error('Save team error:', err)
