@@ -150,42 +150,11 @@ export default function HospitalPage() {
       if (res.ok && data.success) {
         setHospital(prev => ({ ...prev, ...editForm }))
         setShowEditTeamModal(false)
-        return
-      }
-
-      // Fallback: Try direct Supabase update
-      const { error: directErr } = await supabase.from('hospitals').update({
-        director_name: editForm.director_name,
-        director_phone: editForm.director_phone,
-        quality_head_name: editForm.quality_head_name,
-        quality_head_phone: editForm.quality_head_phone,
-        quality_team: editForm.quality_team || []
-      }).eq('id', id)
-
-      if (!directErr) {
-        setHospital(prev => ({ ...prev, ...editForm }))
-        setShowEditTeamModal(false)
       } else {
-        alert(data.error || directErr.message || 'حدث خطأ أثناء الحفظ')
+        alert(data.error || 'حدث خطأ أثناء الحفظ. يرجى التأكد من الصلاحيات.')
       }
     } catch (err) {
       console.error('Save team error:', err)
-      // Fallback to direct client update if API fetch failed
-      try {
-        const { error: directErr } = await supabase.from('hospitals').update({
-          director_name: editForm.director_name,
-          director_phone: editForm.director_phone,
-          quality_head_name: editForm.quality_head_name,
-          quality_head_phone: editForm.quality_head_phone,
-          quality_team: editForm.quality_team || []
-        }).eq('id', id)
-
-        if (!directErr) {
-          setHospital(prev => ({ ...prev, ...editForm }))
-          setShowEditTeamModal(false)
-          return
-        }
-      } catch (e) {}
       alert('حدث خطأ أثناء حفظ البيانات: ' + (err.message || ''))
     } finally {
       setSavingTeam(false)

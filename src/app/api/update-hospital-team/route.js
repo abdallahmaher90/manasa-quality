@@ -16,20 +16,48 @@ export async function POST(request) {
       return Response.json({ error: 'معرف المستشفى مطلوب' }, { status: 400 })
     }
 
+    // Securely check user authorization
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
+      return Response.json({ error: 'غير مصرح' }, { status: 401 })
+    }
+
+    // Verify user identity using anon client
+    const userClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { global: { headers: { Authorization: authHeader } } }
+    )
+    const { data: { user } } = await userClient.auth.getUser()
+    
+    if (!user) {
+      return Response.json({ error: 'غير مصرح' }, { status: 401 })
+    }
+
+    // Verify user role/hospital
+    const { data: profile } = await userClient
+      .from('profiles')
+      .select('role, hospital_id')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile) {
+      return Response.json({ error: 'صلاحيات غير كافية' }, { status: 403 })
+    }
+
+    // Allow if directorate, OR if hospital_member updating their OWN hospital
+    const isDirectorate = ['directorate_admin', 'directorate_member'].includes(profile.role)
+    const isOwnHospital = profile.role === 'hospital_member' && profile.hospital_id === hospitalId
+
+    if (!isDirectorate && !isOwnHospital) {
+      return Response.json({ error: 'لا تملك صلاحية تعديل هذا المستشفى' }, { status: 403 })
+    }
+
     let client = null
     if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
       client = createServiceClient()
     } else {
-      const authHeader = request.headers.get('authorization')
-      if (authHeader) {
-        client = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-          { global: { headers: { Authorization: authHeader } } }
-        )
-      } else {
-        client = supabase
-      }
+      client = userClient
     }
 
     const { error } = await client
