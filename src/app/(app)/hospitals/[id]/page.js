@@ -29,7 +29,7 @@ export default function HospitalPage() {
   const [printMode, setPrintMode] = useState(false)
   const [kpiData, setKpiData] = useState([])
   const [showKpi, setShowKpi] = useState(false)
-  const [showTeam, setShowTeam] = useState(false)
+  const [showTeam, setShowTeam] = useState(true)
   
   const [recentReports, setRecentReports] = useState([])
   const [criticalFindings, setCriticalFindings] = useState([])
@@ -395,44 +395,299 @@ export default function HospitalPage() {
         </div>
 
         {/* Team Accordion */}
-        <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)' }}>
+        <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--bg-card)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
           <div 
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '10px 16px' }}
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              cursor: 'pointer', 
+              padding: '12px 18px',
+              background: 'var(--bg-card)',
+              userSelect: 'none'
+            }}
             onClick={() => setShowTeam(!showTeam)}
           >
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>👥 بيانات الإدارة وفريق الجودة</div>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <button className="btn btn-ghost btn-sm no-print" style={{ padding: '2px 8px', fontSize: 11 }} onClick={(e) => { e.stopPropagation(); setShowEditTeamModal(true); }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '18px' }}>👥</span>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>بيانات الإدارة وفريق الجودة</span>
+              {hospital.quality_team && hospital.quality_team.length > 0 && (
+                <span style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  background: 'var(--bg-input)',
+                  color: 'var(--text-muted)'
+                }}>
+                  {hospital.quality_team.length} {hospital.quality_team.length === 1 ? 'عضو' : hospital.quality_team.length === 2 ? 'عضوان' : 'أعضاء'}
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button 
+                className="btn btn-ghost btn-sm no-print" 
+                style={{ 
+                  padding: '4px 10px', 
+                  fontSize: '12px', 
+                  fontWeight: 600,
+                  border: '1px solid var(--border)',
+                  borderRadius: '6px',
+                  background: 'var(--bg-card)'
+                }} 
+                onClick={(e) => { e.stopPropagation(); setShowEditTeamModal(true); }}
+              >
                 ✏️ تعديل
               </button>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{showTeam ? '🔼' : '🔽'}</div>
+              <div style={{ 
+                fontSize: '11px', 
+                color: 'var(--text-muted)',
+                width: '24px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px',
+                background: 'var(--bg-input)'
+              }}>
+                {showTeam ? '▲' : '▼'}
+              </div>
             </div>
           </div>
           
           {showTeam && (
-            <div style={{ marginTop: 'var(--space-lg)', paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--border)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-md)' }}>
-                <div style={{ padding: 'var(--space-sm)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>مدير المستشفى</div>
-                  <div style={{ fontWeight: 600 }}>{hospital.director_name || 'غير مسجل'}</div>
-                  {hospital.director_phone && <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>📞 {hospital.director_phone}</div>}
+            <div style={{ padding: '16px 18px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-primary)' }}>
+              {/* Leadership Row */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gap: '14px',
+                marginBottom: (hospital.quality_team && hospital.quality_team.length > 0) ? '18px' : '0'
+              }}>
+                
+                {/* Director Card */}
+                <div style={{ 
+                  background: 'var(--bg-card)', 
+                  border: '1px solid rgba(30, 64, 175, 0.15)', 
+                  borderRight: '4px solid var(--primary)',
+                  borderRadius: '8px', 
+                  padding: '14px 16px',
+                  boxShadow: 'var(--shadow-sm)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '10px'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '15px' }}>🩺</span>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>
+                        مدير المستشفى
+                      </span>
+                    </div>
+                    <div style={{ 
+                      fontSize: '15px', 
+                      fontWeight: 800, 
+                      color: hospital.director_name ? 'var(--text-primary)' : 'var(--text-muted)'
+                    }}>
+                      {hospital.director_name || 'غير مسجل'}
+                    </div>
+                  </div>
+
+                  {hospital.director_phone ? (
+                    <div style={{ paddingTop: '8px', borderTop: '1px dashed var(--border)', display: 'flex', justifyContent: 'flex-start' }}>
+                      <a 
+                        href={`tel:${hospital.director_phone.replace(/\s+/g, '')}`}
+                        dir="ltr"
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '6px', 
+                          color: 'var(--primary)', 
+                          fontSize: '13px', 
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                          padding: '3px 10px',
+                          background: 'rgba(30, 64, 175, 0.06)',
+                          borderRadius: '6px',
+                          fontFamily: 'system-ui, -apple-system, sans-serif'
+                        }}
+                      >
+                        <span>📞</span>
+                        <span style={{ unicodeBidi: 'plaintext' }}>{hospital.director_phone}</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>لا يوجد هاتف مسجل</div>
+                  )}
                 </div>
-                <div style={{ padding: 'var(--space-sm)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>رئيس فريق الجودة</div>
-                  <div style={{ fontWeight: 600 }}>{hospital.quality_head_name || 'غير مسجل'}</div>
-                  {hospital.quality_head_phone && <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>📞 {hospital.quality_head_phone}</div>}
+
+                {/* Quality Head Card */}
+                <div style={{ 
+                  background: 'var(--bg-card)', 
+                  border: '1px solid rgba(14, 165, 233, 0.2)', 
+                  borderRight: '4px solid var(--accent)',
+                  borderRadius: '8px', 
+                  padding: '14px 16px',
+                  boxShadow: 'var(--shadow-sm)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '10px'
+                }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '15px' }}>⭐</span>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--accent-dark)' }}>
+                        رئيس فريق الجودة
+                      </span>
+                    </div>
+                    <div style={{ 
+                      fontSize: '15px', 
+                      fontWeight: 800, 
+                      color: hospital.quality_head_name ? 'var(--text-primary)' : 'var(--text-muted)'
+                    }}>
+                      {hospital.quality_head_name || 'غير مسجل'}
+                    </div>
+                  </div>
+
+                  {hospital.quality_head_phone ? (
+                    <div style={{ paddingTop: '8px', borderTop: '1px dashed var(--border)', display: 'flex', justifyContent: 'flex-start' }}>
+                      <a 
+                        href={`tel:${hospital.quality_head_phone.replace(/\s+/g, '')}`}
+                        dir="ltr"
+                        style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '6px', 
+                          color: 'var(--accent-dark)', 
+                          fontSize: '13px', 
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                          padding: '3px 10px',
+                          background: 'rgba(14, 165, 233, 0.08)',
+                          borderRadius: '6px',
+                          fontFamily: 'system-ui, -apple-system, sans-serif'
+                        }}
+                      >
+                        <span>📞</span>
+                        <span style={{ unicodeBidi: 'plaintext' }}>{hospital.quality_head_phone}</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>لا يوجد هاتف مسجل</div>
+                  )}
                 </div>
+
               </div>
 
+              {/* Quality Team Members Section */}
               {hospital.quality_team && hospital.quality_team.length > 0 && (
-                <div style={{ marginTop: 'var(--space-md)' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 'var(--space-sm)' }}>أعضاء فريق الجودة:</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+                <div>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '10px', 
+                    marginBottom: '12px' 
+                  }}>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                      أعضاء فريق الجودة
+                    </span>
+                    <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                  </div>
+
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+                    gap: '10px' 
+                  }}>
                     {hospital.quality_team.map((member, i) => (
-                      <div key={i} style={{ padding: '6px 12px', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', fontSize: 13 }}>
-                        <span style={{ fontWeight: 600 }}>{member.name}</span>
-                        {member.role && <span style={{ color: 'var(--text-muted)' }}> - {member.role}</span>}
-                        {member.phone && <span style={{ color: 'var(--text-secondary)', marginRight: 8 }}>📞 {member.phone}</span>}
+                      <div 
+                        key={i} 
+                        style={{ 
+                          background: 'var(--bg-card)', 
+                          border: '1px solid var(--border)', 
+                          borderRadius: '8px', 
+                          padding: '12px 14px',
+                          boxShadow: 'var(--shadow-sm)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          gap: '8px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                          <div style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '50%',
+                            background: 'rgba(30, 64, 175, 0.08)',
+                            color: 'var(--primary)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '13px',
+                            fontWeight: 700,
+                            flexShrink: 0
+                          }}>
+                            {member.name ? member.name.trim().charAt(0) : '👤'}
+                          </div>
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ 
+                              fontWeight: 700, 
+                              fontSize: '13.5px', 
+                              color: 'var(--text-primary)',
+                              lineHeight: 1.3
+                            }}>
+                              {member.name}
+                            </div>
+                            {member.role ? (
+                              <div style={{ 
+                                display: 'inline-block',
+                                fontSize: '11px', 
+                                fontWeight: 600,
+                                color: 'var(--accent-dark)',
+                                background: 'rgba(14, 165, 233, 0.1)',
+                                padding: '2px 8px',
+                                borderRadius: '10px',
+                                marginTop: '4px'
+                              }}>
+                                {member.role}
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                عضو فريق الجودة
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {member.phone && (
+                          <div style={{ paddingTop: '8px', borderTop: '1px dashed var(--border)', display: 'flex', justifyContent: 'flex-start' }}>
+                            <a 
+                              href={`tel:${member.phone.replace(/\s+/g, '')}`}
+                              dir="ltr"
+                              style={{ 
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                color: 'var(--text-secondary)', 
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                background: 'var(--bg-input)',
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                fontFamily: 'system-ui, -apple-system, sans-serif'
+                              }}
+                            >
+                              <span style={{ fontSize: '11px' }}>📞</span>
+                              <span style={{ unicodeBidi: 'plaintext' }}>{member.phone}</span>
+                            </a>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -558,13 +813,53 @@ export default function HospitalPage() {
               
               {/* Existing Members */}
               {editForm.quality_team?.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginBottom: 'var(--space-md)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: 'var(--space-md)' }}>
                   {editForm.quality_team.map((m, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--bg-secondary)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
-                      <div>
-                        <strong>{m.name}</strong> {m.role && <span>({m.role})</span>} {m.phone && <span>- 📞 {m.phone}</span>}
+                    <div key={i} style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      background: 'var(--bg-input)', 
+                      padding: '8px 12px', 
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border)'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <strong style={{ fontSize: '13.5px' }}>{m.name}</strong>
+                        {m.role && (
+                          <span style={{ 
+                            fontSize: '11px', 
+                            padding: '1px 8px', 
+                            borderRadius: '10px', 
+                            background: 'rgba(14, 165, 233, 0.1)', 
+                            color: 'var(--accent-dark)', 
+                            fontWeight: 600 
+                          }}>
+                            {m.role}
+                          </span>
+                        )}
+                        {m.phone && (
+                          <span dir="ltr" style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span>📞</span>
+                            <span style={{ unicodeBidi: 'plaintext' }}>{m.phone}</span>
+                          </span>
+                        )}
                       </div>
-                      <button onClick={() => handleRemoveTeamMember(i)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}>🗑️</button>
+                      <button 
+                        onClick={() => handleRemoveTeamMember(i)} 
+                        type="button"
+                        style={{ 
+                          background: 'none', 
+                          border: 'none', 
+                          color: 'var(--danger)', 
+                          cursor: 'pointer',
+                          padding: '4px',
+                          fontSize: '14px'
+                        }}
+                        title="حذف"
+                      >
+                        🗑️
+                      </button>
                     </div>
                   ))}
                 </div>
