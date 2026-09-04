@@ -34,6 +34,14 @@ CREATE TABLE IF NOT EXISTS hospitals (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure columns exist if table was previously created
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS director_name TEXT;
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS director_phone TEXT;
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_head_name TEXT;
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_head_phone TEXT;
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_team JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS last_sat_evaluation NUMERIC;
+
 -- =====================================================
 -- DEPARTMENTS
 -- =====================================================

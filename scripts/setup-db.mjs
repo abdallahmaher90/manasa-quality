@@ -39,8 +39,21 @@ const statements = [
     name TEXT NOT NULL,
     governorate TEXT,
     code TEXT,
+    director_name TEXT,
+    director_phone TEXT,
+    quality_head_name TEXT,
+    quality_head_phone TEXT,
+    quality_team JSONB DEFAULT '[]'::jsonb,
+    last_sat_evaluation NUMERIC,
     created_at TIMESTAMPTZ DEFAULT NOW()
   )`,
+
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS director_name TEXT`,
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS director_phone TEXT`,
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_head_name TEXT`,
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_head_phone TEXT`,
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS quality_team JSONB DEFAULT '[]'::jsonb`,
+  `ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS last_sat_evaluation NUMERIC`,
 
   `CREATE TABLE IF NOT EXISTS departments (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
