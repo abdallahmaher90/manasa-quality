@@ -1,4 +1,5 @@
 import { parseReport } from '@/lib/ai-parser'
+import { sanitizeInspectionDate } from '@/lib/utils'
 import { createServiceClient } from '@/lib/supabase'
 
 function normalizeArabicName(name) {
@@ -20,6 +21,10 @@ export async function POST(request) {
     }
 
     const result = await parseReport(text)
+
+    if (result) {
+      result.inspection_date = sanitizeInspectionDate(result.inspection_date || text)
+    }
 
     // Check for duplicate report
     const supabase = createServiceClient()

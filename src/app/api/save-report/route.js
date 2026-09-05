@@ -1,5 +1,6 @@
 import { createServiceClient } from '@/lib/supabase'
-import { normalizeFindingsBulk } from '@/lib/ai-parser'
+import { normalizeFindingsBulk, matchAndCanonicalizeFindingsBulk } from '@/lib/ai-parser'
+import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
 function normalizeArabicName(name) {
@@ -16,6 +17,11 @@ export async function POST(request) {
   try {
     const { parsedData, rawText, fileName, fileUrl } = await request.json()
     const supabase = createServiceClient()
+
+    if (parsedData) {
+      // Ensure multi-day dates or formatted text are converted to a single YYYY-MM-DD date
+      parsedData.inspection_date = sanitizeInspectionDate(parsedData.inspection_date || rawText)
+    }
 
     // 1. Find or create hospital
     let hospitalId
@@ -106,45 +112,59 @@ export async function POST(request) {
       // 4. Process all findings for this department in bulk
       const newFindings = dept.findings || []
       if (newFindings.length > 0) {
-        // Get existing open/recurring findings for this department to compare
-        const { data: existingFindings } = await supabase
-          .from('findings')
-          .select('id, canonical_text')
-          .eq('department_id', deptId)
-          
+        const category = getCategory(dept.name)
 
-        let matchResults = newFindings.map(f => ({ isNew: true, matchedId: null }))
+        // 4a. Fetch platform-wide canonical texts for this category to ensure cross-hospital standardization
+        let existingPlatformCanonicals = []
+        try {
+          const { data: catSample } = await supabase
+            .from('findings')
+            .select('canonical_text, departments(name)')
+            .limit(350)
 
-        if (existingFindings && existingFindings.length > 0) {
-          const newTexts = newFindings.map(f => f.canonical_text || f.original_text)
-          const existingCanons = existingFindings.map(f => ({ id: f.id, text: f.canonical_text }))
-          // Bulk check to avoid rate limits
-          matchResults = await normalizeFindingsBulk(newTexts, existingCanons)
+          if (catSample) {
+            existingPlatformCanonicals = [...new Set(
+              catSample
+                .filter(f => getCategory(f.departments?.name) === category)
+                .map(f => f.canonical_text)
+                .filter(Boolean)
+            )]
+          }
+        } catch (e) {
+          console.warn('Could not fetch platform canonicals:', e)
         }
 
-        // Now save them
-        for (let i = 0; i < newFindings.length; i++) {
-          const finding = newFindings[i]
-          const match = matchResults[i]
-          let savedFindingId = null
+        // 4b. Match and standardize new findings against platform canonical library
+        const standardizedFindings = await matchAndCanonicalizeFindingsBulk(
+          newFindings,
+          existingPlatformCanonicals,
+          category
+        )
 
-          if (!match.isNew && match.matchedId) {
-            // It's a recurring finding - increment count
-            const { data: existingF } = await supabase
-              .from('findings')
-              .select('repeat_count, status, last_seen_date, last_report_id')
-              .eq('id', match.matchedId)
-              .single()
+        // 4c. Save each finding: check if this specific hospital already has this canonical issue in this department
+        for (let i = 0; i < standardizedFindings.length; i++) {
+          const finding = standardizedFindings[i]
+          const targetCanonical = (finding.canonical_text || finding.original_text).trim()
 
-            // Only increment if it hasn't been counted for this specific report or date yet
-            const isSameReport = existingF?.last_report_id === report.id
-            const isSameDate = existingF?.last_seen_date === parsedData.inspection_date
+          // Check if this hospital already has this finding in this department
+          const { data: hospitalExisting } = await supabase
+            .from('findings')
+            .select('id, repeat_count, status, last_seen_date, last_report_id')
+            .eq('hospital_id', hospitalId)
+            .eq('department_id', deptId)
+            .eq('canonical_text', targetCanonical)
+            .maybeSingle()
+
+          if (hospitalExisting) {
+            // It's a recurring finding in this hospital - increment repeat count
+            const isSameReport = hospitalExisting.last_report_id === report.id
+            const isSameDate = hospitalExisting.last_seen_date === parsedData.inspection_date
 
             if (!isSameReport && !isSameDate) {
               await supabase
                 .from('findings')
                 .update({
-                  repeat_count: (existingF?.repeat_count || 1) + 1,
+                  repeat_count: (hospitalExisting.repeat_count || 1) + 1,
                   status: 'recurring',
                   last_seen_date: parsedData.inspection_date,
                   last_report_id: report.id,
@@ -155,14 +175,10 @@ export async function POST(request) {
                   hospital_resolution_note: null,
                   hospital_resolution_date: null
                 })
-                .eq('id', match.matchedId)
+                .eq('id', hospitalExisting.id)
             }
-
-            savedFindingId = match.matchedId
-          }
-
-          // If it's a new finding, insert it
-          if (!savedFindingId) {
+          } else {
+            // New finding for this hospital: insert with standardized canonical_text
             await supabase
               .from('findings')
               .insert({
@@ -170,7 +186,7 @@ export async function POST(request) {
                 department_id: deptId,
                 report_id: report.id,
                 original_text: finding.original_text,
-                canonical_text: finding.canonical_text || finding.original_text,
+                canonical_text: targetCanonical,
                 corrective_action: finding.corrective_action,
                 responsible: finding.responsible,
                 deadline: finding.deadline,

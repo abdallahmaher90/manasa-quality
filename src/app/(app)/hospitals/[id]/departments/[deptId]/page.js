@@ -112,8 +112,9 @@ export default function DepartmentPage() {
   const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
 
   const filteredFindings = findings.filter(f => {
-    if (filter === 'active') return ['open', 'recurring'].includes(f.status)
+    if (filter === 'active') return ['open', 'recurring', 'resolved_by_hospital'].includes(f.status)
     if (filter === 'pending') return f.status === 'resolved_by_hospital'
+    if (filter === 'open_only') return ['open', 'recurring'].includes(f.status)
     if (filter === 'resolved') return f.status === 'resolved_confirmed'
     return true
   })
@@ -175,8 +176,9 @@ export default function DepartmentPage() {
       {/* Filter Tabs */}
       <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-lg)', flexWrap: 'wrap' }} className="no-print">
         {[
-          { key: 'active', label: `🔴 نشطة (${counts.active})` },
+          { key: 'active', label: `🔴 نشطة وتحتاج تأكيد (${counts.active + counts.pending})` },
           { key: 'pending', label: `⏳ تحتاج تأكيد (${counts.pending})`, highlight: counts.pending > 0 },
+          { key: 'open_only', label: `⚠️ مفتوحة فقط (${counts.active})` },
           { key: 'resolved', label: `✅ محلولة (${counts.resolved})` },
           { key: 'all', label: `📋 الكل (${findings.length})` },
         ].map(tab => (
@@ -196,13 +198,13 @@ export default function DepartmentPage() {
         <div className="alert alert-warning mb-md no-print">
           <span>⚠️</span>
           <span>
-            <strong>{counts.pending} سلبية</strong> أفاد فريق المستشفى بتلافيها - تحتاج مراجعتك وتأكيدك.
+            <strong>{counts.pending} سلبية</strong> أفاد فريق المستشفى بتلافيها - تحتاج مراجعتك وتأكيدك (معروضة بالقائمة أدناه).
             <button
               className="btn btn-ghost btn-sm"
               style={{ marginRight: 8 }}
               onClick={() => setFilter('pending')}
             >
-              مراجعة الآن
+              عرض ما يحتاج تأكيد فقط
             </button>
           </span>
         </div>
@@ -259,10 +261,10 @@ export default function DepartmentPage() {
         <div className="empty-state">
           <span className="empty-state-icon">✅</span>
           <div className="empty-state-title">
-            {filter === 'active' ? 'لا توجد سلبيات نشطة!' : 'لا توجد نتائج'}
+            {filter === 'active' ? 'لا توجد سلبيات نشطة أو بانتظار التأكيد!' : 'لا توجد نتائج'}
           </div>
           <p className="empty-state-desc">
-            {filter === 'active' ? 'هذا القسم خالٍ من السلبيات المفتوحة حالياً.' : ''}
+            {filter === 'active' ? 'هذا القسم خالٍ من السلبيات المفتوحة أو التي تنتظر الاعتماد حالياً.' : ''}
           </p>
         </div>
       ) : (

@@ -1,9 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { sanitizeInspectionDate } from './utils'
+
+export { sanitizeInspectionDate }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 // Try models in order until one works
-const MODELS = ['gemini-2.5-flash', 'gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemma-4-31b-it', 'gemini-flash-latest']
+const MODELS = ['gemini-flash-lite-latest', 'gemini-3.6-flash', 'gemini-flash-latest']
 
 // Custom fetch to instantly reject rate limits and server errors, bypassing the SDK's internal long retries
 const fastFailFetch = async (url, options) => {
@@ -111,7 +114,10 @@ ${text}
 4. الإجراء التصحيحي (corrective_action) يجب أن يكون خطوة عملية يمكن تنفيذها.
 5. الأولوية (priority) يجب أن تكون "high" أو "medium" أو "low" فقط.
 6. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null) أو ضعها كقيمة افتراضية منطقية.
-7. التاريخ: حوّله لصيغة YYYY-MM-DD. مثال: 23-8-2026 يصبح 2026-08-23.
+7. التاريخ (inspection_date): حوّله لصيغة YYYY-MM-DD دائماً.
+   - إذا كان المرور تم على مدار يومين أو أكثر (مثل: "مرور يومي 23 و 24 يونيو 2026" أو "23-24 يونيو 2026" أو "من 23 إلى 24/6/2026"):
+     يجب اعتباره تقريراً واحداً في يوم عادي، واستخراج تاريخ اليوم الأخير من المرور (تاريخ انتهاء المرور) كـ تاريخ موحد للتقرير بصيغة YYYY-MM-DD (مثلاً: إذا كان المرور يومي 23 و 24 يونيو 2026، يكون التاريخ: 2026-06-24).
+   - يمنع منعاً باتاً كتابة نص مركب أو تاريخين معاً في حقل inspection_date، يجب أن يكون تاريخاً واحداً فقط بصيغة YYYY-MM-DD.
 
 أعطني JSON فقط بدون أي نص آخر أو markdown.
 `
@@ -126,7 +132,12 @@ ${text}
     .trim()
 
   try {
-    return JSON.parse(cleaned)
+    const parsed = JSON.parse(cleaned)
+    if (parsed) {
+      // Ensure date is always a clean valid YYYY-MM-DD string, especially for multi-day reports
+      parsed.inspection_date = sanitizeInspectionDate(parsed.inspection_date || text)
+    }
+    return parsed
   } catch (e) {
     throw new Error(`فشل في تحليل التقرير: ${e.message}\nالرد: ${cleaned}`)
   }
@@ -213,3 +224,60 @@ ${existingCanonicals.map((c, i) => `[ExistingID_${c.id}]: "${c.text}"`).join('\n
     return newFindingsTextArray.map(f => ({ isNew: true, matchedId: null, originalText: f }))
   }
 }
+
+/**
+ * Matches new findings against platform-wide canonical texts for a department category.
+ * If a finding matches an existing canonical issue, it returns that canonical_text.
+ * If brand new, it generates a clean, standardized canonical_text.
+ */
+export async function matchAndCanonicalizeFindingsBulk(newFindings, existingPlatformCanonicals = [], categoryName = '') {
+  if (!newFindings || newFindings.length === 0) return []
+
+  // If no existing canonicals, return clean canonical_text or original_text
+  const validCanonicals = (existingPlatformCanonicals || []).filter(Boolean).slice(0, 40)
+
+  const prompt = `أنت خبير معتمد في جودة الرعاية الصحية وإدارة المخاطر وسلامة المرضى واعتماد المستشفيات (GAHAR).
+أمامك قائمة بسلبيات جديدة مستخرجة من تقرير مرور مستشفى لقسم "${categoryName || 'القسم'}"، وقائمة بالسلبيات المعيارية المعتمدة مسبقاً على المنصة.
+
+المطلوب:
+لكل سلبية جديدة:
+1. تحقق ما إذا كانت تعبر عن نفس الخلل الجذري لإحدى "السلبيات المعيارية المعتمدة مسبقاً" (حتى لو اختلفت طريقة صياغة المفتش أو التفاصيل البسيطة، مثل عربة الطوارئ Crash Cart، التوقيعات، كروت التعريف ID، أدوية الخطورة العالية LASA، سجل النتائج الحرجة، توثيق نماذج الملف الطبي، إلخ).
+2. إذا تطابقت مع سلبية معتمدة مسبقاً: استخدم نفس النص المعياري المعتمد حرفياً.
+3. إذا كانت سلبية جديدة تماماً: صغ نصاً معيارياً موحداً (canonical_text) واضحاً ورصيناً يعبر عن السلبية بدون حشو.
+
+السلبيات الجديدة:
+${newFindings.map((f, i) => `[New_${i}]: "${f.canonical_text || f.original_text}"`).join('\n')}
+
+السلبيات المعيارية المعتمدة مسبقاً على المنصة لهذا القسم:
+${validCanonicals.length > 0 ? validCanonicals.map(t => `- "${t}"`).join('\n') : '(لا توجد صياغات مسبقة، قم بإنشاء صياغات معيارية موحدة)'}
+
+أجب بصيغة JSON Array فقط:
+[
+  { "index": 0, "canonical_text": "الصياغة المعيارية الموحدة" }
+]
+بدون أي markdown أو شرح إضافي.`
+
+  try {
+    const result = await generateWithFallback(prompt)
+    const responseText = result.response.text()
+    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    const parsed = JSON.parse(cleaned)
+
+    return newFindings.map((f, index) => {
+      const match = parsed.find(p => p.index === index)
+      const canon = match?.canonical_text?.trim()
+      return {
+        ...f,
+        canonical_text: canon || f.canonical_text || f.original_text
+      }
+    })
+  } catch (e) {
+    console.error('matchAndCanonicalizeFindingsBulk error:', e)
+    // Fallback: return as-is
+    return newFindings.map(f => ({
+      ...f,
+      canonical_text: f.canonical_text || f.original_text
+    }))
+  }
+}
+

@@ -316,7 +316,7 @@ export default function UploadPage() {
                 id="report-text-input"
                 className="form-textarea"
                 placeholder="الصق نص تقرير المرور هنا..."
-                style={{ minHeight: 300, direction: 'rtl' }}
+                style={{ minHeight: 300, direction: 'rtl', color: '#0f172a', background: '#ffffff', border: '1.5px solid #cbd5e1' }}
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
               />
@@ -405,8 +405,28 @@ export default function UploadPage() {
                 <div style={{ fontWeight: 700 }}>{parsedData.inspector_name || '-'}</div>
               </div>
               <div>
-                <div className="text-muted text-sm">تاريخ المرور</div>
-                <div style={{ fontWeight: 700 }}>{parsedData.inspection_date || '-'}</div>
+                <label className="text-muted text-sm" style={{ display: 'block', marginBottom: 4 }}>
+                  تاريخ المرور {parsedData.inspection_date && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>✓ معتمد</span>}
+                </label>
+                <input
+                  type="date"
+                  value={parsedData.inspection_date || ''}
+                  onChange={(e) => setParsedData({ ...parsedData, inspection_date: e.target.value })}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#0f172a',
+                    fontFamily: 'inherit',
+                    width: '100%',
+                    maxWidth: 180,
+                    outline: 'none'
+                  }}
+                  title="تاريخ المرور (إذا كان المرور يومين يتم اعتماد اليوم الأخير تلقائياً ويمكن تعديله)"
+                />
               </div>
               <div>
                 <div className="text-muted text-sm">عدد الأقسام</div>
@@ -432,7 +452,7 @@ export default function UploadPage() {
                   type="text" 
                   value={dept.name} 
                   onChange={(e) => updateDeptName(dIdx, e.target.value)}
-                  style={{ flex: 1, padding: '6px 12px', fontSize: 16, fontWeight: 'bold', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff' }}
+                  style={{ flex: 1, padding: '8px 14px', fontSize: 16, fontWeight: '700', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
                 />
                 <span className="badge badge-danger">
                   {dept.findings?.length || 0} سلبية
@@ -442,12 +462,12 @@ export default function UploadPage() {
                 {dept.findings?.map((f, fIdx) => (
                   <div key={fIdx} className="finding-card open" style={{ marginBottom: 'var(--space-sm)', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
                     <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', width: '100%' }}>
-                      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-muted)', minWidth: 24, marginTop: 10 }}>
+                      <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-muted)', minWidth: 24, marginTop: 10 }}>
                         {fIdx + 1}
                       </div>
                       <div style={{ flex: 1 }}>
                         <textarea 
-                          style={{ width: '100%', minHeight: 60, marginBottom: 8, fontSize: 14, padding: '8px 12px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff', fontFamily: 'inherit' }}
+                          style={{ width: '100%', minHeight: 70, marginBottom: 8, fontSize: 15, fontWeight: '600', lineHeight: 1.6, padding: '10px 14px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', fontFamily: 'inherit', outline: 'none' }}
                           value={f.canonical_text || f.original_text || ''}
                           onChange={(e) => updateFinding(dIdx, fIdx, 'canonical_text', e.target.value)}
                           placeholder="نص السلبية..."
@@ -455,13 +475,13 @@ export default function UploadPage() {
                         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                           <input 
                             type="text" 
-                            style={{ flex: 1, minWidth: 200, fontSize: 13, padding: '6px 12px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff' }}
+                            style={{ flex: 1, minWidth: 200, fontSize: 14, fontWeight: '500', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
                             value={f.corrective_action || ''}
                             onChange={(e) => updateFinding(dIdx, fIdx, 'corrective_action', e.target.value)}
                             placeholder="الإجراء التصحيحي (اختياري)..."
                           />
                           <select 
-                            style={{ width: 130, fontSize: 13, padding: '6px 12px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: '#fff' }}
+                            style={{ width: 140, fontSize: 13, fontWeight: '600', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
                             value={f.priority || 'medium'}
                             onChange={(e) => updateFinding(dIdx, fIdx, 'priority', e.target.value)}
                           >
@@ -475,7 +495,7 @@ export default function UploadPage() {
                     {/* Actions Row */}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
                       <select 
-                        style={{ fontSize: 12, padding: '4px 8px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', color: 'var(--text-muted)' }}
+                        style={{ fontSize: 13, fontWeight: '500', padding: '6px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#1e293b', outline: 'none' }}
                         value={dIdx}
                         onChange={(e) => moveFinding(dIdx, fIdx, e.target.value)}
                       >
