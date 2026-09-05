@@ -5,6 +5,34 @@ import { supabase } from '@/lib/supabase'
 
 const STEPS = ['رفع الملف', 'تحليل AI', 'مراجعة وتأكيد', 'تم الحفظ']
 
+const COMMON_HOSPITAL_DEPARTMENTS = [
+  'الاستقبال والطوارئ',
+  'العناية المركزة',
+  'عناية القلب',
+  'الحضانات والمبتسرين',
+  'العمليات والإفاقة',
+  'القسم الداخلي',
+  'العيادات الخارجية',
+  'الغسيل الكلوي',
+  'الصيدلة',
+  'المعامل وبنك الدم',
+  'الأشعة والتصوير الطبي',
+  'مكافحة العدوى',
+  'السلامة والصحة المهنية',
+  'التوثيق الطبي والملفات',
+  'الإدارة الهندسية والصيانة',
+  'التغذية والمطبخ',
+  'المغسلة',
+  'النفايات الطبية والمحرقة',
+  'الأسنان',
+  'العلاج الطبيعي',
+  'التعقيم المركزي',
+  'المخازن والمستلزمات',
+  'التذاكر والدخول',
+  'الشؤون الإدارية والموارد البشرية',
+  'إدارة الجودة وسلامة المرضى'
+]
+
 export default function UploadPage() {
   const router = useRouter()
   const fileInputRef = useRef(null)
@@ -176,6 +204,75 @@ export default function UploadPage() {
     if (newData.departments[dIdx].findings.length === 0) {
       newData.departments.splice(dIdx, 1) // Remove empty department
     }
+    setParsedData(newData)
+  }
+
+  const addNewDepartment = () => {
+    const name = window.prompt('أدخل اسم القسم الجديد الذي ترغب في إضافته للتقرير:')
+    if (!name || !name.trim()) return
+    const cleanName = name.trim()
+    const newData = { ...parsedData }
+    const exists = newData.departments?.some(d => d.name.trim().toLowerCase() === cleanName.toLowerCase())
+    if (exists) {
+      alert('هذا القسم موجود بالفعل في التقرير!')
+      return
+    }
+    newData.departments = newData.departments || []
+    newData.departments.push({
+      name: cleanName,
+      findings: []
+    })
+    setParsedData(newData)
+  }
+
+  const handleMoveFinding = (fromDIdx, fIdx, targetVal) => {
+    if (targetVal === '' || targetVal === String(fromDIdx)) return
+
+    let targetDeptName = ''
+
+    if (targetVal === '__custom_new__') {
+      const customName = window.prompt('أدخل اسم القسم الجديد الذي ترغب في نقل السلبية إليه:')
+      if (!customName || !customName.trim()) return
+      targetDeptName = customName.trim()
+    } else if (typeof targetVal === 'string' && targetVal.startsWith('dept_name:')) {
+      targetDeptName = targetVal.replace('dept_name:', '').trim()
+    } else {
+      const toIndex = parseInt(targetVal, 10)
+      if (!isNaN(toIndex) && toIndex !== fromDIdx) {
+        moveFinding(fromDIdx, fIdx, toIndex)
+      }
+      return
+    }
+
+    if (!targetDeptName) return
+
+    const newData = { ...parsedData }
+    const finding = newData.departments[fromDIdx].findings[fIdx]
+
+    // Remove from source department
+    newData.departments[fromDIdx].findings.splice(fIdx, 1)
+
+    // Check if the department already exists in report
+    const existingIdx = newData.departments.findIndex(
+      d => d.name.trim().toLowerCase() === targetDeptName.toLowerCase()
+    )
+
+    if (existingIdx !== -1) {
+      // Add finding to existing department
+      newData.departments[existingIdx].findings.push(finding)
+    } else {
+      // Create new department with this finding
+      newData.departments.push({
+        name: targetDeptName,
+        findings: [finding]
+      })
+    }
+
+    // If source department is now empty, remove it
+    if (newData.departments[fromDIdx] && newData.departments[fromDIdx].findings.length === 0) {
+      newData.departments.splice(fromDIdx, 1)
+    }
+
     setParsedData(newData)
   }
 
@@ -443,6 +540,19 @@ export default function UploadPage() {
             </div>
           </div>
 
+          {/* Departments Header & Add Action */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)', flexWrap: 'wrap', gap: 10 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)' }}>الأقسام والسلبيات المرصودة</h3>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={addNewDepartment}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, border: '1.5px dashed var(--primary)', color: 'var(--primary)', background: '#ffffff', padding: '6px 14px', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}
+            >
+              <span>➕</span> إضافة قسم جديد للتقرير
+            </button>
+          </div>
+
           {/* Departments & Findings (Editable) */}
           {parsedData.departments?.map((dept, dIdx) => (
             <div key={dIdx} className="card mb-md">
@@ -457,58 +567,98 @@ export default function UploadPage() {
                 <span className="badge badge-danger">
                   {dept.findings?.length || 0} سلبية
                 </span>
+                {dept.findings?.length === 0 && (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      const newData = { ...parsedData }
+                      newData.departments.splice(dIdx, 1)
+                      setParsedData(newData)
+                    }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--danger-light)', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+                  >
+                    🗑️ حذف القسم
+                  </button>
+                )}
               </div>
               <div style={{ padding: '0 var(--space-md) var(--space-md)' }}>
-                {dept.findings?.map((f, fIdx) => (
-                  <div key={fIdx} className="finding-card open" style={{ marginBottom: 'var(--space-sm)', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', width: '100%' }}>
-                      <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-muted)', minWidth: 24, marginTop: 10 }}>
-                        {fIdx + 1}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <textarea 
-                          style={{ width: '100%', minHeight: 70, marginBottom: 8, fontSize: 15, fontWeight: '600', lineHeight: 1.6, padding: '10px 14px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', fontFamily: 'inherit', outline: 'none' }}
-                          value={f.canonical_text || f.original_text || ''}
-                          onChange={(e) => updateFinding(dIdx, fIdx, 'canonical_text', e.target.value)}
-                          placeholder="نص السلبية..."
-                        />
-                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                          <input 
-                            type="text" 
-                            style={{ flex: 1, minWidth: 200, fontSize: 14, fontWeight: '500', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
-                            value={f.corrective_action || ''}
-                            onChange={(e) => updateFinding(dIdx, fIdx, 'corrective_action', e.target.value)}
-                            placeholder="الإجراء التصحيحي (اختياري)..."
+                {dept.findings?.length === 0 ? (
+                  <div style={{ padding: 'var(--space-md)', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13, border: '1.5px dashed var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)' }}>
+                    لا توجد سلبيات في هذا القسم حالياً. يمكنك نقل سلبيات إليه من الأقسام الأخرى عبر خيار "نقل إلى".
+                  </div>
+                ) : (
+                  dept.findings?.map((f, fIdx) => (
+                    <div key={fIdx} className="finding-card open" style={{ marginBottom: 'var(--space-sm)', flexDirection: 'column', gap: 10, alignItems: 'stretch' }}>
+                      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', width: '100%' }}>
+                        <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-muted)', minWidth: 24, marginTop: 10 }}>
+                          {fIdx + 1}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <textarea 
+                            style={{ width: '100%', minHeight: 70, marginBottom: 8, fontSize: 15, fontWeight: '600', lineHeight: 1.6, padding: '10px 14px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', fontFamily: 'inherit', outline: 'none' }}
+                            value={f.canonical_text || f.original_text || ''}
+                            onChange={(e) => updateFinding(dIdx, fIdx, 'canonical_text', e.target.value)}
+                            placeholder="نص السلبية..."
                           />
-                          <select 
-                            style={{ width: 140, fontSize: 13, fontWeight: '600', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
-                            value={f.priority || 'medium'}
-                            onChange={(e) => updateFinding(dIdx, fIdx, 'priority', e.target.value)}
-                          >
-                            <option value="high">أولوية عالية</option>
-                            <option value="medium">متوسطة</option>
-                            <option value="low">منخفضة</option>
-                          </select>
+                          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                            <input 
+                              type="text" 
+                              style={{ flex: 1, minWidth: 200, fontSize: 14, fontWeight: '500', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
+                              value={f.corrective_action || ''}
+                              onChange={(e) => updateFinding(dIdx, fIdx, 'corrective_action', e.target.value)}
+                              placeholder="الإجراء التصحيحي (اختياري)..."
+                            />
+                            <select 
+                              style={{ width: 140, fontSize: 13, fontWeight: '600', padding: '8px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none' }}
+                              value={f.priority || 'medium'}
+                              onChange={(e) => updateFinding(dIdx, fIdx, 'priority', e.target.value)}
+                            >
+                              <option value="high">أولوية عالية</option>
+                              <option value="medium">متوسطة</option>
+                              <option value="low">منخفضة</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
+                      {/* Actions Row */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
+                        <select 
+                          style={{ fontSize: 13, fontWeight: '600', padding: '6px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#0f172a', outline: 'none', cursor: 'pointer', maxWidth: 280 }}
+                          value={dIdx}
+                          onChange={(e) => handleMoveFinding(dIdx, fIdx, e.target.value)}
+                        >
+                          <optgroup label="📋 أقسام التقرير الحالي">
+                            {parsedData.departments.map((d, i) => (
+                              <option key={i} value={i}>
+                                نقل إلى: {d.name} {i === dIdx ? '(القسم الحالي)' : ''}
+                              </option>
+                            ))}
+                          </optgroup>
+
+                          <optgroup label="➕ نقل إلى قسم آخر بالمستشفى">
+                            {COMMON_HOSPITAL_DEPARTMENTS
+                              .filter(name => !parsedData.departments.some(d => d.name.trim().toLowerCase() === name.trim().toLowerCase()))
+                              .map((name) => (
+                                <option key={`common_${name}`} value={`dept_name:${name}`}>
+                                  ➕ {name} (إنشاء قسم جديد)
+                                </option>
+                              ))
+                            }
+                          </optgroup>
+
+                          <optgroup label="✏️ كتابة اسم قسم مخصص">
+                            <option value="__custom_new__">
+                              ✏️ نقل إلى قسم جديد (كتابة اسم القسم يدوي)...
+                            </option>
+                          </optgroup>
+                        </select>
+                        <button onClick={() => deleteFinding(dIdx, fIdx)} style={{ background: 'transparent', border: 'none', color: 'var(--danger-light)', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+                          🗑️ حذف
+                        </button>
+                      </div>
                     </div>
-                    {/* Actions Row */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
-                      <select 
-                        style={{ fontSize: 13, fontWeight: '500', padding: '6px 12px', background: '#ffffff', border: '1.5px solid #cbd5e1', borderRadius: 'var(--radius-sm)', color: '#1e293b', outline: 'none' }}
-                        value={dIdx}
-                        onChange={(e) => moveFinding(dIdx, fIdx, e.target.value)}
-                      >
-                        {parsedData.departments.map((d, i) => (
-                          <option key={i} value={i}>نقل إلى: {d.name}</option>
-                        ))}
-                      </select>
-                      <button onClick={() => deleteFinding(dIdx, fIdx)} style={{ background: 'transparent', border: 'none', color: 'var(--danger-light)', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-                        🗑️ حذف
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           ))}
