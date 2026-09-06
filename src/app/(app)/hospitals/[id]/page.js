@@ -655,7 +655,7 @@ export default function HospitalPage() {
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
                   <th style={{ padding: '12px 8px' }}>التاريخ</th>
-                  <th style={{ padding: '12px 8px' }}>المفتش</th>
+                  <th style={{ padding: '12px 8px' }}>القائم بالمرور</th>
                   <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
                 </tr>
               </thead>

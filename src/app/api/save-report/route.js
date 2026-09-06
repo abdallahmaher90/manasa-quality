@@ -141,9 +141,19 @@ export async function POST(request) {
           category
         )
 
+        // Deduplicate findings to prevent multiple identical findings in the same report
+        const uniqueFindingsMap = new Map()
+        for (const finding of standardizedFindings) {
+          const targetCanonical = (finding.canonical_text || finding.original_text || '').trim()
+          if (!uniqueFindingsMap.has(targetCanonical)) {
+            uniqueFindingsMap.set(targetCanonical, finding)
+          }
+        }
+        const uniqueStandardizedFindings = Array.from(uniqueFindingsMap.values())
+
         // 4c. Save each finding: check if this specific hospital already has this canonical issue in this department
-        for (let i = 0; i < standardizedFindings.length; i++) {
-          const finding = standardizedFindings[i]
+        for (let i = 0; i < uniqueStandardizedFindings.length; i++) {
+          const finding = uniqueStandardizedFindings[i]
           const targetCanonical = (finding.canonical_text || finding.original_text).trim()
 
           // Check if this hospital already has this finding in this department
