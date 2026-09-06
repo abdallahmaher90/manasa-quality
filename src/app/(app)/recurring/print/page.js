@@ -158,9 +158,22 @@ function PrintContent() {
   }, [filteredData])
 
   // Export to actual Microsoft Word (.doc)
-  const exportToWord = () => {
+  const exportToWord = async () => {
     const documentElement = document.getElementById('printable-word-document')
     if (!documentElement) return
+
+    let logoBase64 = ''
+    try {
+      const res = await fetch('/icon-192.png')
+      const blob = await res.blob()
+      logoBase64 = await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      })
+    } catch (e) {
+      console.error('Failed to load logo', e)
+    }
 
     const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' 
           xmlns:w='urn:schemas-microsoft-com:office:word' 
@@ -185,8 +198,15 @@ function PrintContent() {
           </head>
           <body>`
 
+    let innerHtml = documentElement.innerHTML
+
+    // Embed base64 logo
+    if (logoBase64) {
+      innerHtml = innerHtml.replace('<div id="word-logo-placeholder">🏥</div>', `<img src="${logoBase64}" width="75" height="75" style="margin-bottom: 5px;" />`)
+    }
+
     const footer = `</body></html>`
-    const sourceHTML = header + documentElement.innerHTML + footer
+    const sourceHTML = header + innerHtml + footer
 
     const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML)
     const fileDownload = document.createElement('a')
@@ -338,7 +358,7 @@ function PrintContent() {
         }}
       >
         {/* Official Header Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', border: 'none', marginBottom: 20 }}>
+        <table className="header-table" style={{ width: '100%', borderCollapse: 'collapse', border: 'none', marginBottom: 20 }}>
           <tbody>
             <tr>
               <td style={{ width: '38%', verticalAlign: 'top', border: 'none', padding: 0, fontSize: '12pt', fontWeight: 'bold' }}>
@@ -350,7 +370,7 @@ function PrintContent() {
 
               <td style={{ width: '24%', textAlign: 'center', verticalAlign: 'top', border: 'none', padding: 0 }}>
                 {/* Ministry / Directorate Logo placeholder */}
-                <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: 1 }}>🏥</div>
+                <div id="word-logo-placeholder">🏥</div>
                 <div style={{ fontSize: '10pt', color: '#555', marginTop: 4 }}>منصة الجودة المركزية</div>
               </td>
 
@@ -407,6 +427,9 @@ function PrintContent() {
             </div>
 
             <table
+              border="1"
+              cellPadding="6"
+              cellSpacing="0"
               style={{
                 width: '100%',
                 borderCollapse: 'collapse',
@@ -480,7 +503,7 @@ function PrintContent() {
 
         {/* Signatures Table (Official Word Format) */}
         <div style={{ marginTop: 40, pageBreakInside: 'avoid' }}>
-          <table style={{ width: '100%', border: 'none', textAlign: 'center', fontSize: '12pt', fontWeight: 'bold' }}>
+          <table className="footer-table" style={{ width: '100%', border: 'none', textAlign: 'center', fontSize: '12pt', fontWeight: 'bold' }}>
             <tbody>
               <tr>
                 <td style={{ border: 'none', width: '33%', padding: '10px 0' }}>
