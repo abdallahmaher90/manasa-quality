@@ -14,7 +14,7 @@ export const metadata = {
   description: 'منصة ذكية لإدارة تقارير مرور سلامة المرضى في المستشفيات',
   keywords: 'سلامة المرضى, جودة المستشفيات, تقارير المرور, إدارة السلبيات',
   manifest: '/manifest.json',
-  themeColor: '#1e40af',
+  themeColor: '#007A87',
   openGraph: {
     title: 'منصة الجودة',
     description: 'منصة ذكية لإدارة تقارير مرور سلامة المرضى',
