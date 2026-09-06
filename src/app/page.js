@@ -172,10 +172,8 @@ export default function LoginPage() {
         }
 
         .login-logo-icon {
-          font-size: 64px;
           display: block;
           margin-bottom: var(--space-md);
-          filter: drop-shadow(0 0 20px rgba(26, 95, 158, 0.5));
         }
 
         .login-title {
