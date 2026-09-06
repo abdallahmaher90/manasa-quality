@@ -211,13 +211,19 @@ function PrintContent() {
     const footer = `</body></html>`
     const sourceHTML = header + innerHtml + footer
 
-    const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML)
+    // Use Blob instead of data URI for reliable mobile downloads
+    const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+
     const fileDownload = document.createElement('a')
     document.body.appendChild(fileDownload)
-    fileDownload.href = source
+    fileDownload.href = url
     fileDownload.download = `تقرير_السلبيات_المتكررة_${new Date().toISOString().split('T')[0]}.doc`
     fileDownload.click()
     document.body.removeChild(fileDownload)
+    
+    // Clean up
+    setTimeout(() => URL.revokeObjectURL(url), 100)
 
     setDownloading(false)
     setShowToast(true)
