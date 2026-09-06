@@ -12,6 +12,8 @@ function PrintContent() {
   const [filter, setFilter] = useState(initialFilter)
   const [crossHospitalRecurring, setCrossHospitalRecurring] = useState([])
   const [loading, setLoading] = useState(true)
+  const [downloading, setDownloading] = useState(false)
+  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     fetchFindings()
@@ -162,6 +164,7 @@ function PrintContent() {
     const documentElement = document.getElementById('printable-word-document')
     if (!documentElement) return
 
+    setDownloading(true)
     let logoBase64 = ''
     try {
       const res = await fetch('/icon-192.png')
@@ -215,6 +218,10 @@ function PrintContent() {
     fileDownload.download = `تقرير_السلبيات_المتكررة_${new Date().toISOString().split('T')[0]}.doc`
     fileDownload.click()
     document.body.removeChild(fileDownload)
+
+    setDownloading(false)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 5000)
   }
 
   if (loading) {
@@ -229,6 +236,29 @@ function PrintContent() {
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px 10px' }}>
       {/* Control Bar (Hidden during Print) */}
+      
+      {showToast && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#10b981',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: 8,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 9999,
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <span>✅</span> تم تنزيل التقرير بنجاح! راجع مجلد التنزيلات (Downloads) في هاتفك.
+        </div>
+      )}
+
       <div
         className="no-print"
         style={{
@@ -299,22 +329,24 @@ function PrintContent() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
+            disabled={downloading}
             onClick={exportToWord}
             style={{
-              padding: '8px 16px',
+              padding: '6px 14px',
               borderRadius: 6,
-              border: '1px solid #2563eb',
-              background: '#eff6ff',
-              color: '#1d4ed8',
-              cursor: 'pointer',
-              fontWeight: 700,
+              border: 'none',
+              background: '#2563eb',
+              color: '#ffffff',
+              cursor: downloading ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
               fontSize: 13,
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: 8,
+              opacity: downloading ? 0.7 : 1,
             }}
           >
-            📥 تحميل بصيغة Word (.doc)
+            {downloading ? 'جاري تجهيز الملف...' : '📥 تحميل بصيغة Word (.doc)'}
           </button>
 
           <button
