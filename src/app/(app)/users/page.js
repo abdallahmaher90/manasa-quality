@@ -138,7 +138,7 @@ export default function UsersPage() {
 
         {showAddForm && (
           <div style={{ padding: 'var(--space-lg)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', margin: 'var(--space-md) var(--space-xl)' }}>
-            <form onSubmit={handleAddUser} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
+            <form onSubmit={handleAddUser} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: 'var(--space-md)' }}>
               <div className="form-group">
                 <label className="form-label">الاسم بالكامل</label>
                 <input type="text" required className="form-input" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} />

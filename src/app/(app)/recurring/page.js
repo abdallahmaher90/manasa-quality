@@ -354,7 +354,7 @@ export default function RecurringPage() {
       </div>
 
       {/* Real-time KPI Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-sm)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'var(--space-sm)' }}>
         <div className="stat-card" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16 }}>
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>إجمالي المشاكل المشتركة</div>
           <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)' }}>{metrics.totalIssues}</div>

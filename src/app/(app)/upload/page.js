@@ -488,7 +488,7 @@ export default function UploadPage() {
             <div className="card-header">
               <h2 className="card-title">✅ تم التحليل بنجاح - مراجعة البيانات</h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'var(--space-md)' }}>
               <div>
                 <div className="text-muted text-sm">المنشأة</div>
                 <div style={{ fontWeight: 700, fontSize: 16 }}>{parsedData.hospital_name || '-'}</div>

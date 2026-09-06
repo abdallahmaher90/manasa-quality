@@ -217,7 +217,7 @@ export default function DepartmentPage() {
             <h3 className="card-title">➕ إضافة سلبية جديدة</h3>
             <button className="btn btn-ghost btn-sm" onClick={() => setAddingNew(false)}>إلغاء</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 'var(--space-md)' }}>
             <div className="form-group" style={{ gridColumn: '1 / -1' }}>
               <label className="form-label">نص السلبية *</label>
               <textarea

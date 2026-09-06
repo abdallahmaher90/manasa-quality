@@ -351,7 +351,7 @@ export default function HospitalPage() {
               {/* Leadership Row */}
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', 
                 gap: '14px',
                 marginBottom: (hospital.quality_team && hospital.quality_team.length > 0) ? '18px' : '0'
               }}>
@@ -489,7 +489,7 @@ export default function HospitalPage() {
 
                   <div style={{ 
                     display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))', 
                     gap: '10px' 
                   }}>
                     {hospital.quality_team.map((member, i) => (

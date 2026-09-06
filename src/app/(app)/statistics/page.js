@@ -112,7 +112,7 @@ export default function StatisticsPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '15px', marginBottom: '30px' }}>
         
         <div className="stat-card glass-card" style={{ padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📄</div>
@@ -146,7 +146,7 @@ export default function StatisticsPage() {
 
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '20px' }}>
         
         {/* Bar Chart: Hospitals */}
         <div className="glass-card" style={{ padding: '20px', borderRadius: '15px' }}>
