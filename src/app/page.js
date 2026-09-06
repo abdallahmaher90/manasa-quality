@@ -40,7 +40,7 @@ export default function LoginPage() {
       <div className="login-container">
         {/* Logo */}
         <div className="login-logo">
-          <div className="login-logo-icon">🛡️</div>
+          <img src="/logo.png" alt="Patient Safety Logo" className="login-logo-icon" style={{ width: 64, height: 64, objectFit: 'contain', background: 'transparent' }} />
           <h1 className="login-title">منصة الجودة</h1>
           <p className="login-subtitle">إدارة سلامة المرضى في المنشآت الصحية</p>
         </div>

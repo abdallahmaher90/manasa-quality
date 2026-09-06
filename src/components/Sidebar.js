@@ -63,7 +63,7 @@ export default function Sidebar({ user, isOpen, onClose }) {
       
       {/* Logo */}
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">🛡️</div>
+        <img src="/logo.png" alt="Patient Safety Logo" className="sidebar-logo-icon" style={{ width: 42, height: 42, objectFit: 'contain', background: 'transparent' }} />
         <div className="sidebar-logo-text">
           <span className="sidebar-logo-title">منصة الجودة</span>
           <span className="sidebar-logo-subtitle">إدارة سلامة المرضى</span>
