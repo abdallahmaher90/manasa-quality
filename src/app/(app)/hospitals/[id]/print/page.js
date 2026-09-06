@@ -85,7 +85,7 @@ export default function PrintReport() {
           <p>مديرية الشئون الصحية بـ {hospital.governorate || '......'}</p>
         </div>
         <div className="print-header-center">
-          <img src="/logo.png" alt="Logo" style={{ height: 60, opacity: 0.8 }} onError={(e) => e.target.style.display = 'none'} />
+          <img src="/logo.png" alt="Logo" style={{ height: 60, opacity: 0.8, mixBlendMode: 'multiply' }} onError={(e) => e.target.style.display = 'none'} />
         </div>
         <div className="print-header-left">
           <p>التاريخ: {new Date().toLocaleDateString('ar-EG')}</p>
