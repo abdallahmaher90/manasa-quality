@@ -43,31 +43,38 @@ export default function StatisticsPage() {
       let totalFindings = findings.length
       let openCount = 0
       let recurringCount = 0
+      let pendingCount = 0
+      let resolvedCount = 0
       
       const hospitalCounts = {}
 
       findings.forEach(f => {
         if (f.status === 'open') openCount++
-        if (f.status === 'recurring') recurringCount++
+        else if (f.status === 'recurring') recurringCount++
+        else if (f.status === 'resolved_by_hospital') pendingCount++
+        else if (f.status === 'resolved_confirmed') resolvedCount++
+        else resolvedCount++ // fallback
 
         // Count by hospital
         const hName = f.hospitals?.name || 'غير محدد'
         if (!hospitalCounts[hName]) {
-          hospitalCounts[hName] = { name: hName, open: 0, recurring: 0, resolved: 0 }
+          hospitalCounts[hName] = { name: hName, open: 0, recurring: 0, pending: 0, resolved: 0 }
         }
         if (f.status === 'open') hospitalCounts[hName].open++
         else if (f.status === 'recurring') hospitalCounts[hName].recurring++
+        else if (f.status === 'resolved_by_hospital') hospitalCounts[hName].pending++
         else hospitalCounts[hName].resolved++
       })
 
       const hospitalsData = Object.values(hospitalCounts)
-        .sort((a, b) => (b.open + b.recurring) - (a.open + a.recurring))
+        .sort((a, b) => (b.open + b.recurring + b.pending) - (a.open + a.recurring + a.pending))
         .slice(0, 10) // Top 10
 
       const statusData = [
         { name: 'جديدة', value: openCount, color: '#4caf50' },
         { name: 'متكررة', value: recurringCount, color: '#ff9800' },
-        { name: 'تم التلافي', value: totalFindings - openCount - recurringCount, color: '#2196f3' }
+        { name: 'قيد المراجعة', value: pendingCount, color: '#fcd34d' },
+        { name: 'تم التلافي', value: resolvedCount, color: '#2196f3' }
       ].filter(d => d.value > 0)
 
       setStats({
@@ -75,6 +82,7 @@ export default function StatisticsPage() {
         totalFindings,
         openFindings: openCount,
         recurringFindings: recurringCount,
+        pendingFindings: pendingCount,
         hospitalsData,
         statusData
       })
@@ -128,6 +136,12 @@ export default function StatisticsPage() {
           <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🔄</div>
           <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>سلبيات متكررة</h3>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ff9800' }}>{stats.recurringFindings}</div>
+        </div>
+
+        <div className="stat-card glass-card" style={{ padding: '20px', borderRadius: '15px', textAlign: 'center', borderBottom: '4px solid #fcd34d' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '10px' }}>⏳</div>
+          <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>سلبيات قيد المراجعة</h3>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>{stats.pendingFindings}</div>
         </div>
 
       </div>
