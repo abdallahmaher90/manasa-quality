@@ -349,9 +349,12 @@ export default function DepartmentPage() {
                       )}
 
                       {/* Hospital Actions */}
-                      {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
-                        <button className="btn btn-primary btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })}>
-                          💬 إفادة بتلافي السلبية
+                      {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
+                        <button className="btn btn-primary btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => {
+                          setNote(finding.hospital_resolution_note || '')
+                          setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                        }}>
+                          {finding.status === 'resolved_by_hospital' ? '💬 تعديل الإفادة' : '💬 إفادة بتلافي السلبية'}
                         </button>
                       )}
                     </div>
