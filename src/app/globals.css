@@ -7,10 +7,10 @@
 
 :root {
   /* Color Palette - Official Blue/Green */
-  --primary: #1e40af;
-  --primary-light: #3b82f6;
-  --primary-dark: #1e3a8a;
-  --primary-glow: rgba(30, 64, 175, 0.1);
+  --primary: #007A87;
+  --primary-light: #009cae;
+  --primary-dark: #005861;
+  --primary-glow: rgba(0, 122, 135, 0.1);
 
   --accent: #0ea5e9;
   --accent-light: #38bdf8;
