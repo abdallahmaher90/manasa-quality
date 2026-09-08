@@ -31,7 +31,7 @@ export default function StatisticsPage() {
 
       // Fetch all findings for analysis
       const { data: findings } = await supabase
-        .from('findings')
+        .from('v_report_findings')
         .select(`
           id, status, repeat_count,
           hospitals (name)

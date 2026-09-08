@@ -99,7 +99,7 @@ export default function ArchivePage() {
     setDeletingId(reportId)
     try {
       // 1. Delete associated findings first
-      await supabase.from('findings').delete().eq('report_id', reportId)
+      await supabase.from('v_report_findings').delete().eq('report_id', reportId)
       
       // 2. Delete the report
       const { error } = await supabase.from('reports').delete().eq('id', reportId)

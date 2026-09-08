@@ -91,7 +91,7 @@ export default function RecurringPage() {
 
       while (true) {
         const { data, error } = await supabase
-          .from('findings')
+          .from('v_report_findings')
           .select(`
             id,
             canonical_text,

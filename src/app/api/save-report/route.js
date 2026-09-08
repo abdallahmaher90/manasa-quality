@@ -1,5 +1,7 @@
 import { createServiceClient } from '@/lib/supabase'
-import { normalizeFindingsBulk, matchAndCanonicalizeFindingsBulk } from '@/lib/ai-parser'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { VectorMatchingService } from '@/services/vector-matching.service'
 import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
@@ -15,13 +17,35 @@ function normalizeArabicName(name) {
 
 export async function POST(request) {
   try {
-    const { parsedData, rawText, fileName, fileUrl } = await request.json()
+    const cookieStore = await cookies()
+    const supabaseClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch {}
+          },
+        },
+      }
+    )
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+
+    if (authError || !user) {
+      return Response.json({ error: 'غير مصرح لك للقيام بهذه العملية' }, { status: 401 })
+    }
+
+    const { parsedData, rawText, fileName, fileUrl, fileHash } = await request.json()
     const supabase = createServiceClient()
 
     if (parsedData) {
       // Ensure multi-day dates or formatted text are converted to a single YYYY-MM-DD date
       parsedData.inspection_date = sanitizeInspectionDate(parsedData.inspection_date || rawText)
     }
+
+    const userRole = user.app_metadata?.user_role || ''
+    const userHospitalId = user.app_metadata?.user_hospital_id || ''
 
     // 1. Find or create hospital
     let hospitalId
@@ -41,6 +65,10 @@ export async function POST(request) {
     if (existingHospital) {
       hospitalId = existingHospital.id
     } else {
+      // Only directorate admin can create a new hospital implicitly
+      if (userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
+         return Response.json({ error: 'لا تملك صلاحية إضافة مستشفى جديد' }, { status: 403 })
+      }
       const { data: newHospital, error: hospErr } = await supabase
         .from('hospitals')
         .insert({
@@ -54,6 +82,13 @@ export async function POST(request) {
       hospitalId = newHospital.id
     }
 
+    // Permission check for saving to this hospital
+    if (userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
+      if (userHospitalId !== hospitalId) {
+        return Response.json({ error: 'لا تملك صلاحية حفظ تقرير لهذا المستشفى' }, { status: 403 })
+      }
+    }
+
     // 2. Save the report to archive
     const { data: report, error: reportErr } = await supabase
       .from('reports')
@@ -64,6 +99,7 @@ export async function POST(request) {
         raw_text: rawText,
         file_name: fileName,
         file_url: fileUrl,
+        file_hash: fileHash,
         signatory_1_name: parsedData.signatory_1_name,
         signatory_1_title: parsedData.signatory_1_title,
         signatory_2_name: parsedData.signatory_2_name,
@@ -109,107 +145,49 @@ export async function POST(request) {
         deptId = newDept.id
       }
 
-      // 4. Process all findings for this department in bulk
+      // 4. Process all findings for this department
       const newFindings = dept.findings || []
       if (newFindings.length > 0) {
         const category = getCategory(dept.name)
 
-        // 4a. Fetch platform-wide canonical texts for this category to ensure cross-hospital standardization
-        let existingPlatformCanonicals = []
-        try {
-          const { data: catSample } = await supabase
-            .from('findings')
-            .select('canonical_text, departments(name)')
-            .limit(350)
-
-          if (catSample) {
-            existingPlatformCanonicals = [...new Set(
-              catSample
-                .filter(f => getCategory(f.departments?.name) === category)
-                .map(f => f.canonical_text)
-                .filter(Boolean)
-            )]
-          }
-        } catch (e) {
-          console.warn('Could not fetch platform canonicals:', e)
-        }
-
-        // 4b. Match and standardize new findings against platform canonical library
-        const standardizedFindings = await matchAndCanonicalizeFindingsBulk(
-          newFindings,
-          existingPlatformCanonicals,
-          category
-        )
-
-        // Deduplicate findings to prevent multiple identical findings in the same report
+        // Deduplicate locally in this report
         const uniqueFindingsMap = new Map()
-        for (const finding of standardizedFindings) {
-          const targetCanonical = (finding.canonical_text || finding.original_text || '').trim()
-          if (!uniqueFindingsMap.has(targetCanonical)) {
-            uniqueFindingsMap.set(targetCanonical, finding)
+        for (const finding of newFindings) {
+          const original = (finding.original_text || '').trim()
+          if (!uniqueFindingsMap.has(original)) {
+            uniqueFindingsMap.set(original, finding)
           }
         }
-        const uniqueStandardizedFindings = Array.from(uniqueFindingsMap.values())
+        const uniqueFindings = Array.from(uniqueFindingsMap.values())
 
-        // 4c. Save each finding: check if this specific hospital already has this canonical issue in this department
-        for (let i = 0; i < uniqueStandardizedFindings.length; i++) {
-          const finding = uniqueStandardizedFindings[i]
-          const targetCanonical = (finding.canonical_text || finding.original_text).trim()
+        const matcherService = new VectorMatchingService(supabase)
 
-          // Check if this hospital already has this finding in this department
-          const { data: hospitalExisting } = await supabase
-            .from('findings')
-            .select('id, repeat_count, status, last_seen_date, last_report_id')
-            .eq('hospital_id', hospitalId)
-            .eq('department_id', deptId)
-            .eq('canonical_text', targetCanonical)
-            .maybeSingle()
-
-          if (hospitalExisting) {
-            // It's a recurring finding in this hospital - increment repeat count
-            const isSameReport = hospitalExisting.last_report_id === report.id
-            const isSameDate = hospitalExisting.last_seen_date === parsedData.inspection_date
-
-            if (!isSameReport && !isSameDate) {
-              await supabase
-                .from('findings')
-                .update({
-                  repeat_count: (hospitalExisting.repeat_count || 1) + 1,
-                  status: 'recurring',
-                  last_seen_date: parsedData.inspection_date,
-                  last_report_id: report.id,
-                  // Clear resolution fields since it reoccurred
-                  resolved_by: null,
-                  resolved_date: null,
-                  resolution_note: null,
-                  hospital_resolution_note: null,
-                  hospital_resolution_date: null
-                })
-                .eq('id', hospitalExisting.id)
-            }
-          } else {
-            // New finding for this hospital: insert with standardized canonical_text
-            await supabase
-              .from('findings')
-              .insert({
-                hospital_id: hospitalId,
-                department_id: deptId,
-                report_id: report.id,
-                original_text: finding.original_text,
-                canonical_text: targetCanonical,
-                corrective_action: finding.corrective_action,
-                responsible: finding.responsible,
-                deadline: finding.deadline,
-                priority: finding.priority || 'medium',
-                status: 'open',
-                repeat_count: 1,
-                first_seen_date: parsedData.inspection_date,
-                last_seen_date: parsedData.inspection_date,
-                last_report_id: report.id,
-              })
+        for (const finding of uniqueFindings) {
+          const originalText = finding.original_text
+          
+          const matchResult = await matcherService.processFinding(originalText, category)
+          const canonicalId = matchResult.canonicalId
+          
+          // Save the finding and log the match decision
+          if (canonicalId) {
+            await matcherService.logMatch(matchResult.matchLog, originalText)
+            
+            await supabase.from('report_findings').insert({
+              report_id: report.id,
+              hospital_id: hospitalId,
+              department_id: deptId,
+              canonical_finding_id: canonicalId,
+              original_text: originalText,
+              corrective_action: finding.corrective_action,
+              responsible: finding.responsible,
+              deadline: finding.deadline,
+              priority: finding.priority || 'medium',
+              status: 'open'
+            })
           }
         }
       }
+
     }
 
     // --- CREATE NOTIFICATION FOR HOSPITAL ---

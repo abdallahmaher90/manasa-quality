@@ -1,12 +1,115 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { sanitizeInspectionDate } from './utils'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { GoogleGenAI } from '@google/genai'
+import { getCategory } from './utils.js'
+import { z } from 'zod'
+import { sanitizeInspectionDate } from './utils.js'
 
 export { sanitizeInspectionDate }
 
+const ReportZodSchema = z.object({
+  hospital_name: z.string(),
+  governorate: z.string().nullable().optional(),
+  inspector_name: z.string().nullable().optional(),
+  inspection_date: z.string().nullable().optional(),
+  signatory_1_name: z.string().nullable().optional(),
+  signatory_1_title: z.string().nullable().optional(),
+  signatory_2_name: z.string().nullable().optional(),
+  signatory_2_title: z.string().nullable().optional(),
+  departments: z.array(z.object({
+    name: z.string(),
+    findings: z.array(z.object({
+      original_text: z.string(),
+      canonical_text: z.string(),
+      corrective_action: z.string().nullable().optional(),
+      responsible: z.string().nullable().optional(),
+      deadline: z.string().nullable().optional(),
+      priority: z.enum(['high', 'medium', 'low']).nullable().optional()
+    }))
+  }))
+})
+
+const reportGeminiSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    hospital_name: { type: SchemaType.STRING },
+    governorate: { type: SchemaType.STRING },
+    inspector_name: { type: SchemaType.STRING },
+    inspection_date: { type: SchemaType.STRING },
+    signatory_1_name: { type: SchemaType.STRING },
+    signatory_1_title: { type: SchemaType.STRING },
+    signatory_2_name: { type: SchemaType.STRING },
+    signatory_2_title: { type: SchemaType.STRING },
+    departments: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          name: { type: SchemaType.STRING },
+          findings: {
+            type: SchemaType.ARRAY,
+            items: {
+              type: SchemaType.OBJECT,
+              properties: {
+                original_text: { type: SchemaType.STRING },
+                canonical_text: { type: SchemaType.STRING },
+                corrective_action: { type: SchemaType.STRING },
+                responsible: { type: SchemaType.STRING },
+                deadline: { type: SchemaType.STRING },
+                priority: { type: SchemaType.STRING }
+              },
+              required: ["original_text", "canonical_text"]
+            }
+          }
+        },
+        required: ["name", "findings"]
+      }
+    }
+  },
+  required: ["hospital_name", "departments"]
+}
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+const newGenAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
 // Try models in order until one works
 const MODELS = ['gemini-flash-lite-latest', 'gemini-3.6-flash', 'gemini-flash-latest']
+
+// Text Normalization for AI matching
+export function normalizeArabicText(text) {
+  if (!text) return ''
+  return text
+    .replace(/[أإآا]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[^\w\s\u0600-\u06FF]/g, ' ') // Keep Arabic, Alphanumeric
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+// Generate Embeddings using the new SDK
+export async function getEmbedding(text) {
+  if (!text) return null
+  
+  const modelName = process.env.EMBEDDING_MODEL || 'gemini-embedding-2'
+  const dims = parseInt(process.env.EMBEDDING_DIMENSIONS || '768', 10)
+  
+  const normalized = normalizeArabicText(text)
+  
+  try {
+    const response = await newGenAI.models.embedContent({
+      model: modelName,
+      contents: normalized,
+      config: {
+        outputDimensionality: dims
+      }
+    })
+    
+    return response.embeddings[0].values
+  } catch (error) {
+    console.error('Embedding generation failed:', error.message)
+    return null
+  }
+}
 
 // Custom fetch to instantly reject rate limits and server errors, bypassing the SDK's internal long retries
 const fastFailFetch = async (url, options) => {
@@ -17,12 +120,15 @@ const fastFailFetch = async (url, options) => {
   return res
 }
 
-async function generateWithFallback(prompt) {
+async function generateWithFallback(prompt, generationConfig = null) {
   let lastError = null
   for (const modelName of MODELS) {
     try {
+      const modelOptions = { model: modelName }
+      if (generationConfig) modelOptions.generationConfig = generationConfig
+      
       const model = genAI.getGenerativeModel(
-        { model: modelName },
+        modelOptions,
         { customFetch: fastFailFetch }
       )
       return await model.generateContent(prompt)
@@ -50,39 +156,10 @@ export async function parseReport(text) {
   const prompt = `
 أنت نظام ذكاء اصطناعي متخصص في تحليل تقارير مرور سلامة المرضى في المستشفيات المصرية.
 
-قم بتحليل التقرير التالي واستخرج منه البيانات بتنسيق JSON بالضبط.
+قم بتحليل التقرير التالي واستخرج منه البيانات المطلوبة بدقة عالية.
 
 **التقرير:**
 ${text}
-
-**المطلوب:**
-استخرج البيانات بهذا الشكل بالضبط (JSON فقط بدون أي نص إضافي):
-
-{
-  "hospital_name": "اسم المستشفى أو المنشأة",
-  "governorate": "المحافظة",
-  "inspector_name": "اسم القائم بالمرور",
-  "inspection_date": "التاريخ بصيغة YYYY-MM-DD",
-  "signatory_1_name": "اسم أول موقع (مدير سلامة المرضى أو ما شابه)",
-  "signatory_1_title": "لقب أول موقع",
-  "signatory_2_name": "اسم ثاني موقع (وكيل الوزارة أو ما شابه)",
-  "signatory_2_title": "لقب ثاني موقع",
-  "departments": [
-    {
-      "name": "اسم القسم",
-      "findings": [
-        {
-          "original_text": "نص السلبية كما وردت في التقرير",
-          "canonical_text": "صياغة موحدة ومعيارية واضحة للسلبية بأسلوب احترافي",
-          "corrective_action": "الإجراء التصحيحي المطلوب",
-          "responsible": "الجهة أو الشخص المسؤول عن التنفيذ",
-          "deadline": "مدة التنفيذ المحددة (مثل: يوم، أسبوع، شهر)",
-          "priority": "high أو medium أو low بناءً على خطورة السلبية على سلامة المريض"
-        }
-      ]
-    }
-  ]
-}
 
 **قواعد مهمة:**
 1. اسم المستشفى (hospital_name) يجب أن يكون مطابقاً حرفياً لواحد من هذه القائمة فقط (لا تخترع اسماً ولا تستخدم اسماً غير موجود في القائمة، اقرأ التقرير واختر الأقرب من هذه القائمة):
@@ -113,33 +190,33 @@ ${text}
 3. نص السلبية المعياري (canonical_text) يجب أن يكون واضحاً ومباشراً بدون حشو.
 4. الإجراء التصحيحي (corrective_action) يجب أن يكون خطوة عملية يمكن تنفيذها.
 5. الأولوية (priority) يجب أن تكون "high" أو "medium" أو "low" فقط.
-6. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null) أو ضعها كقيمة افتراضية منطقية.
+6. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null).
 7. التاريخ (inspection_date): حوّله لصيغة YYYY-MM-DD دائماً.
-   - إذا كان المرور تم على مدار يومين أو أكثر (مثل: "مرور يومي 23 و 24 يونيو 2026" أو "23-24 يونيو 2026" أو "من 23 إلى 24/6/2026"):
-     يجب اعتباره تقريراً واحداً في يوم عادي، واستخراج تاريخ اليوم الأخير من المرور (تاريخ انتهاء المرور) كـ تاريخ موحد للتقرير بصيغة YYYY-MM-DD (مثلاً: إذا كان المرور يومي 23 و 24 يونيو 2026، يكون التاريخ: 2026-06-24).
-   - يمنع منعاً باتاً كتابة نص مركب أو تاريخين معاً في حقل inspection_date، يجب أن يكون تاريخاً واحداً فقط بصيغة YYYY-MM-DD.
-
-أعطني JSON فقط بدون أي نص آخر أو markdown.
+   - إذا كان المرور تم على مدار يومين أو أكثر، يجب اعتباره تقريراً واحداً في يوم عادي، واستخراج تاريخ اليوم الأخير من المرور.
 `
 
-  const result = await generateWithFallback(prompt)
+  const generationConfig = {
+    responseMimeType: "application/json",
+    responseSchema: reportGeminiSchema,
+  }
+
+  const result = await generateWithFallback(prompt, generationConfig)
   const responseText = result.response.text()
 
-  // Clean up response - remove markdown code blocks if present
-  const cleaned = responseText
-    .replace(/```json\n?/g, '')
-    .replace(/```\n?/g, '')
-    .trim()
-
   try {
-    const parsed = JSON.parse(cleaned)
-    if (parsed) {
-      // Ensure date is always a clean valid YYYY-MM-DD string, especially for multi-day reports
-      parsed.inspection_date = sanitizeInspectionDate(parsed.inspection_date || text)
+    const rawParsed = JSON.parse(responseText)
+    
+    // Validate with Zod
+    const validated = ReportZodSchema.parse(rawParsed)
+
+    if (validated) {
+      validated.inspection_date = sanitizeInspectionDate(validated.inspection_date || text)
     }
-    return parsed
+    
+    return validated
   } catch (e) {
-    throw new Error(`فشل في تحليل التقرير: ${e.message}\nالرد: ${cleaned}`)
+    console.error("Zod Validation or Parse Error:", e)
+    throw new Error(`فشل في تحليل التقرير (خطأ في هيكل البيانات): ${e.message}`)
   }
 }
 
@@ -273,7 +350,7 @@ ${validCanonicals.length > 0 ? validCanonicals.map(t => `- "${t}"`).join('\n') :
     })
   } catch (e) {
     console.error('matchAndCanonicalizeFindingsBulk error:', e)
-    // Fallback: return as-is
+    // Fallback: Use original text as canonical text if everything fails
     return newFindings.map(f => ({
       ...f,
       canonical_text: f.canonical_text || f.original_text
@@ -281,3 +358,40 @@ ${validCanonicals.length > 0 ? validCanonicals.map(t => `- "${t}"`).join('\n') :
   }
 }
 
+/**
+ * Adjudicates if a new finding matches one of the top candidate canonical findings.
+ */
+export async function adjudicateFindingMatch(newFindingText, candidates) {
+  if (!candidates || candidates.length === 0) return { isMatch: false, matchedId: null, reasoning: 'No candidates provided' }
+  
+  const prompt = `
+أنت نظام خبير في مراجعة الجودة ومطابقة السلبيات الطبية.
+مهمتك هي تحديد ما إذا كانت "السلبية الجديدة" تعبر عن نفس المشكلة الجذرية لإحدى "السلبيات المعيارية المرشحة".
+
+السلبية الجديدة: "${newFindingText}"
+
+السلبيات المرشحة:
+${candidates.map((c, i) => `[ID: ${c.id}] النص: "${c.canonical_text}" (نسبة التشابه: ${c.similarity})`).join('\n')}
+
+أجب بـ JSON فقط:
+- إذا كانت نفس المشكلة بالضبط (حتى باختلاف صياغة بسيط): 
+  {"isMatch": true, "matchedId": "ID_HERE", "reasoning": "سبب المطابقة"}
+- إذا كانت مشكلة مختلفة أو تفاصيلها مختلفة جوهرياً: 
+  {"isMatch": false, "matchedId": null, "reasoning": "سبب الاختلاف"}
+`
+
+  try {
+    const result = await generateWithFallback(prompt)
+    const responseText = result.response.text()
+    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    const parsed = JSON.parse(cleaned)
+    return {
+      isMatch: parsed.isMatch === true,
+      matchedId: parsed.matchedId,
+      reasoning: parsed.reasoning || ''
+    }
+  } catch (e) {
+    console.error('Adjudication failed:', e)
+    return { isMatch: false, matchedId: null, reasoning: 'Adjudication API failed' }
+  }
+}

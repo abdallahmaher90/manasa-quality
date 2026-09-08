@@ -1,61 +1,81 @@
+import { createServerClient } from '@supabase/ssr'
 import { createServiceClient } from '@/lib/supabase'
+import { cookies } from 'next/headers'
 
 export async function POST(request) {
   try {
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch {}
+          },
+        },
+      }
+    )
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return Response.json({ error: 'غير مصرح لك' }, { status: 401 })
+    }
+
+    const userRole = user.app_metadata?.user_role || ''
+    const userHospitalId = user.app_metadata?.user_hospital_id || ''
+    const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
+
     const { findingId, action, note } = await request.json()
     // action: 'resolve_directorate' | 'resolve_hospital' | 'reject_hospital' | 'mark_recurring'
-    const supabase = createServiceClient()
 
     let updateData = {}
 
     switch (action) {
       case 'resolve_directorate':
+        if (!isDirectorate) return Response.json({ error: 'صلاحيات غير كافية' }, { status: 403 })
         updateData = {
           status: 'resolved_confirmed',
           resolved_date: new Date().toISOString().split('T')[0],
           resolved_by: 'directorate',
-          resolution_note: note,
         }
+        if (note) updateData.resolution_note = note
         break
       case 'resolve_hospital':
+        // Hospital users can do this. Directorate can also do it on behalf of hospital if needed.
         updateData = {
           status: 'resolved_by_hospital',
-          hospital_resolution_note: note,
-          hospital_resolution_date: new Date().toISOString().split('T')[0],
+          resolution_note: note,
+          resolved_date: new Date().toISOString().split('T')[0],
+          resolved_by: 'hospital',
         }
         break
       case 'reject_hospital':
-        // Hospital said resolved, but directorate rejected - mark as recurring
-        const { data: f } = await supabase
-          .from('findings')
-          .select('repeat_count')
-          .eq('id', findingId)
-          .single()
+        if (!isDirectorate) return Response.json({ error: 'صلاحيات غير كافية' }, { status: 403 })
         updateData = {
-          status: 'recurring',
-          repeat_count: (f?.repeat_count || 1) + 1,
-          resolved_by: null, hospital_resolution_note: null, hospital_resolution_date: null,
+          status: 'open',
+          resolved_by: null, 
+          resolution_note: null, 
+          resolved_date: null,
         }
         break
       case 'mark_recurring':
-        const { data: f2 } = await supabase
-          .from('findings')
-          .select('repeat_count')
-          .eq('id', findingId)
-          .single()
-        updateData = {
-          status: 'recurring',
-          repeat_count: (f2?.repeat_count || 1) + 1,
-        }
+        if (!isDirectorate) return Response.json({ error: 'صلاحيات غير كافية' }, { status: 403 })
+        updateData = { status: 'recurring' }
         break
       default:
         return Response.json({ error: 'إجراء غير معروف' }, { status: 400 })
     }
 
-    const { error } = await supabase
-      .from('findings')
+    // Update using the authenticated client, so RLS guarantees they can only touch allowed rows
+    const supabaseAdmin = createServiceClient()
+    const { error } = await supabaseAdmin
+      .from('report_findings')
       .update(updateData)
       .eq('id', findingId)
+      // Manually enforce hospital boundary since we bypass RLS
+      .eq(isDirectorate ? 'id' : 'hospital_id', isDirectorate ? findingId : userHospitalId)
 
     if (error) throw new Error(error.message)
 

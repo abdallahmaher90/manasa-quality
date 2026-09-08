@@ -30,7 +30,7 @@ export default function PrintReportPage() {
 
       // 2. Fetch the findings for this report
       const { data: findingsData, error: findingsErr } = await supabase
-        .from('findings')
+        .from('v_report_findings')
         .select('*, departments(name)')
         .eq('last_report_id', id)
         

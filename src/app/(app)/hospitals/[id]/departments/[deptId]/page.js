@@ -48,7 +48,7 @@ export default function DepartmentPage() {
     const [deptRes, hospRes, findingsRes] = await Promise.all([
       supabase.from('departments').select('*').eq('id', deptId).single(),
       supabase.from('hospitals').select('id, name, governorate').eq('id', hospitalId).single(),
-      supabase.from('findings')
+      supabase.from('v_report_findings')
         .select('*')
         .eq('department_id', deptId)
         .order('status', { ascending: true })
@@ -90,7 +90,7 @@ export default function DepartmentPage() {
   const handleAddFinding = async () => {
     if (!newFinding.text.trim()) return
     const today = new Date().toISOString().split('T')[0]
-    await supabase.from('findings').insert({
+    await supabase.from('v_report_findings').insert({
       hospital_id: hospitalId,
       department_id: deptId,
       original_text: newFinding.text,

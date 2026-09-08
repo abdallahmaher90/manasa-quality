@@ -44,6 +44,8 @@ export default function UploadPage() {
   const [fileObj, setFileObj] = useState(null)
   const [parsing, setParsing] = useState(false)
   const [parsedData, setParsedData] = useState(null)
+  const [parsedHospitalId, setParsedHospitalId] = useState(null)
+  const [fileHash, setFileHash] = useState(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
@@ -77,11 +79,27 @@ export default function UploadPage() {
     throw new Error('نوع الملف غير مدعوم. يرجى رفع ملف Word أو PDF أو نص.')
   }
 
+  const computeFileHash = async (file) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer()
+      const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    } catch (e) {
+      console.error('Hash error', e)
+      return null
+    }
+  }
+
   const handleFile = async (file) => {
     setInputMethod('file')
     setError('')
     setFileObj(file)
+    setFileHash(null)
     try {
+      const hash = await computeFileHash(file)
+      if (hash) setFileHash(hash)
+      
       const text = await extractTextFromFile(file)
       setRawText(text)
     } catch (err) {
@@ -112,7 +130,7 @@ export default function UploadPage() {
       const res = await fetch('/api/parse-report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: rawText }),
+        body: JSON.stringify({ text: rawText, fileHash }),
       })
 
       setProgress(70)
@@ -121,6 +139,7 @@ export default function UploadPage() {
       if (data.error) throw new Error(data.error)
 
       setParsedData(data.result)
+      setParsedHospitalId(data.hospitalId)
       setProgress(100)
       setStep(2)
     } catch (err) {
@@ -140,9 +159,13 @@ export default function UploadPage() {
       
       // Upload file to Supabase Storage if present
       if (fileObj) {
+        if (!parsedHospitalId) {
+          throw new Error('لا يمكن حفظ الملف: تعذر التعرف على المستشفى بشكل صحيح.')
+        }
         const fileExt = fileObj.name.split('.').pop()
+        const reportId = crypto.randomUUID()
         const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-        const filePath = `uploads/${uniqueName}`
+        const filePath = `${parsedHospitalId}/${reportId}/${uniqueName}`
         
         const { error: uploadError } = await supabase.storage
           .from('reports_files')
@@ -150,11 +173,7 @@ export default function UploadPage() {
           
         if (uploadError) throw new Error('فشل في رفع الملف: ' + uploadError.message)
         
-        const { data: { publicUrl } } = supabase.storage
-          .from('reports_files')
-          .getPublicUrl(filePath)
-          
-        fileUrl = publicUrl
+        fileUrl = filePath
       }
 
       const res = await fetch('/api/save-report', {
@@ -163,8 +182,9 @@ export default function UploadPage() {
         body: JSON.stringify({
           parsedData,
           rawText,
-          fileName,
+          fileName: fileObj ? fileObj.name : null,
           fileUrl,
+          fileHash
         }),
       })
 

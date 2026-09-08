@@ -62,7 +62,7 @@ export default function HospitalPage() {
         findings!findings_department_id_fkey(id, status, repeat_count, priority)
       `).eq('hospital_id', id).order('name'),
       supabase.from('reports').select('id, inspection_date, inspector_name').eq('hospital_id', id).order('inspection_date', { ascending: false }).limit(5),
-      supabase.from('findings').select('id, original_text, canonical_text, priority, repeat_count, status, departments(name, id)').eq('hospital_id', id).in('status', ['open', 'recurring']).or('priority.eq.high,repeat_count.gte.3').order('repeat_count', { ascending: false }).limit(5)
+      supabase.from('v_report_findings').select('id, original_text, canonical_text, priority, repeat_count, status, departments(name, id)').eq('hospital_id', id).in('status', ['open', 'recurring']).or('priority.eq.high,repeat_count.gte.3').order('repeat_count', { ascending: false }).limit(5)
     ])
 
     setHospital(hospRes.data)

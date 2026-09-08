@@ -23,7 +23,7 @@ export default function Dashboard() {
       // Fetch stats
       const [pendingRes, hospitalsListRes, reportsRes, recurringRes] =
         await Promise.all([
-          supabase.from('findings').select('id', { count: 'exact' }).eq('status', 'resolved_by_hospital'),
+          supabase.from('v_report_findings').select('id', { count: 'exact' }).eq('status', 'resolved_by_hospital'),
           supabase.from('hospitals').select(`
             id, name, governorate,
             findings(count)
@@ -32,7 +32,7 @@ export default function Dashboard() {
             .select('id, inspection_date, inspector_name, hospitals(name)')
             .order('inspection_date', { ascending: false })
             .limit(5),
-          supabase.from('findings')
+          supabase.from('v_report_findings')
             .select(`
               id,
               canonical_text,

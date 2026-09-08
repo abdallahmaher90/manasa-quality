@@ -26,7 +26,7 @@ export async function GET() {
 
     // Fetch unresolved findings
     const { data: findings, error } = await supabase
-      .from('findings')
+      .from('v_report_findings')
       .select('id, original_text, hospitals(name), departments(name)')
       .in('status', ['open', 'recurring'])
       // Limiting to 500 to keep the response time somewhat reasonable for a web request,

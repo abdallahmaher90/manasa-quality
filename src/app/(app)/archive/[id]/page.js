@@ -25,6 +25,18 @@ export default function ViewArchiveReport() {
         .single()
         
       if (error) throw error
+      
+      if (data.file_url && !data.file_url.startsWith('http')) {
+        // It's a path, not a public URL. Create signed URL
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from('reports_files')
+          .createSignedUrl(data.file_url, 60 * 60) // 1 hour expiry
+        
+        if (signedData) {
+          data.file_url = signedData.signedUrl
+        }
+      }
+
       setReport(data)
     } catch (err) {
       console.error(err)

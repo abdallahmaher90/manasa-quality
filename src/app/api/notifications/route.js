@@ -37,10 +37,11 @@ export async function GET(request) {
     if (hospitalId || role !== 'hospital_member') {
       
       let findingsQuery = supabase
-        .from('findings')
+        .from('report_findings')
         .select(`
-          id, original_text, canonical_text, deadline, hospital_id,
-          hospitals(name)
+          id, original_text, deadline, hospital_id,
+          hospitals(name),
+          canonical_findings(canonical_text)
         `)
         .eq('status', 'open')
         .not('deadline', 'is', null)
@@ -86,13 +87,13 @@ export async function GET(request) {
           return diffDays <= 3
         })
 
-        // Inject dynamic notifications
         warningFindings.forEach(wf => {
+          const canonicalText = wf.canonical_findings?.canonical_text || wf.original_text
           notifications.unshift({
             id: `dyn-${wf.id}`, // Fake ID
             hospital_id: wf.hospital_id,
             title: '⚠️ تحذير: موعد نهائي اقترب أو انتهى',
-            message: `السلبية: "${wf.canonical_text || wf.original_text}" الخاصة بـ ${wf.hospitals?.name || 'مستشفاك'} مهلتها تنتهي في ${wf.deadline}. يرجى التلافي فوراً!`,
+            message: `السلبية: "${canonicalText}" الخاصة بـ ${wf.hospitals?.name || 'مستشفاك'} مهلتها تنتهي في ${wf.deadline}. يرجى التلافي فوراً!`,
             type: 'deadline_warning',
             is_read: false, // Cannot be read until resolved
             created_at: new Date().toISOString(),
