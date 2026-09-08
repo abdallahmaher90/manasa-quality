@@ -27,6 +27,14 @@ export async function POST(request) {
     const userHospitalId = user.app_metadata?.user_hospital_id || ''
     const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
 
+    // Validate Hospital Identity
+    if (!isDirectorate) {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!userHospitalId || !uuidRegex.test(userHospitalId)) {
+        return Response.json({ error: 'حساب المستشفى غير مرتبط بمستشفى صالح' }, { status: 403 })
+      }
+    }
+
     const { findingId, action, note } = await request.json()
     // action: 'resolve_directorate' | 'resolve_hospital' | 'reject_hospital' | 'mark_recurring'
 
@@ -46,9 +54,8 @@ export async function POST(request) {
         // Hospital users can do this. Directorate can also do it on behalf of hospital if needed.
         updateData = {
           status: 'resolved_by_hospital',
-          resolution_note: note,
-          resolved_date: new Date().toISOString().split('T')[0],
-          resolved_by: 'hospital',
+          hospital_resolution_note: note || null,
+          hospital_resolution_date: new Date().toISOString().split('T')[0],
         }
         break
       case 'reject_hospital':
@@ -70,14 +77,29 @@ export async function POST(request) {
 
     // Update using the authenticated client, so RLS guarantees they can only touch allowed rows
     const supabaseAdmin = createServiceClient()
-    const { error } = await supabaseAdmin
+    
+    let query = supabaseAdmin
       .from('report_findings')
       .update(updateData)
       .eq('id', findingId)
-      // Manually enforce hospital boundary since we bypass RLS
-      .eq(isDirectorate ? 'id' : 'hospital_id', isDirectorate ? findingId : userHospitalId)
+
+    // Manually enforce hospital boundary since we bypass RLS
+    if (isDirectorate) {
+      query = query.eq('id', findingId)
+    } else {
+      query = query.eq('hospital_id', userHospitalId)
+    }
+
+    const { data: updatedRows, error } = await query.select('id')
 
     if (error) throw new Error(error.message)
+
+    if (!updatedRows || updatedRows.length === 0) {
+      return Response.json(
+        { error: 'السلبية غير موجودة أو لا تملك صلاحية تعديلها' },
+        { status: 403 }
+      )
+    }
 
     return Response.json({ success: true })
   } catch (error) {

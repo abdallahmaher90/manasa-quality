@@ -74,16 +74,32 @@ export default function DepartmentPage() {
   const updateFinding = async (findingId, action, noteText = '') => {
     setUpdatingId(findingId)
     try {
-      await fetch('/api/update-finding', {
+      const res = await fetch('/api/update-finding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ findingId, action, note: noteText }),
       })
+      
+      if (!res.ok) {
+        let errorMsg = 'حدث خطأ أثناء حفظ الإجراء'
+        try {
+          const errorData = await res.json()
+          if (errorData.error) errorMsg = errorData.error
+        } catch (e) {
+          errorMsg = await res.text()
+        }
+        alert(errorMsg)
+        return // Do not close modal or fetchData if failed
+      }
+      
       await fetchData()
-    } finally {
-      setUpdatingId(null)
       setNoteModal(null)
       setNote('')
+    } catch (err) {
+      alert('حدث خطأ في الاتصال بالخادم')
+      console.error(err)
+    } finally {
+      setUpdatingId(null)
     }
   }
 
