@@ -18,6 +18,19 @@ const PRIORITY_CONFIG = {
   low: { label: 'منخفضة', class: 'badge-success' },
 }
 
+const normalizeArabic = (text) => {
+  if (!text) return ''
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/\s+/g, ' ')
+}
+
 export default function DepartmentPage() {
   const { id: hospitalId, deptId } = useParams()
   const [dept, setDept] = useState(null)
@@ -32,6 +45,13 @@ export default function DepartmentPage() {
   const [filter, setFilter] = useState('active') // 'active' | 'pending' | 'resolved' | 'all'
   const [addingNew, setAddingNew] = useState(false)
   const [newFinding, setNewFinding] = useState({ text: '', corrective: '', responsible: '', deadline: '', priority: 'medium' })
+
+  // Phase 2 Step 2: Search, Sort & Pagination State
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('default') // 'default' | 'priority' | 'date'
+  const [sortDirection, setSortDirection] = useState('desc') // 'asc' | 'desc'
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 20
 
   useEffect(() => {
     fetchData()
@@ -134,13 +154,83 @@ export default function DepartmentPage() {
 
   const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
 
-  const filteredFindings = findings.filter(f => {
+  // Phase 2 Step 2: Handlers
+  const handleFilterChange = (key) => {
+    setFilter(key)
+    setCurrentPage(1)
+  }
+
+  const handleSearchChange = (val) => {
+    setSearchTerm(val)
+    setCurrentPage(1)
+  }
+
+  const handleClearSearch = () => {
+    setSearchTerm('')
+    setCurrentPage(1)
+  }
+
+  const handleSortChange = (newSort) => {
+    setSortBy(newSort)
+    if (newSort === 'priority') setSortDirection('desc')
+    else if (newSort === 'date') setSortDirection('desc')
+    setCurrentPage(1)
+  }
+
+  const handleToggleSortDirection = () => {
+    setSortDirection(prev => prev === 'desc' ? 'asc' : 'desc')
+    setCurrentPage(1)
+  }
+
+  // 1. Status Filter
+  const tabFilteredFindings = findings.filter(f => {
     if (filter === 'active') return ['open', 'recurring', 'resolved_by_hospital'].includes(f.status)
     if (filter === 'pending') return f.status === 'resolved_by_hospital'
     if (filter === 'open_only') return ['open', 'recurring'].includes(f.status)
     if (filter === 'resolved') return f.status === 'resolved_confirmed'
     return true
   })
+
+  // 2. Search Filter (tolerant to Arabic letters, diacritics, case, and whitespace)
+  const searchFilteredFindings = tabFilteredFindings.filter(f => {
+    if (!searchTerm.trim()) return true
+    const q = normalizeArabic(searchTerm)
+    const canonical = normalizeArabic(f.canonical_text)
+    const original = normalizeArabic(f.original_text)
+    return canonical.includes(q) || original.includes(q)
+  })
+
+  // 3. Sorting
+  const sortedFindings = [...searchFilteredFindings].sort((a, b) => {
+    if (sortBy === 'priority') {
+      const priorityWeights = { high: 3, medium: 2, low: 1 }
+      const weightA = priorityWeights[a.priority] || 0
+      const weightB = priorityWeights[b.priority] || 0
+      if (weightA !== weightB) {
+        return sortDirection === 'desc' ? weightB - weightA : weightA - weightB
+      }
+    } else if (sortBy === 'date') {
+      const dateA = new Date(a.last_seen_date || a.first_seen_date || a.created_at || 0).getTime()
+      const dateB = new Date(b.last_seen_date || b.first_seen_date || b.created_at || 0).getTime()
+      if (dateA !== dateB) {
+        return sortDirection === 'desc' ? dateB - dateA : dateA - dateB
+      }
+    }
+    return 0 // Preserve default business ordering
+  })
+
+  // 4. Pagination
+  const totalItems = sortedFindings.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE))
+  const startIndex = (currentPage - 1) * PAGE_SIZE
+  const paginatedFindings = sortedFindings.slice(startIndex, startIndex + PAGE_SIZE)
+
+  // Keep pagination stable within bounds if findings count shrinks
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [totalPages, currentPage])
 
   const counts = {
     active: findings.filter(f => ['open', 'recurring'].includes(f.status)).length,
@@ -197,7 +287,7 @@ export default function DepartmentPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-lg)', flexWrap: 'wrap' }} className="no-print">
+      <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)', flexWrap: 'wrap' }} className="no-print">
         {[
           { key: 'active', label: `🔴 نشطة وتحتاج تأكيد (${counts.active + counts.pending})` },
           { key: 'pending', label: `⏳ تحتاج تأكيد (${counts.pending})`, highlight: counts.pending > 0 },
@@ -209,11 +299,154 @@ export default function DepartmentPage() {
             key={tab.key}
             id={`filter-${tab.key}`}
             className={`btn btn-sm ${filter === tab.key ? 'btn-primary' : tab.highlight ? 'btn-accent' : 'btn-ghost'}`}
-            onClick={() => setFilter(tab.key)}
+            onClick={() => handleFilterChange(tab.key)}
           >
             {tab.label}
           </button>
         ))}
+      </div>
+
+      {/* Search & Sort Responsive Toolbar */}
+      <div
+        className="card no-print"
+        style={{
+          padding: 'var(--space-md)',
+          marginBottom: 'var(--space-md)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 'var(--space-md)',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
+        >
+          {/* Search Box */}
+          <div style={{ position: 'relative', flex: '1 1 260px', minWidth: 200 }}>
+            <input
+              id="findings-search-input"
+              type="text"
+              className="form-input"
+              placeholder="بحث في نص السلبية أو التقرير..."
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              style={{
+                width: '100%',
+                paddingRight: 36,
+                paddingLeft: searchTerm ? 34 : 12,
+                fontSize: 13,
+              }}
+            />
+            <span
+              style={{
+                position: 'absolute',
+                right: 12,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'var(--text-muted)',
+                pointerEvents: 'none',
+                fontSize: 14,
+              }}
+            >
+              🔍
+            </span>
+            {searchTerm && (
+              <button
+                id="clear-search-btn"
+                type="button"
+                onClick={handleClearSearch}
+                title="مسح البحث"
+                style={{
+                  position: 'absolute',
+                  left: 10,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  fontSize: 14,
+                  lineHeight: 1,
+                  padding: '4px',
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Sort Controls & Count */}
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--space-sm)',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            <label
+              htmlFor="findings-sort-select"
+              style={{ fontSize: 13, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}
+            >
+              الترتيب:
+            </label>
+            <select
+              id="findings-sort-select"
+              className="form-select"
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+              style={{
+                width: 'auto',
+                minWidth: 140,
+                padding: '6px 12px',
+                fontSize: 13,
+              }}
+            >
+              <option value="default">الافتراضي (حسب الحالة)</option>
+              <option value="priority">درجة الخطورة</option>
+              <option value="date">تاريخ الرصد</option>
+            </select>
+
+            {sortBy !== 'default' && (
+              <button
+                id="sort-direction-btn"
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleToggleSortDirection}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  padding: '6px 10px',
+                  fontSize: 12,
+                  border: '1px solid var(--border)',
+                }}
+                title={sortDirection === 'desc' ? 'ترتيب تنازلي' : 'ترتيب تصاعدي'}
+              >
+                {sortBy === 'priority' ? (
+                  sortDirection === 'desc' ? 'الأعلى أولاً ↓' : 'الأقل أولاً ↑'
+                ) : (
+                  sortDirection === 'desc' ? 'الأحدث أولاً ↓' : 'الأقدم أولاً ↑'
+                )}
+              </button>
+            )}
+
+            <span
+              className="badge badge-neutral"
+              style={{
+                fontSize: 12,
+                padding: '6px 10px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {totalItems} سلبية
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Pending confirmation alert */}
@@ -225,7 +458,7 @@ export default function DepartmentPage() {
             <button
               className="btn btn-ghost btn-sm"
               style={{ marginRight: 8 }}
-              onClick={() => setFilter('pending')}
+              onClick={() => handleFilterChange('pending')}
             >
               عرض ما يحتاج تأكيد فقط
             </button>
@@ -280,34 +513,56 @@ export default function DepartmentPage() {
       )}
 
       {/* Findings List */}
-      {filteredFindings.length === 0 ? (
+      {totalItems === 0 ? (
         <div className="empty-state">
-          <span className="empty-state-icon">✅</span>
-          <div className="empty-state-title">
-            {filter === 'active' ? 'لا توجد سلبيات نشطة أو بانتظار التأكيد!' : 'لا توجد نتائج'}
-          </div>
-          <p className="empty-state-desc">
-            {filter === 'active' ? 'هذا القسم خالٍ من السلبيات المفتوحة أو التي تنتظر الاعتماد حالياً.' : ''}
-          </p>
+          {searchTerm ? (
+            <>
+              <span className="empty-state-icon">🔍</span>
+              <div className="empty-state-title">لا توجد نتائج مطابقة للبحث</div>
+              <p className="empty-state-desc">
+                لم نتمكن من العثور على أي نتائج تطابق &quot;{searchTerm}&quot;
+              </p>
+              <button
+                id="empty-clear-search-btn"
+                type="button"
+                className="btn btn-ghost btn-sm"
+                style={{ marginTop: 12, border: '1px solid var(--border)' }}
+                onClick={handleClearSearch}
+              >
+                مسح البحث
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="empty-state-icon">✅</span>
+              <div className="empty-state-title">
+                {filter === 'active' ? 'لا توجد سلبيات نشطة أو بانتظار التأكيد!' : 'لا توجد نتائج'}
+              </div>
+              <p className="empty-state-desc">
+                {filter === 'active' ? 'هذا القسم خالٍ من السلبيات المفتوحة أو التي تنتظر الاعتماد حالياً.' : ''}
+              </p>
+            </>
+          )}
         </div>
       ) : (
-        <div className="mobile-table-card" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
-                <th style={{ padding: '8px 12px', width: 40 }}>#</th>
-                <th style={{ padding: '8px 12px' }}>نص السلبية والملاحظات</th>
-                <th style={{ padding: '8px 12px', width: 120 }}>تاريخ الرصد</th>
-                <th style={{ padding: '8px 12px', textAlign: 'center', width: 120 }}>الحالة</th>
-                <th className="no-print" style={{ padding: '8px 12px', textAlign: 'left', width: 230 }}>الإجراء</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFindings.map((finding, idx) => (
-                <tr key={finding.id} style={{ borderBottom: '1px solid var(--border)', background: finding.status === 'resolved_confirmed' ? 'rgba(16, 185, 129, 0.05)' : 'transparent' }}>
-                  <td style={{ padding: '10px 12px', verticalAlign: 'top', fontWeight: 700, color: 'var(--text-muted)' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-                      {idx + 1}
+        <>
+          <div className="mobile-table-card" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '8px 12px', width: 40 }}>#</th>
+                  <th style={{ padding: '8px 12px' }}>نص السلبية والملاحظات</th>
+                  <th style={{ padding: '8px 12px', width: 120 }}>تاريخ الرصد</th>
+                  <th style={{ padding: '8px 12px', textAlign: 'center', width: 120 }}>الحالة</th>
+                  <th className="no-print" style={{ padding: '8px 12px', textAlign: 'left', width: 230 }}>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedFindings.map((finding, idx) => (
+                  <tr key={finding.id} style={{ borderBottom: '1px solid var(--border)', background: finding.status === 'resolved_confirmed' ? 'rgba(16, 185, 129, 0.05)' : 'transparent' }}>
+                    <td style={{ padding: '10px 12px', verticalAlign: 'top', fontWeight: 700, color: 'var(--text-muted)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+                        {startIndex + idx + 1}
                       {finding.repeat_count > 1 && (
                         <span className="badge badge-repeat" style={{ padding: '2px 6px', fontSize: 10 }}>
                           🔁 ×{finding.repeat_count}
@@ -402,7 +657,69 @@ export default function DepartmentPage() {
             </tbody>
           </table>
         </div>
-      )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div
+            className="no-print"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 'var(--space-md)',
+              marginTop: 'var(--space-md)',
+              padding: 'var(--space-sm) var(--space-md)',
+              background: 'var(--bg-card)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border)',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              صفحة <strong>{currentPage}</strong> من <strong>{totalPages}</strong> ({totalItems} سلبية)
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--space-xs)', alignItems: 'center' }}>
+              <button
+                id="pagination-prev-btn"
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                style={{
+                  border: '1px solid var(--border)',
+                  opacity: currentPage === 1 ? 0.5 : 1,
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  padding: '4px 12px',
+                }}
+              >
+                السابق
+              </button>
+
+              <span style={{ fontSize: 13, fontWeight: 700, padding: '0 8px', color: 'var(--text-main)' }}>
+                {currentPage} / {totalPages}
+              </span>
+
+              <button
+                id="pagination-next-btn"
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                style={{
+                  border: '1px solid var(--border)',
+                  opacity: currentPage === totalPages ? 0.5 : 1,
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  padding: '4px 12px',
+                }}
+              >
+                التالي
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    )}
 
       {/* Note Modal */}
       {noteModal && (
