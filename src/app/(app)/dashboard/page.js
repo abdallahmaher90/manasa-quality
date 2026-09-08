@@ -7,6 +7,10 @@ import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIc
 export default function Dashboard() {
   const [stats, setStats] = useState({
     pendingConfirmation: 0,
+    totalOpen: 0,
+    totalRecurring: 0,
+    totalReports: 0,
+    totalHospitals: 0,
   })
   const [recurringByDept, setRecurringByDept] = useState([])
   const [expandedDept, setExpandedDept] = useState(null)
@@ -22,9 +26,9 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       // Fetch stats
-      const [pendingRes, hospitalsListRes, reportsRes, recurringRes] =
+      const [pendingRes, hospitalsListRes, reportsRes, recurringRes, totalOpenRes, totalRecurringRes, totalReportsRes, totalHospitalsRes] =
         await Promise.all([
-          supabase.from('v_report_findings').select('id', { count: 'exact' }).eq('status', 'resolved_by_hospital'),
+          supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'resolved_by_hospital'),
           supabase.from('hospitals').select(`
             id, name, governorate,
             findings(count)
@@ -42,11 +46,19 @@ export default function Dashboard() {
               departments (name),
               hospitals (name)
             `)
-            .eq('status', 'recurring')
+            .eq('status', 'recurring'),
+          supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).in('status', ['open', 'recurring']),
+          supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'recurring'),
+          supabase.from('reports').select('id', { count: 'exact', head: true }),
+          supabase.from('hospitals').select('id', { count: 'exact', head: true })
         ])
 
       setStats({
         pendingConfirmation: pendingRes.count || 0,
+        totalOpen: totalOpenRes.count || 0,
+        totalRecurring: totalRecurringRes.count || 0,
+        totalReports: totalReportsRes.count || 0,
+        totalHospitals: totalHospitalsRes.count || 0,
       })
 
       // Group recurring findings by department
@@ -117,6 +129,46 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+        <div className="card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', background: 'var(--danger-light)', color: 'var(--danger-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ClipboardIcon className="w-6 h-6" />
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>سلبيات نشطة</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)' }}>{stats.totalOpen}</div>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', background: 'var(--warning-light)', color: 'var(--warning-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ExclamationCircleIcon className="w-6 h-6" />
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>سلبيات متكررة</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)' }}>{stats.totalRecurring}</div>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', background: 'var(--primary-glow)', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArchiveIcon className="w-6 h-6" />
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>إجمالي التقارير</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)' }}>{stats.totalReports}</div>
+          </div>
+        </div>
+        <div className="card" style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <HospitalIcon className="w-6 h-6" />
+          </div>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>المستشفيات المسجلة</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-main)' }}>{stats.totalHospitals}</div>
+          </div>
+        </div>
+      </div>
 
       {/* Main Grid */}
       <div className="grid-responsive-2">

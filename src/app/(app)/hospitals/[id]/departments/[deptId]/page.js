@@ -319,6 +319,14 @@ export default function DepartmentPage() {
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.5 }}>
                       {finding.canonical_text || finding.original_text}
                     </div>
+                    {finding.canonical_text && finding.original_text && finding.canonical_text !== finding.original_text && (
+                      <details style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
+                        <summary style={{ cursor: 'pointer', outline: 'none' }}>النص الأصلي للتقرير</summary>
+                        <div style={{ padding: '8px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
+                          {finding.original_text}
+                        </div>
+                      </details>
+                    )}
 
                     {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
                       <div className="alert alert-warning" style={{ padding: '6px 10px', fontSize: 12, marginTop: 8 }}>
@@ -338,9 +346,16 @@ export default function DepartmentPage() {
                     )}
                   </td>
                   <td style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'center' }}>
-                    <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
-                      {STATUS_CONFIG[finding.status]?.label}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                      <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
+                        {STATUS_CONFIG[finding.status]?.label}
+                      </span>
+                      {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                        <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 11, padding: '2px 8px' }}>
+                          {PRIORITY_CONFIG[finding.priority].label}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="no-print" style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'left' }}>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'nowrap', alignItems: 'center' }}>
