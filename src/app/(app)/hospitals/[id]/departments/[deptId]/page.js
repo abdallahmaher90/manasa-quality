@@ -74,9 +74,13 @@ export default function DepartmentPage() {
   const updateFinding = async (findingId, action, noteText = '') => {
     setUpdatingId(findingId)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/update-finding', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        },
         body: JSON.stringify({ findingId, action, note: noteText }),
       })
       

@@ -1,8 +1,6 @@
 import { parseReport } from '@/lib/ai-parser'
 import { sanitizeInspectionDate } from '@/lib/utils'
-import { createServiceClient } from '@/lib/supabase'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 
 function normalizeArabicName(name) {
   if (!name) return ''
@@ -10,46 +8,38 @@ function normalizeArabicName(name) {
     .replace(/[أإآ]/g, 'ا')
     .replace(/ة/g, 'ه')
     .replace(/ي/g, 'ى')
-    .replace(/\s+/g, ' ')
+    .replace(/\s+/g, ' ') // just normalize spaces
     .trim()
 }
 
 export async function POST(request) {
   try {
-    const cookieStore = await cookies()
-    const supabaseClient = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              )
-            } catch {
-              // Ignore in route handlers
-            }
-          },
-        },
-      }
-    )
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
 
     if (authError || !user) {
       return Response.json({ error: 'غير مصرح لك' }, { status: 401 })
     }
+
+    const supabase = createServiceClient()
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, hospital_id')
+      .eq('id', user.id)
+      .single()
+
+    const userRole = profile?.role || ''
+    const userHospitalId = profile?.hospital_id || ''
 
     const { text, fileHash } = await request.json()
 
     if (!text || text.trim().length < 50) {
       return Response.json({ error: 'النص قصير جداً أو فارغ' }, { status: 400 })
     }
-
-    const supabase = createServiceClient()
 
     // Check if this exact file was already uploaded
     if (fileHash) {
@@ -99,8 +89,6 @@ export async function POST(request) {
     }
 
     // Check if the current user has permission for this hospital
-    const userRole = session.user.app_metadata?.user_role || ''
-    const userHospitalId = session.user.app_metadata?.user_hospital_id || ''
 
     if (hospitalId && userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
       if (userHospitalId !== hospitalId) {

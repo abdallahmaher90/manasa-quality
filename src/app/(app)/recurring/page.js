@@ -41,9 +41,13 @@ export default function RecurringPage() {
       setResolvingId(findingId)
       const note = resolutionNotes[findingId] || 'تم التأكد من التلافي بواسطة الإدارة'
 
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/update-finding', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        },
         body: JSON.stringify({
           findingId,
           action: 'resolve_directorate',

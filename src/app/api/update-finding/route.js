@@ -1,36 +1,32 @@
-import { createServerClient } from '@supabase/ssr'
-import { createServiceClient } from '@/lib/supabase'
-import { cookies } from 'next/headers'
+import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 
 export async function POST(request) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll() },
-          setAll(cookiesToSet) {
-            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch {}
-          },
-        },
-      }
-    )
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
 
     if (authError || !user) {
       return Response.json({ error: 'غير مصرح لك' }, { status: 401 })
     }
 
-    const userRole = user.app_metadata?.user_role || ''
-    const userHospitalId = user.app_metadata?.user_hospital_id || ''
+    const supabaseAdmin = createServiceClient()
+
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('role, hospital_id')
+      .eq('id', user.id)
+      .single()
+
+    const userRole = profile?.role || ''
+    const userHospitalId = profile?.hospital_id || ''
     const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
 
     // Validate Hospital Identity
     if (!isDirectorate) {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!userHospitalId || !uuidRegex.test(userHospitalId)) {
+      if (!userHospitalId) {
         return Response.json({ error: 'حساب المستشفى غير مرتبط بمستشفى صالح' }, { status: 403 })
       }
     }
@@ -76,7 +72,6 @@ export async function POST(request) {
     }
 
     // Update using the authenticated client, so RLS guarantees they can only touch allowed rows
-    const supabaseAdmin = createServiceClient()
     
     let query = supabaseAdmin
       .from('report_findings')

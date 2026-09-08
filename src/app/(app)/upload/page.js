@@ -126,10 +126,14 @@ export default function UploadPage() {
     setProgress(10)
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
       setProgress(30)
       const res = await fetch('/api/parse-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        },
         body: JSON.stringify({ text: rawText, fileHash }),
       })
 
@@ -176,9 +180,13 @@ export default function UploadPage() {
         fileUrl = filePath
       }
 
+      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/save-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        },
         body: JSON.stringify({
           parsedData,
           rawText,

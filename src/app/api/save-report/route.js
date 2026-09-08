@@ -1,6 +1,4 @@
-import { createServiceClient } from '@/lib/supabase'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 import { VectorMatchingService } from '@/services/vector-matching.service'
 import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
@@ -17,35 +15,33 @@ function normalizeArabicName(name) {
 
 export async function POST(request) {
   try {
-    const cookieStore = await cookies()
-    const supabaseClient = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll() },
-          setAll(cookiesToSet) {
-            try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } catch {}
-          },
-        },
-      }
-    )
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
 
     if (authError || !user) {
       return Response.json({ error: 'غير مصرح لك للقيام بهذه العملية' }, { status: 401 })
     }
 
-    const { parsedData, rawText, fileName, fileUrl, fileHash } = await request.json()
     const supabase = createServiceClient()
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, hospital_id')
+      .eq('id', user.id)
+      .single()
+
+    const userRole = profile?.role || ''
+    const userHospitalId = profile?.hospital_id || ''
+
+    const { parsedData, rawText, fileName, fileUrl, fileHash } = await request.json()
+    
     if (parsedData) {
       // Ensure multi-day dates or formatted text are converted to a single YYYY-MM-DD date
       parsedData.inspection_date = sanitizeInspectionDate(parsedData.inspection_date || rawText)
     }
-
-    const userRole = user.app_metadata?.user_role || ''
-    const userHospitalId = user.app_metadata?.user_hospital_id || ''
 
     // 1. Find or create hospital
     let hospitalId
