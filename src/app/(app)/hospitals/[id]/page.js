@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { fetchGoogleSheetData } from '@/lib/google-sheets'
 import DynamicKPI from '@/components/DynamicKPI'
+import { useToast } from '@/components/Toast'
 
 const DEPT_ICONS = {
   'الداخلي': '🏥', 'الباطنة': '🏥', 'العناية': '🫀', 'طوارئ': '🚨',
@@ -26,6 +27,7 @@ export default function HospitalPage() {
   const [hospital, setHospital] = useState(null)
   const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
   const [printMode, setPrintMode] = useState(false)
   const [kpiData, setKpiData] = useState([])
   const [showKpi, setShowKpi] = useState(false)
@@ -151,11 +153,11 @@ export default function HospitalPage() {
         setHospital(prev => ({ ...prev, ...editForm }))
         setShowEditTeamModal(false)
       } else {
-        alert('API Error: ' + (data.error || 'حدث خطأ أثناء الحفظ. يرجى التأكد من الصلاحيات.'))
+        showToast('API Error: ' + (data.error || 'حدث خطأ أثناء الحفظ. يرجى التأكد من الصلاحيات.'), 'error')
       }
     } catch (err) {
       console.error('Save team error:', err)
-      alert('حدث خطأ أثناء حفظ البيانات: ' + (err.message || ''))
+      showToast('حدث خطأ أثناء حفظ البيانات: ' + (err.message || ''), 'error')
     } finally {
       setSavingTeam(false)
     }
@@ -190,7 +192,7 @@ export default function HospitalPage() {
       setHospital(prev => ({ ...prev, last_sat_evaluation: tempSat }))
       setIsEditingSat(false)
     } else {
-      alert('حدث خطأ أثناء حفظ النسبة')
+      showToast('حدث خطأ أثناء حفظ النسبة', 'error')
     }
   }
 
@@ -650,7 +652,7 @@ export default function HospitalPage() {
             <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div className="mobile-table-card" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>

@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import Sidebar from '@/components/Sidebar'
 import Link from 'next/link'
 import NotificationsDropdown from '@/components/NotificationsDropdown'
+import { HomeIcon, UploadIcon, LogoutIcon } from '@/components/Icons'
 
 const pageTitles = {
   '/dashboard': 'الرئيسية',
@@ -128,7 +129,7 @@ export default function AppLayout({ children }) {
             <div>
               <div className="header-title">{getPageTitle()}</div>
               <div className="header-breadcrumb">
-                <span>🏠 منصة الجودة</span>
+                <span><HomeIcon className="w-4 h-4" /> منصة الجودة</span>
                 <span>›</span>
                 <span>{getPageTitle()}</span>
               </div>
@@ -140,7 +141,7 @@ export default function AppLayout({ children }) {
             
             {profile?.role !== 'hospital_member' && (
               <Link href="/upload" className="btn btn-primary btn-sm no-print" id="header-upload-btn">
-                <span>📤</span>
+                <span><UploadIcon className="w-4 h-4" /></span>
                 رفع تقرير
               </Link>
             )}
@@ -149,7 +150,7 @@ export default function AppLayout({ children }) {
               onClick={handleLogout}
               className="btn btn-ghost btn-sm no-print"
             >
-              <span>🚪</span>
+              <span><LogoutIcon className="w-4 h-4" /></span>
               خروج
             </button>
           </div>

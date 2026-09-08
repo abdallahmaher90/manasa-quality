@@ -1,39 +1,40 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon } from '@/components/Icons'
 
 const navItems = [
   {
     section: 'الرئيسية',
     roles: ['directorate_admin', 'directorate_member'],
     items: [
-      { href: '/dashboard', icon: '📊', label: 'الرئيسية' },
-      { href: '/recurring', icon: '🚨', label: 'السلبيات المتكررة' },
-      { href: '/hospitals', icon: '🏥', label: 'المستشفيات' },
+      { href: '/dashboard', icon: <HomeIcon className="w-5 h-5" />, label: 'الرئيسية' },
+      { href: '/recurring', icon: <ExclamationCircleIcon className="w-5 h-5" />, label: 'السلبيات المتكررة' },
+      { href: '/hospitals', icon: <HospitalIcon className="w-5 h-5" />, label: 'المستشفيات' },
     ]
   },
   {
     section: 'التقارير',
     roles: ['directorate_admin', 'directorate_member', 'hospital_member'],
     items: [
-      { href: '/upload', icon: '📤', label: 'رفع تقرير جديد', roles: ['directorate_admin', 'directorate_member'] },
-      { href: '/archive', icon: '🗂️', label: 'أرشيف التقارير' },
+      { href: '/upload', icon: <UploadIcon className="w-5 h-5" />, label: 'رفع تقرير جديد', roles: ['directorate_admin', 'directorate_member'] },
+      { href: '/archive', icon: <ArchiveIcon className="w-5 h-5" />, label: 'أرشيف التقارير' },
     ]
   },
   {
     section: 'التحليلات',
     roles: ['directorate_admin', 'directorate_member'],
     items: [
-      { href: '/cross-report', icon: '📋', label: 'تقرير مقارن بالأقسام' },
-      { href: '/statistics', icon: '📈', label: 'الإحصائيات' },
+      { href: '/cross-report', icon: <ClipboardIcon className="w-5 h-5" />, label: 'تقرير مقارن بالأقسام' },
+      { href: '/statistics', icon: <ChartIcon className="w-5 h-5" />, label: 'الإحصائيات' },
     ]
   },
   {
     section: 'إدارة النظام',
     roles: ['directorate_admin', 'directorate_member'],
     items: [
-      { href: '/settings', icon: '⚙️', label: 'الإعدادات' },
-      { href: '/users', icon: '👥', label: 'المستخدمين', roles: ['directorate_admin'] },
+      { href: '/settings', icon: <SettingsIcon className="w-5 h-5" />, label: 'الإعدادات' },
+      { href: '/users', icon: <UsersIcon className="w-5 h-5" />, label: 'المستخدمين', roles: ['directorate_admin'] },
     ]
   }
 ]
@@ -80,7 +81,7 @@ export default function Sidebar({ user, isOpen, onClose }) {
               onClick={onClose}
               className={`sidebar-link ${pathname.includes(`/hospitals/${user.hospital_id}`) ? 'active' : ''}`}
             >
-              <span className="sidebar-link-icon">🏥</span>
+              <span className="sidebar-link-icon"><HospitalIcon className="w-5 h-5" /></span>
               <span>المستشفى الخاص بك</span>
             </Link>
           </div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { useToast } from '@/components/Toast'
 
 const STATUS_CONFIG = {
   open: { label: 'مفتوحة', color: 'var(--danger-light)', bgClass: 'open' },
@@ -23,6 +24,7 @@ export default function DepartmentPage() {
   const [hospital, setHospital] = useState(null)
   const [findings, setFindings] = useState([])
   const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
   const [updatingId, setUpdatingId] = useState(null)
   const [noteModal, setNoteModal] = useState(null) // { findingId, action }
   const [note, setNote] = useState('')
@@ -92,15 +94,16 @@ export default function DepartmentPage() {
         } catch (e) {
           errorMsg = await res.text()
         }
-        alert(errorMsg)
+        showToast(errorMsg, 'error')
         return // Do not close modal or fetchData if failed
       }
       
       await fetchData()
       setNoteModal(null)
       setNote('')
+      showToast('تم حفظ الإجراء بنجاح', 'success')
     } catch (err) {
-      alert('حدث خطأ في الاتصال بالخادم')
+      showToast('حدث خطأ في الاتصال بالخادم', 'error')
       console.error(err)
     } finally {
       setUpdatingId(null)

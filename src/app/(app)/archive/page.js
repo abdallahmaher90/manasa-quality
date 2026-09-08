@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { useToast } from '@/components/Toast'
 
 export default function ArchivePage() {
   const [reports, setReports] = useState([])
@@ -13,6 +14,7 @@ export default function ArchivePage() {
   const [hospitals, setHospitals] = useState([])
   const [user, setUser] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const { showToast } = useToast()
 
   useEffect(() => {
     loadData()
@@ -108,7 +110,7 @@ export default function ArchivePage() {
       // 3. Remove from UI
       setReports(prev => prev.filter(r => r.id !== reportId))
     } catch (err) {
-      alert('حدث خطأ أثناء المسح: ' + err.message)
+      showToast('حدث خطأ أثناء المسح: ' + err.message, 'error')
     } finally {
       setDeletingId(null)
     }

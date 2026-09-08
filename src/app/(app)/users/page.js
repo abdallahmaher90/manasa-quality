@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/Toast'
 
 export default function UsersPage() {
   const [users, setUsers] = useState([])
   const [hospitals, setHospitals] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentUserRole, setCurrentUserRole] = useState(null)
+  const { showToast } = useToast()
   
   const [showAddForm, setShowAddForm] = useState(false)
   const [formData, setFormData] = useState({
@@ -82,7 +84,7 @@ export default function UsersPage() {
       setShowAddForm(false)
       setFormData({ full_name: '', email: '', password: '', role: 'hospital_member', hospital_id: '' })
       fetchUsers()
-      alert('تم إنشاء المستخدم بنجاح!')
+      showToast('تم إنشاء المستخدم بنجاح!', 'success')
     } catch (err) {
       setErrorMsg(err.message)
     } finally {
@@ -104,7 +106,7 @@ export default function UsersPage() {
       
       setUsers(users.filter(u => u.id !== userId))
     } catch (err) {
-      alert(err.message)
+      showToast(err.message, 'error')
     }
   }
 

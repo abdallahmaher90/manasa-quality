@@ -3,11 +3,13 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { getCategory } from '@/lib/utils'
 import Link from 'next/link'
+import { useToast } from '@/components/Toast'
 
 export default function RecurringPage() {
   const [crossHospitalRecurring, setCrossHospitalRecurring] = useState([])
   const [expandedDept, setExpandedDept] = useState(null)
   const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
   const [refreshing, setRefreshing] = useState(false)
   const [filterStatus, setFilterStatus] = useState('active') // 'active' | 'all' | 'resolved'
   const [searchTerm, setSearchTerm] = useState('')
@@ -77,7 +79,7 @@ export default function RecurringPage() {
       // Re-fetch in background to update counters and chips
       fetchCrossHospitalFindings(true)
     } catch (err) {
-      alert('خطأ: ' + err.message)
+      showToast('خطأ: ' + err.message, 'error')
     } finally {
       setResolvingId(null)
     }

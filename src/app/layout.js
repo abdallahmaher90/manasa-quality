@@ -1,6 +1,7 @@
 import { Cairo } from 'next/font/google'
 import './globals.css'
 import PWARegistration from '@/components/PWARegistration'
+import { ToastProvider } from '@/components/Toast'
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -30,7 +31,9 @@ export default function RootLayout({ children }) {
     <html lang="ar" dir="rtl">
       <body className={cairo.variable}>
         <PWARegistration />
-        {children}
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </body>
     </html>
   )

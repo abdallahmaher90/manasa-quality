@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/Toast'
 
 const STEPS = ['رفع الملف', 'تحليل AI', 'مراجعة وتأكيد', 'تم الحفظ']
 
@@ -35,6 +36,7 @@ const COMMON_HOSPITAL_DEPARTMENTS = [
 
 export default function UploadPage() {
   const router = useRouter()
+  const { showToast } = useToast()
   const fileInputRef = useRef(null)
   const [step, setStep] = useState(0)
   const [dragOver, setDragOver] = useState(false)
@@ -242,7 +244,7 @@ export default function UploadPage() {
     const newData = { ...parsedData }
     const exists = newData.departments?.some(d => d.name.trim().toLowerCase() === cleanName.toLowerCase())
     if (exists) {
-      alert('هذا القسم موجود بالفعل في التقرير!')
+      showToast('هذا القسم موجود بالفعل في التقرير!', 'error')
       return
     }
     newData.departments = newData.departments || []

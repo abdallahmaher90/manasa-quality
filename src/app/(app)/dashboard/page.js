@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon } from '@/components/Icons'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -132,7 +133,7 @@ export default function Dashboard() {
               <p className="empty-state-desc">لا توجد بيانات بعد. ابدأ برفع أول تقرير.</p>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="mobile-table-card" style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
@@ -167,19 +168,19 @@ export default function Dashboard() {
         {/* Recent Reports */}
         <div className="card">
           <div className="card-header">
-            <h2 className="card-title">📋 آخر تقارير المرور</h2>
+            <h2 className="card-title"><ClipboardIcon className="w-5 h-5 inline-block ml-2" /> آخر تقارير المرور</h2>
             <Link href="/archive" className="btn btn-ghost btn-sm">الأرشيف</Link>
           </div>
           {recentReports.length === 0 ? (
             <div className="empty-state" style={{ padding: 'var(--space-xl)' }}>
-              <span className="empty-state-icon" style={{ fontSize: 40 }}>📋</span>
+              <span className="empty-state-icon" style={{ fontSize: 40 }}><ClipboardIcon className="w-10 h-10" /></span>
               <p className="empty-state-desc">لا توجد تقارير بعد.</p>
               <Link href="/upload" className="btn btn-primary btn-sm">
-                <span>📤</span> رفع أول تقرير
+                <span><UploadIcon className="w-4 h-4 inline-block ml-1" /></span> رفع أول تقرير
               </Link>
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="mobile-table-card" style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
@@ -220,20 +221,20 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="card mt-md">
         <div className="card-header">
-          <h2 className="card-title">⚡ إجراءات سريعة</h2>
+          <h2 className="card-title"><ExclamationCircleIcon className="w-5 h-5 inline-block ml-2" /> إجراءات سريعة</h2>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
           <Link href="/upload" className="btn btn-primary" id="quick-upload">
-            <span>📤</span> رفع تقرير جديد
+            <span><UploadIcon className="w-4 h-4 inline-block ml-1" /></span> رفع تقرير جديد
           </Link>
           <Link href="/hospitals" className="btn btn-accent" id="quick-hospitals">
-            <span>🏥</span> عرض كل المستشفيات
+            <span><HospitalIcon className="w-4 h-4 inline-block ml-1" /></span> عرض كل المستشفيات
           </Link>
           <Link href="/cross-report" className="btn btn-ghost" id="quick-cross">
-            <span>📊</span> تقرير مقارن بالأقسام
+            <span><ChartIcon className="w-4 h-4 inline-block ml-1" /></span> تقرير مقارن بالأقسام
           </Link>
           <Link href="/archive" className="btn btn-ghost" id="quick-archive">
-            <span>🗂️</span> الأرشيف
+            <span><ArchiveIcon className="w-4 h-4 inline-block ml-1" /></span> الأرشيف
           </Link>
         </div>
       </div>
