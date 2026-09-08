@@ -7,7 +7,7 @@ import Link from 'next/link'
 const STATUS_CONFIG = {
   open: { label: 'مفتوحة', color: 'var(--danger-light)', bgClass: 'open' },
   recurring: { label: 'متكررة', color: 'var(--warning-light)', bgClass: 'recurring' },
-  resolved_by_hospital: { label: 'تم التلافي (بانتظار تأكيد المديرية)', color: 'var(--warning-light)', bgClass: 'resolved_by_hospital' },
+  resolved_by_hospital: { label: 'بانتظار التأكيد', color: 'var(--warning-light)', bgClass: 'resolved_by_hospital' },
   resolved_confirmed: { label: 'تم التلافي ✅', color: 'var(--success-light)', bgClass: 'resolved_confirmed' },
 }
 
@@ -295,7 +295,7 @@ export default function DepartmentPage() {
                 <th style={{ padding: '8px 12px', width: 40 }}>#</th>
                 <th style={{ padding: '8px 12px' }}>نص السلبية والملاحظات</th>
                 <th style={{ padding: '8px 12px', width: 120 }}>تاريخ الرصد</th>
-                <th style={{ padding: '8px 12px', textAlign: 'center', width: 100 }}>الحالة</th>
+                <th style={{ padding: '8px 12px', textAlign: 'center', width: 120 }}>الحالة</th>
                 <th className="no-print" style={{ padding: '8px 12px', textAlign: 'left', width: 230 }}>الإجراء</th>
               </tr>
             </thead>
@@ -335,7 +335,7 @@ export default function DepartmentPage() {
                     )}
                   </td>
                   <td style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'center' }}>
-                    <span style={{ fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
+                    <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
                       {STATUS_CONFIG[finding.status]?.label}
                     </span>
                   </td>
