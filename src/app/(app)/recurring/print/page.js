@@ -519,17 +519,6 @@ function PrintContent() {
           </div>
         ))}
 
-        {/* General Recommendations Section */}
-        <div style={{ marginTop: 25, marginBottom: 30, pageBreakInside: 'avoid', fontSize: '12pt' }}>
-          <p style={{ fontWeight: 'bold', textDecoration: 'underline', marginBottom: 6 }}>
-            التوصيات العامة لإدارات المستشفيات:
-          </p>
-          <ol style={{ margin: 0, paddingRight: 20, lineHeight: 1.7 }}>
-            <li>التشديد على مسؤولي الأقسام بسرعة تلافي الملاحظات النشطة الواردة بالتقرير وإفادة المديرية بما تم.</li>
-            <li>إلزام الكوادر الطبية والتمريضية بالمعايير القياسية للتوثيق الطبي والتبليغ عن النتائج الحرجة.</li>
-            <li>المراجعة الصباحية الدورية لجاهزية عربات الطوارئ (Crash Cart) وصلاحيات الأدوية وتطبيق شروط مكافحة العدوى.</li>
-          </ol>
-        </div>
 
         {/* Signatures Table (Official Word Format) */}
         <div style={{ marginTop: 40, pageBreakInside: 'avoid' }}>
