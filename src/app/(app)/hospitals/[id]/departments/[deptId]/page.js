@@ -97,19 +97,8 @@ export default function DepartmentPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const PAGE_SIZE = 20
 
-  // Phase 2 Step 3: Action Menu & Confirmation Modal State
-  const [openMenuId, setOpenMenuId] = useState(null)
+  // Confirmation Modal State
   const [confirmModal, setConfirmModal] = useState(null) // { title, message, actionText, actionType, onConfirm }
-
-  useEffect(() => {
-    const handleDocumentClick = (e) => {
-      if (!e.target.closest('.action-menu-container')) {
-        setOpenMenuId(null)
-      }
-    }
-    document.addEventListener('click', handleDocumentClick)
-    return () => document.removeEventListener('click', handleDocumentClick)
-  }, [])
 
   useEffect(() => {
     fetchData()
@@ -140,11 +129,32 @@ export default function DepartmentPage() {
     setHospital(hospRes.data)
 
     if (findingsRes.data) {
+      // Calculate true total occurrences (N) per recurrence group in this hospital
+      const groupTotalMap = new Map()
+      findingsRes.data.forEach(f => {
+        const grpKey = f.recurrence_group_id || f.id
+        // Exclude pending_review from confirmed recurrence count
+        const isPendingReview = f.review_status === 'pending_review'
+        if (!isPendingReview) {
+          groupTotalMap.set(grpKey, (groupTotalMap.get(grpKey) || 0) + 1)
+        }
+      })
+
+      const withTotals = findingsRes.data.map(f => {
+        const grpKey = f.recurrence_group_id || f.id
+        const totalOccurrences = groupTotalMap.get(grpKey) || 1
+        return {
+          ...f,
+          totalOccurrences,
+          isPendingReview: f.review_status === 'pending_review'
+        }
+      })
+
       // Sort: recurring first, then open, then pending confirm, then resolved
-      const sorted = [...findingsRes.data].sort((a, b) => {
+      const sorted = withTotals.sort((a, b) => {
         const order = { recurring: 0, open: 1, resolved_by_hospital: 2, resolved_confirmed: 3 }
         if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status]
-        return b.repeat_count - a.repeat_count
+        return (b.totalOccurrences || b.repeat_count) - (a.totalOccurrences || a.repeat_count)
       })
       setFindings(sorted)
     }
@@ -641,156 +651,131 @@ export default function DepartmentPage() {
                     <td style={{ padding: '10px 12px', verticalAlign: 'top', fontWeight: 700, color: 'var(--text-muted)' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
                         {startIndex + idx + 1}
-                      {finding.repeat_count > 1 && (
-                        <span className="badge badge-repeat" style={{ padding: '2px 6px', fontSize: 10 }}>
-                          🔁 ×{finding.repeat_count}
+                        {finding.totalOccurrences > 1 && !finding.isPendingReview ? (
+                          <span className="badge badge-repeat" style={{ padding: '2px 6px', fontSize: 10 }} title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}>
+                            🔁 متكررة ×{finding.totalOccurrences}
+                          </span>
+                        ) : finding.isPendingReview ? (
+                          <span className="badge badge-warning" style={{ padding: '2px 6px', fontSize: 10 }} title="سلبية قيد مراجعة الجودة">
+                            ⏳ قيد المراجعة
+                          </span>
+                        ) : null}
+                      </div>
+                    </td>
+                    <td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
+                      {/* PRIMARY TITLE: report_findings.original_text (Immutable Truth) */}
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5 }}>
+                        {finding.original_text}
+                      </div>
+
+                      {/* SECONDARY METADATA: Canonical / Administrative Classification */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', marginTop: 6 }}>
+                        {finding.canonical_text && finding.canonical_text !== finding.original_text && (
+                          <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px', background: 'var(--bg-secondary)' }}>
+                            🏷️ التصنيف: {finding.canonical_text}
+                          </span>
+                        )}
+                        {finding.repeat_count > 1 && (
+                          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                            (الظهور رقم {finding.repeat_count})
+                          </span>
+                        )}
+                      </div>
+
+                      {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
+                        <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
+                      )}
+                      {finding.status === 'resolved_confirmed' && finding.resolution_note && (
+                        <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 12px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
+                      <div>{formatDate(finding.first_seen_date)}</div>
+                      {finding.totalOccurrences > 1 && (
+                        <div style={{ marginTop: 4, color: 'var(--warning-dark)' }}>🔁 {formatDate(finding.last_seen_date)}</div>
+                      )}
+                    </td>
+                    <td style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
+                          {STATUS_CONFIG[finding.status]?.label}
                         </span>
-                      )}
-                    </div>
-                  </td>
-                  <td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.5 }}>
-                      {finding.canonical_text || finding.original_text}
-                    </div>
-                    {finding.canonical_text && finding.original_text && finding.canonical_text !== finding.original_text && (
-                      <details style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-                        <summary style={{ cursor: 'pointer', outline: 'none' }}>النص الأصلي للتقرير</summary>
-                        <div style={{ padding: '8px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', marginTop: 4 }}>
-                          {finding.original_text}
-                        </div>
-                      </details>
-                    )}
+                        {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                          <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 11, padding: '2px 8px' }}>
+                            {PRIORITY_CONFIG[finding.priority].label}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="no-print" style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'left' }}>
+                      {/* Direct Action Buttons - No Dropdown Menu */}
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        {/* Directorate Actions */}
+                        {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
+                          <button
+                            type="button"
+                            className="btn btn-success btn-sm"
+                            disabled={updatingId === finding.id}
+                            style={{ padding: '5px 10px', fontSize: 12 }}
+                            onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                          >
+                            <CheckIcon className="w-3.5 h-3.5" />
+                            <span>تأكيد الإغلاق</span>
+                          </button>
+                        )}
 
-                    {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
-                      <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
-                    )}
-                    {finding.status === 'resolved_confirmed' && finding.resolution_note && (
-                      <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
-                    )}
-                  </td>
-                  <td style={{ padding: '10px 12px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
-                    <div>{formatDate(finding.first_seen_date)}</div>
-                    {finding.repeat_count > 1 && (
-                      <div style={{ marginTop: 4, color: 'var(--warning-dark)' }}>🔁 {formatDate(finding.last_seen_date)}</div>
-                    )}
-                  </td>
-                  <td style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                      <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
-                        {STATUS_CONFIG[finding.status]?.label}
-                      </span>
-                      {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                        <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 11, padding: '2px 8px' }}>
-                          {PRIORITY_CONFIG[finding.priority].label}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="no-print" style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'left' }}>
-                    {/* Action Menu (Phase 2 Step 3) */}
-                    <div className="action-menu-container">
-                      <button
-                        type="button"
-                        id={`action-menu-btn-${finding.id}`}
-                        className={`action-menu-trigger ${openMenuId === finding.id ? 'active' : ''}`}
-                        disabled={updatingId === finding.id}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setOpenMenuId(openMenuId === finding.id ? null : finding.id)
-                        }}
-                      >
-                        <EllipsisVerticalIcon />
-                        <span>الإجراءات</span>
-                      </button>
-
-                      {openMenuId === finding.id && (
-                        <div className="action-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                          {/* Directorate Actions */}
-                          {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
+                        {isDirectorate && finding.status === 'resolved_by_hospital' && (
+                          <>
                             <button
                               type="button"
-                              className="action-menu-item success"
-                              onClick={() => {
-                                setOpenMenuId(null)
-                                setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })
-                              }}
+                              className="btn btn-success btn-sm"
+                              disabled={updatingId === finding.id}
+                              style={{ padding: '5px 10px', fontSize: 12 }}
+                              onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
                             >
-                              <CheckIcon />
-                              <span>تأكيد (إغلاق)</span>
+                              <CheckIcon className="w-3.5 h-3.5" />
+                              <span>قبول</span>
                             </button>
-                          )}
-
-                          {isDirectorate && finding.status === 'resolved_by_hospital' && (
-                            <>
-                              <button
-                                type="button"
-                                className="action-menu-item success"
-                                onClick={() => {
-                                  setOpenMenuId(null)
-                                  setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })
-                                }}
-                              >
-                                <CheckIcon />
-                                <span>قبول (إغلاق)</span>
-                              </button>
-
-                              <button
-                                type="button"
-                                className="action-menu-item danger"
-                                onClick={() => {
-                                  setOpenMenuId(null)
-                                  handleRejectHospital(finding.id)
-                                }}
-                              >
-                                <XMarkIcon />
-                                <span>رفض وإعادة</span>
-                              </button>
-                            </>
-                          )}
-
-                          {isDirectorate && finding.status !== 'recurring' && finding.status !== 'resolved_confirmed' && (
                             <button
                               type="button"
-                              className="action-menu-item warning"
-                              onClick={() => {
-                                setOpenMenuId(null)
-                                handleMarkRecurring(finding.id)
-                              }}
+                              className="btn btn-outline btn-sm"
+                              disabled={updatingId === finding.id}
+                              style={{ padding: '5px 10px', fontSize: 12, borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                              onClick={() => handleRejectHospital(finding.id)}
                             >
-                              <ArrowPathIcon />
-                              <span>تسجيل كمتكررة</span>
+                              <XMarkIcon className="w-3.5 h-3.5" />
+                              <span>رفض</span>
                             </button>
-                          )}
+                          </>
+                        )}
 
-                          {/* Hospital Actions */}
-                          {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
-                            <button
-                              type="button"
-                              className="action-menu-item primary"
-                              onClick={() => {
-                                setOpenMenuId(null)
-                                setNote(finding.hospital_resolution_note || '')
-                                setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
-                              }}
-                            >
-                              <ChatBubbleIcon />
-                              <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة بتلافي السلبية'}</span>
-                            </button>
-                          )}
+                        {/* Hospital Actions */}
+                        {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            disabled={updatingId === finding.id}
+                            style={{ padding: '5px 10px', fontSize: 12 }}
+                            onClick={() => {
+                              setNote(finding.hospital_resolution_note || '')
+                              setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                            }}
+                          >
+                            <ChatBubbleIcon className="w-3.5 h-3.5" />
+                            <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة بتلافي السلبية'}</span>
+                          </button>
+                        )}
 
-                          {/* Completed info */}
-                          {finding.status === 'resolved_confirmed' && (
-                            <div style={{ padding: '6px 10px', fontSize: 11, color: 'var(--text-muted)' }}>
-                              تم الإغلاق والتلافي
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                        {finding.status === 'resolved_confirmed' && (
+                          <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>
+                            ✅ تم التلافي
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
           </table>
         </div>
 

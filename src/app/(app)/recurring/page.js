@@ -110,6 +110,11 @@ export default function RecurringPage() {
             resolved_by,
             resolution_note,
             hospital_resolution_note,
+            recurrence_group_id,
+            recurrence_group_title,
+            recurrence_entity,
+            recurrence_defect,
+            review_status,
             departments (id, name),
             hospitals (id, name, governorate)
           `)
@@ -123,30 +128,35 @@ export default function RecurringPage() {
       }
 
       if (allFindings.length > 0) {
-        // Group findings by Category -> Canonical Text Key
+        // Group findings by Category -> Recurrence Group ID
         const groupedByCategory = {}
 
         allFindings.forEach((f) => {
           if (!f.hospitals || !f.departments) return
+          // Filter out pending_review from confirmed recurrence groups
+          if (f.review_status === 'pending_review') return
+
           const category = getCategory(f.departments.name)
 
-          // Standardize text key by removing any [room] tags for cross-hospital matching
-          let textKey = (f.canonical_text || f.original_text || '').trim()
-          textKey = textKey.replace(/^\[.*?\]\s*/, '')
-          if (!textKey) return
+          // Key by recurrence_group_id if available, fallback to normalized text
+          const groupKey = f.recurrence_group_id || f.id
+          const groupTitle = f.recurrence_group_title || f.original_text || f.canonical_text || 'سلبية غير مصنفة'
+          const canonicalClassification = f.canonical_text || ''
 
           if (!groupedByCategory[category]) {
             groupedByCategory[category] = {}
           }
 
-          if (!groupedByCategory[category][textKey]) {
-            groupedByCategory[category][textKey] = {
-              text: textKey,
+          if (!groupedByCategory[category][groupKey]) {
+            groupedByCategory[category][groupKey] = {
+              groupId: groupKey,
+              text: groupTitle,
+              canonicalClassification,
               hospitalsMap: new Map(), // hospitalId -> { hospitalInfo, findings: [] }
             }
           }
 
-          const hospMap = groupedByCategory[category][textKey].hospitalsMap
+          const hospMap = groupedByCategory[category][groupKey].hospitalsMap
           if (!hospMap.has(f.hospitals.id)) {
             hospMap.set(f.hospitals.id, {
               id: f.hospitals.id,
@@ -165,11 +175,11 @@ export default function RecurringPage() {
         for (const [category, textGroups] of Object.entries(groupedByCategory)) {
           const crossFindings = []
 
-          for (const [text, info] of Object.entries(textGroups)) {
+          for (const [groupId, info] of Object.entries(textGroups)) {
             const hospitalEntries = Array.from(info.hospitalsMap.values())
 
-            // ONLY keep findings that appeared in MULTIPLE distinct hospitals (>= 2)
-            if (hospitalEntries.length >= 2) {
+            // ONLY keep findings that appeared in MULTIPLE distinct hospitals (>= 2) OR recurrent in same hospital
+            if (hospitalEntries.length >= 2 || hospitalEntries.some(h => h.findings.length >= 2)) {
               // Analyze hospital statuses for this issue
               let activeCount = 0
               let pendingCount = 0
@@ -193,15 +203,15 @@ export default function RecurringPage() {
                   activeCount++
                 }
 
-                // Get max repeat count among findings for this hospital
-                const maxRepeats = Math.max(...h.findings.map((f) => f.repeat_count || 1))
-                const latestDate = h.findings.map((f) => f.last_seen_date).filter(Boolean).sort().reverse()[0]
+                // True total occurrences for this hospital
+                const totalHospitalOccurrences = h.findings.length
+                const latestDate = h.findings.map((f) => f.last_seen_date || f.first_seen_date).filter(Boolean).sort().reverse()[0]
                 const resolvedDate = h.findings.map((f) => f.resolved_date).filter(Boolean).sort().reverse()[0]
 
                 return {
                   ...h,
                   issueStatus: status,
-                  repeatCount: maxRepeats,
+                  repeatCount: totalHospitalOccurrences,
                   latestDate,
                   resolvedDate,
                 }
@@ -213,10 +223,15 @@ export default function RecurringPage() {
                 return weight[a.issueStatus] - weight[b.issueStatus]
               })
 
+              const totalOccurrencesAll = hospitalsList.reduce((acc, h) => acc + h.findings.length, 0)
+
               crossFindings.push({
-                text,
+                groupId,
+                text: info.text,
+                canonicalClassification: info.canonicalClassification,
                 category,
                 totalHospitals: hospitalsList.length,
+                totalOccurrences: totalOccurrencesAll,
                 activeCount,
                 pendingCount,
                 resolvedCount,
@@ -513,8 +528,17 @@ export default function RecurringPage() {
                       >
                         {/* Title & Badges */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
-                          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.6, flex: 1 }}>
-                            {f.text}
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                              {f.text}
+                            </div>
+                            {f.canonicalClassification && f.canonicalClassification !== f.text && (
+                              <div style={{ marginTop: 4 }}>
+                                <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px', background: 'var(--bg-secondary)' }}>
+                                  🏷️ التصنيف: {f.canonicalClassification}
+                                </span>
+                              </div>
+                            )}
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -528,7 +552,7 @@ export default function RecurringPage() {
                                 border: '1px solid var(--border)',
                               }}
                             >
-                              🏥 تكررت في {f.totalHospitals} مستشفيات
+                              🏥 {f.totalHospitals} مستشفيات ({f.totalOccurrences || f.totalHospitals} رصد)
                             </span>
 
                             {f.activeCount > 0 && (
@@ -598,7 +622,7 @@ export default function RecurringPage() {
                               return (
                                 <div
                                   key={h.id}
-                                  onClick={() => setSelectedModalData({ hospital: h, findingText: f.text, category: dept.category })}
+                                  onClick={() => setSelectedModalData({ hospital: h, findingText: f.text, canonicalText: f.canonicalClassification, category: dept.category })}
                                   style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -613,13 +637,13 @@ export default function RecurringPage() {
                                     cursor: 'pointer',
                                     transition: 'all 0.15s ease',
                                   }}
-                                  title="اضغط لعرض تفاصيل المرور ونصوص الملاحظة في هذا المستشفى"
+                                  title="اضغط لعرض تفاصيل المرور ونصوص الملاحظة الأصلية في هذا المستشفى"
                                 >
                                   <span>{chipStyle.icon}</span>
                                   <span>{h.name}</span>
                                   {h.repeatCount > 1 && (
                                     <span style={{ opacity: 0.8, fontSize: 10, background: 'rgba(0,0,0,0.06)', padding: '1px 5px', borderRadius: 4 }}>
-                                      🔁 {h.repeatCount}x
+                                      🔁 متكررة ×{h.repeatCount}
                                     </span>
                                   )}
                                   {isResolved && h.resolvedDate && (
@@ -696,15 +720,22 @@ export default function RecurringPage() {
             </div>
 
             <div style={{ background: 'var(--bg-secondary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>المشكلة المعيارية الموحدة:</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>المشكلة المتكررة الفعلية:</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginTop: 2, lineHeight: 1.5 }}>
                 {selectedModalData.findingText}
               </div>
+              {selectedModalData.canonicalText && selectedModalData.canonicalText !== selectedModalData.findingText && (
+                <div style={{ marginTop: 6 }}>
+                  <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px' }}>
+                    🏷️ التصنيف الإداري: {selectedModalData.canonicalText}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-                📋 الملاحظات المسجلة في تقرير المرور ({selectedModalData.hospital.findings.length}):
+                📋 الملاحظات المسجلة في تقارير المرور لهذا المستشفى ({selectedModalData.hospital.findings.length}):
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -727,7 +758,7 @@ export default function RecurringPage() {
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
                       <span>📅 تاريخ الرصد: {f.last_seen_date || f.first_seen_date || 'غير محدد'}</span>
-                      <span>🔁 مرات التكرار: {f.repeat_count || 1}</span>
+                      <span>🔁 الظهور رقم: {f.repeat_count || 1}</span>
                       <span
                         style={{
                           fontWeight: 700,

@@ -38,6 +38,9 @@ function PrintContent() {
             repeat_count,
             last_seen_date,
             resolved_date,
+            recurrence_group_id,
+            recurrence_group_title,
+            review_status,
             departments (name),
             hospitals (id, name, governorate)
           `)
@@ -55,23 +58,28 @@ function PrintContent() {
 
         allFindings.forEach((f) => {
           if (!f.hospitals || !f.departments) return
+          if (f.review_status === 'pending_review') return
+
           const category = getCategory(f.departments.name)
 
-          let textKey = (f.canonical_text || f.original_text || '').trim().replace(/^\[.*?\]\s*/, '')
-          if (!textKey) return
+          const groupKey = f.recurrence_group_id || f.id
+          const groupTitle = f.recurrence_group_title || f.original_text || f.canonical_text || 'سلبية غير مصنفة'
+          const canonicalClassification = f.canonical_text || ''
 
           if (!groupedByCategory[category]) {
             groupedByCategory[category] = {}
           }
 
-          if (!groupedByCategory[category][textKey]) {
-            groupedByCategory[category][textKey] = {
-              text: textKey,
+          if (!groupedByCategory[category][groupKey]) {
+            groupedByCategory[category][groupKey] = {
+              groupId: groupKey,
+              text: groupTitle,
+              canonicalClassification,
               hospitalsMap: new Map(),
             }
           }
 
-          const hospMap = groupedByCategory[category][textKey].hospitalsMap
+          const hospMap = groupedByCategory[category][groupKey].hospitalsMap
           if (!hospMap.has(f.hospitals.id)) {
             hospMap.set(f.hospitals.id, {
               id: f.hospitals.id,
@@ -88,10 +96,10 @@ function PrintContent() {
         for (const [category, textGroups] of Object.entries(groupedByCategory)) {
           const crossFindings = []
 
-          for (const [text, info] of Object.entries(textGroups)) {
+          for (const [groupId, info] of Object.entries(textGroups)) {
             const hospitalEntries = Array.from(info.hospitalsMap.values())
 
-            if (hospitalEntries.length >= 2) {
+            if (hospitalEntries.length >= 2 || hospitalEntries.some(h => h.findings.length >= 2)) {
               let activeCount = 0
               let resolvedCount = 0
 
@@ -109,7 +117,9 @@ function PrintContent() {
               })
 
               crossFindings.push({
-                text,
+                groupId,
+                text: info.text,
+                canonicalClassification: info.canonicalClassification,
                 category,
                 totalHospitals: hospitalsList.length,
                 activeCount,
