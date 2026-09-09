@@ -1,5 +1,6 @@
 import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 import { VectorMatchingService } from '@/services/vector-matching.service'
+import { RecurrenceMatcherService, normalizeRecurrenceKey } from '@/services/recurrence-matcher.service'
 import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
@@ -157,30 +158,64 @@ export async function POST(request) {
         const uniqueFindings = Array.from(uniqueFindingsMap.values())
 
         const matcherService = new VectorMatchingService(supabase)
+        const recurrenceMatcher = new RecurrenceMatcherService(supabase)
 
         for (const finding of uniqueFindings) {
           const originalText = finding.original_text
           
+          // Layer 3: Broad Canonical Classification (Independent)
           const matchResult = await matcherService.processFinding(originalText, category)
           const canonicalId = matchResult.canonicalId
           
-          // Save the finding and log the match decision
           if (canonicalId) {
             await matcherService.logMatch(matchResult.matchLog, originalText)
-            
-            await supabase.from('report_findings').insert({
-              report_id: report.id,
-              hospital_id: hospitalId,
-              department_id: deptId,
-              canonical_finding_id: canonicalId,
-              original_text: originalText,
-              corrective_action: finding.corrective_action,
-              responsible: finding.responsible,
-              deadline: finding.deadline,
-              priority: finding.priority || 'medium',
-              status: 'open'
-            })
           }
+
+          // Layer 2: Exact Recurrence Matching (Unified Engine)
+          const recResult = await recurrenceMatcher.matchFinding(originalText, dept.name || 'عام')
+          let recurrenceGroupId = recResult.recurrenceGroupId
+          let reviewStatus = recResult.reviewStatus
+
+          if (!recurrenceGroupId) {
+            // Distinct or Uncertain: create new independent group
+            const normKey = normalizeRecurrenceKey(originalText)
+            const { data: newGrp } = await supabase
+              .from('recurrence_groups')
+              .insert({
+                title: normKey,
+                normalized_key: normKey,
+                entity: recResult.entity,
+                defect: recResult.defect,
+                domain: dept.name || 'عام',
+                confidence: recResult.decision,
+                review_status: reviewStatus,
+                matching_policy_version: recResult.matchingPolicyVersion
+              })
+              .select('id')
+              .single()
+
+            if (newGrp) {
+              recurrenceGroupId = newGrp.id
+            }
+          }
+
+          // Save finding with both canonical_finding_id and recurrence_group_id
+          await supabase.from('report_findings').insert({
+            report_id: report.id,
+            hospital_id: hospitalId,
+            department_id: deptId,
+            canonical_finding_id: canonicalId || null,
+            recurrence_group_id: recurrenceGroupId || null,
+            matching_policy_version: recResult.matchingPolicyVersion,
+            review_status: reviewStatus,
+            match_reason: recResult.reason,
+            original_text: originalText,
+            corrective_action: finding.corrective_action,
+            responsible: finding.responsible,
+            deadline: finding.deadline,
+            priority: finding.priority || 'medium',
+            status: 'open'
+          })
         }
       }
 
