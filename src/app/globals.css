@@ -1505,6 +1505,83 @@ tbody tr {
     flex-wrap: wrap;
   }
 
+  /* Header layout mobile adjustments */
+  .header {
+    height: 54px !important;
+    padding: 0 10px !important;
+  }
+
+  .header-title {
+    font-size: 14px !important;
+    max-width: 110px !important;
+  }
+
+  .page-content {
+    padding: 10px !important;
+    padding-top: calc(54px + 10px) !important;
+  }
+
+  /* Department Header Mobile Adjustments */
+  .dept-breadcrumb {
+    font-size: 11.5px !important;
+    margin-bottom: 8px !important;
+    gap: 4px !important;
+  }
+
+  .dept-header-card {
+    padding: 10px 12px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .dept-header-content {
+    gap: 8px !important;
+  }
+
+  .dept-header-actions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
+  }
+
+  /* Filter Tabs Mobile Styling */
+  .dept-filter-tabs {
+    gap: 5px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .dept-filter-tabs .btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Toolbar Mobile Styling */
+  .dept-toolbar-card {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .dept-toolbar-inner {
+    gap: 8px !important;
+  }
+
+  .dept-search-box {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .dept-sort-controls {
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+  }
+
+  .dept-sort-controls select {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
   /* Findings Responsive Switching: Show mobile cards on <= 768px, hide desktop table */
   .findings-desktop-table {
     display: none !important;

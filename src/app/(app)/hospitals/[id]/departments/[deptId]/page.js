@@ -333,31 +333,34 @@ export default function DepartmentPage() {
   return (
     <div>
       {/* Breadcrumb */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 'var(--space-lg)', fontSize: 14, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+      <div className="dept-breadcrumb no-print" style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 12, fontSize: 13, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
         <Link href="/hospitals" style={{ color: 'var(--accent-light)' }}>المستشفيات</Link>
         <span>›</span>
         <Link href={`/hospitals/${hospitalId}`} style={{ color: 'var(--accent-light)' }}>{hospital?.name}</Link>
         <span>›</span>
-        <span>{dept?.name}</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{dept?.name}</span>
       </div>
 
       {/* Department Header */}
-      <div className="card mb-lg">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)' }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 'var(--radius-lg)',
-            background: 'var(--primary-glow)', border: '1px solid var(--border-accent)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28,
-          }}>🏨</div>
-          <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: 22, fontWeight: 900 }}>{dept?.name}</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>{hospital?.name} - {hospital?.governorate}</p>
+      <div className="card dept-header-card" style={{ padding: '14px 16px', marginBottom: 12 }}>
+        <div className="dept-header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 200 }}>
+            <div style={{
+              width: 46, height: 46, borderRadius: 'var(--radius-md)',
+              background: 'var(--primary-glow)', border: '1px solid var(--border-accent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0,
+            }}>🏨</div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <h1 style={{ fontSize: 18, fontWeight: 900, lineHeight: 1.3, margin: 0, wordBreak: 'break-word' }}>{dept?.name}</h1>
+              <p style={{ color: 'var(--text-muted)', fontSize: 12, margin: '2px 0 0 0' }}>{hospital?.name} - {hospital?.governorate}</p>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+          <div className="dept-header-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <button
               id="print-dept-report"
               className="btn btn-ghost btn-sm no-print"
               onClick={() => window.print()}
+              style={{ padding: '5px 10px', fontSize: 12 }}
             >
               🖨️ طباعة
             </button>
@@ -366,6 +369,7 @@ export default function DepartmentPage() {
                 id="add-finding-btn"
                 className="btn btn-primary btn-sm no-print"
                 onClick={() => setAddingNew(true)}
+                style={{ padding: '5px 12px', fontSize: 12 }}
               >
                 ➕ إضافة سلبية
               </button>
@@ -375,7 +379,7 @@ export default function DepartmentPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)', flexWrap: 'wrap' }} className="no-print">
+      <div className="dept-filter-tabs no-print" style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
         {[
           { key: 'active', label: `🔴 نشطة وتحتاج تأكيد (${counts.active + counts.pending})` },
           { key: 'pending', label: `⏳ تحتاج تأكيد (${counts.pending})`, highlight: counts.pending > 0 },
@@ -388,6 +392,7 @@ export default function DepartmentPage() {
             id={`filter-${tab.key}`}
             className={`btn btn-sm ${filter === tab.key ? 'btn-primary' : tab.highlight ? 'btn-accent' : 'btn-ghost'}`}
             onClick={() => handleFilterChange(tab.key)}
+            style={{ padding: '4px 10px', fontSize: 12, borderRadius: 6 }}
           >
             {tab.label}
           </button>
@@ -396,25 +401,26 @@ export default function DepartmentPage() {
 
       {/* Search & Sort Responsive Toolbar */}
       <div
-        className="card no-print"
+        className="card dept-toolbar-card no-print"
         style={{
-          padding: 'var(--space-md)',
-          marginBottom: 'var(--space-md)',
+          padding: '10px 12px',
+          marginBottom: 10,
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
         }}
       >
         <div
+          className="dept-toolbar-inner"
           style={{
             display: 'flex',
-            gap: 'var(--space-md)',
+            gap: 8,
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
           }}
         >
           {/* Search Box */}
-          <div style={{ position: 'relative', flex: '1 1 260px', minWidth: 200 }}>
+          <div className="dept-search-box" style={{ position: 'relative', flex: '1 1 200px', minWidth: 160 }}>
             <input
               id="findings-search-input"
               type="text"
@@ -424,20 +430,23 @@ export default function DepartmentPage() {
               onChange={(e) => handleSearchChange(e.target.value)}
               style={{
                 width: '100%',
-                paddingRight: 36,
-                paddingLeft: searchTerm ? 34 : 12,
-                fontSize: 13,
+                paddingRight: 32,
+                paddingLeft: searchTerm ? 30 : 10,
+                paddingTop: 6,
+                paddingBottom: 6,
+                fontSize: 12.5,
+                height: 36,
               }}
             />
             <span
               style={{
                 position: 'absolute',
-                right: 12,
+                right: 10,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: 'var(--text-muted)',
                 pointerEvents: 'none',
-                fontSize: 14,
+                fontSize: 13,
               }}
             >
               🔍
@@ -450,14 +459,14 @@ export default function DepartmentPage() {
                 title="مسح البحث"
                 style={{
                   position: 'absolute',
-                  left: 10,
+                  left: 8,
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
                   color: 'var(--text-muted)',
                   cursor: 'pointer',
-                  fontSize: 14,
+                  fontSize: 13,
                   lineHeight: 1,
                   padding: '4px',
                 }}
@@ -469,16 +478,17 @@ export default function DepartmentPage() {
 
           {/* Sort Controls & Count */}
           <div
+            className="dept-sort-controls"
             style={{
               display: 'flex',
-              gap: 'var(--space-sm)',
+              gap: 6,
               alignItems: 'center',
               flexWrap: 'wrap',
             }}
           >
             <label
               htmlFor="findings-sort-select"
-              style={{ fontSize: 13, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}
+              style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}
             >
               الترتيب:
             </label>
@@ -489,9 +499,10 @@ export default function DepartmentPage() {
               onChange={(e) => handleSortChange(e.target.value)}
               style={{
                 width: 'auto',
-                minWidth: 140,
-                padding: '6px 12px',
-                fontSize: 13,
+                minWidth: 130,
+                padding: '4px 8px',
+                fontSize: 12,
+                height: 36,
               }}
             >
               <option value="default">الافتراضي (حسب الحالة)</option>
@@ -509,8 +520,9 @@ export default function DepartmentPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 4,
-                  padding: '6px 10px',
-                  fontSize: 12,
+                  padding: '4px 8px',
+                  fontSize: 11.5,
+                  height: 36,
                   border: '1px solid var(--border)',
                 }}
                 title={sortDirection === 'desc' ? 'ترتيب تنازلي' : 'ترتيب تصاعدي'}
@@ -526,9 +538,12 @@ export default function DepartmentPage() {
             <span
               className="badge badge-neutral"
               style={{
-                fontSize: 12,
-                padding: '6px 10px',
+                fontSize: 11.5,
+                padding: '4px 8px',
                 whiteSpace: 'nowrap',
+                height: 28,
+                display: 'inline-flex',
+                alignItems: 'center',
               }}
             >
               {totalItems} سلبية
