@@ -52,6 +52,22 @@ export default function UploadPage() {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
 
+  // Phase 3 Step 1: Department Modal (replace window.prompt)
+  const [deptModal, setDeptModal] = useState(null) // { mode: 'add' | 'move', fromDIdx, fIdx, title, defaultValue, targetDept }
+  const [modalInputVal, setModalInputVal] = useState('')
+
+  const handleClearFile = (e) => {
+    if (e) e.stopPropagation()
+    setFileObj(null)
+    setFileName('')
+    setFileHash(null)
+    setRawText('')
+    setError('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const extractTextFromFile = async (file) => {
     setFileName(file.name)
     const ext = file.name.split('.').pop().toLowerCase()
@@ -97,6 +113,7 @@ export default function UploadPage() {
     setInputMethod('file')
     setError('')
     setFileObj(file)
+    setFileName(file.name)
     setFileHash(null)
     try {
       const hash = await computeFileHash(file)
@@ -238,7 +255,15 @@ export default function UploadPage() {
   }
 
   const addNewDepartment = () => {
-    const name = window.prompt('أدخل اسم القسم الجديد الذي ترغب في إضافته للتقرير:')
+    setModalInputVal('')
+    setDeptModal({
+      mode: 'add',
+      title: 'إضافة قسم جديد للتقرير',
+      subtitle: 'أدخل اسم القسم الطبي أو الإداري لإدراجه في قائمة أقسام التقرير:'
+    })
+  }
+
+  const executeAddDepartment = (name) => {
     if (!name || !name.trim()) return
     const cleanName = name.trim()
     const newData = { ...parsedData }
@@ -253,38 +278,25 @@ export default function UploadPage() {
       findings: []
     })
     setParsedData(newData)
+    setDeptModal(null)
+    setModalInputVal('')
+    showToast(`تمت إضافة قسم "${cleanName}" بنجاح`, 'success')
   }
 
-  const handleMoveFinding = (fromDIdx, fIdx, targetVal) => {
-    if (targetVal === '' || targetVal === String(fromDIdx)) return
-
-    let targetDeptName = ''
-
-    if (targetVal === '__custom_new__') {
-      const customName = window.prompt('أدخل اسم القسم الجديد الذي ترغب في نقل السلبية إليه:')
-      if (!customName || !customName.trim()) return
-      targetDeptName = customName.trim()
-    } else if (typeof targetVal === 'string' && targetVal.startsWith('dept_name:')) {
-      targetDeptName = targetVal.replace('dept_name:', '').trim()
-    } else {
-      const toIndex = parseInt(targetVal, 10)
-      if (!isNaN(toIndex) && toIndex !== fromDIdx) {
-        moveFinding(fromDIdx, fIdx, toIndex)
-      }
-      return
-    }
-
-    if (!targetDeptName) return
+  const executeMoveFindingToName = (fromDIdx, fIdx, targetDeptName) => {
+    if (!targetDeptName || !targetDeptName.trim()) return
+    const cleanName = targetDeptName.trim()
 
     const newData = { ...parsedData }
-    const finding = newData.departments[fromDIdx].findings[fIdx]
+    const finding = newData.departments[fromDIdx]?.findings?.[fIdx]
+    if (!finding) return
 
     // Remove from source department
     newData.departments[fromDIdx].findings.splice(fIdx, 1)
 
     // Check if the department already exists in report
     const existingIdx = newData.departments.findIndex(
-      d => d.name.trim().toLowerCase() === targetDeptName.toLowerCase()
+      d => d.name.trim().toLowerCase() === cleanName.toLowerCase()
     )
 
     if (existingIdx !== -1) {
@@ -293,7 +305,7 @@ export default function UploadPage() {
     } else {
       // Create new department with this finding
       newData.departments.push({
-        name: targetDeptName,
+        name: cleanName,
         findings: [finding]
       })
     }
@@ -304,6 +316,36 @@ export default function UploadPage() {
     }
 
     setParsedData(newData)
+    setDeptModal(null)
+    setModalInputVal('')
+    showToast(`تم نقل السلبية إلى "${cleanName}" بنجاح`, 'success')
+  }
+
+  const handleMoveFinding = (fromDIdx, fIdx, targetVal) => {
+    if (targetVal === '' || targetVal === String(fromDIdx)) return
+
+    if (targetVal === '__custom_new__') {
+      setModalInputVal('')
+      setDeptModal({
+        mode: 'move',
+        fromDIdx,
+        fIdx,
+        title: 'نقل السلبية إلى قسم جديد',
+        subtitle: 'أدخل اسم القسم الجديد الذي ترغب في نقل هذه السلبية إليه:'
+      })
+      return
+    }
+
+    if (typeof targetVal === 'string' && targetVal.startsWith('dept_name:')) {
+      const targetDeptName = targetVal.replace('dept_name:', '').trim()
+      executeMoveFindingToName(fromDIdx, fIdx, targetDeptName)
+      return
+    }
+
+    const toIndex = parseInt(targetVal, 10)
+    if (!isNaN(toIndex) && toIndex !== fromDIdx) {
+      moveFinding(fromDIdx, fIdx, toIndex)
+    }
   }
 
   const moveFinding = (fromDIdx, fIdx, toDIdx) => {
@@ -398,7 +440,9 @@ export default function UploadPage() {
               onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (!fileName) fileInputRef.current?.click()
+              }}
             >
               <input
                 ref={fileInputRef}
@@ -414,9 +458,20 @@ export default function UploadPage() {
               {fileName ? (
                 <>
                   <div className="upload-title" style={{ color: 'var(--success-light)' }}>
-                    ✅ تم تحميل الملف
+                    ✅ تم اختيار الملف بنجاح
                   </div>
-                  <div className="upload-subtitle">{fileName}</div>
+                  <div className="upload-subtitle" style={{ wordBreak: 'break-all', fontWeight: 600 }}>{fileName}</div>
+                  <div style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      id="remove-file-btn"
+                      className="btn btn-ghost btn-sm"
+                      style={{ border: '1px solid var(--border)', color: 'var(--danger-light)', background: 'var(--bg-card)' }}
+                      onClick={handleClearFile}
+                    >
+                      <span>✕</span> إزالة الملف واختيار آخر
+                    </button>
+                  </div>
                 </>
               ) : (
                 <>
@@ -729,6 +784,106 @@ export default function UploadPage() {
             تم حفظ التقرير وإضافة السلبيات للقسم المعني. جاري الانتقال لصفحة المستشفى...
           </p>
           <div className="loading-spinner" style={{ margin: 'var(--space-xl) auto 0' }} />
+        </div>
+      )}
+
+      {/* Department Custom Modal (Phase 3 Step 1 - replaces window.prompt) */}
+      {deptModal && (
+        <div 
+          className="modal-overlay" 
+          onClick={() => setDeptModal(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setDeptModal(null)
+          }}
+        >
+          <div 
+            className="confirm-modal-box" 
+            onClick={(e) => e.stopPropagation()} 
+            role="dialog" 
+            aria-modal="true"
+            style={{ maxWidth: 460 }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(59, 130, 246, 0.15)',
+                  color: 'var(--primary-light)',
+                  flexShrink: 0,
+                  fontSize: 18
+                }}
+              >
+                🏨
+              </div>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {deptModal.title}
+              </h3>
+            </div>
+
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 16px 0' }}>
+              {deptModal.subtitle}
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (!modalInputVal.trim()) return
+                if (deptModal.mode === 'add') {
+                  executeAddDepartment(modalInputVal)
+                } else if (deptModal.mode === 'move') {
+                  executeMoveFindingToName(deptModal.fromDIdx, deptModal.fIdx, modalInputVal)
+                }
+              }}
+            >
+              <div className="form-group" style={{ marginBottom: 20 }}>
+                <label className="form-label" htmlFor="dept-name-modal-input">اسم القسم *</label>
+                <input
+                  id="dept-name-modal-input"
+                  type="text"
+                  className="form-input"
+                  autoFocus
+                  required
+                  placeholder="مثال: الاستقبال والطوارئ، بنك الدم..."
+                  value={modalInputVal}
+                  onChange={(e) => setModalInputVal(e.target.value)}
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    background: '#ffffff',
+                    color: '#0f172a',
+                    border: '1.5px solid var(--border-accent)'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  id="cancel-dept-modal-btn"
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    setDeptModal(null)
+                    setModalInputVal('')
+                  }}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  id="submit-dept-modal-btn"
+                  className="btn btn-primary"
+                  disabled={!modalInputVal.trim()}
+                >
+                  {deptModal.mode === 'add' ? 'إضافة القسم' : 'نقل السلبية'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
