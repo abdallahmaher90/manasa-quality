@@ -724,12 +724,11 @@ export default function DepartmentPage() {
                         {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
                           <button
                             type="button"
-                            className="btn btn-success btn-sm"
+                            className="btn btn-success btn-desktop-resolve"
                             disabled={updatingId === finding.id}
-                            style={{ padding: '5px 10px', fontSize: 12 }}
                             onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
                           >
-                            <CheckIcon className="w-3.5 h-3.5" />
+                            <span style={{ fontSize: 11, lineHeight: 1 }}>✓</span>
                             <span>تأكيد الإغلاق</span>
                           </button>
                         )}
