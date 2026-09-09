@@ -250,7 +250,7 @@ function PrintContent() {
   }
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px 10px' }}>
+    <div className="print-page-container" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px 10px' }}>
       {/* Control Bar (Hidden during Print) */}
       
       {showToast && (
@@ -438,24 +438,6 @@ function PrintContent() {
           <h1 style={{ fontSize: '18pt', fontWeight: 'bold', margin: '0 0 6px 0', textDecoration: 'underline' }}>
             تقرير حصر السلبيات المتكررة والمشتركة بين مستشفيات المحافظة
           </h1>
-          <h2 style={{ fontSize: '13pt', fontWeight: 'normal', margin: 0, color: '#333' }}>
-            {filter === 'active'
-              ? `(حصر السلبيات النشطة الجاري متابعتها - إجمالي ${totalFilteredCount} ملاحظة مشتركة)`
-              : `(الحصر الشامل للسلبيات وموقف التلافي - إجمالي ${totalFilteredCount} ملاحظة)`}
-          </h2>
-        </div>
-
-        {/* Formal Opening Paragraph */}
-        <div style={{ fontSize: '13pt', marginBottom: 20, textAlign: 'justify' }}>
-          <p style={{ fontWeight: 'bold', margin: '0 0 8px 0' }}>
-            السيد الأستاذ الدكتور / وكيل وزارة الصحة بكفر الشيخ
-          </p>
-          <p style={{ margin: '0 0 10px 0', textIndent: '20px' }}>
-            تحية طيبة وبعد ،،،
-          </p>
-          <p style={{ margin: '0 0 15px 0', textIndent: '30px' }}>
-            بناءً على نتائج أعمال لجان المرور الميداني المستمر على المستشفيات التابعة للمديرية للتحقق من تطبيق معايير الجودة وسلامة المرضى، نتشرف بأن نعرض على سيادتكم فيما يلي حصر وموقف السلبيات المتكررة التي تم رصدها في أكثر من منشأة صحية على مستوى المحافظة مصنفة بحسب الأقسام الطبية، وذلك لسرعة اتخاذ اللازم وتوجيه إدارات المستشفيات بتلافيها:
-          </p>
         </div>
 
         {/* Department Sections & Formal Word Tables */}
@@ -572,8 +554,32 @@ function PrintContent() {
         </div>
       </div>
 
-      {/* Global Print Stylesheet for true A4 Word look */}
+      {/* Global Print & Responsive Stylesheet */}
       <style jsx global>{`
+        @media screen and (max-width: 768px) {
+          .print-page-container {
+            padding: 10px 6px !important;
+          }
+          .print-paper {
+            padding: 16px 12px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+            overflow-x: auto !important;
+          }
+          .print-paper table {
+            min-width: 580px !important;
+          }
+          .print-paper .header-table {
+            min-width: 100% !important;
+          }
+          .print-paper .footer-table {
+            min-width: 100% !important;
+          }
+          .print-paper h1 {
+            font-size: 14pt !important;
+            margin-bottom: 12px !important;
+          }
+        }
         @media print {
           body {
             background: #ffffff !important;
