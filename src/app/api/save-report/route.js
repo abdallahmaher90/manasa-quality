@@ -96,7 +96,6 @@ export async function POST(request) {
         raw_text: rawText,
         file_name: fileName,
         file_url: fileUrl,
-        file_hash: fileHash,
         signatory_1_name: parsedData.signatory_1_name,
         signatory_1_title: parsedData.signatory_1_title,
         signatory_2_name: parsedData.signatory_2_name,

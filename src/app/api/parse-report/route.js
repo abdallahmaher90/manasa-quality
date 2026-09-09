@@ -41,18 +41,7 @@ export async function POST(request) {
       return Response.json({ error: 'النص قصير جداً أو فارغ' }, { status: 400 })
     }
 
-    // Check if this exact file was already uploaded
-    if (fileHash) {
-      const { data: existingHash } = await supabase
-        .from('reports')
-        .select('id')
-        .eq('file_hash', fileHash)
-        .maybeSingle()
-      
-      if (existingHash) {
-        return Response.json({ error: 'تم رفع هذا الملف مسبقاً في النظام. يرجى التحقق من الأرشيف.' }, { status: 409 })
-      }
-    }
+    // Note: file_hash column is not present in reports schema; duplicate detection is enforced via hospital_id + inspection_date below
 
     const result = await parseReport(text)
 
