@@ -1513,22 +1513,23 @@ tbody tr {
   .findings-mobile-cards {
     display: flex !important;
     flex-direction: column;
-    gap: 6px;
-    width: 100%;
-    max-width: 100%;
+    gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     overflow-x: hidden;
-    padding: 0;
-    margin: 0;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .mobile-finding-card {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-wrap: break-word;
-    word-break: break-word;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
     min-height: 0 !important;
     height: auto !important;
+    margin: 0 0 6px 0 !important;
   }
 
   /* Table to Card layout fallback for legacy mobile-table-card */

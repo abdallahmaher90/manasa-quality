@@ -789,48 +789,52 @@ export default function DepartmentPage() {
                     background: isResolved ? 'rgba(16, 185, 129, 0.03)' : 'var(--bg-card)',
                     border: '1px solid var(--border)',
                     borderRight: isResolved
-                      ? '4px solid var(--success)'
+                      ? '3px solid var(--success)'
                       : isPendingHosp
-                      ? '4px solid var(--warning)'
+                      ? '3px solid var(--warning)'
                       : isRecurring
-                      ? '4px solid var(--danger)'
-                      : '4px solid var(--border-accent)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '10px 12px',
+                      ? '3px solid var(--danger)'
+                      : '3px solid var(--border-accent)',
+                    borderRadius: 8,
+                    padding: '8px 10px',
+                    margin: 0,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 6,
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                    boxShadow: 'none',
                   }}
                 >
-                  {/* 1. Header: [رقم السلبية] ... [التاريخ] */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                  {/* 1. Header row: [التاريخ] (left) ... [#1] (right in RTL) */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0, padding: 0 }}>
                     <span
                       style={{
-                        fontSize: 11.5,
+                        fontSize: 11,
                         fontWeight: 800,
                         color: 'var(--text-muted)',
                         background: 'var(--bg-secondary)',
-                        padding: '1px 6px',
+                        padding: '1px 5px',
                         borderRadius: 4,
                         border: '1px solid var(--border)',
+                        lineHeight: 1.2,
                       }}
                     >
                       #{startIndex + idx + 1}
                     </span>
 
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', lineHeight: 1.2 }}>
                       📅 {formatDate(finding.first_seen_date)}
-                    </div>
+                    </span>
                   </div>
 
-                  {/* 2. ORIGINAL TEXT: Primary & most prominent content */}
+                  {/* 2. ORIGINAL TEXT: Directly below header */}
                   <div
                     style={{
-                      fontSize: 14,
+                      fontSize: 13.5,
                       fontWeight: 700,
                       color: 'var(--text-primary)',
-                      lineHeight: 1.5,
+                      lineHeight: 1.45,
+                      margin: 0,
+                      padding: 0,
                       wordBreak: 'break-word',
                       overflowWrap: 'break-word',
                     }}
@@ -846,78 +850,76 @@ export default function DepartmentPage() {
                     <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
                   )}
 
-                  {/* 3. META ROW: [الحالة] [درجة الخطورة] + [🔁 متكررة ×N] [الظهور رقم X] */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-                      {/* Status */}
+                  {/* 3. METADATA ROW: [الحالة] [الخطورة] [🔁 متكررة ×N عند الحاجة] in one compact row */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
+                    {/* Status */}
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        padding: '2px 6px',
+                        background: 'var(--bg-primary)',
+                        borderRadius: 100,
+                        border: '1px solid var(--border)',
+                        color: STATUS_CONFIG[finding.status]?.color,
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {STATUS_CONFIG[finding.status]?.label}
+                    </span>
+
+                    {/* Priority */}
+                    {finding.priority && PRIORITY_CONFIG[finding.priority] && (
                       <span
+                        className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
+                        style={{ fontSize: 10, padding: '2px 6px', lineHeight: 1.2 }}
+                      >
+                        {PRIORITY_CONFIG[finding.priority].label}
+                      </span>
+                    )}
+
+                    {/* Recurrence Badge (only if truly recurring) */}
+                    {finding.totalOccurrences > 1 && !finding.isPendingReview && (
+                      <span
+                        className="badge badge-repeat"
                         style={{
+                          fontSize: 10,
+                          padding: '2px 6px',
+                          fontWeight: 700,
                           display: 'inline-flex',
                           alignItems: 'center',
-                          fontSize: 11,
-                          fontWeight: 700,
-                          padding: '2px 7px',
-                          background: 'var(--bg-primary)',
-                          borderRadius: 100,
-                          border: '1px solid var(--border)',
-                          color: STATUS_CONFIG[finding.status]?.color,
+                          gap: 2,
+                          lineHeight: 1.2,
                         }}
+                        title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}
                       >
-                        {STATUS_CONFIG[finding.status]?.label}
-                      </span>
-
-                      {/* Priority */}
-                      {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                        <span
-                          className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
-                          style={{ fontSize: 10.5, padding: '2px 6px' }}
-                        >
-                          {PRIORITY_CONFIG[finding.priority].label}
-                        </span>
-                      )}
-
-                      {finding.isPendingReview && (
-                        <span className="badge badge-warning" style={{ fontSize: 10, padding: '2px 5px' }}>
-                          ⏳ قيد المراجعة
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Recurrence Badge & Ordinal */}
-                    {finding.totalOccurrences > 1 && !finding.isPendingReview && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span
-                          className="badge badge-repeat"
-                          style={{
-                            fontSize: 10.5,
-                            padding: '2px 6px',
-                            fontWeight: 700,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 3,
-                          }}
-                          title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}
-                        >
-                          🔁 متكررة ×{finding.totalOccurrences}
-                        </span>
+                        🔁 متكررة ×{finding.totalOccurrences}
                         {finding.repeat_count > 1 && (
-                          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                          <span style={{ fontSize: 9.5, opacity: 0.85, marginRight: 2 }}>
                             (الظهور {finding.repeat_count})
                           </span>
                         )}
-                      </div>
+                      </span>
+                    )}
+
+                    {finding.isPendingReview && (
+                      <span className="badge badge-warning" style={{ fontSize: 10, padding: '2px 5px', lineHeight: 1.2 }}>
+                        ⏳ قيد المراجعة
+                      </span>
                     )}
                   </div>
 
-                  {/* 4. DIRECT ACTION BUTTON: Placed immediately at the bottom with no gap */}
-                  <div className="no-print" style={{ marginTop: 2, paddingTop: 4, borderTop: '1px solid var(--border-light)' }}>
-                    <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                  {/* 4. DIRECT ACTION BUTTON: Placed directly below metadata with no whitespace */}
+                  <div className="no-print" style={{ margin: 0, paddingTop: 4, borderTop: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-start', flexWrap: 'wrap', alignItems: 'center' }}>
                       {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
                         <button
                           type="button"
                           className="btn btn-success btn-sm"
                           disabled={updatingId === finding.id}
-                          style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                          style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
                           onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
                         >
                           <CheckIcon className="w-3.5 h-3.5" />
@@ -926,12 +928,12 @@ export default function DepartmentPage() {
                       )}
 
                       {isDirectorate && finding.status === 'resolved_by_hospital' && (
-                        <div style={{ display: 'flex', gap: 6 }}>
+                        <div style={{ display: 'flex', gap: 5 }}>
                           <button
                             type="button"
                             className="btn btn-success btn-sm"
                             disabled={updatingId === finding.id}
-                            style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                            style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
                             onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
                           >
                             <CheckIcon className="w-3.5 h-3.5" />
@@ -941,7 +943,7 @@ export default function DepartmentPage() {
                             type="button"
                             className="btn btn-outline btn-sm"
                             disabled={updatingId === finding.id}
-                            style={{ padding: '5px 10px', fontSize: 11.5, borderColor: 'var(--danger)', color: 'var(--danger)', borderRadius: 6 }}
+                            style={{ padding: '4px 8px', fontSize: 11.5, borderColor: 'var(--danger)', color: 'var(--danger)', borderRadius: 5 }}
                             onClick={() => handleRejectHospital(finding.id)}
                           >
                             <XMarkIcon className="w-3.5 h-3.5" />
@@ -955,7 +957,7 @@ export default function DepartmentPage() {
                           type="button"
                           className="btn btn-primary btn-sm"
                           disabled={updatingId === finding.id}
-                          style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                          style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
                           onClick={() => {
                             setNote(finding.hospital_resolution_note || '')
                             setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
@@ -967,7 +969,7 @@ export default function DepartmentPage() {
                       )}
 
                       {finding.status === 'resolved_confirmed' && (
-                        <span style={{ fontSize: 11.5, color: 'var(--success)', fontWeight: 700, padding: '2px 0' }}>
+                        <span style={{ fontSize: 11, color: 'var(--success)', fontWeight: 700 }}>
                           ✅ تم التلافي والاعتماد
                         </span>
                       )}
