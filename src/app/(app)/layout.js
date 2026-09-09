@@ -129,7 +129,10 @@ export default function AppLayout({ children }) {
             <div>
               <div className="header-title">{getPageTitle()}</div>
               <div className="header-breadcrumb">
-                <span><HomeIcon className="w-4 h-4" /> منصة الجودة</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <HomeIcon style={{ width: 14, height: 14, flexShrink: 0 }} />
+                  <span>منصة الجودة</span>
+                </span>
                 <span>›</span>
                 <span>{getPageTitle()}</span>
               </div>
