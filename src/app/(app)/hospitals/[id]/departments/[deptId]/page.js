@@ -4,6 +4,50 @@ import { supabase } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useToast } from '@/components/Toast'
+import {
+  EllipsisVerticalIcon,
+  CheckIcon,
+  XMarkIcon,
+  ArrowPathIcon,
+  ChatBubbleIcon,
+  ExclamationCircleIcon,
+} from '@/components/Icons'
+
+function CollapsibleNote({ label, text, type = 'warning' }) {
+  const [expanded, setExpanded] = useState(false)
+  if (!text) return null
+  const isLong = text.length > 90
+  const displayText = !isLong || expanded ? text : `${text.slice(0, 90)}...`
+
+  return (
+    <div
+      className={`resolution-note-box alert ${type === 'success' ? 'alert-success' : 'alert-warning'}`}
+      style={{ padding: '6px 10px', fontSize: 12, marginTop: 8 }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+        <span>{type === 'success' ? '✅' : '💬'}</span>
+        <div style={{ flex: 1 }}>
+          <strong>{label}: </strong>
+          <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{displayText}</span>
+          {isLong && (
+            <div>
+              <button
+                type="button"
+                className="resolution-note-toggle"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setExpanded((prev) => !prev)
+                }}
+              >
+                {expanded ? 'عرض أقل ▴' : 'عرض المزيد ▾'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const STATUS_CONFIG = {
   open: { label: 'مفتوحة', color: 'var(--danger-light)', bgClass: 'open' },
@@ -52,6 +96,20 @@ export default function DepartmentPage() {
   const [sortDirection, setSortDirection] = useState('desc') // 'asc' | 'desc'
   const [currentPage, setCurrentPage] = useState(1)
   const PAGE_SIZE = 20
+
+  // Phase 2 Step 3: Action Menu & Confirmation Modal State
+  const [openMenuId, setOpenMenuId] = useState(null)
+  const [confirmModal, setConfirmModal] = useState(null) // { title, message, actionText, actionType, onConfirm }
+
+  useEffect(() => {
+    const handleDocumentClick = (e) => {
+      if (!e.target.closest('.action-menu-container')) {
+        setOpenMenuId(null)
+      }
+    }
+    document.addEventListener('click', handleDocumentClick)
+    return () => document.removeEventListener('click', handleDocumentClick)
+  }, [])
 
   useEffect(() => {
     fetchData()
@@ -153,6 +211,26 @@ export default function DepartmentPage() {
   }
 
   const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
+
+  const handleMarkRecurring = (findingId) => {
+    setConfirmModal({
+      title: 'تسجيل السلبية كمتكررة',
+      message: 'هل أنت متأكد من تسجيل هذه السلبية كمتكررة؟ سيتم تحديث حالتها إلى متكررة ومطالبة المستشفى باتخاذ إجراء تصحيحي عاجل.',
+      actionText: 'تسجيل كمتكررة',
+      actionType: 'warning',
+      onConfirm: () => updateFinding(findingId, 'mark_recurring')
+    })
+  }
+
+  const handleRejectHospital = (findingId) => {
+    setConfirmModal({
+      title: 'رفض إفادة المستشفى وإعادة السلبية',
+      message: 'هل أنت متأكد من رفض إفادة المستشفى؟ ستتم إعادة فتح السلبية وطلب إفادة تصحيحية جديدة.',
+      actionText: 'رفض وإعادة الفتح',
+      actionType: 'danger',
+      onConfirm: () => updateFinding(findingId, 'reject_hospital')
+    })
+  }
 
   // Phase 2 Step 2: Handlers
   const handleFilterChange = (key) => {
@@ -584,14 +662,10 @@ export default function DepartmentPage() {
                     )}
 
                     {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
-                      <div className="alert alert-warning" style={{ padding: '6px 10px', fontSize: 12, marginTop: 8 }}>
-                        💬 <strong>المستشفى:</strong> {finding.hospital_resolution_note}
-                      </div>
+                      <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
                     )}
                     {finding.status === 'resolved_confirmed' && finding.resolution_note && (
-                      <div className="alert alert-success" style={{ padding: '6px 10px', fontSize: 12, marginTop: 8 }}>
-                        ✅ <strong>المديرية:</strong> {finding.resolution_note}
-                      </div>
+                      <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
                     )}
                   </td>
                   <td style={{ padding: '10px 12px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
@@ -613,42 +687,104 @@ export default function DepartmentPage() {
                     </div>
                   </td>
                   <td className="no-print" style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'left' }}>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'nowrap', alignItems: 'center' }}>
-                      {/* Directorate Actions */}
-                      {isDirectorate && finding.status === 'open' && (
-                        <button className="btn btn-success btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}>
-                          ✅ تأكيد (إغلاق)
-                        </button>
-                      )}
-                      {isDirectorate && finding.status === 'recurring' && (
-                        <button className="btn btn-success btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}>
-                          ✅ تأكيد (إغلاق)
-                        </button>
-                      )}
-                      {isDirectorate && finding.status === 'resolved_by_hospital' && (
-                        <>
-                          <button className="btn btn-success btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}>
-                            ✅ قبول (إغلاق)
-                          </button>
-                          <button className="btn btn-danger btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => setNoteModal({ findingId: finding.id, action: 'reject_hospital' })}>
-                            ❌ رفض وإعادة
-                          </button>
-                        </>
-                      )}
-                      {isDirectorate && finding.status !== 'recurring' && finding.status !== 'resolved_confirmed' && (
-                        <button className="btn btn-warning btn-sm" style={{ background: 'var(--warning)', color: '#fff', padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => handleMarkRecurring(finding.id)}>
-                          🔁 تسجيل كمتكررة
-                        </button>
-                      )}
+                    {/* Action Menu (Phase 2 Step 3) */}
+                    <div className="action-menu-container">
+                      <button
+                        type="button"
+                        id={`action-menu-btn-${finding.id}`}
+                        className={`action-menu-trigger ${openMenuId === finding.id ? 'active' : ''}`}
+                        disabled={updatingId === finding.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setOpenMenuId(openMenuId === finding.id ? null : finding.id)
+                        }}
+                      >
+                        <EllipsisVerticalIcon />
+                        <span>الإجراءات</span>
+                      </button>
 
-                      {/* Hospital Actions */}
-                      {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
-                        <button className="btn btn-primary btn-sm" style={{ padding: '4px 8px', fontSize: 11 }} disabled={updatingId === finding.id} onClick={() => {
-                          setNote(finding.hospital_resolution_note || '')
-                          setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
-                        }}>
-                          {finding.status === 'resolved_by_hospital' ? '💬 تعديل الإفادة' : '💬 إفادة بتلافي السلبية'}
-                        </button>
+                      {openMenuId === finding.id && (
+                        <div className="action-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                          {/* Directorate Actions */}
+                          {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
+                            <button
+                              type="button"
+                              className="action-menu-item success"
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })
+                              }}
+                            >
+                              <CheckIcon />
+                              <span>تأكيد (إغلاق)</span>
+                            </button>
+                          )}
+
+                          {isDirectorate && finding.status === 'resolved_by_hospital' && (
+                            <>
+                              <button
+                                type="button"
+                                className="action-menu-item success"
+                                onClick={() => {
+                                  setOpenMenuId(null)
+                                  setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })
+                                }}
+                              >
+                                <CheckIcon />
+                                <span>قبول (إغلاق)</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className="action-menu-item danger"
+                                onClick={() => {
+                                  setOpenMenuId(null)
+                                  handleRejectHospital(finding.id)
+                                }}
+                              >
+                                <XMarkIcon />
+                                <span>رفض وإعادة</span>
+                              </button>
+                            </>
+                          )}
+
+                          {isDirectorate && finding.status !== 'recurring' && finding.status !== 'resolved_confirmed' && (
+                            <button
+                              type="button"
+                              className="action-menu-item warning"
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                handleMarkRecurring(finding.id)
+                              }}
+                            >
+                              <ArrowPathIcon />
+                              <span>تسجيل كمتكررة</span>
+                            </button>
+                          )}
+
+                          {/* Hospital Actions */}
+                          {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
+                            <button
+                              type="button"
+                              className="action-menu-item primary"
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                setNote(finding.hospital_resolution_note || '')
+                                setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                              }}
+                            >
+                              <ChatBubbleIcon />
+                              <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة بتلافي السلبية'}</span>
+                            </button>
+                          )}
+
+                          {/* Completed info */}
+                          {finding.status === 'resolved_confirmed' && (
+                            <div style={{ padding: '6px 10px', fontSize: 11, color: 'var(--text-muted)' }}>
+                              تم الإغلاق والتلافي
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </td>
@@ -763,6 +899,62 @@ export default function DepartmentPage() {
                 ) : (
                   noteModal.action === 'resolve_directorate' ? '✅ تأكيد التلافي' : '🔔 إبلاغ'
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal (Phase 2 Step 3) */}
+      {confirmModal && (
+        <div className="modal-overlay" onClick={() => setConfirmModal(null)}>
+          <div className="confirm-modal-box" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: confirmModal.actionType === 'danger' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  color: confirmModal.actionType === 'danger' ? 'var(--danger-light)' : 'var(--warning-light)',
+                  flexShrink: 0
+                }}
+              >
+                <ExclamationCircleIcon className="w-5 h-5" />
+              </div>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {confirmModal.title}
+              </h3>
+            </div>
+
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: '0 0 20px 0' }}>
+              {confirmModal.message}
+            </p>
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                id="cancel-confirm-dialog-btn"
+                className="btn btn-ghost"
+                onClick={() => setConfirmModal(null)}
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                id="submit-confirm-dialog-btn"
+                className={`btn ${confirmModal.actionType === 'danger' ? 'btn-danger' : 'btn-warning'}`}
+                style={confirmModal.actionType === 'warning' ? { background: 'var(--warning)', color: '#fff' } : {}}
+                onClick={async () => {
+                  const action = confirmModal.onConfirm
+                  setConfirmModal(null)
+                  if (action) await action()
+                }}
+              >
+                {confirmModal.actionText}
               </button>
             </div>
           </div>

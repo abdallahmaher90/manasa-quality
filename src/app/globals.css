@@ -105,7 +105,7 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(30, 64, 175, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 0%, rgba(30, 64, 175, 0.05) 0%, transparent 50%);
   overflow-x: hidden;
 }
 
@@ -1595,4 +1595,150 @@ tbody tr {
   from { transform: translate(-50%, -100%); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
 }
+
+/* =====================================================
+   ACTION MENU & DROPDOWN (PHASE 2 STEP 3)
+   ===================================================== */
+.action-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.action-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.action-menu-trigger:hover,
+.action-menu-trigger.active {
+  background: var(--bg-secondary);
+  border-color: var(--border-accent);
+}
+
+.action-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 100;
+  min-width: 170px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fadeIn 0.15s ease;
+}
+
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: right;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+
+.action-menu-item:hover {
+  background: var(--bg-secondary);
+}
+
+.action-menu-item.success {
+  color: var(--success-light);
+}
+.action-menu-item.success:hover {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.action-menu-item.danger {
+  color: var(--danger-light);
+}
+.action-menu-item.danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.action-menu-item.warning {
+  color: var(--warning-light);
+}
+.action-menu-item.warning:hover {
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.action-menu-item.primary {
+  color: var(--accent-light);
+}
+.action-menu-item.primary:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+/* Resolution Note Collapsible */
+.resolution-note-box {
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+  margin-top: 6px;
+  line-height: 1.5;
+  transition: max-height 0.25s ease;
+}
+
+.resolution-note-toggle {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 4px;
+  margin-top: 4px;
+  cursor: pointer;
+  opacity: 0.85;
+  text-decoration: underline;
+}
+.resolution-note-toggle:hover {
+  opacity: 1;
+}
+
+/* Confirmation Dialog */
+.confirm-modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 440px;
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-lg), 0 0 50px rgba(0,0,0,0.3);
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 640px) {
+  .action-dropdown-menu {
+    left: auto;
+    right: 0;
+    min-width: 190px;
+  }
+}
+
 
