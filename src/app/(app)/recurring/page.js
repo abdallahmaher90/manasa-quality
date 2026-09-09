@@ -532,13 +532,6 @@ export default function RecurringPage() {
                             <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5 }}>
                               {f.text}
                             </div>
-                            {f.canonicalClassification && f.canonicalClassification !== f.text && (
-                              <div style={{ marginTop: 4 }}>
-                                <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px', background: 'var(--bg-secondary)' }}>
-                                  🏷️ التصنيف: {f.canonicalClassification}
-                                </span>
-                              </div>
-                            )}
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
@@ -724,13 +717,6 @@ export default function RecurringPage() {
               <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginTop: 2, lineHeight: 1.5 }}>
                 {selectedModalData.findingText}
               </div>
-              {selectedModalData.canonicalText && selectedModalData.canonicalText !== selectedModalData.findingText && (
-                <div style={{ marginTop: 6 }}>
-                  <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px' }}>
-                    🏷️ التصنيف الإداري: {selectedModalData.canonicalText}
-                  </span>
-                </div>
-              )}
             </div>
 
             <div>

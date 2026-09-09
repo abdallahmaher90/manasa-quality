@@ -580,6 +580,15 @@ body {
 /* =====================================================
    FINDING CARDS (السلبيات)
    ===================================================== */
+.findings-desktop-table {
+  display: block;
+  width: 100%;
+}
+
+.findings-mobile-cards {
+  display: none;
+}
+
 .finding-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1496,7 +1505,33 @@ tbody tr {
     flex-wrap: wrap;
   }
 
-  /* Table to Card layout for mobile */
+  /* Findings Responsive Switching: Show mobile cards on <= 768px, hide desktop table */
+  .findings-desktop-table {
+    display: none !important;
+  }
+
+  .findings-mobile-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  .mobile-finding-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  /* Table to Card layout fallback for legacy mobile-table-card */
   .mobile-table-card table, 
   .mobile-table-card thead, 
   .mobile-table-card tbody, 

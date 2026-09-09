@@ -113,7 +113,7 @@ export default function CrossReportPage() {
     results.forEach(r => {
       if (!r.departments) return // Safe-guard against old state during hot-reload
       // Use a Set to only count a finding once per hospital, even if repeated within the same hospital
-      const allTextsInHospital = r.departments.flatMap(d => d.filteredFindings.map(f => (f.canonical_text || f.original_text).trim().replace(/^\[.*?\]\s*/, '')))
+      const allTextsInHospital = r.departments.flatMap(d => d.filteredFindings.map(f => (f.original_text || f.canonical_text).trim().replace(/^\[.*?\]\s*/, '')))
       const uniqueTextsInHospital = new Set(allTextsInHospital)
       uniqueTextsInHospital.forEach(text => {
         findingTextFrequencies[text] = (findingTextFrequencies[text] || 0) + 1
@@ -230,7 +230,7 @@ export default function CrossReportPage() {
                   </h4>
                   <ol style={{ paddingRight: '20px', margin: 0, listStylePosition: 'outside' }}>
                     {dept.filteredFindings.map((f) => {
-                      const text = (f.canonical_text || f.original_text).trim()
+                      const text = (f.original_text || f.canonical_text).trim()
                       const strippedText = text.replace(/^\[.*?\]\s*/, '')
                       const isCrossHospitalCommon = findingTextFrequencies[strippedText] > 1
                       const isHospitalRecurring = f.status === 'recurring' || f.repeat_count > 1

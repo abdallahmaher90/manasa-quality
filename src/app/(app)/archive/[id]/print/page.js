@@ -128,7 +128,7 @@ export default function PrintReportPage() {
                       {dept.newFindings.map((f, i) => (
                         <tr key={f.id}>
                           <td style={{ textAlign: 'center' }}>{i + 1}</td>
-                          <td>{f.canonical_text || f.original_text}</td>
+                          <td>{f.original_text || f.canonical_text}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -152,7 +152,7 @@ export default function PrintReportPage() {
                         <tr key={f.id}>
                           <td style={{ textAlign: 'center' }}>{i + 1}</td>
                           <td>
-                            {f.canonical_text || f.original_text}
+                            {f.original_text || f.canonical_text}
                             {f.first_seen_date && (
                               <div style={{ fontSize: '11px', color: '#666', marginTop: 4 }}>
                                 أول ظهور: {f.first_seen_date}

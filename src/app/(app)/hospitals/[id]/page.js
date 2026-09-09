@@ -624,7 +624,7 @@ export default function HospitalPage() {
             {criticalFindings.map(finding => (
               <div key={finding.id} className={`finding-card ${finding.status}`} style={{ margin: 0 }}>
                 <div className="finding-header">
-                  <div className="finding-text">{finding.canonical_text || finding.original_text}</div>
+                  <div className="finding-text">{finding.original_text || finding.canonical_text}</div>
                 </div>
                 <div className="finding-meta">
                   <span className="badge badge-neutral">📍 {finding.departments?.name}</span>

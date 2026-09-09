@@ -634,7 +634,8 @@ export default function DepartmentPage() {
         </div>
       ) : (
         <>
-          <div className="mobile-table-card" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+          {/* DESKTOP VIEW: Table (Hidden on Mobile via CSS) */}
+          <div className="findings-desktop-table" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
@@ -662,25 +663,19 @@ export default function DepartmentPage() {
                         ) : null}
                       </div>
                     </td>
-                    <td style={{ padding: '10px 12px', verticalAlign: 'top' }}>
+                    <td style={{ padding: '8px 10px', verticalAlign: 'top' }}>
                       {/* PRIMARY TITLE: report_findings.original_text (Immutable Truth) */}
                       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5 }}>
                         {finding.original_text}
                       </div>
 
-                      {/* SECONDARY METADATA: Canonical / Administrative Classification */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', marginTop: 6 }}>
-                        {finding.canonical_text && finding.canonical_text !== finding.original_text && (
-                          <span className="badge badge-neutral" style={{ fontSize: 11, padding: '2px 8px', background: 'var(--bg-secondary)' }}>
-                            🏷️ التصنيف: {finding.canonical_text}
-                          </span>
-                        )}
-                        {finding.repeat_count > 1 && (
+                      {finding.repeat_count > 1 && (
+                        <div style={{ marginTop: 4 }}>
                           <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                             (الظهور رقم {finding.repeat_count})
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
                       {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
                         <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
@@ -689,25 +684,25 @@ export default function DepartmentPage() {
                         <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
                       )}
                     </td>
-                    <td style={{ padding: '10px 12px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
+                    <td style={{ padding: '8px 10px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
                       <div>{formatDate(finding.first_seen_date)}</div>
                       {finding.totalOccurrences > 1 && (
-                        <div style={{ marginTop: 4, color: 'var(--warning-dark)' }}>🔁 {formatDate(finding.last_seen_date)}</div>
+                        <div style={{ marginTop: 2, color: 'var(--warning-dark)', fontSize: 11 }}>🔁 {formatDate(finding.last_seen_date)}</div>
                       )}
                     </td>
-                    <td style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 12, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '4px 10px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
+                    <td style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'center' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
                           {STATUS_CONFIG[finding.status]?.label}
                         </span>
                         {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                          <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 11, padding: '2px 8px' }}>
+                          <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 10.5, padding: '2px 7px' }}>
                             {PRIORITY_CONFIG[finding.priority].label}
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="no-print" style={{ padding: '10px 12px', verticalAlign: 'top', textAlign: 'left' }}>
+                    <td className="no-print" style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'left' }}>
                       {/* Direct Action Buttons - No Dropdown Menu */}
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                         {/* Directorate Actions */}
@@ -740,7 +735,7 @@ export default function DepartmentPage() {
                               type="button"
                               className="btn btn-outline btn-sm"
                               disabled={updatingId === finding.id}
-                              style={{ padding: '5px 10px', fontSize: 12, borderColor: 'var(--danger)', color: 'var(--danger)' }}
+                              style={{ padding: '5px 8px', fontSize: 12, borderColor: 'var(--danger)', color: 'var(--danger)' }}
                               onClick={() => handleRejectHospital(finding.id)}
                             >
                               <XMarkIcon className="w-3.5 h-3.5" />
@@ -762,13 +757,13 @@ export default function DepartmentPage() {
                             }}
                           >
                             <ChatBubbleIcon className="w-3.5 h-3.5" />
-                            <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة بتلافي السلبية'}</span>
+                            <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة'}</span>
                           </button>
                         )}
 
                         {finding.status === 'resolved_confirmed' && (
                           <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>
-                            ✅ تم التلافي
+                            ✅ تم الاعتماد
                           </span>
                         )}
                       </div>
@@ -776,8 +771,212 @@ export default function DepartmentPage() {
                   </tr>
                 ))}
               </tbody>
-          </table>
-        </div>
+            </table>
+          </div>
+
+          {/* MOBILE VIEW: Dedicated Native Cards (Hidden on Desktop via CSS) */}
+          <div className="findings-mobile-cards">
+            {paginatedFindings.map((finding, idx) => {
+              const isResolved = finding.status === 'resolved_confirmed'
+              const isPendingHosp = finding.status === 'resolved_by_hospital'
+              const isRecurring = finding.status === 'recurring'
+
+              return (
+                <div
+                  key={finding.id}
+                  className="mobile-finding-card"
+                  style={{
+                    background: isResolved ? 'rgba(16, 185, 129, 0.03)' : 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderRight: isResolved
+                      ? '4px solid var(--success)'
+                      : isPendingHosp
+                      ? '4px solid var(--warning)'
+                      : isRecurring
+                      ? '4px solid var(--danger)'
+                      : '4px solid var(--border-accent)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '10px 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                  }}
+                >
+                  {/* 1. Header: [رقم السلبية] ... [التاريخ] */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                    <span
+                      style={{
+                        fontSize: 11.5,
+                        fontWeight: 800,
+                        color: 'var(--text-muted)',
+                        background: 'var(--bg-secondary)',
+                        padding: '1px 6px',
+                        borderRadius: 4,
+                        border: '1px solid var(--border)',
+                      }}
+                    >
+                      #{startIndex + idx + 1}
+                    </span>
+
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                      📅 {formatDate(finding.first_seen_date)}
+                    </div>
+                  </div>
+
+                  {/* 2. ORIGINAL TEXT: Primary & most prominent content */}
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.5,
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                    }}
+                  >
+                    {finding.original_text}
+                  </div>
+
+                  {/* Notes if applicable */}
+                  {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
+                    <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
+                  )}
+                  {finding.status === 'resolved_confirmed' && finding.resolution_note && (
+                    <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
+                  )}
+
+                  {/* 3. META ROW: [الحالة] [درجة الخطورة] + [🔁 متكررة ×N] [الظهور رقم X] */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                      {/* Status */}
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: '2px 7px',
+                          background: 'var(--bg-primary)',
+                          borderRadius: 100,
+                          border: '1px solid var(--border)',
+                          color: STATUS_CONFIG[finding.status]?.color,
+                        }}
+                      >
+                        {STATUS_CONFIG[finding.status]?.label}
+                      </span>
+
+                      {/* Priority */}
+                      {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                        <span
+                          className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
+                          style={{ fontSize: 10.5, padding: '2px 6px' }}
+                        >
+                          {PRIORITY_CONFIG[finding.priority].label}
+                        </span>
+                      )}
+
+                      {finding.isPendingReview && (
+                        <span className="badge badge-warning" style={{ fontSize: 10, padding: '2px 5px' }}>
+                          ⏳ قيد المراجعة
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Recurrence Badge & Ordinal */}
+                    {finding.totalOccurrences > 1 && !finding.isPendingReview && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span
+                          className="badge badge-repeat"
+                          style={{
+                            fontSize: 10.5,
+                            padding: '2px 6px',
+                            fontWeight: 700,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 3,
+                          }}
+                          title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}
+                        >
+                          🔁 متكررة ×{finding.totalOccurrences}
+                        </span>
+                        {finding.repeat_count > 1 && (
+                          <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                            (الظهور {finding.repeat_count})
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 4. DIRECT ACTION BUTTON: Placed immediately at the bottom with no gap */}
+                  <div className="no-print" style={{ marginTop: 2, paddingTop: 4, borderTop: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                      {isDirectorate && (finding.status === 'open' || finding.status === 'recurring') && (
+                        <button
+                          type="button"
+                          className="btn btn-success btn-sm"
+                          disabled={updatingId === finding.id}
+                          style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                          onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                        >
+                          <CheckIcon className="w-3.5 h-3.5" />
+                          <span>تأكيد الإغلاق</span>
+                        </button>
+                      )}
+
+                      {isDirectorate && finding.status === 'resolved_by_hospital' && (
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button
+                            type="button"
+                            className="btn btn-success btn-sm"
+                            disabled={updatingId === finding.id}
+                            style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                            onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                          >
+                            <CheckIcon className="w-3.5 h-3.5" />
+                            <span>قبول</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-outline btn-sm"
+                            disabled={updatingId === finding.id}
+                            style={{ padding: '5px 10px', fontSize: 11.5, borderColor: 'var(--danger)', color: 'var(--danger)', borderRadius: 6 }}
+                            onClick={() => handleRejectHospital(finding.id)}
+                          >
+                            <XMarkIcon className="w-3.5 h-3.5" />
+                            <span>رفض</span>
+                          </button>
+                        </div>
+                      )}
+
+                      {!isDirectorate && (finding.status === 'open' || finding.status === 'recurring' || finding.status === 'resolved_by_hospital') && (
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          disabled={updatingId === finding.id}
+                          style={{ padding: '5px 12px', fontSize: 11.5, fontWeight: 700, borderRadius: 6 }}
+                          onClick={() => {
+                            setNote(finding.hospital_resolution_note || '')
+                            setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                          }}
+                        >
+                          <ChatBubbleIcon className="w-3.5 h-3.5" />
+                          <span>{finding.status === 'resolved_by_hospital' ? 'تعديل الإفادة' : 'إفادة بتلافي السلبية'}</span>
+                        </button>
+                      )}
+
+                      {finding.status === 'resolved_confirmed' && (
+                        <span style={{ fontSize: 11.5, color: 'var(--success)', fontWeight: 700, padding: '2px 0' }}>
+                          ✅ تم التلافي والاعتماد
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
 
         {/* Pagination Controls */}
         {totalPages > 1 && (

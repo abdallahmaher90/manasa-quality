@@ -114,7 +114,7 @@ export default function PrintReport() {
                   <li key={finding.id} className="print-finding-item">
                     <div className="finding-text">
                       <strong>السلبية: </strong> 
-                      {finding.canonical_text || finding.original_text}
+                      {finding.original_text || finding.canonical_text}
                       {finding.repeat_count > 1 && (
                         <span className="print-badge"> (مكررة ×{finding.repeat_count})</span>
                       )}
