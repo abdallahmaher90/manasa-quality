@@ -1,38 +1,28 @@
-import { getEmbedding } from '../lib/ai-parser.js'
+import { getEmbedding, extractSemanticIssueSignature, adjudicateFindingMatch } from '../lib/ai-parser.js'
 
-export const RECURRENCE_MATCHING_POLICY_VERSION = 'RECURRENCE_MATCHING_POLICY_V1'
+export const RECURRENCE_MATCHING_POLICY_VERSION = 'SEMANTIC_RECURRENCE_POLICY_V3'
 
 /**
- * Standard Arabic Text Normalization for Recurrence Matching
- * Preserves the original text 100% while extracting a clean key.
+ * Standard Arabic Text Normalization
  */
 export function normalizeRecurrenceKey(text) {
   if (!text) return ''
   return text
-    // 1. Remove room/unit/section prefixes like [العناية المركزة] or [الكراش كار]
     .replace(/^\[.*?\]\s*/, '')
-    // 2. Remove leading list numbers e.g. "1.", "1 -", "1)"
     .replace(/^[0-9]+[\.\-\)\s]*/, '')
-    // 3. Remove Arabic Tashkeel & Tatweel
     .replace(/[\u064B-\u065F\u0640]/g, '')
-    // 4. Normalize Alef variants
     .replace(/[أإآا]/g, 'ا')
-    // 5. Normalize Taa Marbuta and Yaa/Alef Maksura
     .replace(/ة/g, 'ه')
     .replace(/ى/g, 'ي')
-    // 6. Replace non-alphanumeric/punctuation with single space
+    .replace(/(^|\s)و(?=ال)/g, '$1')
     .replace(/[^\w\s\u0600-\u06FF]/g, ' ')
-    // 7. Squeeze multiple spaces
     .replace(/\s+/g, ' ')
     .trim()
 }
 
-/**
- * Stop words for token overlap calculations
- */
 const STOP_WORDS = new Set([
   'في', 'ف', 'من', 'على', 'علي', 'إلى', 'الي', 'عن', 'مع', 'هذا', 'هذه', 'تم', 'يتم',
-  'لا', 'غير', 'عدم', 'يوجد', 'وجود', 'بها', 'به', 'داخل', 'قسم', 'القسم',
+  'لا', 'غير', 'عدم', 'يوجد', 'وجود', 'بها', 'به', 'داخل', 'قسم', 'القسم', 'بالقسم',
   'بعض', 'كل', 'ذلك', 'أو', 'او', 'و', 'هو', 'هي', 'ما', 'عند', 'قبل', 'بعد'
 ])
 
@@ -41,267 +31,239 @@ export function getCoreTokens(text) {
   return norm.split(' ').filter(w => w.length > 2 && !STOP_WORDS.has(w))
 }
 
-/**
- * RecurrenceMatcherService
- * Unified Source of Truth for Recurrence Matching (Current Migration + Future Reports)
- */
 export class RecurrenceMatcherService {
   constructor(supabase, options = {}) {
     this.supabase = supabase
     this.policyVersion = RECURRENCE_MATCHING_POLICY_VERSION
-    this.highConfidenceThreshold = 0.92
-    this.uncertainLowerBound = 0.80
-    // Options to control embedding generation if needed
-    this.useVector = options.useVector !== undefined ? options.useVector : true
+    this.useVector = options.useVector !== undefined ? options.useVector : false
   }
 
-  /**
-   * Main matching entry point
-   */
+  async initializeGroupCache() {
+    if (!this._allGroups) {
+      const { data } = await this.supabase.from('recurrence_groups').select('id, title, normalized_key, entity, defect, domain, review_status').limit(2000)
+      this._allGroups = data || []
+    }
+  }
+
   async matchFinding(originalText, domain = 'عام') {
+    // 0. Prefetch all groups once if not cached
+    await this.initializeGroupCache()
+
     const normalizedKey = normalizeRecurrenceKey(originalText)
     if (!normalizedKey) {
-      return this._buildResult('DISTINCT', null, null, 1.0, 0, 'نص فارغ أو غير محدد', originalText, 'عام', 'سلبية فارغة', domain, 'single')
+      return this._buildResult('DISTINCT', null, null, 1.0, 0, 'نص فارغ', originalText, 'عام', 'سلبية فارغة', domain, 'single')
     }
 
-    // 1. FAST PATH: Exact Normalized Match on existing recurrence_groups
-    const { data: exactMatch } = await this.supabase
-      .from('recurrence_groups')
-      .select('id, title, entity, defect, domain, review_status')
-      .eq('normalized_key', normalizedKey)
-      .maybeSingle()
-
-    if (exactMatch) {
-      return this._buildResult(
-        'HIGH_CONFIDENCE',
-        exactMatch.id,
-        exactMatch.id,
-        1.0,
-        1.0,
-        'تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)',
-        exactMatch.title,
-        exactMatch.entity,
-        exactMatch.defect,
-        exactMatch.domain,
-        'confirmed'
-      )
+    // 1. EXTRACT ISSUE SIGNATURE
+    let signature = await extractSemanticIssueSignature(originalText)
+    if (!signature) {
+      signature = this._heuristicExtract(originalText)
     }
 
-    // 2. CANDIDATE RETRIEVAL (Lexical Distinctive Tokens)
-    let candidates = []
+    // 2. RETRIEVAL FUNNEL (8-Step)
+    const candidateMap = new Map()
+
+    // Step 1: Exact Normalized Retrieval
+    const exactMatch = this._allGroups.filter(g => g.normalized_key === normalizedKey)
+    if (exactMatch.length > 0) {
+      candidateMap.set(exactMatch[0].id, exactMatch[0])
+    }
+
     const coreToks = getCoreTokens(originalText)
-    
     if (coreToks.length >= 1) {
-      // Pick distinctive tokens (avoiding generic single words like 'نموذج' when more specific tokens exist)
+      // Step 2 & 3: Lexical & Distinctive Token Retrieval
       const specificToks = coreToks.filter(t => !['نموذج', 'سجل', 'قائمه', 'ملف', 'تقرير', 'مكان'].includes(t))
       const searchToks = specificToks.length > 0 ? specificToks.slice(0, 3) : coreToks.slice(0, 2)
       
-      const candidateMap = new Map()
       for (const tok of searchToks) {
-        const { data: textCandidates } = await this.supabase
-          .from('recurrence_groups')
-          .select('id, title, normalized_key, entity, defect, domain, review_status')
-          .ilike('normalized_key', `%${tok}%`)
-          .limit(20)
-        
-        if (textCandidates) {
-          for (const c of textCandidates) {
-            candidateMap.set(c.id, c)
+        const textCandidates = this._allGroups.filter(g => g.normalized_key && g.normalized_key.includes(tok)).slice(0, 20)
+        for (const c of textCandidates) candidateMap.set(c.id, c)
+      }
+
+      // Step 4: Semantic Embedding Retrieval (Optional based on flag)
+      if (this.useVector) {
+        const vec = await getEmbedding(originalText)
+        if (vec) {
+          const { data: vecCandidates } = await this.supabase.rpc('match_recurrence_groups', {
+            query_embedding: vec,
+            match_threshold: 0.70,
+            match_count: 5
+          })
+          if (vecCandidates) {
+             for (const c of vecCandidates) candidateMap.set(c.id, c)
           }
         }
       }
-      candidates = Array.from(candidateMap.values())
     }
 
-    // 3. STRICT SEMANTIC VALIDATION
-    if (candidates && candidates.length > 0) {
-      for (const candidate of candidates) {
-        const validation = this.validateSemanticEquivalence(originalText, candidate.title, normalizedKey, candidate.normalized_key)
-        
-        if (validation.isIdentical) {
-          return this._buildResult(
-            'HIGH_CONFIDENCE',
-            candidate.id,
-            candidate.id,
-            0.95,
-            0.95,
-            `تطابق دلالي عالي الثقة: ${validation.reason}`,
-            candidate.title,
-            candidate.entity || validation.entity,
-            candidate.defect || validation.defect,
-            candidate.domain || domain,
-            'confirmed'
-          )
-        }
+    // Step 5: Heuristic Scoring for Candidate Ranking
+    let rankedCandidates = Array.from(candidateMap.values()).map(c => {
+       const jaccard = this._calculateJaccard(originalText, c.title)
+       return { ...c, heuristicScore: Math.max(jaccard, c.similarity || 0) }
+    }).sort((a, b) => b.heuristicScore - a.heuristicScore)
 
-        if (validation.isUncertain) {
-          return this._buildResult(
-            'UNCERTAIN',
-            null,
-            candidate.id,
-            0.82,
-            0.82,
-            `اشتباه تشابه دلالي بحاجة لمراجعة الجودة: ${validation.reason}`,
-            normalizedKey,
-            validation.entity || 'كيان مشتبه',
-            validation.defect || 'عيب بحاجة لتدقيق',
-            domain,
-            'pending_review'
-          )
-        }
+    // 3. DECISION GATE - Dynamic Top-K Expansion (3 -> 5 -> 8)
+    if (rankedCandidates.length > 0) {
+      let bestCandidate = null
+      let bestValidation = { decision: 'DISTINCT', score: 0 }
+      
+      const evaluateTopK = async (k) => {
+         const candidatesToEvaluate = rankedCandidates.slice(0, k)
+         for (const candidate of candidatesToEvaluate) {
+            // Skip if already evaluated (this would be optimized in real logic, but fine for dry run)
+            if (candidate.evaluated) continue
+            
+            candidate.evaluated = true
+            const validation = await this.evaluateSemanticEquivalence(signature, candidate, originalText, candidate.title)
+            
+            if (validation.score > bestValidation.score) {
+               bestValidation = validation
+               bestCandidate = candidate
+            }
+         }
+      }
+
+      // Try Top 3
+      await evaluateTopK(3)
+      
+      // If we didn't get a HIGH_CONFIDENCE (SAME_ISSUE), expand to Top 5
+      if (bestValidation.decision !== 'SAME_ISSUE' && rankedCandidates.length > 3) {
+         await evaluateTopK(5)
+      }
+      
+      // If still uncertain/distinct and there are candidates with ok heuristic, expand to Top 8
+      if (bestValidation.decision !== 'SAME_ISSUE' && rankedCandidates.length > 5) {
+         await evaluateTopK(8)
+      }
+
+      if (bestValidation.decision === 'SAME_ISSUE' || bestValidation.decision === 'HIGH_CONFIDENCE') {
+        return this._buildResult('HIGH_CONFIDENCE', bestCandidate.id, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
+      }
+
+      if (bestValidation.decision === 'UNCERTAIN') {
+        return this._buildResult('UNCERTAIN', null, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
       }
     }
 
-    // 4. DISTINCT NEW ISSUE
-    const extracted = this._heuristicExtract(originalText)
-    return this._buildResult(
-      'DISTINCT',
-      null,
-      null,
-      1.0,
-      0,
-      'سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها',
-      normalizedKey,
-      extracted.entity,
-      extracted.defect,
-      domain,
-      'single'
-    )
+    return this._buildResult('DISTINCT', null, null, 1.0, 0, 'Decision Gate: DISTINCT (No valid candidates)', normalizedKey, signature.entity, signature.defect, domain, 'single', signature)
   }
 
-  /**
-   * Deterministic semantic equivalence validator between two findings
-   */
-  validateSemanticEquivalence(textA, textB, normA, normB) {
-    const na = normA || normalizeRecurrenceKey(textA)
-    const nb = normB || normalizeRecurrenceKey(textB)
-
-    // Hard negatives rule checks
-    // 1. Critical results
-    const aCrit = na.includes('حرجه') || na.includes('نتائج حرجه')
-    const bCrit = nb.includes('حرجه') || nb.includes('نتائج حرجه')
-    if (aCrit && bCrit) {
-      const aDelay = na.includes('ابلاغ') || na.includes('تاخر') || na.includes('تبليغ')
-      const bDelay = nb.includes('ابلاغ') || nb.includes('تاخر') || nb.includes('تبليغ')
-      if (aDelay !== bDelay) {
-        return { isIdentical: false, isUncertain: false, reason: 'اختلاف بين تأخر إبلاغ النتائج الحرجة وتوثيق سجل النتائج الحرجة' }
-      }
-      const aRef = na.includes('مرجع') || na.includes('قائمه')
-      const bRef = nb.includes('مرجع') || nb.includes('قائمه')
-      if (aRef !== bRef) {
-        return { isIdentical: false, isUncertain: false, reason: 'اختلاف بين قائمة المرجع العلمي وسجل التوثيق اليومي للنتائج الحرجة' }
-      }
+  _calculateJaccard(textA, textB) {
+    const setA = new Set(getCoreTokens(textA))
+    const setB = new Set(getCoreTokens(textB))
+    if (setA.size === 0 && setB.size === 0) return 1.0
+    let intersection = 0
+    for (const token of setA) {
+      if (setB.has(token)) intersection++
     }
-
-    // Helper: strip Arabic 'ال' prefix for root-term matching
-    const stripAl = (s) => s.split(' ').map(w => w.startsWith('ال') && w.length > 3 ? w.slice(2) : w).join(' ')
-    const sa = stripAl(na)
-    const sb = stripAl(nb)
-
-    // 2. Forms (الأوامر الشفوية vs التوافق الدوائي vs أباتشي)
-    const forms = [
-      { key: 'اوامر شفويه', label: 'نموذج الأوامر الشفوية' },
-      { key: 'اوامر شفهيه', label: 'نموذج الأوامر الشفوية' },
-      { key: 'توافق دوائي', label: 'نموذج التوافق الدوائي' },
-      { key: 'تقييد', label: 'نموذج التقييد' },
-      { key: 'اباتشي', label: 'نموذج أباتشي' },
-      { key: 'سقوط', label: 'نموذج السقوط' },
-      { key: 'قرح', label: 'نموذج قرح الفراش' },
-      { key: 'الم', label: 'نموذج قياس الألم' }
-    ]
-    for (const f of forms) {
-      const hasA = sa.includes(f.key)
-      const hasB = sb.includes(f.key)
-      if (hasA !== hasB && (hasA || hasB)) {
-        return { isIdentical: false, isUncertain: false, reason: `اختلاف في نوع النموذج الطبي الموثق (${f.label})` }
-      }
-    }
-
-    // 3. Crash Cart (قفل vs محتويات وخريطة vs ترمومتر)
-    const aCC = sa.includes('كراش')
-    const bCC = sb.includes('كراش')
-    if (aCC && bCC) {
-      const aLock = sa.includes('قفل') || sa.includes('مكسور') || sa.includes('تامين')
-      const bLock = sb.includes('قفل') || sb.includes('مكسور') || sb.includes('تامين')
-      if (aLock !== bLock) {
-        return { isIdentical: false, isUncertain: false, reason: 'اختلاف بين قفل وتأمين الكراش كار ومحتويات/أدوية الكراش كار' }
-      }
-      const aThermo = sa.includes('ترمومتر') || sa.includes('حراره') || sa.includes('رطوبه')
-      const bThermo = sb.includes('ترمومتر') || sb.includes('حراره') || sb.includes('رطوبه')
-      if (aThermo !== bThermo) {
-        return { isIdentical: false, isUncertain: false, reason: 'اختلاف بين قياس حرارة ورطوبة الكراش كار وتجهيز العربة' }
-      }
-    }
-
-    // Token overlap comparison
-    const tokA = getCoreTokens(textA)
-    const tokB = getCoreTokens(textB)
-    const setB = new Set(tokB)
-    const shared = tokA.filter(w => setB.has(w))
-    const union = new Set([...tokA, ...tokB])
-    const jaccard = union.size === 0 ? 0 : shared.length / union.size
-
-    // High confidence match: Same Entity and Defect
-    if (jaccard >= 0.70) {
-      return { isIdentical: true, isUncertain: false, reason: 'تطابق قوي في الكلمات الجوهرية والكيان والعيب', entity: shared.slice(0, 2).join(' '), defect: 'مطابق' }
-    }
-
-    // Ambubag match in crash cart
-    if (sa.includes('امبوباج') && sb.includes('امبوباج') && sa.includes('كراش') && sb.includes('كراش')) {
-      return { isIdentical: true, isUncertain: false, reason: 'تطابق أمبوباج الأطفال بعربة الطوارئ', entity: 'أمبوباج أطفال بعربة الطوارئ', defect: 'غير متوفر' }
-    }
-
-    // Chemical spill kit
-    if (sa.includes('انسكاب') && sb.includes('انسكاب') && sa.includes('كيميائ') && sb.includes('كيميائ')) {
-      return { isIdentical: true, isUncertain: false, reason: 'تطابق حقيبة/طقم الانسكاب الكيميائي', entity: 'حقيبة انسكاب كيميائي', defect: 'غير متوفر' }
-    }
-
-    // Sewage drains open
-    if ((sa.includes('مطبق') || sa.includes('بلاعه') || sa.includes('صرف صحي')) && (sb.includes('مطبق') || sb.includes('بلاعه') || sb.includes('صرف صحي')) && (sa.includes('مفتوح') || sa.includes('مكشوف') || sa.includes('بدون غطاء') || sa.includes('رائح')) && (sb.includes('مفتوح') || sb.includes('مكشوف') || sb.includes('بدون غطاء') || sb.includes('رائح'))) {
-      return { isIdentical: true, isUncertain: false, reason: 'تطابق فتحات ومطابق الصرف الصحي المكشوفة', entity: 'مطابق وغرف الصرف الصحي', defect: 'مكشوفة وبدون غطاء تنبعث منها روائح' }
-    }
-
-    // Oxygen cylinders unsecured
-    if ((sa.includes('اسطوان') || sa.includes('انبوبه')) && (sb.includes('اسطوان') || sb.includes('انبوبه')) && sa.includes('اكسجين') && sb.includes('اكسجين') && (sa.includes('غير مثبت') || sa.includes('غير مؤمن') || sa.includes('مسند') || sa.includes('جنزير')) && (sb.includes('غير مثبت') || sb.includes('غير مؤمن') || sb.includes('مسند') || sb.includes('جنزير'))) {
-      return { isIdentical: true, isUncertain: false, reason: 'تطابق أسطوانات الأكسجين غير المؤمنة ضد السقوط', entity: 'أسطوانات الأكسجين', defect: 'غير مثبتة بمسند أو جنزير' }
-    }
-
-    // Verbal orders
-    if ((sa.includes('اوامر شفويه') || sa.includes('اوامر شفهيه')) && (sb.includes('اوامر شفويه') || sb.includes('اوامر شفهيه'))) {
-      if ((sa.includes('نموذج') || sa.includes('لا يوجد') || sa.includes('متوفر')) && (sb.includes('نموذج') || sb.includes('لا يوجد') || sb.includes('متوفر'))) {
-        return { isIdentical: true, isUncertain: false, reason: 'تطابق عدم توفر نموذج الأوامر الشفوية المعتمد', entity: 'نموذج الأوامر الشفوية', defect: 'غير متوفر' }
-      }
-    }
-
-    if (jaccard >= 0.45) {
-      return { isIdentical: false, isUncertain: true, reason: 'تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب' }
-    }
-
-    return { isIdentical: false, isUncertain: false, reason: 'اختلاف في الكيان أو العيب التشغيلي' }
+    const union = new Set([...setA, ...setB]).size
+    return union === 0 ? 0 : intersection / union
   }
 
+  async evaluateSemanticEquivalence(newSig, candidate, textA, textB) {
+    const na = normalizeRecurrenceKey(textA)
+    const nb = normalizeRecurrenceKey(textB)
+
+    const candSig = candidate.semantic_signature || this._heuristicExtract(candidate.title)
+    
+    // Safety check for null
+    if (!newSig || !candSig) {
+      return {
+        decision: 'UNCERTAIN',
+        reasonLog: 'Semantic extraction failed for one or both findings. AI_UNAVAILABLE',
+        decisionLog: 'Extraction Failed'
+      }
+    }
+
+    // Call the external AI Adjudication Gate
+    const aiResult = await adjudicateFindingMatch(newSig, candSig)
+    
+    let score = 0.5
+    if (aiResult.decision === 'SAME_ISSUE') score = 0.95
+    if (aiResult.decision === 'DIFFERENT_ISSUE') score = 0.1
+
+    return {
+      decision: aiResult.decision,
+      score,
+      reasonLog: aiResult.reason,
+      jaccard: candidate.similarity || 0.5
+    }
+  }
+
+  // Very robust local extractor mocking LLM structure
   _heuristicExtract(text) {
     const norm = normalizeRecurrenceKey(text)
+    let polarity = 'other'
+    let defectStr = 'مخالفة تشغيلية'
+    let reqStr = 'الالتزام بالمعايير'
+    
+    if (norm.includes('لا يوجد') || norm.includes('غير متوفر') || norm.includes('بدون') || norm.includes('لم يتم توفير') || norm.includes('عدم وجود') || norm.includes('غير موجود') || norm.includes('غير موجوده') || norm.includes('عدم توفر') || norm.includes('غير متوفره')) {
+      polarity = 'missing'
+      defectStr = 'غير متوفر'
+    } else if (norm.includes('غير مكتمل') || norm.includes('نقص') || norm.includes('غير مستوف') || norm.includes('غير مرتب') || norm.includes('عدم ترتيب')) {
+      polarity = 'incomplete'
+      defectStr = 'غير مكتمل'
+    } else if (norm.includes('غير معتمد') || norm.includes('اعتماد') || norm.includes('اعتمادات')) {
+      polarity = 'unapproved'
+      defectStr = 'غير معتمد'
+    } else if (norm.includes('تالف') || norm.includes('معطل') || norm.includes('خربان') || norm.includes('لا يعمل') || norm.includes('مكسور') || norm.includes('صيانه')) {
+      polarity = 'damaged'
+      defectStr = 'تالف أو معطل'
+    } else if (norm.includes('منتهي') || norm.includes('صلاحي')) {
+      polarity = 'expired'
+      defectStr = 'منتهي الصلاحية'
+    } else if (norm.includes('نظيف') || norm.includes('غير نظيف') || norm.includes('غير محدث') || norm.includes('محدث') || norm.includes('متاخر') || norm.includes('تحديث') || norm.includes('غير مميز')) {
+      polarity = 'incorrect'
+      defectStr = 'غير صحيح أو غير محدث'
+    } else if (norm.includes('لا يرتدي') || norm.includes('عدم لبس') || norm.includes('عدم التزام') || norm.includes('غير مطاب') || norm.includes('لم تفعل') || norm.includes('لم تكتب') || norm.includes('تسرب')) {
+      polarity = 'other'
+      defectStr = 'مخالفة'
+    }
+
+    // Extract Entity by stripping defect words
+    let entityTokens = getCoreTokens(text).filter(w => !['متوفر', 'مكتمل', 'تالف', 'معطل', 'نظيف', 'محدث', 'لا', 'يوجد', 'غير', 'بدون', 'خربان', 'وجود', 'عدم', 'نقص', 'توفير', 'لبس', 'يرتدي', 'مستوف', 'مرتب', 'ترتيب', 'صيانه', 'تفعل', 'تكتب', 'مطاب', 'مميز', 'تسرب'].includes(w))
+    let entity = entityTokens.join(' ') || 'سلبية عامة'
+    if (entity.includes('اوامر شفويه')) entity = 'نموذج الأوامر الشفوية'
+    if (entity.includes('كراش كار') || entity.includes('عربه انعاش')) entity = 'عربة الإنعاش (كراش كار)'
+    if (entity.includes('تسجيل دخول') || entity.includes('سجل دخول')) entity = 'سجل الدخول'
+    if (entity.includes('مونيتور') || entity.includes('شاشه مراقبه')) entity = 'جهاز المونيتور'
+    if (entity.includes('موظف') && entity.includes('بطاق')) entity = 'البطاقة التعريفية للموظف'
+    if (entity.includes('ملف مريض') || entity.includes('ملفات مرضى')) entity = 'ملف المريض'
+    if (entity.includes('جهاز صدمات')) entity = 'جهاز الصدمات الكهربائية'
+    if (entity.includes('مستلزمات عزل')) entity = 'مستلزمات العزل'
+    if (entity.includes('دواليب تخزين') || entity.includes('تخزين')) entity = 'دواليب التخزين'
+    if (entity.includes('خطه اخلاء')) entity = 'خطة الإخلاء'
+    if (entity.includes('سجل عهده')) entity = 'سجل العهدة'
+
     return {
-      entity: norm.split(' ').slice(0, 3).join(' ') || 'سلبية عامة',
-      defect: norm.includes('لا يوجد') || norm.includes('غير متوفر') ? 'غير متوفر' : (norm.includes('غير مكتمل') ? 'غير مكتمل' : 'مخالفة تشغيلية')
+      entity: entity,
+      defect: defectStr,
+      polarity: polarity,
+      requirement: reqStr,
+      scope: norm.includes('نموذج') ? 'form' : (norm.includes('سجل') ? 'record' : 'item'),
+      context: 'عام',
+      measurement: null,
+      temporal: null
     }
   }
 
-  _buildResult(decision, recurrenceGroupId, candidateGroupId, confidence, similarity, reason, title, entity, defect, domain, reviewStatus) {
+  _buildResult(decision, recurrenceGroupId, candidateGroupId, confidence, similarity, reasonLog, title, entity, defect, domain, reviewStatus, signature = null, sigB = null) {
     return {
       decision,
       recurrenceGroupId,
       candidateGroupId,
       confidence,
       similarity,
-      reason,
+      reason: reasonLog,
       title,
       entity,
       defect,
       domain,
       reviewStatus,
-      matchingPolicyVersion: this.policyVersion
+      matchingPolicyVersion: this.policyVersion,
+      signature,
+      sigA: signature,
+      sigB
     }
   }
 }

@@ -68,11 +68,21 @@ const reportGeminiSchema = {
   required: ["hospital_name", "departments"]
 }
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-const newGenAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+let genAI = null
+let newGenAI = null
 
-// Try models in order until one works
-const MODELS = ['gemini-flash-lite-latest', 'gemini-3.6-flash', 'gemini-flash-latest']
+function getGenAI() {
+  if (!genAI) genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+  return genAI
+}
+
+function getNewGenAI() {
+  if (!newGenAI) newGenAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+  return newGenAI
+}
+
+// Production-safe stable model (Availability, Low Latency, JSON support)
+const MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest']
 
 // Text Normalization for AI matching
 export function normalizeArabicText(text) {
@@ -96,7 +106,7 @@ export async function getEmbedding(text) {
   const normalized = normalizeArabicText(text)
   
   try {
-    const response = await newGenAI.models.embedContent({
+    const response = await getNewGenAI().models.embedContent({
       model: modelName,
       contents: normalized,
       config: {
@@ -111,7 +121,6 @@ export async function getEmbedding(text) {
   }
 }
 
-// Custom fetch to instantly reject rate limits and server errors, bypassing the SDK's internal long retries
 const fastFailFetch = async (url, options) => {
   const res = await fetch(url, options)
   if (res.status === 429 || res.status === 503) {
@@ -120,31 +129,167 @@ const fastFailFetch = async (url, options) => {
   return res
 }
 
+// Circuit Breaker State
+let consecutiveFailures = 0
+const MAX_FAILURES = 5
+let circuitBreakerOpenUntil = 0
+
 async function generateWithFallback(prompt, generationConfig = null) {
+  if (Date.now() < circuitBreakerOpenUntil) {
+    throw new Error('CIRCUIT_BREAKER_OPEN')
+  }
+
   let lastError = null
-  for (const modelName of MODELS) {
-    try {
-      const modelOptions = { model: modelName }
-      if (generationConfig) modelOptions.generationConfig = generationConfig
-      
-      const model = genAI.getGenerativeModel(
-        modelOptions,
-        { customFetch: fastFailFetch }
-      )
-      return await model.generateContent(prompt)
-    } catch (e) {
-      console.warn(`Model ${modelName} failed:`, e.message)
-      lastError = e
-      
-      // Fail fast on quota errors to prevent massive hanging delays
-      if (e.message?.includes('429') || e.status === 429 || e.message?.includes('quota') || e.message?.includes('FAST_FAIL_429')) {
-        throw new Error('تم استنفاد حصة الاستخدام المجانية (Quota Exceeded). يرجى الانتظار دقيقة أو الترقية.')
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    for (const modelName of MODELS) {
+      try {
+        const modelOptions = { model: modelName }
+        if (generationConfig) modelOptions.generationConfig = generationConfig
+        
+        const model = getGenAI().getGenerativeModel(
+          modelOptions,
+          { customFetch: fastFailFetch }
+        )
+        const response = await model.generateContent(prompt)
+        
+        // Success -> Reset circuit breaker
+        consecutiveFailures = 0
+        return response
+      } catch (e) {
+        lastError = e
+        if (e.message?.includes('429') || e.status === 429 || e.message?.includes('quota') || e.message?.includes('FAST_FAIL_429')) {
+          consecutiveFailures++
+          if (consecutiveFailures >= MAX_FAILURES) {
+             circuitBreakerOpenUntil = Date.now() + 60000 // 1 minute penalty
+             throw new Error('CIRCUIT_BREAKER_OPEN')
+          }
+          // Quota exceeded, retry with backoff
+          await new Promise(r => setTimeout(r, 2000 * attempt + Math.random() * 1000))
+          continue
+        }
+        if (e.message?.includes('503') || e.message?.includes('FAST_FAIL_503')) {
+          consecutiveFailures++
+          if (consecutiveFailures >= MAX_FAILURES) {
+             circuitBreakerOpenUntil = Date.now() + 30000 // 30 sec penalty
+             throw new Error('CIRCUIT_BREAKER_OPEN')
+          }
+          // Service Unavailable, retry with backoff
+          await new Promise(r => setTimeout(r, 2000 * attempt + Math.random() * 1000))
+          continue
+        }
+        continue
       }
-      
-      continue
+    }
+    // General failure wait before next attempt
+    if (lastError && (lastError.message?.includes('503') || lastError.message?.includes('429'))) {
+      await new Promise(r => setTimeout(r, 2000 * attempt + Math.random() * 1000))
+    } else {
+      break
     }
   }
+  
+  consecutiveFailures++
+  if (consecutiveFailures >= MAX_FAILURES) {
+     circuitBreakerOpenUntil = Date.now() + 60000
+  }
   throw lastError
+}
+
+/**
+ * Bulk extract semantic signatures for multiple findings in one request.
+ * Takes an array of texts.
+ * Returns an array of signatures in the same order.
+ */
+export async function extractSemanticSignaturesBulk(texts) {
+  if (!texts || texts.length === 0) return []
+  
+  const prompt = `
+أنت خبير في تقييم جودة الرعاية الصحية وإدارة المخاطر.
+استخرج البصمة الدلالية (Semantic Signature) لكل سلبية من السلبيات التالية بشكل مستقل.
+
+النصوص المرفقة مرقمة. قم بإرجاع JSON Array يحتوي على كائنات، كل كائن يجب أن يتضمن الحقول التالية:
+- index: رقم النص الأصلي (من 0 إلى ${texts.length - 1})
+- entity: الكيان أو القسم أو المادة المذكورة.
+- defect: نوع الخلل أو المشكلة.
+- requirement: المتطلب الأصلي الذي تم الإخلال به (إن وجد).
+- polarity: قطبية المشكلة (missing, incomplete, incorrect, damaged, expired, unapproved, undocumented, unavailable, other).
+- scope: نطاق المشكلة.
+- context: السياق.
+- important_qualifiers: أي صفات هامة (مثل: عالي الخطورة، طبي، etc).
+
+النصوص:
+${texts.map((t, i) => `[${i}] ${t}`).join('\n')}
+
+أرجع النتيجة بصيغة JSON Array فقط، بدون أي نصوص أخرى.
+`
+  try {
+    const response = await generateWithFallback(prompt, { responseMimeType: 'application/json' })
+    const responseText = response.response.text()
+    const parsedArray = JSON.parse(responseText)
+    
+    // Map back to original order and add versioning
+    const results = texts.map((_, i) => {
+      const match = parsedArray.find(item => item.index === i) || {}
+      return {
+        signature_version: "SEMANTIC_SIGNATURE_V1",
+        model_version: "gemini-3.8-flash",
+        prompt_version: "v2_bulk",
+        entity: match.entity || "غير محدد",
+        defect: match.defect || "غير محدد",
+        requirement: match.requirement || "غير محدد",
+        polarity: match.polarity || "other",
+        scope: match.scope || "غير محدد",
+        context: match.context || "غير محدد",
+        important_qualifiers: match.important_qualifiers || []
+      }
+    })
+    return results
+  } catch (e) {
+    console.error('AI Bulk Extraction failed:', e.message)
+    return texts.map(() => null)
+  }
+}
+
+export async function adjudicateFindingMatch(sigA, sigB) {
+  if (!sigA || !sigB) {
+    return { decision: 'UNCERTAIN', reason: 'Missing semantic signature for one or both findings. AI_UNAVAILABLE.' }
+  }
+
+  const prompt = `
+أنت خبير في إدارة الجودة الطبية وتقييم المخاطر.
+مهمتك هي مراجعة بصمتين دلاليتين (Semantic Signatures) لسلبيتين طبيتين/إداريتين وتقرير ما إذا كانتا تعبران عن **نفس المشكلة التشغيلية تماماً** حتى لو اختلفت الصياغة، أم أنهما مشكلتان مختلفتان.
+
+القواعد الصارمة:
+1. SAME_ISSUE: إذا كان الكيان (Entity) والخلل (Defect) متطابقين جوهرياً، والفرق فقط في الصياغة أو تفاصيل غير مؤثرة.
+2. DIFFERENT_ISSUE: إذا اختلف الكيان، أو اختلف الخلل جوهرياً، أو كان هناك تناقض (Contradiction) مثل (غير موجود) ضد (غير مكتمل).
+3. UNCERTAIN: إذا لم تكن متأكداً أو كانت المعلومات ناقصة.
+
+البصمة A:
+${JSON.stringify(sigA, null, 2)}
+
+البصمة B:
+${JSON.stringify(sigB, null, 2)}
+
+قم بإرجاع JSON فقط يحتوي على:
+{
+  "decision": "SAME_ISSUE" | "DIFFERENT_ISSUE" | "UNCERTAIN",
+  "reason": "شرح مفصل لسبب القرار بناءً على القواعد"
+}
+`
+
+  try {
+    const response = await generateWithFallback(prompt, { responseMimeType: 'application/json' })
+    const responseText = response.response.text()
+    const parsed = JSON.parse(responseText)
+    return {
+      decision: parsed.decision || 'UNCERTAIN',
+      reason: parsed.reason || 'No reason provided'
+    }
+  } catch (e) {
+    console.error('AI Adjudication failed:', e.message)
+    // Never return DISTINCT on failure
+    return { decision: 'UNCERTAIN', reason: 'AI_UNAVAILABLE: ' + e.message }
+  }
 }
 
 /**
@@ -358,40 +503,52 @@ ${validCanonicals.length > 0 ? validCanonicals.map(t => `- "${t}"`).join('\n') :
   }
 }
 
-/**
- * Adjudicates if a new finding matches one of the top candidate canonical findings.
- */
-export async function adjudicateFindingMatch(newFindingText, candidates) {
-  if (!candidates || candidates.length === 0) return { isMatch: false, matchedId: null, reasoning: 'No candidates provided' }
-  
+
+
+export async function extractSemanticIssueSignature(text) {
   const prompt = `
-أنت نظام خبير في مراجعة الجودة ومطابقة السلبيات الطبية.
-مهمتك هي تحديد ما إذا كانت "السلبية الجديدة" تعبر عن نفس المشكلة الجذرية لإحدى "السلبيات المعيارية المرشحة".
+أنت نظام ذكاء اصطناعي متخصص في سلامة المرضى والجودة الصحية.
+مهمتك استخراج البصمة الدلالية (Semantic Signature) للمشكلة المذكورة في النص التالي.
 
-السلبية الجديدة: "${newFindingText}"
+النص: "${text}"
 
-السلبيات المرشحة:
-${candidates.map((c, i) => `[ID: ${c.id}] النص: "${c.canonical_text}" (نسبة التشابه: ${c.similarity})`).join('\n')}
+قم باستخراج العناصر التالية كـ JSON فقط بدون أي نص إضافي:
+- entity: الكيان الأساسي الذي فيه المشكلة (مثل: جهاز الصدمات، كراش كار، سجل التسليم، أدوية عالية الخطورة).
+- defect: المشكلة أو العيب الجوهري (مثل: معطل، غير موجود، غير معتمد، غير نظيف، غير مرقم).
+- polarity: استقطاب المشكلة. اختر واحدًا فقط من:
+  - "missing" (غير موجود / مفقود / عجز / غير متوفر)
+  - "incomplete" (غير مكتمل / ناقص / غير مفعل بالكامل / يحتاج تحديث)
+  - "damaged" (معطل / مكسور / لا يعمل / منتهي الصلاحية)
+  - "unapproved" (غير معتمد / غير موثق / غير موقع)
+  - "other" (شيء آخر)
+- requirement: المعيار أو المتطلب الذي تم الإخلال به (مثل: توفر الأجهزة، اكتمال السجلات، سياسة الأدوية).
+- scope: نطاق المشكلة. اختر واحدًا فقط من: "item" (شيء محدد)، "process" (عملية/سياسة)، "personnel" (طاقم/أفراد).
+- context: أي سياق إضافي مهم (مثل: اسم قسم محدد إذا كان جوهرياً، أو اتركه فارغاً).
 
-أجب بـ JSON فقط:
-- إذا كانت نفس المشكلة بالضبط (حتى باختلاف صياغة بسيط): 
-  {"isMatch": true, "matchedId": "ID_HERE", "reasoning": "سبب المطابقة"}
-- إذا كانت مشكلة مختلفة أو تفاصيلها مختلفة جوهرياً: 
-  {"isMatch": false, "matchedId": null, "reasoning": "سبب الاختلاف"}
+يجب أن يكون الناتج JSON فقط بهذا الهيكل:
+{
+  "entity": "...",
+  "defect": "...",
+  "polarity": "...",
+  "requirement": "...",
+  "scope": "...",
+  "context": "..."
+}
 `
 
   try {
-    const result = await generateWithFallback(prompt)
+    const result = await generateWithFallback(prompt, {
+      responseMimeType: "application/json"
+    })
     const responseText = result.response.text()
     const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     const parsed = JSON.parse(cleaned)
-    return {
-      isMatch: parsed.isMatch === true,
-      matchedId: parsed.matchedId,
-      reasoning: parsed.reasoning || ''
-    }
+    // Add Signature Versioning details
+    parsed.signature_version = 'SEMANTIC_SIGNATURE_V1'
+    parsed.model_version = MODELS[0] // tracks which model produced it
+    return parsed
   } catch (e) {
-    console.error('Adjudication failed:', e)
-    return { isMatch: false, matchedId: null, reasoning: 'Adjudication API failed' }
+    console.error('Extraction failed:', e.message)
+    return null
   }
 }

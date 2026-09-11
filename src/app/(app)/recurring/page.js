@@ -1,13 +1,11 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import { getCategory } from '@/lib/utils'
 import Link from 'next/link'
 import { useToast } from '@/components/Toast'
 
 export default function RecurringPage() {
-  const [crossHospitalRecurring, setCrossHospitalRecurring] = useState([])
-  const [expandedDept, setExpandedDept] = useState(null)
+  const [recurringData, setRecurringData] = useState({ recurringInSameHospital: [], commonAcrossHospitals: [] })
   const [loading, setLoading] = useState(true)
   const { showToast } = useToast()
   const [refreshing, setRefreshing] = useState(false)
@@ -18,9 +16,11 @@ export default function RecurringPage() {
   const [isDirectorate, setIsDirectorate] = useState(true)
   const [resolvingId, setResolvingId] = useState(null)
   const [resolutionNotes, setResolutionNotes] = useState({})
+  
+  const [activeTab, setActiveTab] = useState('recurring') // 'recurring' | 'common'
 
   useEffect(() => {
-    fetchCrossHospitalFindings()
+    fetchFindings()
     checkUserRole()
   }, [])
 
@@ -60,7 +60,6 @@ export default function RecurringPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'فشل في تحديث السلبية')
 
-      // Update in-place in selectedModalData
       if (selectedModalData) {
         const updatedFindings = selectedModalData.hospital.findings.map((f) =>
           f.id === findingId
@@ -76,8 +75,7 @@ export default function RecurringPage() {
         })
       }
 
-      // Re-fetch in background to update counters and chips
-      fetchCrossHospitalFindings(true)
+      fetchFindings(true)
     } catch (err) {
       showToast('خطأ: ' + err.message, 'error')
     } finally {
@@ -85,209 +83,42 @@ export default function RecurringPage() {
     }
   }
 
-  const fetchCrossHospitalFindings = async (isRefresh = false) => {
+  const fetchFindings = async (isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true)
       else setLoading(true)
 
-      // 1. Fetch ALL findings across all hospitals using pagination to avoid 1000 row limits
-      let allFindings = []
-      let page = 0
-      const pageSize = 1000
+      const res = await fetch('/api/analytics/recurring')
+      const result = await res.json()
 
-      while (true) {
-        const { data, error } = await supabase
-          .from('v_report_findings')
-          .select(`
-            id,
-            canonical_text,
-            original_text,
-            status,
-            repeat_count,
-            last_seen_date,
-            first_seen_date,
-            resolved_date,
-            resolved_by,
-            resolution_note,
-            hospital_resolution_note,
-            recurrence_group_id,
-            recurrence_group_title,
-            recurrence_entity,
-            recurrence_defect,
-            review_status,
-            departments (id, name),
-            hospitals (id, name, governorate)
-          `)
-          .range(page * pageSize, (page + 1) * pageSize - 1)
+      if (!res.ok) throw new Error(result.error || 'Failed to fetch data')
 
-        if (error) throw error
-        if (!data || data.length === 0) break
-        allFindings = allFindings.concat(data)
-        page++
-        if (data.length < pageSize) break
-      }
-
-      if (allFindings.length > 0) {
-        // Group findings by Category -> Recurrence Group ID
-        const groupedByCategory = {}
-
-        allFindings.forEach((f) => {
-          if (!f.hospitals || !f.departments) return
-          // Filter out pending_review from confirmed recurrence groups
-          if (f.review_status === 'pending_review') return
-
-          const category = getCategory(f.departments.name)
-
-          // Key by recurrence_group_id if available, fallback to normalized text
-          const groupKey = f.recurrence_group_id || f.id
-          const groupTitle = f.recurrence_group_title || f.original_text || f.canonical_text || 'سلبية غير مصنفة'
-          const canonicalClassification = f.canonical_text || ''
-
-          if (!groupedByCategory[category]) {
-            groupedByCategory[category] = {}
-          }
-
-          if (!groupedByCategory[category][groupKey]) {
-            groupedByCategory[category][groupKey] = {
-              groupId: groupKey,
-              text: groupTitle,
-              canonicalClassification,
-              hospitalsMap: new Map(), // hospitalId -> { hospitalInfo, findings: [] }
-            }
-          }
-
-          const hospMap = groupedByCategory[category][groupKey].hospitalsMap
-          if (!hospMap.has(f.hospitals.id)) {
-            hospMap.set(f.hospitals.id, {
-              id: f.hospitals.id,
-              name: f.hospitals.name,
-              governorate: f.hospitals.governorate,
-              findings: [],
-            })
-          }
-
-          hospMap.get(f.hospitals.id).findings.push(f)
-        })
-
-        // Process and categorize results
-        const finalResults = []
-
-        for (const [category, textGroups] of Object.entries(groupedByCategory)) {
-          const crossFindings = []
-
-          for (const [groupId, info] of Object.entries(textGroups)) {
-            const hospitalEntries = Array.from(info.hospitalsMap.values())
-
-            // ONLY keep findings that appeared in MULTIPLE distinct hospitals (>= 2) OR recurrent in same hospital
-            if (hospitalEntries.length >= 2 || hospitalEntries.some(h => h.findings.length >= 2)) {
-              // Analyze hospital statuses for this issue
-              let activeCount = 0
-              let pendingCount = 0
-              let resolvedCount = 0
-
-              const hospitalsList = hospitalEntries.map((h) => {
-                // Determine overall hospital status for this issue
-                const hasActive = h.findings.some((f) => ['open', 'recurring'].includes(f.status))
-                const hasPending = h.findings.some((f) => f.status === 'resolved_by_hospital')
-                const allResolved = h.findings.every((f) => f.status === 'resolved_confirmed')
-
-                let status = 'active'
-                if (allResolved) {
-                  status = 'resolved'
-                  resolvedCount++
-                } else if (hasPending && !hasActive) {
-                  status = 'pending'
-                  pendingCount++
-                } else {
-                  status = 'active'
-                  activeCount++
-                }
-
-                // True total occurrences for this hospital
-                const totalHospitalOccurrences = h.findings.length
-                const latestDate = h.findings.map((f) => f.last_seen_date || f.first_seen_date).filter(Boolean).sort().reverse()[0]
-                const resolvedDate = h.findings.map((f) => f.resolved_date).filter(Boolean).sort().reverse()[0]
-
-                return {
-                  ...h,
-                  issueStatus: status,
-                  repeatCount: totalHospitalOccurrences,
-                  latestDate,
-                  resolvedDate,
-                }
-              })
-
-              // Sort hospitals: Active first, then pending, then resolved
-              hospitalsList.sort((a, b) => {
-                const weight = { active: 0, pending: 1, resolved: 2 }
-                return weight[a.issueStatus] - weight[b.issueStatus]
-              })
-
-              const totalOccurrencesAll = hospitalsList.reduce((acc, h) => acc + h.findings.length, 0)
-
-              crossFindings.push({
-                groupId,
-                text: info.text,
-                canonicalClassification: info.canonicalClassification,
-                category,
-                totalHospitals: hospitalsList.length,
-                totalOccurrences: totalOccurrencesAll,
-                activeCount,
-                pendingCount,
-                resolvedCount,
-                isFullyResolved: activeCount === 0 && pendingCount === 0,
-                hospitalsList,
-              })
-            }
-          }
-
-          if (crossFindings.length > 0) {
-            // Sort findings within category: active ones first, then by total hospitals affected
-            crossFindings.sort((a, b) => {
-              if (b.activeCount !== a.activeCount) return b.activeCount - a.activeCount
-              return b.totalHospitals - a.totalHospitals
-            })
-
-            finalResults.push({
-              category,
-              findings: crossFindings,
-              totalActiveIssues: crossFindings.filter((f) => f.activeCount > 0).length,
-              totalResolvedIssues: crossFindings.filter((f) => f.isFullyResolved).length,
-            })
-          }
-        }
-
-        // Sort categories by total active findings descending
-        finalResults.sort((a, b) => b.totalActiveIssues - a.totalActiveIssues || b.findings.length - a.findings.length)
-
-        setCrossHospitalRecurring(finalResults)
-        if (finalResults.length > 0 && !expandedDept) {
-          setExpandedDept(finalResults[0].category)
-        }
-        setLastUpdated(new Date().toLocaleTimeString('ar-EG'))
-      }
+      setRecurringData(result.data)
+      setLastUpdated(new Date().toLocaleTimeString('ar-EG'))
     } catch (err) {
-      console.error('Error fetching cross-hospital findings:', err)
+      console.error('Error fetching findings:', err)
+      showToast('حدث خطأ أثناء جلب البيانات', 'error')
     } finally {
       setLoading(false)
       setRefreshing(false)
     }
   }
 
+  const activeDataList = activeTab === 'recurring' 
+    ? recurringData.recurringInSameHospital 
+    : recurringData.commonAcrossHospitals
+
   // Summary Metrics
   const metrics = useMemo(() => {
-    let totalIssues = 0
+    let totalIssues = activeDataList.length
     let activeIssues = 0
     let resolvedIssues = 0
     const uniqueHospitals = new Set()
 
-    crossHospitalRecurring.forEach((dept) => {
-      dept.findings.forEach((f) => {
-        totalIssues++
-        if (f.activeCount > 0) activeIssues++
-        if (f.isFullyResolved) resolvedIssues++
-        f.hospitalsList.forEach((h) => uniqueHospitals.add(h.id))
-      })
+    activeDataList.forEach((f) => {
+      if (f.activeCount > 0) activeIssues++
+      if (f.isFullyResolved) resolvedIssues++
+      f.hospitalsList.forEach((h) => uniqueHospitals.add(h.id))
     })
 
     return {
@@ -296,43 +127,33 @@ export default function RecurringPage() {
       resolvedIssues,
       totalHospitalsCount: uniqueHospitals.size,
     }
-  }, [crossHospitalRecurring])
+  }, [activeDataList])
 
   // Filtered Findings
-  const filteredCategories = useMemo(() => {
+  const filteredFindings = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
 
-    return crossHospitalRecurring
-      .map((dept) => {
-        const filteredFindings = dept.findings.filter((f) => {
-          // Status Filter
-          if (filterStatus === 'active' && f.activeCount === 0) return false
-          if (filterStatus === 'resolved' && !f.isFullyResolved) return false
+    return activeDataList.filter((f) => {
+      // Status Filter
+      if (filterStatus === 'active' && f.activeCount === 0) return false
+      if (filterStatus === 'resolved' && !f.isFullyResolved) return false
 
-          // Search Filter
-          if (q) {
-            const matchesText = f.text.toLowerCase().includes(q)
-            const matchesHospital = f.hospitalsList.some((h) => h.name.toLowerCase().includes(q))
-            const matchesCat = dept.category.toLowerCase().includes(q)
-            return matchesText || matchesHospital || matchesCat
-          }
+      // Search Filter
+      if (q) {
+        const matchesText = f.title.toLowerCase().includes(q)
+        const matchesHospital = f.hospitalsList.some((h) => h.name.toLowerCase().includes(q))
+        return matchesText || matchesHospital
+      }
 
-          return true
-        })
-
-        return {
-          ...dept,
-          findings: filteredFindings,
-        }
-      })
-      .filter((dept) => dept.findings.length > 0)
-  }, [crossHospitalRecurring, filterStatus, searchTerm])
+      return true
+    })
+  }, [activeDataList, filterStatus, searchTerm])
 
   if (loading) {
     return (
       <div className="loading-state" style={{ minHeight: '50vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
         <div className="loading-spinner" style={{ width: 44, height: 44 }} />
-        <span style={{ fontSize: 16, fontWeight: 600 }}>جاري جلب ومطابقة السلبيات المشتركة بين كافة المستشفيات...</span>
+        <span style={{ fontSize: 16, fontWeight: 600 }}>جاري جلب وتحليل محرك السلبيات...</span>
       </div>
     )
   }
@@ -343,10 +164,10 @@ export default function RecurringPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            🚨 السلبيات المتكررة المشتركة بين المستشفيات
+            🚨 السلبيات المجمعة
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-            رصد المشاكل الجذرية الموحدة التي تكررت في أكثر من مستشفى للمتابعة المركزية وتوجيه التدخلات التصحيحية.
+            رصد السلبيات المتكررة داخل المستشفى الواحدة والسلبيات الشائعة عبر عدة مستشفيات.
           </p>
         </div>
 
@@ -361,10 +182,10 @@ export default function RecurringPage() {
             className="btn btn-primary btn-sm"
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, textDecoration: 'none' }}
           >
-            🖨️ طباعة تقرير رسمي (Word)
+            🖨️ طباعة تقرير
           </Link>
           <button
-            onClick={() => fetchCrossHospitalFindings(true)}
+            onClick={() => fetchFindings(true)}
             disabled={refreshing}
             className="btn btn-secondary btn-sm"
             style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}
@@ -374,12 +195,58 @@ export default function RecurringPage() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: 16, borderBottom: '2px solid var(--border)' }}>
+        <button
+          onClick={() => setActiveTab('recurring')}
+          style={{
+            padding: '12px 24px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'recurring' ? '3px solid var(--primary)' : '3px solid transparent',
+            color: activeTab === 'recurring' ? 'var(--primary)' : 'var(--text-secondary)',
+            fontWeight: activeTab === 'recurring' ? 800 : 600,
+            fontSize: 16,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            marginBottom: -2,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          🏥 السلبيات المتكررة ({recurringData.recurringInSameHospital.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('common')}
+          style={{
+            padding: '12px 24px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'common' ? '3px solid var(--primary)' : '3px solid transparent',
+            color: activeTab === 'common' ? 'var(--primary)' : 'var(--text-secondary)',
+            fontWeight: activeTab === 'common' ? 800 : 600,
+            fontSize: 16,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            marginBottom: -2,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          🌍 السلبيات الشائعة ({recurringData.commonAcrossHospitals.length})
+        </button>
+      </div>
+
       {/* Real-time KPI Stats Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'var(--space-sm)' }}>
         <div className="stat-card" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 16 }}>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>إجمالي المشاكل المشتركة</div>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>إجمالي المشاكل</div>
           <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)' }}>{metrics.totalIssues}</div>
-          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 4 }}>في مختلف أقسام المستشفيات</div>
+          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 4 }}>
+            {activeTab === 'recurring' ? 'متكررة في نفس المستشفى' : 'شائعة بين المستشفيات'}
+          </div>
         </div>
 
         <div className="stat-card" style={{ background: 'var(--bg-card)', border: '1px solid #fca5a5', borderRadius: 'var(--radius-md)', padding: 16 }}>
@@ -416,7 +283,7 @@ export default function RecurringPage() {
             className={`btn btn-sm ${filterStatus === 'all' ? 'btn-primary' : 'btn-outline'}`}
             style={{ fontWeight: 700, borderRadius: 20, fontSize: 12 }}
           >
-            📋 كافة السلبيات المشتركة ({metrics.totalIssues})
+            📋 كافة السلبيات ({metrics.totalIssues})
           </button>
           <button
             onClick={() => setFilterStatus('resolved')}
@@ -439,221 +306,162 @@ export default function RecurringPage() {
         </div>
       </div>
 
-      {/* Main Content: Categories and Recurring Findings */}
-      {filteredCategories.length === 0 ? (
+      {/* Main Content: Recurring Findings */}
+      {filteredFindings.length === 0 ? (
         <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
             {filterStatus === 'active'
-              ? 'ممتاز! لا توجد سلبيات نشطة مشتركة تتطلب متابعة حالياً.'
+              ? 'ممتاز! لا توجد سلبيات نشطة تتطلب متابعة حالياً.'
               : filterStatus === 'resolved'
-              ? 'لا توجد سلبيات مشتركة تم تلافيها بالكامل بعد.'
+              ? 'لا توجد سلبيات تم تلافيها بالكامل بعد.'
               : 'لم يتم العثور على سلبيات مطابقة للبحث.'}
           </div>
-          <p style={{ fontSize: 13, marginTop: 4 }}>
-            {filterStatus === 'active' ? 'كافة السلبيات المشتركة تم تلافيها أو لا توجد سلبيات تطابق معايير البحث.' : ''}
-          </p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-          {filteredCategories.map((dept) => {
-            const isExpanded = expandedDept === dept.category
-
-            return (
-              <div
-                key={dept.category}
-                style={{
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'var(--bg-card)',
-                  overflow: 'hidden',
-                  boxShadow: isExpanded ? 'var(--shadow-sm)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                {/* Accordion Category Header */}
-                <div
-                  style={{
-                    padding: '14px 18px',
-                    background: isExpanded ? 'var(--bg-secondary)' : 'var(--bg-card)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 12,
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                  onClick={() => setExpandedDept(isExpanded ? null : dept.category)}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)' }}>
-                      🏥 {dept.category}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        background: dept.totalActiveIssues > 0 ? '#fee2e2' : '#dcfce7',
-                        color: dept.totalActiveIssues > 0 ? '#b91c1c' : '#15803d',
-                        padding: '3px 10px',
-                        borderRadius: 100,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {dept.findings.length} ملاحظات مشتركة ({dept.totalActiveIssues} بحاجة لمتابعة)
-                    </span>
+          {filteredFindings.map((f, idx) => (
+            <div
+              key={idx}
+              className={`finding-card ${f.isFullyResolved ? 'resolved_confirmed' : f.activeCount > 0 ? 'recurring' : 'resolved_by_hospital'}`}
+              style={{
+                background: 'var(--bg-primary)',
+                padding: '16px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+            >
+              {/* Title & Badges */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                    {f.title}
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-muted)', fontSize: 13 }}>
-                    <span>{isExpanded ? 'طي الأقسام' : 'عرض التفاصيل'}</span>
-                    <span>{isExpanded ? '▲' : '▼'}</span>
-                  </div>
+                  {f.allDepartments?.length > 0 && (
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                      🏷️ الأقسام: {f.allDepartments.join('، ')}
+                    </div>
+                  )}
                 </div>
 
-                {/* Expanded Findings List */}
-                {isExpanded && (
-                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12, borderTop: '1px solid var(--border)' }}>
-                    {dept.findings.map((f, idx) => (
-                      <div
-                        key={idx}
-                        className={`finding-card ${f.isFullyResolved ? 'resolved_confirmed' : f.activeCount > 0 ? 'recurring' : 'resolved_by_hospital'}`}
-                        style={{
-                          background: 'var(--bg-primary)',
-                          padding: '16px',
-                          borderRadius: 'var(--radius-sm)',
-                          border: '1px solid var(--border)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 10,
-                        }}
-                      >
-                        {/* Title & Badges */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5 }}>
-                              {f.text}
-                            </div>
-                          </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: '3px 8px',
+                      borderRadius: 6,
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    🏥 {f.totalHospitals} مستشفيات ({f.totalOccurrences || f.totalHospitals} رصد)
+                  </span>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                            <span
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 700,
-                                padding: '3px 8px',
-                                borderRadius: 6,
-                                background: 'var(--bg-secondary)',
-                                border: '1px solid var(--border)',
-                              }}
-                            >
-                              🏥 {f.totalHospitals} مستشفيات ({f.totalOccurrences || f.totalHospitals} رصد)
-                            </span>
+                  {f.activeCount > 0 && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        background: '#fee2e2',
+                        color: '#b91c1c',
+                      }}
+                    >
+                      🔴 {f.activeCount} لم يتم التلافي
+                    </span>
+                  )}
 
-                            {f.activeCount > 0 && (
-                              <span
-                                style={{
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  padding: '3px 8px',
-                                  borderRadius: 6,
-                                  background: '#fee2e2',
-                                  color: '#b91c1c',
-                                }}
-                              >
-                                🔴 {f.activeCount} لم يتم التلافي
-                              </span>
-                            )}
+                  {f.pendingCount > 0 && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        background: '#fef3c7',
+                        color: '#b45309',
+                      }}
+                    >
+                      🟡 {f.pendingCount} أبلغت بالتلافي
+                    </span>
+                  )}
 
-                            {f.pendingCount > 0 && (
-                              <span
-                                style={{
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  padding: '3px 8px',
-                                  borderRadius: 6,
-                                  background: '#fef3c7',
-                                  color: '#b45309',
-                                }}
-                              >
-                                🟡 {f.pendingCount} أبلغت بالتلافي
-                              </span>
-                            )}
-
-                            {f.resolvedCount > 0 && (
-                              <span
-                                style={{
-                                  fontSize: 11,
-                                  fontWeight: 700,
-                                  padding: '3px 8px',
-                                  borderRadius: 6,
-                                  background: '#dcfce7',
-                                  color: '#15803d',
-                                }}
-                              >
-                                🟢 {f.resolvedCount} تم التلافي
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Hospitals Breakdown Pills */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                            موقف المستشفيات من هذه السلبية:
-                          </div>
-
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            {f.hospitalsList.map((h) => {
-                              const isResolved = h.issueStatus === 'resolved'
-                              const isPending = h.issueStatus === 'pending'
-
-                              const chipStyle = isResolved
-                                ? { bg: '#dcfce7', border: '#86efac', text: '#15803d', icon: '✅' }
-                                : isPending
-                                ? { bg: '#fef3c7', border: '#fde047', text: '#b45309', icon: '🟡' }
-                                : { bg: '#fee2e2', border: '#fca5a5', text: '#b91c1c', icon: '🔴' }
-
-                              return (
-                                <div
-                                  key={h.id}
-                                  onClick={() => setSelectedModalData({ hospital: h, findingText: f.text, canonicalText: f.canonicalClassification, category: dept.category })}
-                                  style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                    padding: '5px 12px',
-                                    borderRadius: 100,
-                                    fontSize: 12,
-                                    fontWeight: 600,
-                                    background: chipStyle.bg,
-                                    border: `1px solid ${chipStyle.border}`,
-                                    color: chipStyle.text,
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease',
-                                  }}
-                                  title="اضغط لعرض تفاصيل المرور ونصوص الملاحظة الأصلية في هذا المستشفى"
-                                >
-                                  <span>{chipStyle.icon}</span>
-                                  <span>{h.name}</span>
-                                  {h.repeatCount > 1 && (
-                                    <span style={{ opacity: 0.8, fontSize: 10, background: 'rgba(0,0,0,0.06)', padding: '1px 5px', borderRadius: 4 }}>
-                                      🔁 متكررة ×{h.repeatCount}
-                                    </span>
-                                  )}
-                                  {isResolved && h.resolvedDate && (
-                                    <span style={{ fontSize: 10, opacity: 0.85 }}>({h.resolvedDate})</span>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  {f.resolvedCount > 0 && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        background: '#dcfce7',
+                        color: '#15803d',
+                      }}
+                    >
+                      🟢 {f.resolvedCount} تم التلافي
+                    </span>
+                  )}
+                </div>
               </div>
-            )
-          })}
+
+              {/* Hospitals Breakdown Pills */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
+                  موقف المستشفيات من هذه السلبية:
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {f.hospitalsList.map((h) => {
+                    const isResolved = h.issueStatus === 'resolved'
+                    const isPending = h.issueStatus === 'pending'
+
+                    const chipStyle = isResolved
+                      ? { bg: '#dcfce7', border: '#86efac', text: '#15803d', icon: '✅' }
+                      : isPending
+                      ? { bg: '#fef3c7', border: '#fde047', text: '#b45309', icon: '🟡' }
+                      : { bg: '#fee2e2', border: '#fca5a5', text: '#b91c1c', icon: '🔴' }
+
+                    return (
+                      <div
+                        key={h.id}
+                        onClick={() => setSelectedModalData({ hospital: h, findingText: f.title, canonicalText: f.canonicalClassification })}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '5px 12px',
+                          borderRadius: 100,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: chipStyle.bg,
+                          border: `1px solid ${chipStyle.border}`,
+                          color: chipStyle.text,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                        }}
+                        title="اضغط لعرض تفاصيل المرور ونصوص الملاحظة الأصلية في هذا المستشفى"
+                      >
+                        <span>{chipStyle.icon}</span>
+                        <span>{h.name}</span>
+                        {h.repeatCount > 1 && (
+                          <span style={{ opacity: 0.8, fontSize: 10, background: 'rgba(0,0,0,0.06)', padding: '1px 5px', borderRadius: 4 }}>
+                            🔁 متكررة ×{h.repeatCount}
+                          </span>
+                        )}
+                        {isResolved && h.resolvedDate && (
+                          <span style={{ fontSize: 10, opacity: 0.85 }}>({h.resolvedDate})</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -698,9 +506,6 @@ export default function RecurringPage() {
                 <h3 style={{ fontSize: 17, fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                   🏥 {selectedModalData.hospital.name}
                 </h3>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
-                  القسم: {selectedModalData.category}
-                </div>
               </div>
 
               <button
@@ -713,7 +518,7 @@ export default function RecurringPage() {
             </div>
 
             <div style={{ background: 'var(--bg-secondary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>المشكلة المتكررة الفعلية:</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>المشكلة الجذرية:</div>
               <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginTop: 2, lineHeight: 1.5 }}>
                 {selectedModalData.findingText}
               </div>
@@ -721,7 +526,7 @@ export default function RecurringPage() {
 
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-                📋 الملاحظات المسجلة في تقارير المرور لهذا المستشفى ({selectedModalData.hospital.findings.length}):
+                📋 سجل الرصد في هذا المستشفى ({selectedModalData.hospital.findings.length}):
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -740,6 +545,10 @@ export default function RecurringPage() {
                   >
                     <div style={{ fontSize: 13, color: 'var(--text-main)', lineHeight: 1.5 }}>
                       <strong>نص التقرير الأصلي:</strong> &ldquo;{f.original_text}&rdquo;
+                      <br/>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        🏷️ القسم: {f.departments?.name || 'غير محدد'}
+                      </span>
                     </div>
 
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
@@ -798,10 +607,10 @@ export default function RecurringPage() {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
               <Link
                 href={`/hospitals/${selectedModalData.hospital.id}`}
-                className="btn btn-primary btn-sm"
-                style={{ fontSize: 12, textDecoration: 'none' }}
+                className="btn btn-outline btn-sm"
+                style={{ padding: '6px 14px', fontSize: 13, textDecoration: 'none' }}
               >
-                الانتقال لصفحة المستشفى ↗
+                🏥 ملف المستشفى
               </Link>
             </div>
           </div>
