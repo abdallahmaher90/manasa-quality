@@ -640,49 +640,6 @@ export default function HospitalPage() {
         </div>
       )}
 
-      {/* Recent Reports */}
-      <div className="card" style={{ marginBottom: '24px' }}>
-        <div className="card-header">
-          <h2 className="card-title">📋 آخر تقارير المرور</h2>
-          <Link href={`/archive?hospital=${id}`} className="btn btn-ghost btn-sm">عرض كل التقارير</Link>
-        </div>
-        {recentReports.length === 0 ? (
-          <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
-            <span className="empty-state-icon" style={{ fontSize: 32 }}>📋</span>
-            <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
-          </div>
-        ) : (
-          <div className="mobile-table-card" style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '12px 8px' }}>التاريخ</th>
-                  <th style={{ padding: '12px 8px' }}>القائم بالمرور</th>
-                  <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentReports.map(report => (
-                  <tr key={report.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {new Date(report.inspection_date).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </td>
-                    <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>
-                      {report.inspector_name}
-                    </td>
-                    <td style={{ padding: '12px 8px', textAlign: 'left' }}>
-                      <Link href={`/archive/${report.id}`} className="btn btn-ghost btn-sm no-print" style={{ fontSize: 11, padding: '4px 8px' }}>
-                        عرض التقرير
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
       {/* KPIs Accordion */}
       <div className="no-print" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', marginBottom: '24px' }}>
         <div 
@@ -762,6 +719,49 @@ export default function HospitalPage() {
           })}
         </div>
       )}
+
+      {/* Recent Reports */}
+      <div className="card" style={{ marginTop: '32px', marginBottom: '24px' }}>
+        <div className="card-header">
+          <h2 className="card-title">📋 آخر تقارير المرور</h2>
+          <Link href={`/archive?hospital=${id}`} className="btn btn-ghost btn-sm">عرض كل التقارير</Link>
+        </div>
+        {recentReports.length === 0 ? (
+          <div className="empty-state" style={{ padding: 'var(--space-md)' }}>
+            <span className="empty-state-icon" style={{ fontSize: 32 }}>📋</span>
+            <p className="empty-state-desc">لا توجد تقارير مرور مسجلة</p>
+          </div>
+        ) : (
+          <div className="mobile-table-card" style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '12px 8px' }}>التاريخ</th>
+                  <th style={{ padding: '12px 8px' }}>القائم بالمرور</th>
+                  <th style={{ padding: '12px 8px', textAlign: 'left' }}>إجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReports.map(report => (
+                  <tr key={report.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '12px 8px', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {new Date(report.inspection_date).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '12px 8px', color: 'var(--text-muted)' }}>
+                      {report.inspector_name}
+                    </td>
+                    <td style={{ padding: '12px 8px', textAlign: 'left' }}>
+                      <Link href={`/archive/${report.id}`} className="btn btn-ghost btn-sm no-print" style={{ fontSize: 11, padding: '4px 8px' }}>
+                        عرض التقرير
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Edit Team Modal */}
       {showEditTeamModal && (
