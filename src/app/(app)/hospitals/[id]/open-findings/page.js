@@ -167,7 +167,7 @@ export default function OpenFindingsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = \`Checklist_${hospital.name}.doc\`;
+    link.download = `Checklist_${hospital.name}.doc`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
