@@ -12,19 +12,19 @@ const PRIORITY_CONFIG = {
 
 // SVG Icons
 const PrinterIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg className={className} style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
   </svg>
 )
 
 const FilterIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg className={className} style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
   </svg>
 )
 
 const CheckIcon = ({ className }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg className={className} style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
   </svg>
 )
@@ -147,21 +147,29 @@ export default function OpenFindingsPage() {
       {/* Print Styles */}
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          body * { visibility: hidden; }
+          @page { margin: 0; size: A4; }
+          body, html { background: #fff !important; color: #000 !important; }
+          
+          /* Hide sidebar, header, etc. */
+          .sidebar, .top-header, .no-print { display: none !important; }
+          .main-content, .app-layout, .page-content, body { 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            background: #fff !important;
+            overflow: visible !important;
+          }
+          
           .print-section, .print-section * { visibility: visible; }
           .print-section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 20px;
+            padding: 2cm !important;
             direction: rtl;
             background: white;
             color: black;
+            width: 100%;
           }
-          .no-print { display: none !important; }
           .print-header { display: block !important; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-          .print-dept-title { border-bottom: 1px solid #ccc; margin-top: 30px; margin-bottom: 15px; padding-bottom: 5px; font-size: 18px; font-weight: bold; }
+          .print-dept-title { border-bottom: 1px solid #ccc; margin-top: 30px; margin-bottom: 15px; padding-bottom: 5px; font-size: 18px; font-weight: bold; page-break-after: avoid; }
+          .print-dept-wrapper { page-break-inside: auto; }
           .print-item { display: flex; gap: 10px; margin-bottom: 12px; page-break-inside: avoid; }
           .print-checkbox { width: 16px; height: 16px; border: 1px solid #000; display: inline-block; flex-shrink: 0; margin-top: 4px; }
           .badge { border: 1px solid #999 !important; background: transparent !important; color: #333 !important; }
