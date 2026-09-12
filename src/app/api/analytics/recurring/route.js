@@ -7,16 +7,6 @@ export const dynamic = 'force-dynamic'
 export async function GET(request) {
   try {
     let token = request.headers.get('authorization')?.replace('Bearer ', '')
-    
-    // Fallback for cookie-based auth since page.js fetch doesn't pass Bearer
-    if (!token) {
-      const authCookie = cookies().getAll().find(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'))
-      if (authCookie) {
-        try {
-          token = JSON.parse(authCookie.value)[0]
-        } catch (e) {}
-      }
-    }
 
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

@@ -88,7 +88,12 @@ export default function RecurringPage() {
       if (isRefresh) setRefreshing(true)
       else setLoading(true)
 
-      const res = await fetch('/api/analytics/recurring')
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/analytics/recurring', {
+        headers: {
+          'Authorization': session ? `Bearer ${session.access_token}` : ''
+        }
+      })
       const result = await res.json()
 
       if (!res.ok) throw new Error(result.error || 'Failed to fetch data')
