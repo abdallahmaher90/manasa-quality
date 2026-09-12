@@ -17,6 +17,12 @@ const DownloadIcon = ({ className }) => (
   </svg>
 )
 
+const WordIcon = ({ className }) => (
+  <svg className={className} style={{ width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M14.07 2.11L14.07 21.89L2 23L2 1L14.07 2.11ZM22 4.5V19.5H15.07V4.5H22ZM11.08 17.51L8.85 9.07H8.81L6.75 17.51H4.66L7.68 6.55H9.98L11.83 14L11.87 14L13.72 6.55H15.93L13.12 17.51H11.08Z" />
+  </svg>
+)
+
 const FilterIcon = ({ className }) => (
   <svg className={className} style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -116,6 +122,57 @@ export default function OpenFindingsPage() {
     window.print()
   }
 
+  const handleExportWord = () => {
+    const tableElement = document.getElementById('checklist-table');
+    if (!tableElement) return;
+
+    const tableClone = tableElement.cloneNode(true);
+    
+    // In Word, we WANT the notes column which has .print-only-cell
+    tableClone.querySelectorAll('.print-only-cell').forEach(el => {
+      el.style.display = 'table-cell';
+    });
+
+    tableClone.querySelectorAll('th, td').forEach(el => {
+      el.style.padding = '4px 8px';
+      el.style.border = '1px solid black';
+      el.style.fontSize = '12px';
+    });
+    
+    const htmlContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="utf-8">
+        <title>تقرير السلبيات</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid black; padding: 4px 8px; text-align: right; }
+          th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+        </style>
+      </head>
+      <body>
+        <h2 style="text-align: center;">تقرير السلبيات المفتوحة (Checklist)</h2>
+        <h3 style="text-align: center;">المستشفى: ${hospital.name}</h3>
+        <h4 style="text-align: center;">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</h4>
+        <br>
+        ${tableClone.outerHTML}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff', htmlContent], {
+      type: 'application/msword'
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = \`Checklist_${hospital.name}.doc\`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   if (loading) {
     return <div className="loading-state"><div className="loading-spinner" /><span>جاري التحميل...</span></div>
   }
@@ -175,10 +232,14 @@ export default function OpenFindingsPage() {
             السلبيات المفتوحة <span style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 400 }}>({hospital.name})</span>
           </h1>
         </div>
-        <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '8px', position: 'relative', flexWrap: 'wrap' }}>
+          <button className="btn btn-outline" onClick={handleExportWord} style={{ background: '#fff', color: '#2b579a', border: '1px solid #2b579a', display: 'flex', alignItems: 'center' }}>
+            <WordIcon className="w-4 h-4 ml-2" />
+            تحميل Word
+          </button>
           <button className="btn btn-primary" onClick={handlePrint}>
             <DownloadIcon className="w-4 h-4 ml-2" />
-            تنزيل الـ Checklist
+            طباعة / PDF
           </button>
         </div>
       </div>
@@ -241,7 +302,7 @@ export default function OpenFindingsPage() {
             <div className="empty-state-title">لا توجد سلبيات مفتوحة تطابق الفلاتر</div>
           </div>
         ) : (
-          <table style={{ 
+          <table id="checklist-table" style={{ 
             width: '100%', 
             borderCollapse: 'collapse', 
             border: '2px solid #333',
@@ -250,9 +311,9 @@ export default function OpenFindingsPage() {
           }}>
             <thead>
               <tr>
-                <th style={{ padding: '12px', border: '1px solid #333', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>السلبية (Item)</th>
-                <th className="print-only-cell" style={{ padding: '12px', border: '1px solid #333', width: '25%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>ملاحظات (Notes)</th>
-                <th style={{ padding: '12px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>النتيجة (Result)</th>
+                <th style={{ padding: '6px 8px', border: '1px solid #333', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>السلبية (Item)</th>
+                <th className="print-only-cell" style={{ padding: '6px 8px', border: '1px solid #333', width: '25%', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>ملاحظات (Notes)</th>
+                <th style={{ padding: '6px 8px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>النتيجة (Result)</th>
               </tr>
             </thead>
             <tbody>
@@ -265,17 +326,17 @@ export default function OpenFindingsPage() {
                     {/* Department Header */}
                     <tr className="print-dept-wrapper" data-dept-id={deptId}>
                       <td colSpan="3" style={{ 
-                        padding: '12px 16px', 
+                        padding: '6px 12px', 
                         border: '1px solid #333', 
                         background: '#555', 
                         color: '#fff', 
                         fontWeight: 'bold', 
-                        fontSize: '18px',
+                        fontSize: '15px',
                         WebkitPrintColorAdjust: 'exact',
                         printColorAdjust: 'exact'
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontSize: '24px', opacity: 0.6, fontWeight: 900 }}>{dIndex + 1}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '16px', opacity: 0.8, fontWeight: 900 }}>{dIndex + 1}</span>
                           <span>{dName}</span>
                         </div>
                       </td>
@@ -295,11 +356,11 @@ export default function OpenFindingsPage() {
                         onClick={() => toggleCheck(finding.id)}
                       >
                         {/* Item Column */}
-                        <td style={{ padding: '12px', border: '1px solid #333', verticalAlign: 'top' }}>
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                            <span style={{ marginTop: '2px' }}>•</span>
+                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'top' }}>
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                            <span style={{ marginTop: '0px' }}>•</span>
                             <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '15px', fontWeight: 600 }}>
+                              <div style={{ fontSize: '12.5px', fontWeight: 600 }}>
                                 {finding.original_text}
                               </div>
                             </div>
@@ -307,14 +368,14 @@ export default function OpenFindingsPage() {
                         </td>
                         
                         {/* Notes Column */}
-                        <td className="print-only-cell" style={{ padding: '12px', border: '1px solid #333' }}></td>
+                        <td className="print-only-cell" style={{ padding: '4px 8px', border: '1px solid #333' }}></td>
                         
                         {/* Result Column (Checkbox) */}
-                        <td style={{ padding: '12px', border: '1px solid #333', verticalAlign: 'middle' }}>
+                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'middle' }}>
                           <div style={{ display: 'flex', justifyContent: 'center' }}>
                             <div style={{ 
-                              width: '20px', 
-                              height: '20px', 
+                              width: '16px', 
+                              height: '16px', 
                               border: checkedItems.has(finding.id) ? '2px solid #10b981' : '2px solid #333',
                               display: 'flex', 
                               alignItems: 'center', 
@@ -323,7 +384,7 @@ export default function OpenFindingsPage() {
                               WebkitPrintColorAdjust: 'exact',
                               printColorAdjust: 'exact'
                             }}>
-                              {checkedItems.has(finding.id) && <CheckIcon style={{ width: '14px', height: '14px', color: '#fff' }} />}
+                              {checkedItems.has(finding.id) && <CheckIcon style={{ width: '12px', height: '12px', color: '#fff' }} />}
                             </div>
                           </div>
                         </td>
