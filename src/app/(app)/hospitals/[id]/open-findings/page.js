@@ -400,9 +400,11 @@ export default function OpenFindingsPage() {
                               {checkedItems.has(finding.id) && <CheckIcon style={{ width: '12px', height: '12px', color: '#fff' }} />}
                             </div>
                           </div>
-                          <div className="print-only-block" style={{ display: 'none', fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
-                            {checkedItems.has(finding.id) ? '( \u00A0 ✔ \u00A0 )' : '( \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 )'}
-                          </div>
+                          <div 
+                            className="print-only-block" 
+                            style={{ display: 'none', fontSize: '16px', fontWeight: 'bold', color: '#333' }}
+                            dangerouslySetInnerHTML={{ __html: checkedItems.has(finding.id) ? '( &nbsp;&nbsp; ✔ &nbsp;&nbsp; )' : '( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )' }}
+                          />
                         </td>
                       </tr>
                     ))}
