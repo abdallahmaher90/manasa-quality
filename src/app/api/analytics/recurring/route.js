@@ -57,10 +57,9 @@ export async function GET(request) {
         `)
         .neq('review_status', 'pending_review') // ignore pending review
       
-      // Hospital Scoping Enforcement
-      if (!isDirectorate) {
-        if (!profile?.hospital_id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        query = query.eq('hospital_id', profile.hospital_id)
+      // Early Exit if Hospital Admin has no hospital assigned
+      if (!isDirectorate && !profile?.hospital_id) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
 
       const { data, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1)
@@ -187,20 +186,48 @@ export async function GET(request) {
       }
     }
 
+    // Post-Grouping Hospital Scoping Enforcement
+    let finalRecurring = recurringInSameHospital
+    let finalCommon = commonAcrossHospitals
+
+    if (!isDirectorate && profile?.hospital_id) {
+      const isMyHospital = (h) => h.id === profile.hospital_id
+
+      finalRecurring = recurringInSameHospital.filter(group => {
+        const myHospital = group.hospitalsList.find(isMyHospital)
+        return myHospital && myHospital.repeatCount >= 2
+      })
+
+      finalCommon = commonAcrossHospitals.filter(group => {
+        return group.hospitalsList.some(isMyHospital)
+      })
+
+      const maskHospitals = (group) => {
+        return {
+          ...group,
+          hospitalsList: group.hospitalsList.filter(isMyHospital),
+          allDepartments: [...new Set(group.hospitalsList.filter(isMyHospital).flatMap(h => h.departments))]
+        }
+      }
+
+      finalRecurring = finalRecurring.map(maskHospitals)
+      finalCommon = finalCommon.map(maskHospitals)
+    }
+
     // Sort by active issues first, then total occurrences
     const sorter = (a, b) => {
       if (b.activeCount !== a.activeCount) return b.activeCount - a.activeCount
       return b.totalOccurrences - a.totalOccurrences
     }
 
-    recurringInSameHospital.sort(sorter)
-    commonAcrossHospitals.sort(sorter)
+    finalRecurring.sort(sorter)
+    finalCommon.sort(sorter)
 
     return NextResponse.json({
       success: true,
       data: {
-        recurringInSameHospital,
-        commonAcrossHospitals
+        recurringInSameHospital: finalRecurring,
+        commonAcrossHospitals: finalCommon
       }
     })
 
