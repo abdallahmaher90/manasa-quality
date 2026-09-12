@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "errorType": "Daily Quota Exhaustion",
+    "httpStatus": 429,
+    "model": "gemini-flash-latest (mapped to gemini-3.8-flash)",
+    "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+    "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+    "quotaLimit": 20,
+    "isUsableNow": false
+  },
+  "failedCallsAnalysis": {
+    "totalSmokeTestCalls": 10,
+    "successful": 1,
+    "failed": 9,
+    "averageRetriesBeforeFailure": 5,
+    "averageElapsedTimeMs": 40166,
+    "errorConsistency": "All 9 failures failed with the exact same 429 Daily Quota error."
+  },
+  "singleCallTest": {
+    "executed": true,
+    "result": "FAILED",
+    "reason": "429 Too Many Requests. Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20."
+  },
+  "recommendation": {
+    "safeBatchSize": 0,
+    "nextSteps": "The daily quota for gemini-3.8-flash is completely exhausted (Limit: 20/day on this free tier). Gemini is currently unusable for this API key and model combination. We cannot continue Historical Preparation with this model until the quota resets, or we must switch to a different model (e.g. gemini-1.5-flash) or upgrade the API tier."
+  }
+}

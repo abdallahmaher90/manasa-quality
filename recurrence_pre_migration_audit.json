@@ -1,0 +1,13 @@
+{
+  "total_findings_db": 1366,
+  "total_findings_local": 1366,
+  "no_duplicate_finding_id": true,
+  "no_missing_finding_id": true,
+  "every_proposed_finding_exists": true,
+  "every_target_group_valid": true,
+  "no_orphan_proposed_group": true,
+  "no_duplicate_production_group_ids": true,
+  "no_change_to_original_text": true,
+  "no_change_to_canonical_finding_id": true,
+  "audit_errors": []
+}

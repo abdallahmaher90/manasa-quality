@@ -1,0 +1,388 @@
+{
+  "dataset": "30 Curated Findings (Balanced Edge Cases)",
+  "metrics": {
+    "TP": 0,
+    "TN": 0,
+    "FP": 0,
+    "FN": 0,
+    "Total": 0,
+    "Precision": "0.00%",
+    "Recall": "0.00%",
+    "F1": "0.00%",
+    "RecallAt3": "0.00%",
+    "RecallAt5": "0.00%",
+    "RecallAt8": "0.00%"
+  },
+  "falseNegatives": {
+    "total": 0,
+    "retrievalFN": 0,
+    "decisionFN": 0,
+    "cases": []
+  },
+  "falsePositives": {
+    "total": 0,
+    "cases": []
+  },
+  "determinism": [
+    {
+      "case": 1,
+      "input": "لا يوجد نموذج الأوامر الشفوية",
+      "runs": [
+        "UNCERTAIN",
+        "UNCERTAIN",
+        "UNCERTAIN"
+      ],
+      "stable": true
+    },
+    {
+      "case": 2,
+      "input": "عدم وجود كراش كار",
+      "runs": [
+        "UNCERTAIN",
+        "UNCERTAIN",
+        "UNCERTAIN"
+      ],
+      "stable": true
+    },
+    {
+      "case": 3,
+      "input": "تسجيل الدخول غير محدث",
+      "runs": [
+        "UNCERTAIN",
+        "UNCERTAIN",
+        "UNCERTAIN"
+      ],
+      "stable": true
+    },
+    {
+      "case": 4,
+      "input": "جهاز المونيتور معطل",
+      "runs": [
+        "UNCERTAIN",
+        "UNCERTAIN",
+        "UNCERTAIN"
+      ],
+      "stable": true
+    },
+    {
+      "case": 5,
+      "input": "الموظف لا يرتدي البطاقة",
+      "runs": [
+        "UNCERTAIN",
+        "UNCERTAIN",
+        "UNCERTAIN"
+      ],
+      "stable": true
+    }
+  ],
+  "apiMetrics": {
+    "bulkCalls": 3,
+    "adjudicationCalls": 15,
+    "cacheHits": 0,
+    "cacheMisses": 0,
+    "averageLatency": 0,
+    "p95Latency": 0
+  },
+  "cases": [
+    {
+      "case": {
+        "id": 1,
+        "type": "TP",
+        "input": "لا يوجد نموذج الأوامر الشفوية",
+        "target": "نموذج الأوامر الشفوية غير متوفر بالقسم",
+        "desc": "Synonyms / Paraphrase"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 2,
+        "type": "TP",
+        "input": "عدم وجود كراش كار",
+        "target": "عربة الإنعاش (الكراش كار) غير موجودة",
+        "desc": "Synonyms / Crash Cart"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 3,
+        "type": "TP",
+        "input": "تسجيل الدخول غير محدث",
+        "target": "لم يتم تحديث سجل الدخول",
+        "desc": "Reordered Words"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 4,
+        "type": "TP",
+        "input": "جهاز المونيتور معطل",
+        "target": "شاشة المراقبة لا تعمل",
+        "desc": "Synonyms"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 5,
+        "type": "TP",
+        "input": "الموظف لا يرتدي البطاقة",
+        "target": "عدم لبس البطاقة التعريفية",
+        "desc": "Paraphrase"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 6,
+        "type": "TP",
+        "input": "ملف المريض غير مرتب",
+        "target": "عدم ترتيب ملفات المرضى",
+        "desc": "Plural / Grammar"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 7,
+        "type": "TP",
+        "input": "عدم صيانة جهاز الصدمات",
+        "target": "جهاز الصدمات الكهربائية بحاجة لصيانة",
+        "desc": "Paraphrase"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 8,
+        "type": "TP",
+        "input": "نقص مستلزمات العزل",
+        "target": "مستلزمات العزل غير مكتملة",
+        "desc": "Synonyms"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 9,
+        "type": "TP",
+        "input": "دواليب التخزين غير مطابقة",
+        "target": "تخزين غير مطابق للمعايير في الدواليب",
+        "desc": "Reordered"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 10,
+        "type": "TP",
+        "input": "لا يوجد خطة إخلاء",
+        "target": "خطة الإخلاء في حالة الطوارئ غير موجودة",
+        "desc": "Paraphrase with generic addition"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 11,
+        "type": "TP",
+        "input": "سجل العهدة غير مفعل",
+        "target": "عدم تفعيل سجل العهدة",
+        "desc": "Grammar"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 12,
+        "type": "TP",
+        "input": "النتائج الحرجة لا تبلغ",
+        "target": "عدم الإبلاغ عن النتائج الحرجة",
+        "desc": "Critical Results"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 13,
+        "type": "TP",
+        "input": "عدم وجود سياسة النفايات",
+        "target": "سياسة التخلص من النفايات غير متوفرة",
+        "desc": "Paraphrase"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 14,
+        "type": "TP",
+        "input": "تسرب ماء بالمغسلة",
+        "target": "تسرب مياه من المغسلة",
+        "desc": "Spelling (ماء vs مياه)"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 15,
+        "type": "TN",
+        "input": "نموذج التسليم غير متوفر",
+        "target": "نموذج التسليم غير مكتمل",
+        "desc": "Missing vs Incomplete"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 16,
+        "type": "TN",
+        "input": "جهاز التخطيط غير متوفر",
+        "target": "جهاز التخطيط معطل",
+        "desc": "Missing vs Damaged"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 17,
+        "type": "TN",
+        "input": "الجهاز تالف",
+        "target": "الجهاز غير نظيف",
+        "desc": "Damaged vs Dirty"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 18,
+        "type": "TN",
+        "input": "السياسة غير معتمدة",
+        "target": "السياسة غير محدثة",
+        "desc": "Unapproved vs Outdated"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 19,
+        "type": "TN",
+        "input": "الأدوية منتهية الصلاحية",
+        "target": "الأدوية غير متوفرة",
+        "desc": "Expired vs Missing"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 20,
+        "type": "TN",
+        "input": "التوثيق الطبي متأخر",
+        "target": "التوثيق الطبي غير موجود",
+        "desc": "Delayed vs Missing"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 21,
+        "type": "TN",
+        "input": "نقص في كمية الأدوية",
+        "target": "الدواء غير متوفر",
+        "desc": "Incomplete vs Missing"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 22,
+        "type": "TN",
+        "input": "نموذج الإقرار غير متوفر",
+        "target": "سجل الحرارة غير متوفر",
+        "desc": "Same Defect / Diff Entity"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 23,
+        "type": "TN",
+        "input": "عدم الالتزام بسياسة نظافة اليدين",
+        "target": "عدم الالتزام بسياسة التخلص من النفايات",
+        "desc": "Same generic wording"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 24,
+        "type": "TN",
+        "input": "ثلاجة الدم معطلة",
+        "target": "ثلاجة الأدوية معطلة",
+        "desc": "Same Defect / Diff Entity"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 25,
+        "type": "TN",
+        "input": "السرير غير نظيف",
+        "target": "السرير مكسور",
+        "desc": "Dirty vs Damaged"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 26,
+        "type": "TN",
+        "input": "السياسة لم تفعل",
+        "target": "السياسة لم تكتب",
+        "desc": "Inactive vs Missing"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 27,
+        "type": "TN",
+        "input": "وجود أدوية عالية الخطورة",
+        "target": "أدوية عالية الخطورة غير مميزة",
+        "desc": "Incorrect vs Unlabeled"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 28,
+        "type": "TN",
+        "input": "عدم توفر معقم لليدين",
+        "target": "معقم اليدين منتهي الصلاحية",
+        "desc": "Missing vs Expired"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 29,
+        "type": "TN",
+        "input": "تسرب مياه من السقف",
+        "target": "تسرب مياه من المغسلة",
+        "desc": "Same defect / Diff Entity"
+      },
+      "error": "Signature Missing (API Limit)"
+    },
+    {
+      "case": {
+        "id": 30,
+        "type": "TN",
+        "input": "سجل التسليم غير مكتمل",
+        "target": "سجل العهدة غير مكتمل",
+        "desc": "Same generic wording / Diff Entity"
+      },
+      "error": "Signature Missing (API Limit)"
+    }
+  ]
+}

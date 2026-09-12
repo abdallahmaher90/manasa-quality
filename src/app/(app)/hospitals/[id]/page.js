@@ -591,27 +591,33 @@ export default function HospitalPage() {
       </div>
 
       {/* Stats Grid */}
+      {/* Stats Grid */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .kpi-clickable { transition: all 0.2s ease-in-out; }
+        .kpi-clickable:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); filter: brightness(1.05); }
+        .kpi-clickable:active { transform: translateY(-1px); }
+      `}} />
       <div className="stats-grid" style={{ marginBottom: '24px' }}>
-        <div className="stat-card danger">
+        <Link href={`/hospitals/${id}/open-findings`} className="stat-card danger kpi-clickable" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', cursor: 'pointer' }}>
           <div className="stat-value">{totalOpen}</div>
           <div className="stat-label">سلبيات مفتوحة</div>
-        </div>
-        <div className="stat-card warning">
+        </Link>
+        <Link href={`/hospitals/${id}/recurring`} className="stat-card warning kpi-clickable" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', cursor: 'pointer' }}>
           <div className="stat-value">{totalRecurring}</div>
           <div className="stat-label">سلبيات مكررة</div>
-        </div>
-        <div className="stat-card success">
+        </Link>
+        <Link href={`/hospitals/${id}/resolved-findings`} className="stat-card success kpi-clickable" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', cursor: 'pointer' }}>
           <div className="stat-value">{totalResolved}</div>
           <div className="stat-label">سلبيات محلولة</div>
-        </div>
-        <div className="stat-card primary">
+        </Link>
+        <Link href={`/hospitals/${id}/completion-rate`} className="stat-card primary kpi-clickable" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', cursor: 'pointer' }}>
           <div className="stat-value">
             {totalOpen + totalResolved > 0 
               ? Math.round((totalResolved / (totalOpen + totalResolved)) * 100) 
               : 0}%
           </div>
           <div className="stat-label">معدل الإنجاز</div>
-        </div>
+        </Link>
       </div>
 
 

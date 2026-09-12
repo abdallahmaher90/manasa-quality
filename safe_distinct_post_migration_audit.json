@@ -1,0 +1,224 @@
+{
+  "summary": {
+    "total_findings": 1366,
+    "assertions_passed": 2,
+    "assertions_failed": 0,
+    "orphan_groups": 0,
+    "duplicate_findings": 0
+  },
+  "cases": [
+    {
+      "finding_id": "1ebd9c93-5109-47ea-878a-2df65dc71518",
+      "assertions": [
+        {
+          "name": "recurrence_group_id_correct",
+          "passed": true,
+          "details": "Expected cd30ccdd-0812-4b5e-a386-ca10d64e4d41, got cd30ccdd-0812-4b5e-a386-ca10d64e4d41"
+        },
+        {
+          "name": "recurrence_groups_row_exists",
+          "passed": true,
+          "details": "Group exists"
+        },
+        {
+          "name": "title_correct",
+          "passed": true,
+          "details": "Expected غرفة الأرشيف غير مطابقة للمواصفات, got غرفة الأرشيف غير مطابقة للمواصفات"
+        },
+        {
+          "name": "normalized_key_correct",
+          "passed": true,
+          "details": "Expected غرفه الارشيف غير مطابقه للمواصفات, got غرفه الارشيف غير مطابقه للمواصفات"
+        },
+        {
+          "name": "original_text_unchanged",
+          "passed": true,
+          "details": "Original text matches expected title text"
+        },
+        {
+          "name": "report_id_present",
+          "passed": true,
+          "details": "report_id is preserved"
+        },
+        {
+          "name": "hospital_id_present",
+          "passed": true,
+          "details": "hospital_id is preserved"
+        },
+        {
+          "name": "department_id_present",
+          "passed": true,
+          "details": "department_id is preserved"
+        },
+        {
+          "name": "status_present",
+          "passed": true,
+          "details": "status is preserved"
+        },
+        {
+          "name": "priority_present",
+          "passed": true,
+          "details": "priority is preserved"
+        },
+        {
+          "name": "created_at_present",
+          "passed": true,
+          "details": "created_at is preserved"
+        },
+        {
+          "name": "group_member_count_correct",
+          "passed": true,
+          "details": "Expected 1 member, got 1"
+        }
+      ],
+      "unexpected_changes": [],
+      "group_member_count": 1
+    },
+    {
+      "finding_id": "63c41f52-dd9c-4a92-bcee-f8937d7e46bc",
+      "assertions": [
+        {
+          "name": "recurrence_group_id_correct",
+          "passed": true,
+          "details": "Expected 4721c3ee-5aea-4b7a-ad1f-9fa6b46f8526, got 4721c3ee-5aea-4b7a-ad1f-9fa6b46f8526"
+        },
+        {
+          "name": "recurrence_groups_row_exists",
+          "passed": true,
+          "details": "Group exists"
+        },
+        {
+          "name": "title_correct",
+          "passed": true,
+          "details": "Expected يوجد ألات منتهية التعقيم و آخري منتهية التطهير, got يوجد ألات منتهية التعقيم و آخري منتهية التطهير"
+        },
+        {
+          "name": "normalized_key_correct",
+          "passed": true,
+          "details": "Expected يوجد الات منتهيه التعقيم و اخري منتهيه التطهير, got يوجد الات منتهيه التعقيم و اخري منتهيه التطهير"
+        },
+        {
+          "name": "original_text_unchanged",
+          "passed": true,
+          "details": "Original text matches expected title text"
+        },
+        {
+          "name": "report_id_present",
+          "passed": true,
+          "details": "report_id is preserved"
+        },
+        {
+          "name": "hospital_id_present",
+          "passed": true,
+          "details": "hospital_id is preserved"
+        },
+        {
+          "name": "department_id_present",
+          "passed": true,
+          "details": "department_id is preserved"
+        },
+        {
+          "name": "status_present",
+          "passed": true,
+          "details": "status is preserved"
+        },
+        {
+          "name": "priority_present",
+          "passed": true,
+          "details": "priority is preserved"
+        },
+        {
+          "name": "created_at_present",
+          "passed": true,
+          "details": "created_at is preserved"
+        },
+        {
+          "name": "group_member_count_correct",
+          "passed": true,
+          "details": "Expected 1 member, got 1"
+        }
+      ],
+      "unexpected_changes": [],
+      "group_member_count": 1
+    },
+    {
+      "finding_id": "8a72c2b7-b2ab-4c21-82e3-08b49d8ce192",
+      "assertions": [
+        {
+          "name": "recurrence_group_id_correct",
+          "passed": true,
+          "details": "Expected a1e33baf-658d-4d2b-a67b-ac2e16183157, got a1e33baf-658d-4d2b-a67b-ac2e16183157"
+        },
+        {
+          "name": "recurrence_groups_row_exists",
+          "passed": true,
+          "details": "Group exists"
+        },
+        {
+          "name": "title_correct",
+          "passed": true,
+          "details": "Expected سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للآلات المعقمة و تسليم الآلات الملوثة للتعقيم, got سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للآلات المعقمة و تسليم الآلات الملوثة للتعقيم"
+        },
+        {
+          "name": "normalized_key_correct",
+          "passed": true,
+          "details": "Expected سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للالات المعقمه و تسليم الالات الملوثه للتعقيم, got سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للالات المعقمه و تسليم الالات الملوثه للتعقيم"
+        },
+        {
+          "name": "original_text_unchanged",
+          "passed": true,
+          "details": "Original text matches expected title text"
+        },
+        {
+          "name": "report_id_present",
+          "passed": true,
+          "details": "report_id is preserved"
+        },
+        {
+          "name": "hospital_id_present",
+          "passed": true,
+          "details": "hospital_id is preserved"
+        },
+        {
+          "name": "department_id_present",
+          "passed": true,
+          "details": "department_id is preserved"
+        },
+        {
+          "name": "status_present",
+          "passed": true,
+          "details": "status is preserved"
+        },
+        {
+          "name": "priority_present",
+          "passed": true,
+          "details": "priority is preserved"
+        },
+        {
+          "name": "created_at_present",
+          "passed": true,
+          "details": "created_at is preserved"
+        },
+        {
+          "name": "group_member_count_correct",
+          "passed": true,
+          "details": "Expected 1 member, got 1"
+        }
+      ],
+      "unexpected_changes": [],
+      "group_member_count": 1
+    }
+  ],
+  "assertions": [
+    {
+      "name": "total_report_findings_is_1366",
+      "passed": true,
+      "details": "Found: 1366"
+    },
+    {
+      "name": "no_duplicate_finding_id",
+      "passed": true,
+      "details": "Verified by Primary Key constraint on report_findings.id"
+    }
+  ]
+}

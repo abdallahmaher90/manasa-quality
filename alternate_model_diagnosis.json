@@ -1,0 +1,10 @@
+{
+  "model": "gemini-3.5-flash",
+  "sdk": "@google/generative-ai",
+  "success": true,
+  "httpStatus": 200,
+  "exactErrorCategory": null,
+  "quotaMetric": null,
+  "quotaLimit": null,
+  "responseLatencyMs": 1672
+}

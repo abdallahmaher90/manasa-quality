@@ -1,0 +1,524 @@
+{
+  "summary": {
+    "total_recoverable": 16,
+    "LIKELY_SAME_ISSUE": 0,
+    "LIKELY_DISTINCT": 2,
+    "INSUFFICIENT_EVIDENCE": 14,
+    "candidate_groups": 16,
+    "suspicious_lexical_only_matches": [
+      {
+        "finding_id": "fdd80f5d-24d9-4b83-8b17-5f8db5441463",
+        "original_text": "عدم تمييز الأصناف المتشابهة في الشكل والنطق في دولاب الطوارئ",
+        "target": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+        "score": 0.7142857142857143,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "68ea9db5-1df7-4675-964c-effb52b78eab",
+        "original_text": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+        "target": "لا يوجد محضر فتح لسجل المعمل",
+        "score": 0.75,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "b0b86bb9-a467-4082-adbe-ab125ca5192e",
+        "original_text": "توقيع الطاقم الطبي ثنائي بسجل الطوارئ",
+        "target": "توقيع التمريض ثنائي",
+        "score": 0.6666666666666666,
+        "reason": "Semantic divergence detected despite lexical overlap."
+      },
+      {
+        "finding_id": "35843c3b-9c2d-4d9e-9a1f-9909bab1503e",
+        "original_text": "لا يوجد قائمه محتويات الثلاجه",
+        "target": "قائمه الثلاجه تحتاج الي تحديث",
+        "score": 0.6666666666666666,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+        "original_text": "توقيع الصيدلي الاكلينيكي احادي",
+        "target": "توقيع الصيدلي الاكلينيكي احادي في نموذج مرور الصيدلي الاكلينيكي",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "7bba0c69-c3e5-454f-a572-506d4e2238ea",
+        "original_text": "لا يوجد تسليم وتسلم للأطباء منذ الدخول الحاله للقسم",
+        "target": "لا يوجد تسليم وتسلم للاطباء",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "87f9da23-dad8-4330-9fee-4e77d879722f",
+        "original_text": "جهاز الصدمات لا يعمل ولم يتم تفريغ الشحنه",
+        "target": "لم يتم تسجيل تفريغ شحنات جهاز DC",
+        "score": 0.6,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "82c46142-a066-45fe-bd73-37d2a2bf433c",
+        "original_text": "جهاز الصدمات DC معطل.",
+        "target": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+        "score": 0.6666666666666666,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+        "original_text": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+        "target": "لا يوجد ترمومتر حراره و رطوبه",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "26f22a85-51cf-452b-890f-293f441f3642",
+        "original_text": "يتم عمل تقييم الوقاية من الجلطات  VTE عند الدخول فقط ولا يتم إعادة التقييم .",
+        "target": "تقييم الوقايه من الجلطات غير دقيق",
+        "score": 0.75,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+        "original_text": "لا يوجد ماسة على المواد الكيميائية",
+        "target": "لا يتم وضع ماسه المواد الكيميائيه الخطره علي زجاجات الصابون",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "a15559b7-1b96-4e7a-b344-dead85d5770b",
+        "original_text": "تاريخ الانتهاء بعد الفتح غير مسجل  .",
+        "target": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+        "score": 0.8,
+        "reason": "Semantic divergence detected despite lexical overlap."
+      },
+      {
+        "finding_id": "a8904600-4730-4c32-8c4f-83bd4d706d9c",
+        "original_text": "قوائم مرور الفحص اليومي لفني الاشعه غير مكتمله (آخر مرور عليها يوم 9/7/2026.",
+        "target": "لا يوجد مرور الفحص اليومي للاجهزه",
+        "score": 0.75,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "6498b325-c6fe-42d3-bcfc-0cce3010deb9",
+        "original_text": "لا يوجد سجل معايرة او اي بيانات تفيد معايرة البادج فيلم .",
+        "target": "لا يوجد سجل معايره الميزان",
+        "score": 0.6666666666666666,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "bd6383b1-90a3-41d1-83ab-d1520b1a5909",
+        "original_text": "العاملين بالقسم غير مدربين على الامان الإشعاعي\nسياسة النتائج الحرجة  \nالإنعاش القلبي الرئويCPR  \nتقرير الإبلاغ عن حادث عارض OVR\nالتعامل مع الانسكابات الكيميائية او البيولوجية \nخطة الحريق والاخلاء  RACE PASS",
+        "target": "لا يوجد PASS RACE",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      },
+      {
+        "finding_id": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+        "original_text": "لا يوجد سجل اعطال بالقسم .",
+        "target": "لا يوجد سجل اعطال",
+        "score": 1,
+        "reason": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "finding_id": "fdd80f5d-24d9-4b83-8b17-5f8db5441463",
+      "original_text": "عدم تمييز الأصناف المتشابهة في الشكل والنطق في دولاب الطوارئ",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "8fa9b717-019d-498a-bcbb-4cdd10673c6f",
+      "current_recurrence_group_id": "f2fc3938-0c7f-4923-9c8e-781484f8a04f",
+      "normalized_text": "عدم تمييز الاصناف المتشابهه في الشكل النطق في دولاب الطوارئ",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+      "lexical_score": 0.7142857142857143,
+      "token_overlap": [
+        "تمييز",
+        "المتشابهه",
+        "الشكل",
+        "النطق",
+        "الطوارئ"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "68ea9db5-1df7-4675-964c-effb52b78eab",
+      "original_text": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "20b2e50c-4ce5-4a2c-9d01-4b42882b9c63",
+      "normalized_text": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد محضر فتح لسجل المعمل",
+      "lexical_score": 0.75,
+      "token_overlap": [
+        "محضر",
+        "فتح",
+        "لسجل"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "b0b86bb9-a467-4082-adbe-ab125ca5192e",
+      "original_text": "توقيع الطاقم الطبي ثنائي بسجل الطوارئ",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "b238945f-cb73-4dfe-beb9-9dad4f145099",
+      "normalized_text": "توقيع الطاقم الطبي ثنائي بسجل الطوارئ",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "توقيع التمريض ثنائي",
+      "lexical_score": 0.6666666666666666,
+      "token_overlap": [
+        "توقيع",
+        "ثنائي"
+      ],
+      "review_label": "LIKELY_DISTINCT",
+      "semantic_comparison": {
+        "entity": "MISMATCH (Documentation vs Non-Documentation)",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Semantic divergence detected despite lexical overlap."
+      }
+    },
+    {
+      "finding_id": "35843c3b-9c2d-4d9e-9a1f-9909bab1503e",
+      "original_text": "لا يوجد قائمه محتويات الثلاجه",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "189b661e-5bea-4550-93d1-b525e0d5fd09",
+      "normalized_text": "لا يوجد قائمه محتويات الثلاجه",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "قائمه الثلاجه تحتاج الي تحديث",
+      "lexical_score": 0.6666666666666666,
+      "token_overlap": [
+        "قائمه",
+        "الثلاجه"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "POSSIBLE_MISMATCH",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+      "original_text": "توقيع الصيدلي الاكلينيكي احادي",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": "050b4819-0d44-4157-86a3-634b13b259e3",
+      "normalized_text": "توقيع الصيدلي الاكلينيكي احادي",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "توقيع الصيدلي الاكلينيكي احادي في نموذج مرور الصيدلي الاكلينيكي",
+      "lexical_score": 1,
+      "token_overlap": [
+        "توقيع",
+        "الصيدلي",
+        "الاكلينيكي",
+        "احادي"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "7bba0c69-c3e5-454f-a572-506d4e2238ea",
+      "original_text": "لا يوجد تسليم وتسلم للأطباء منذ الدخول الحاله للقسم",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": null,
+      "normalized_text": "لا يوجد تسليم وتسلم للاطباء منذ الدخول الحاله للقسم",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد تسليم وتسلم للاطباء",
+      "lexical_score": 1,
+      "token_overlap": [
+        "تسليم",
+        "وتسلم",
+        "للاطباء"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "87f9da23-dad8-4330-9fee-4e77d879722f",
+      "original_text": "جهاز الصدمات لا يعمل ولم يتم تفريغ الشحنه",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": null,
+      "normalized_text": "جهاز الصدمات لا يعمل ولم يتم تفريغ الشحنه",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لم يتم تسجيل تفريغ شحنات جهاز DC",
+      "lexical_score": 0.6,
+      "token_overlap": [
+        "جهاز",
+        "يتم",
+        "تفريغ"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "82c46142-a066-45fe-bd73-37d2a2bf433c",
+      "original_text": "جهاز الصدمات DC معطل.",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "8f7c5fa5-563a-4f7a-9a37-5be11a688ea1",
+      "normalized_text": "جهاز الصدمات dc معطل",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+      "lexical_score": 0.6666666666666666,
+      "token_overlap": [
+        "جهاز",
+        "الصدمات"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+      "original_text": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "69cc31aa-4791-4176-8dc7-68dd9a0c456a",
+      "normalized_text": "لا يوجد ترمومتر حراره او رطوبه فوق او بجانب عربه الكراش كارت",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد ترمومتر حراره و رطوبه",
+      "lexical_score": 1,
+      "token_overlap": [
+        "ترمومتر",
+        "حراره",
+        "رطوبه"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "26f22a85-51cf-452b-890f-293f441f3642",
+      "original_text": "يتم عمل تقييم الوقاية من الجلطات  VTE عند الدخول فقط ولا يتم إعادة التقييم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": null,
+      "normalized_text": "يتم عمل تقييم الوقايه من الجلطات vte عند الدخول فقط ولا يتم اعاده التقييم",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "تقييم الوقايه من الجلطات غير دقيق",
+      "lexical_score": 0.75,
+      "token_overlap": [
+        "تقييم",
+        "الوقايه",
+        "الجلطات"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "POSSIBLE_MISMATCH",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+      "original_text": "لا يوجد ماسة على المواد الكيميائية",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "83d2e331-6a3c-415e-8a51-4b073d22d76c",
+      "normalized_text": "لا يوجد ماسه علي المواد الكيميائيه",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يتم وضع ماسه المواد الكيميائيه الخطره علي زجاجات الصابون",
+      "lexical_score": 1,
+      "token_overlap": [
+        "ماسه",
+        "علي",
+        "المواد",
+        "الكيميائيه"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "POSSIBLE_MISMATCH",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "a15559b7-1b96-4e7a-b344-dead85d5770b",
+      "original_text": "تاريخ الانتهاء بعد الفتح غير مسجل  .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "d0682a48-12b7-4441-9762-a9fe7d080a94",
+      "normalized_text": "تاريخ الانتهاء بعد الفتح غير مسجل",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+      "lexical_score": 0.8,
+      "token_overlap": [
+        "تاريخ",
+        "الانتهاء",
+        "بعد",
+        "الفتح"
+      ],
+      "review_label": "LIKELY_DISTINCT",
+      "semantic_comparison": {
+        "entity": "MISMATCH (Documentation vs Non-Documentation)",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "POSSIBLE_MISMATCH",
+        "analysis": "Semantic divergence detected despite lexical overlap."
+      }
+    },
+    {
+      "finding_id": "a8904600-4730-4c32-8c4f-83bd4d706d9c",
+      "original_text": "قوائم مرور الفحص اليومي لفني الاشعه غير مكتمله (آخر مرور عليها يوم 9/7/2026.",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "normalized_text": "قوائم مرور الفحص اليومي لفني الاشعه غير مكتمله اخر مرور عليها يوم 9 7 2026",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد مرور الفحص اليومي للاجهزه",
+      "lexical_score": 0.75,
+      "token_overlap": [
+        "مرور",
+        "الفحص",
+        "اليومي"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "6498b325-c6fe-42d3-bcfc-0cce3010deb9",
+      "original_text": "لا يوجد سجل معايرة او اي بيانات تفيد معايرة البادج فيلم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "normalized_text": "لا يوجد سجل معايره او اي بيانات تفيد معايره البادج فيلم",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد سجل معايره الميزان",
+      "lexical_score": 0.6666666666666666,
+      "token_overlap": [
+        "سجل",
+        "معايره"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "bd6383b1-90a3-41d1-83ab-d1520b1a5909",
+      "original_text": "العاملين بالقسم غير مدربين على الامان الإشعاعي\nسياسة النتائج الحرجة  \nالإنعاش القلبي الرئويCPR  \nتقرير الإبلاغ عن حادث عارض OVR\nالتعامل مع الانسكابات الكيميائية او البيولوجية \nخطة الحريق والاخلاء  RACE PASS",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "normalized_text": "العاملين بالقسم غير مدربين علي الامان الاشعاعي سياسه النتائج الحرجه الانعاش القلبي الرئويcpr تقرير الابلاغ عن حادث عارض ovr التعامل مع الانسكابات الكيميائيه او البيولوجيه خطه الحريق الاخلاء race pass",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد PASS RACE",
+      "lexical_score": 1,
+      "token_overlap": [
+        "race",
+        "pass"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    },
+    {
+      "finding_id": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+      "original_text": "لا يوجد سجل اعطال بالقسم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": "b6df7e3e-377e-4146-a1e0-d8ea3d6eaa98",
+      "normalized_text": "لا يوجد سجل اعطال بالقسم",
+      "extracted_concepts": [],
+      "lexical_candidate_group": "لا يوجد سجل اعطال",
+      "lexical_score": 1,
+      "token_overlap": [
+        "سجل",
+        "اعطال"
+      ],
+      "review_label": "INSUFFICIENT_EVIDENCE",
+      "semantic_comparison": {
+        "entity": "UNKNOWN",
+        "defect": "UNKNOWN",
+        "requirement": "UNKNOWN",
+        "context": "UNKNOWN",
+        "polarity": "UNKNOWN",
+        "analysis": "Requires manual or LLM review. Lexical overlap exists but semantic alignment is ambiguous."
+      }
+    }
+  ]
+}

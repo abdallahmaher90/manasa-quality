@@ -1,0 +1,28 @@
+{
+  "A_LocalHistoricalIndexing": {
+    "totalFindings": 1366,
+    "uniqueNormalizedKeys": 1317,
+    "existingRecurrenceGroups": 1104,
+    "indexingGeminiCalls": 0
+  },
+  "B_CandidateRetrieval": {
+    "totalCandidatePairsGenerated": 5466,
+    "avgCandidatesPerFinding": "4.00",
+    "sameHospitalPairs": 922,
+    "crossHospitalPairs": 4544,
+    "crossDepartmentPairs": 673
+  },
+  "C_CandidateDistribution": {
+    "0": 111,
+    "1": 83,
+    "2-3": 164,
+    "4-8": 1008,
+    ">8": 0
+  },
+  "D_EstimatedGeminiCalls_Historical": 5466,
+  "E_NewReportBenchmark": {
+    "findingCount": 30,
+    "estimatedLocalRetrievals": 30,
+    "estimatedGeminiAdjudications": 121
+  }
+}

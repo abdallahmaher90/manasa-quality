@@ -1,0 +1,122 @@
+{
+  "v4_tuning_metrics": {
+    "averageCandidateGroupsPerFinding": "4.52",
+    "zeroCandidates": 0,
+    "conceptCandidates": 4252,
+    "geminiCallsReduction": "Group-level architecture + Concept Injection limits candidates to Top 5 high-quality."
+  },
+  "lexicalDisjointResults": [
+    {
+      "id": "LD1",
+      "input": "عربة الإنعاش غير موجودة",
+      "expected": "نقص كراش كار",
+      "inputConcepts": [
+        "ENT_CRASH_CART",
+        "DEF_MISSING"
+      ],
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false
+    },
+    {
+      "id": "LD2",
+      "input": "النتائج الحرجة لا تبلغ",
+      "expected": "قصور في نظام تبليغ القيم الحرجة",
+      "inputConcepts": [
+        "ENT_CRITICAL_RESULTS"
+      ],
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false
+    },
+    {
+      "id": "LD3",
+      "input": "جهاز المراقبة معطل",
+      "expected": "المونيتور لا يعمل",
+      "inputConcepts": [
+        "ENT_MONITOR",
+        "DEF_BROKEN"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD4",
+      "input": "ملف المريض غير مرتب",
+      "expected": "سجلات المرضى مبعثرة",
+      "inputConcepts": [
+        "ENT_PATIENT_FILE",
+        "DEF_MESSY"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD5",
+      "input": "الموظف لا يرتدي البطاقة",
+      "expected": "غياب الهوية التعريفية للكادر",
+      "inputConcepts": [
+        "ENT_ID_CARD",
+        "ENT_STAFF",
+        "DEF_NOT_WEARING"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD6",
+      "input": "عدم وجود امبو باج",
+      "expected": "نقص جهاز تنفس يدوي",
+      "inputConcepts": [
+        "ENT_AMBU_BAG",
+        "DEF_MISSING"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD7",
+      "input": "تخزين ادوية LASA خاطئ",
+      "expected": "الادوية المتشابهة غير مفصولة",
+      "inputConcepts": [
+        "ENT_LASA"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD8",
+      "input": "لا يوجد Medical forms",
+      "expected": "نقص النماذج الطبية",
+      "inputConcepts": [
+        "ENT_MEDICAL_FORMS",
+        "DEF_MISSING"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD9",
+      "input": "Oral orders not documented",
+      "expected": "الاوامر الشفهية غير موثقة",
+      "inputConcepts": [
+        "ENT_ORAL_ORDERS",
+        "DEF_NOT_DOCUMENTED"
+      ],
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    }
+  ],
+  "geminiVolumeProjections": {
+    "20_findings_report": 91,
+    "30_findings_report": 136,
+    "1366_historical": 6175
+  }
+}

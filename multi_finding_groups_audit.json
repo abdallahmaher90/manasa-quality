@@ -1,0 +1,1612 @@
+[
+  {
+    "group": {
+      "id": "ddebb0a8-8593-44c0-a105-6e49316aa461",
+      "title": "الوصفه الطبيه غير مكتمله",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "27a3e0ea-ddb5-49d4-be31-e83683a16021",
+        "recurrence_group_id": "ddebb0a8-8593-44c0-a105-6e49316aa461",
+        "original_text": "الوصفه الطبيه غير مكتمله البيانات",
+        "hospital_id": "982945ef-7f38-4497-93d7-aeaade37cfaf",
+        "created_at": "2026-08-25T08:16:15.138399+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "39e1312a-24a4-4de6-adae-451f31523593",
+        "recurrence_group_id": "ddebb0a8-8593-44c0-a105-6e49316aa461",
+        "original_text": "الوصفه الطبيه غير مكتملة",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:28:31.927815+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "1fb30af6-583a-42bc-b2aa-ef6f8ec0e772",
+      "title": "نموذج التوافق الدوائي غير مفعل",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 3,
+    "items": [
+      {
+        "id": "92da6ad3-7b5b-42b9-8c40-5d8bf15d7b26",
+        "recurrence_group_id": "1fb30af6-583a-42bc-b2aa-ef6f8ec0e772",
+        "original_text": "نموذج التوافق الدوائى غير مفعل",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:28:30.058279+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "21705967-14f2-4928-b5af-a4a48654c0ef",
+        "recurrence_group_id": "1fb30af6-583a-42bc-b2aa-ef6f8ec0e772",
+        "original_text": "نموذج التوافق الدوائى غير مفعل",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:21:14.115448+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "963bbc27-fbe3-438b-af5d-1d5da7e578f8",
+        "recurrence_group_id": "1fb30af6-583a-42bc-b2aa-ef6f8ec0e772",
+        "original_text": "التوافق الدوائي غير مفعل",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:28:31.840697+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "0d96fb0b-07a4-4c4f-98ef-d008e6d65452",
+      "title": "لا يوجد قائمه بالنتائج الحرجه الاكلينيكيه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "28ee294f-676a-4de6-8485-f01ff4b83d9f",
+        "recurrence_group_id": "0d96fb0b-07a4-4c4f-98ef-d008e6d65452",
+        "original_text": "لا يوجد قائمه بالنتائج الحرجه الاكلينيكيه او الفسيولوجيه",
+        "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+        "created_at": "2026-08-25T11:37:11.291173+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "772f8ccb-0f2d-4ac5-beb3-2222217f0746",
+        "recurrence_group_id": "0d96fb0b-07a4-4c4f-98ef-d008e6d65452",
+        "original_text": "لا يوجد قائمه بالنتائج الحرجه الاكلينيكيه",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:06.959776+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+      "title": "يوجد اختصارات بالملف الطبي",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 7,
+    "items": [
+      {
+        "id": "6ae4d3a2-906d-4df1-b158-43ac6bbd265d",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "يوجد اختصارات بالملف الطبي",
+        "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+        "created_at": "2026-08-25T11:37:10.520171+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "4dd4c317-9c3a-44a5-bf84-a7fce1bb2de1",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "[الكراش كار] يوجد اختصارات بالملف الطبي",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:11:18.614282+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "2acc1993-2d4b-4259-9c93-8ed8611f1152",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "يوجد اختصارات غير مسموحه بالملف الطبي",
+        "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+        "created_at": "2026-08-25T11:27:33.317403+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "55c08690-9e9c-426f-a045-6a2bf9e25c21",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "وجود اختصارات ممنوعة بالملف الطبي",
+        "hospital_id": "3183df43-a0e2-46ad-be8b-4c14a5b9aba7",
+        "created_at": "2026-08-25T11:30:00.558356+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "9ec5ecdc-9f5d-4ce1-993f-02194a25c420",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "يوجد اختصارات بالملف الطبي",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:05.174535+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "77f22427-f073-4ab7-aa96-1270cbf16254",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "يوجد اختصارات غير مسموحه بالملف الطبي",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:27.779661+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "432fcf73-9fa3-4374-9352-dfd42a56f01d",
+        "recurrence_group_id": "92561968-a28b-4708-9ce4-f6cbb61010bd",
+        "original_text": "يوجد اختصارات بالملف الطبي",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:15:39.833494+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "ea370628-c6da-4311-9bc6-aaee487caca5",
+      "title": "لا يوجد قائمه بالاختصاراات الطبيه الممنوعه او المسموحه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "a11728ce-cddb-49c9-a222-5dcc5b30ef41",
+        "recurrence_group_id": "ea370628-c6da-4311-9bc6-aaee487caca5",
+        "original_text": "لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:05.07474+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "e134736a-93af-4752-b0d4-3efad322c181",
+        "recurrence_group_id": "ea370628-c6da-4311-9bc6-aaee487caca5",
+        "original_text": "لا يوجد قائمة بالاختصاراات الطبية الممنوعه",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:06.662564+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "7cc0af5c-7220-4bb5-a318-7c687913f7ea",
+      "title": "توقيع بعض الاطباء فورمه او ثنائي",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 3,
+    "items": [
+      {
+        "id": "03365545-49d2-4114-832d-b3fe6bbae8df",
+        "recurrence_group_id": "7cc0af5c-7220-4bb5-a318-7c687913f7ea",
+        "original_text": "توقيع بعض الاطباء فورمه او ثنائي",
+        "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+        "created_at": "2026-08-25T11:37:11.697549+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "e6a7f07e-b4e3-42d2-8b7b-1aa023f03722",
+        "recurrence_group_id": "7cc0af5c-7220-4bb5-a318-7c687913f7ea",
+        "original_text": "توقيع بعض الاطباء فورمة او ثنائي",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:00.605103+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "7660cb2c-65ca-4ed1-85f0-7d83ff3427d0",
+        "recurrence_group_id": "7cc0af5c-7220-4bb5-a318-7c687913f7ea",
+        "original_text": "توقيع الأطباء ثنائى",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:09.878649+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "87e6f379-e6bb-4565-9104-4a99a52ecb36",
+      "title": "لا يوجد توقيع صيدلي ع صرف الادويه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "1f962bdd-4683-4d9b-abf5-745ff35d246e",
+        "recurrence_group_id": "87e6f379-e6bb-4565-9104-4a99a52ecb36",
+        "original_text": "لا يوجد توقيع صيدلي على صرف الادويه",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T11:25:42.931849+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "fa2bc877-a4c7-4f48-92e2-206460612131",
+        "recurrence_group_id": "87e6f379-e6bb-4565-9104-4a99a52ecb36",
+        "original_text": "لا يوجد توقيع صيدلي ع صرف الادويه",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:19:05.376485+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "837620dd-56b6-4230-9050-ce84245332f4",
+      "title": "لايوجد قائمه بالاختصارات المسموحه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 3,
+    "items": [
+      {
+        "id": "606d22f2-a5da-4ed8-a957-61f92e00c3a1",
+        "recurrence_group_id": "837620dd-56b6-4230-9050-ce84245332f4",
+        "original_text": "لا يوجد قائمه بالاختصارات المسموحه",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:15:39.936948+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "3a5fbf3d-3347-42db-ba91-5f6545ea4b97",
+        "recurrence_group_id": "837620dd-56b6-4230-9050-ce84245332f4",
+        "original_text": ". لايوجد قائمة بالاختصارات المسموحه",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T12:07:07.664534+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "df48d04c-d087-4231-b024-a8615a507a7b",
+        "recurrence_group_id": "837620dd-56b6-4230-9050-ce84245332f4",
+        "original_text": "لا يوجد قائمة بالاختصارات المسموحة",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:33:48.9024+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "799bbfea-8aa0-47b9-bbe8-a027b0122d5a",
+      "title": "الوصفه الدوائيه غير مكتمله",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 4,
+    "items": [
+      {
+        "id": "cc684964-f73b-4be8-80a9-b9c85027254f",
+        "recurrence_group_id": "799bbfea-8aa0-47b9-bbe8-a027b0122d5a",
+        "original_text": "الوصفة الدوائية غير مكتملة",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:10.190851+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "8ca11fa9-086c-4c7b-922e-ba8231048ce7",
+        "recurrence_group_id": "799bbfea-8aa0-47b9-bbe8-a027b0122d5a",
+        "original_text": ". الوصفة الدوائية غير مكتملة",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T12:07:07.383763+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      },
+      {
+        "id": "2e2dc582-6b47-4293-9059-5180f81d53e1",
+        "recurrence_group_id": "799bbfea-8aa0-47b9-bbe8-a027b0122d5a",
+        "original_text": "الوصفة الدوائيه غير مكتملة البيانات",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.775104+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "ab92bffd-2c54-44cd-8013-8edb808805fc",
+        "recurrence_group_id": "799bbfea-8aa0-47b9-bbe8-a027b0122d5a",
+        "original_text": "الوصفه الدوائيه غير مكتملة في التذاكر",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T11:45:08.975879+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+      "title": "حقيبه الانسكابات الكيميائيه غير مكتمله",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 5,
+    "items": [
+      {
+        "id": "b39b40cc-9786-46b2-9b61-c8f75d8bbcd4",
+        "recurrence_group_id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+        "original_text": "حقيبه الانسكابات الكيميائيه غير مكتملة",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T12:07:06.419716+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "797fa58f-1915-4cd9-be08-453a481d4930",
+        "recurrence_group_id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+        "original_text": "لا يوجد حقيبة انسكابات كيميائية",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:33.097234+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق حقيبة/طقم الانسكاب الكيميائي"
+      },
+      {
+        "id": "c362e00e-70db-40b7-a2e3-146cc950045e",
+        "recurrence_group_id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+        "original_text": "لا يوجد حقيبة انسكابات كيميائية",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T11:45:10.160587+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق حقيبة/طقم الانسكاب الكيميائي"
+      },
+      {
+        "id": "719dc1bf-544b-4cf2-bd39-7df37f5ca99d",
+        "recurrence_group_id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+        "original_text": "لا يوجد حقيبة انسكابات كيميائية",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:31.622126+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق حقيبة/طقم الانسكاب الكيميائي"
+      },
+      {
+        "id": "f6a7f2cb-b074-41ef-b9de-db16e13ed30a",
+        "recurrence_group_id": "9cfe1dfa-b013-48df-89ed-63d186e1c657",
+        "original_text": "لا يوجد حقيبة انسكابات كيميائية",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:29.245459+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق حقيبة/طقم الانسكاب الكيميائي"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "0a93e707-2daf-4eb2-8fe7-ee4604806751",
+      "title": "لا توجد قائمه بالانذارات الحرجه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "2d2d025f-22a0-4bb5-9695-ec0a676d7663",
+        "recurrence_group_id": "0a93e707-2daf-4eb2-8fe7-ee4604806751",
+        "original_text": "لا توجد قائمه بالانذارات الحرجه",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:13:58.370667+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "cac12789-723f-4154-8ee7-807768958dbd",
+        "recurrence_group_id": "0a93e707-2daf-4eb2-8fe7-ee4604806751",
+        "original_text": "لا توجد قائمه بالانذارات الحرجه للاجهزه",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:20:11.812182+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "5cb5285c-cd5d-4c48-9c46-8e2c5877de55",
+      "title": "قوائم الادويه عاليه الخطوره والادويه المتشابهه في الشكل والنطق تحتاج الي تحديث",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 3,
+    "items": [
+      {
+        "id": "c1272c9e-e28d-4523-a919-fab594ece3d0",
+        "recurrence_group_id": "5cb5285c-cd5d-4c48-9c46-8e2c5877de55",
+        "original_text": "قوائم الأدوية المتشابهة في الشكل والنطق تحتاج إلي تحديث",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T11:16:14.358041+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "b489960a-8cfc-43a6-b799-c8b1e860cd75",
+        "recurrence_group_id": "5cb5285c-cd5d-4c48-9c46-8e2c5877de55",
+        "original_text": "قوائم الادوية عالية الخطورة والادوية المتشابهه فى الشكل والنطق تحتاج الى تحديث",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:14:00.954465+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "f48caf31-6b14-40f2-98a7-8a527bb8fae9",
+        "recurrence_group_id": "5cb5285c-cd5d-4c48-9c46-8e2c5877de55",
+        "original_text": "قوائم الأدوية عالية الخطورة والمتشابهة في الشكل والنطق تحتاج إلي تحديث",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:20:18.507737+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "69c42290-005e-4e97-8939-3bb894956fbe",
+      "title": "النظافه العامه سيئه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "3001179f-64ee-42ee-9d6d-eee285fd8c87",
+        "recurrence_group_id": "69c42290-005e-4e97-8939-3bb894956fbe",
+        "original_text": "النظافه العامه سيئه للغايه",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:21.719193+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "f39e4750-305f-4d71-a889-e9387ef88d4d",
+        "recurrence_group_id": "69c42290-005e-4e97-8939-3bb894956fbe",
+        "original_text": "النظافة العامة سيئة",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T11:25:38.481888+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "923ee395-0885-43e1-8dc1-7e3d79867afc",
+      "title": "لا يتم وضع ماسه المواد الخطره علي المواد",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "68ae1033-1af5-40c6-af13-88443b4e7f81",
+        "recurrence_group_id": "923ee395-0885-43e1-8dc1-7e3d79867afc",
+        "original_text": "لا يتم وضع ماسة المواد الخطرة على المواد",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:22.523418+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "f0fbe5d6-a421-4506-9060-f4afa533e877",
+        "recurrence_group_id": "923ee395-0885-43e1-8dc1-7e3d79867afc",
+        "original_text": "لا يتم وضع ماسة المواد الخطرة على المواد الكيميائية",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:35.539027+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "0c62a99b-05c1-4c0e-821b-b376b04444cd",
+      "title": "لا يوجد نماذج تقديم شكاوي عند صندوق الشكاوي",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "6cbcfaac-6b73-42ae-9583-11dca1331a27",
+        "recurrence_group_id": "0c62a99b-05c1-4c0e-821b-b376b04444cd",
+        "original_text": "لا يوجد نماذج تقديم شكاوي عند صندوق الشكاوي",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:19.671777+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "56ffb9b2-3709-4ccf-8a94-c2669bdd9114",
+        "recurrence_group_id": "0c62a99b-05c1-4c0e-821b-b376b04444cd",
+        "original_text": "لا يوجد نماذج تقديم شكاوي عند صندوق الشكاوي",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:23:13.43656+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+      "title": "لا يوجد فحص يومي للاجهزه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 6,
+    "items": [
+      {
+        "id": "d6674871-8e49-42f4-bbe8-ccb6365a867c",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للاجهزه",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:03.356646+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "76daa411-ae5a-4340-ae15-7b9d172faba9",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للاجهزة",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:34.740546+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "f4f078b7-251e-45fb-a6fe-b3eff89d56f7",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للاجهزة",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:22.962975+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "64094361-9b04-4174-a302-5333c18bea3a",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للاجهزة",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:34.011174+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "bf6f36e3-9317-454f-b940-04581398eee1",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للاجهزه",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:04.402498+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "f8b56790-a731-4694-8979-092f775196f9",
+        "recurrence_group_id": "b6ffbffe-5818-4d6e-8177-7f595306b4ad",
+        "original_text": "لا يوجد فحص يومي للأجهزة",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:41:47.182148+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "7d1777a7-1271-4194-b2e4-19421768cea9",
+      "title": "لا يوجد امبوباج اطفال ف الكراش كار",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "9de4e227-12d8-4e61-81cd-7487dc0318f7",
+        "recurrence_group_id": "7d1777a7-1271-4194-b2e4-19421768cea9",
+        "original_text": "لا يوجد أمبوباج أطفال في الكراش كار",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:23:17.666548+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "946986e5-e527-4ac1-91ed-c9cef888ac6d",
+        "recurrence_group_id": "7d1777a7-1271-4194-b2e4-19421768cea9",
+        "original_text": "لا يوجد امبوباج اطفال/ف الكراش كار",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:23.484338+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "00e92ed5-0b97-4690-a819-d09756188814",
+      "title": "الهيكل التنظيمي غير محدث",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 4,
+    "items": [
+      {
+        "id": "3a999494-3124-4294-a26f-cf8c8b2b16ca",
+        "recurrence_group_id": "00e92ed5-0b97-4690-a819-d09756188814",
+        "original_text": "الهيكل التنظيمي غير محدث",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:23:13.335192+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "7314db30-98f3-4c4a-9ffd-f111e1557388",
+        "recurrence_group_id": "00e92ed5-0b97-4690-a819-d09756188814",
+        "original_text": "الهيكل التنظيمي غير محدث",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:36:13.666963+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "262d8f42-7b45-4ab5-a753-c1a8ffe7cd71",
+        "recurrence_group_id": "00e92ed5-0b97-4690-a819-d09756188814",
+        "original_text": "الهيكل التنظيمي غير محدث",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:33:11.32575+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "bb540cd5-58c8-4daf-8428-8fb85aff2869",
+        "recurrence_group_id": "00e92ed5-0b97-4690-a819-d09756188814",
+        "original_text": "الهيكل التنظيمي غير محدث",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:19.501056+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "003d2c6a-15d2-4279-966e-225fdb7bd66c",
+      "title": "لا يتم عمل معايره للموازين",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "c85cbcc5-2680-4c71-a5d6-f067e26cc86c",
+        "recurrence_group_id": "003d2c6a-15d2-4279-966e-225fdb7bd66c",
+        "original_text": "لا يتم عمل معايرة للموازين",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:23.055557+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "f6d68773-15c1-4424-aa69-9c685aae018f",
+        "recurrence_group_id": "003d2c6a-15d2-4279-966e-225fdb7bd66c",
+        "original_text": "لا يتم عمل معايرة للموازين",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T11:45:11.161774+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "790187e0-0edf-4d8c-b955-ffd045517c54",
+      "title": "لا يوجد قائمه بالاختصارات المسموحه والممنوعه",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "f2a4436c-8a6e-4eae-9abc-5e1282c9b143",
+        "recurrence_group_id": "790187e0-0edf-4d8c-b955-ffd045517c54",
+        "original_text": "لا يوجد قائمه بالاختصارات المسموحه والممنوعه",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:38:31.134777+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      },
+      {
+        "id": "385a679b-4bda-497f-aae8-23784feccb30",
+        "recurrence_group_id": "790187e0-0edf-4d8c-b955-ffd045517c54",
+        "original_text": "لا يوجد قائمه بالاختصارات المسموحة والممنوعه",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T08:20:56.998215+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "04b5bea7-ee30-4997-aff5-10f48be61cce",
+      "title": "الغرفه غير نظيفه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "ac6f6a12-d758-4a13-bad8-0a7965eee761",
+        "recurrence_group_id": "04b5bea7-ee30-4997-aff5-10f48be61cce",
+        "original_text": "الغرفة غير نظيفة",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:13.966776+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "51c96bf3-38ab-4329-a12f-acce7299b251",
+        "recurrence_group_id": "04b5bea7-ee30-4997-aff5-10f48be61cce",
+        "original_text": "الغرفة غير نظيفة",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:33:13.283903+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "f243db64-c7a2-480d-9530-b6335633470e",
+      "title": "كروت تعريف الادويه غير محدثه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "61dd9a56-3041-4cd4-866e-2c66eb22b680",
+        "recurrence_group_id": "f243db64-c7a2-480d-9530-b6335633470e",
+        "original_text": "كروت تعريف الادوية غير محدثه",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:04.716907+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "4a2255ca-f666-457c-b7e7-926f523279bd",
+        "recurrence_group_id": "f243db64-c7a2-480d-9530-b6335633470e",
+        "original_text": "كروت تعريف الادوية غير محدثه",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.279849+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "aaa60d37-d93f-4800-adf6-b2f520313cd9",
+      "title": "لا يوجد تمييز لبعض الادويه في الصيدليه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "6c4a7778-e688-4939-854d-8fb4ef7c7fa8",
+        "recurrence_group_id": "aaa60d37-d93f-4800-adf6-b2f520313cd9",
+        "original_text": "لا يوجد تمييز لبعض الادوية في الصيدليه",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:05.026397+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "68b7f264-87c8-4ac2-8281-f5f6addd0438",
+        "recurrence_group_id": "aaa60d37-d93f-4800-adf6-b2f520313cd9",
+        "original_text": "لا يوجد تمييز لبعض الادوية في الصيدليه",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.554927+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "4262a673-f743-43b0-a481-abfe0e1121ff",
+      "title": "لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "8be04d9b-6c29-4f28-a1b2-3057f7e503fe",
+        "recurrence_group_id": "4262a673-f743-43b0-a481-abfe0e1121ff",
+        "original_text": "لا يتم الالتزام بسياسة تخزين الادويه بشكل صحيح",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.461034+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "83f76620-e665-45bf-acfb-2b2757a74594",
+        "recurrence_group_id": "4262a673-f743-43b0-a481-abfe0e1121ff",
+        "original_text": "لا يتم الالتزام بسياسة تخزين الادويه بشكل صحيح",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:04.933737+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "95a7f84f-adea-4dcc-9c63-c77aad5772a3",
+      "title": "لا يوجد فصل للادويه عاليه الخطوره في رف منفصل",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "cf600fb8-b5e5-465d-88e7-5144bb8c691f",
+        "recurrence_group_id": "95a7f84f-adea-4dcc-9c63-c77aad5772a3",
+        "original_text": "لا يوجد فصل للادوية عالية الخطورة في رف منفصل",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.370053+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "91c09046-7157-4a1f-b144-3365e1393908",
+        "recurrence_group_id": "95a7f84f-adea-4dcc-9c63-c77aad5772a3",
+        "original_text": "لا يوجد فصل للادوية عالية الخطورة في رف منفصل",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:04.834664+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "36deabf5-005a-4b53-9477-a354a3faa3c6",
+      "title": "لا يوجد قائمه بثبات الكواشف بعد الفتح",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "e9b5f7d4-383a-4041-9c14-5dce1cdaca3f",
+        "recurrence_group_id": "36deabf5-005a-4b53-9477-a354a3faa3c6",
+        "original_text": "لا يوجد قائمة بثبات الكواشف بعد الفتح",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:23:20.461222+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "a4631d0a-e5c3-4f28-ba07-8f55234e6304",
+        "recurrence_group_id": "36deabf5-005a-4b53-9477-a354a3faa3c6",
+        "original_text": "لا يوجد قائمه بثبات الكواشف بعد الفتح",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:04.099178+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "7d1502eb-6a3c-4521-a2c8-a3c6ff22b39c",
+      "title": "قائمه الادويه المتشابهه في الشكل والنطق غير محدثه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "fe403c38-00fa-4a78-a73a-8551099e0077",
+        "recurrence_group_id": "7d1502eb-6a3c-4521-a2c8-a3c6ff22b39c",
+        "original_text": "قائمه الادويه المتشابهه في الشكل والنطق غير محدثة",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:35:05.144473+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "c8414c84-8494-4ac6-bb72-bff917ee00ef",
+        "recurrence_group_id": "7d1502eb-6a3c-4521-a2c8-a3c6ff22b39c",
+        "original_text": "قائمه الادويه المتشابهه في الشكل والنطق غير محدثة",
+        "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+        "created_at": "2026-08-25T11:31:36.669231+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "6d2bce0f-ac3b-41a7-9ae4-e0a862c2ba8d",
+      "title": "السياسات غير محدثه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "6dcccdae-0e0e-41dd-ba4c-b906d3dba0a9",
+        "recurrence_group_id": "6d2bce0f-ac3b-41a7-9ae4-e0a862c2ba8d",
+        "original_text": "السياسات غير محدثه",
+        "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+        "created_at": "2026-08-25T11:27:28.934358+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "ba9acf8d-1956-453d-8147-c25ac600229d",
+        "recurrence_group_id": "6d2bce0f-ac3b-41a7-9ae4-e0a862c2ba8d",
+        "original_text": "السياسات غير محدثه",
+        "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+        "created_at": "2026-08-25T11:27:33.115623+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "94074601-9673-4d4a-9d8d-dc910a953a8b",
+      "title": "لا يوجد تمييز للادويه عاليه الخطوره",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "cda7d4a0-7ae8-46f1-afe4-d230519f670f",
+        "recurrence_group_id": "94074601-9673-4d4a-9d8d-dc910a953a8b",
+        "original_text": "لا يوجد تمييز للأدوية عالية الخطورة والتركيز",
+        "hospital_id": "70e29487-f756-4cc6-8279-d4b35315a7ca",
+        "created_at": "2026-09-06T00:28:29.350182+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      },
+      {
+        "id": "86da61e0-ac39-425d-b513-39eb14a4cf31",
+        "recurrence_group_id": "94074601-9673-4d4a-9d8d-dc910a953a8b",
+        "original_text": "لا يوجد تمييز للادويه عاليه الخطورة",
+        "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+        "created_at": "2026-08-25T11:27:33.801523+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "24e0a359-ff46-41d1-8434-2f1406e8fd2e",
+      "title": "كروت تعريف الادويه غير مكتمله البيانات",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 3,
+    "items": [
+      {
+        "id": "7d60b334-36b2-45a9-a423-257f41f2d692",
+        "recurrence_group_id": "24e0a359-ff46-41d1-8434-2f1406e8fd2e",
+        "original_text": "كروت تعريف الادويه غير مكتملة البيانات",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:21:13.195306+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "446eec67-d8a6-45e5-a09e-7697db5af215",
+        "recurrence_group_id": "24e0a359-ff46-41d1-8434-2f1406e8fd2e",
+        "original_text": "كروت تعريف الادويه غير مكتملة البيانات",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T11:24:50.357404+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      },
+      {
+        "id": "3b4bd489-c5e4-437a-9e58-b0ae23e0cf2d",
+        "recurrence_group_id": "24e0a359-ff46-41d1-8434-2f1406e8fd2e",
+        "original_text": "كروت تعريف الأدوية غير مكتملة البيانات",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T08:12:57.393998+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "89a008ff-5121-4478-ab4a-2a1b7baa5913",
+      "title": "لا يوجد كروت تعريف او صيانه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "07af13c8-a885-484b-ab69-468fffda4c49",
+        "recurrence_group_id": "89a008ff-5121-4478-ab4a-2a1b7baa5913",
+        "original_text": "لا يوجد.كروت تعريف او صيانة",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:14:43.396479+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "14eccb7f-6b4a-4836-8c60-37c832ee1ba0",
+        "recurrence_group_id": "89a008ff-5121-4478-ab4a-2a1b7baa5913",
+        "original_text": "لا يوجد كروت تعريف او صيانة",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:14:40.118796+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "4c783d41-e7cf-4515-9e9c-80662d915156",
+      "title": "عدم الالتزام بسياسه منع التدخين",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "187bdb5a-bb10-4d0b-b037-baa9b980a05d",
+        "recurrence_group_id": "4c783d41-e7cf-4515-9e9c-80662d915156",
+        "original_text": "عدم الالتزام بسياسة منع التدخين",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:09:00.769507+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "0b8428bc-8b4b-4856-9a7f-0c6df0a366cb",
+        "recurrence_group_id": "4c783d41-e7cf-4515-9e9c-80662d915156",
+        "original_text": "عدم الالتزام بسياسة منع التدخين",
+        "hospital_id": "17bd7aef-66a3-49b7-837c-1f254f0b8cad",
+        "created_at": "2026-08-25T07:23:48.83816+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "834d9dc8-2c88-4c02-821a-c8cc7facb28d",
+      "title": "يوجد تخزين في اكياس حمراء",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "6efefcf8-21b3-4da2-987a-ac1de8920092",
+        "recurrence_group_id": "834d9dc8-2c88-4c02-821a-c8cc7facb28d",
+        "original_text": "يوجد تخزين في اكياس حمراء",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:14:39.029721+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "7325933c-d401-4189-8217-f119f526ad17",
+        "recurrence_group_id": "834d9dc8-2c88-4c02-821a-c8cc7facb28d",
+        "original_text": "يوجد تخزين في اكياس حمراء",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:14:09.356038+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "5302a86c-6338-45cc-a809-ab75aaa09fca",
+      "title": "سجل النتائج الحرجه غير مكتمل البيانات",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "8b9d1f55-e131-4a13-989f-2ed30fc1a58c",
+        "recurrence_group_id": "5302a86c-6338-45cc-a809-ab75aaa09fca",
+        "original_text": "سجل النتائج الحرجه غير مكتمل البيانات",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:21:13.47348+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "9fa97608-5c0e-4eff-9f77-155675c866d9",
+        "recurrence_group_id": "5302a86c-6338-45cc-a809-ab75aaa09fca",
+        "original_text": "سجل النتائج الحرجة غير مكتمل البيانات",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T11:45:12.13733+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "6bcaf30f-c157-4bb1-9e75-e10d2faeee22",
+      "title": "بيان تسجيل درجات حراره الثلاجه غير معتمد",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "21dc8671-80d6-4e9d-8299-b9a24dd55b81",
+        "recurrence_group_id": "6bcaf30f-c157-4bb1-9e75-e10d2faeee22",
+        "original_text": "بيان تسجيل درجات حرارة الثلاجة غير معتمد",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:29.813957+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "32b7c4b8-7618-4e0c-8a8b-f58af4ec7b76",
+        "recurrence_group_id": "6bcaf30f-c157-4bb1-9e75-e10d2faeee22",
+        "original_text": "بيان تسجيل درجات حرارة الثلاجة غير معتمد",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:32.580102+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "e1cdb64a-987d-4eb7-8be1-0cd124b8f0e9",
+      "title": "بعض قوائم النتائج الحرجه لا يوجد مرجع",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "42762206-7f8c-44f0-97d3-c73770e6e7b0",
+        "recurrence_group_id": "e1cdb64a-987d-4eb7-8be1-0cd124b8f0e9",
+        "original_text": "بعض قوائم النتائج الحرجة لا يوجد مرجع",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:33.812432+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "9a5fc951-0205-455c-b900-9a12a665347d",
+        "recurrence_group_id": "e1cdb64a-987d-4eb7-8be1-0cd124b8f0e9",
+        "original_text": "قوائم النتائج الحرجة بدون مرجع",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:41:48.979715+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "5e6d3a92-dd7e-4864-ac22-5a7534add1e2",
+      "title": "يوجد اسطوانات اكسجين بغرفه عمليات العظام غير مؤمنه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "476e5a18-83ad-46ee-b642-bb2c487a8242",
+        "recurrence_group_id": "5e6d3a92-dd7e-4864-ac22-5a7534add1e2",
+        "original_text": "يوجد اسطوانات اكسجين بغرفة عمليات العظام غير مؤمنة",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:42:30.78717+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "d4560c2b-4715-43c2-8f29-778762de3272",
+        "recurrence_group_id": "5e6d3a92-dd7e-4864-ac22-5a7534add1e2",
+        "original_text": "اسطوانات الاكسجين غير مؤمنه",
+        "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+        "created_at": "2026-08-25T11:15:41.513766+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق أسطوانات الأكسجين غير المؤمنة ضد السقوط"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "2004cde2-51c9-44e0-a8e7-adb3272df456",
+      "title": "الغرفه غير مطابقه",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "6c4d7a49-3e7a-4c9a-afcd-0d001b1753ae",
+        "recurrence_group_id": "2004cde2-51c9-44e0-a8e7-adb3272df456",
+        "original_text": "الغرفه غير مطابقة",
+        "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+        "created_at": "2026-08-25T08:17:46.678957+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      },
+      {
+        "id": "8025837e-77ee-4a3e-809f-42b7699a01ec",
+        "recurrence_group_id": "2004cde2-51c9-44e0-a8e7-adb3272df456",
+        "original_text": "الغرفة غير مطابقة",
+        "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+        "created_at": "2026-08-25T11:19:25.985269+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "1227e121-eeb1-4a23-a8e4-2829d45ff2d0",
+      "title": "لا توجد لوحه بالخدمات المقدمه داخل المستشفي",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "8a4e7dbb-fbfa-4840-aeee-092abeeb38c0",
+        "recurrence_group_id": "1227e121-eeb1-4a23-a8e4-2829d45ff2d0",
+        "original_text": "لا توجد لوحه بالخدمات المقدمه داخل المستشفي",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T11:24:09.938733+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "8b08ecbc-c2ef-47a6-8e73-4af886ae3c25",
+        "recurrence_group_id": "1227e121-eeb1-4a23-a8e4-2829d45ff2d0",
+        "original_text": "[أقسام مختلفة] لا توجد لوحه بالخدمات المقدمه داخل المستشفي",
+        "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+        "created_at": "2026-08-25T12:02:03.893814+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "3942cc6d-189e-4b0e-99a4-0a9472357c47",
+      "title": "العينات غير مكتمله التعريف",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "a3cdc2fb-9cf8-438c-bfcc-2023c76e85bb",
+        "recurrence_group_id": "3942cc6d-189e-4b0e-99a4-0a9472357c47",
+        "original_text": "العينات غير مكتملة التعريف",
+        "hospital_id": "17bd7aef-66a3-49b7-837c-1f254f0b8cad",
+        "created_at": "2026-08-25T08:20:18.30621+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "d6ca52a3-7e41-4158-b159-56b7de77f836",
+        "recurrence_group_id": "3942cc6d-189e-4b0e-99a4-0a9472357c47",
+        "original_text": "بعض العينات غير مكتملة التعريف",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T11:24:14.357095+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق قوي في الكلمات الجوهرية والكيان والعيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "4564e044-89bc-4f96-89f7-f42eb7ec4d07",
+      "title": "جميع البلاعات بالقسم مكشوفه ويوجد مخرج صرف صحي مكشوف بغرفه الانسكابات مما يؤدي الي وجود رائحه كريهه بالقسم",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "f6670259-67be-4ff9-8a27-35f52055cc3a",
+        "recurrence_group_id": "4564e044-89bc-4f96-89f7-f42eb7ec4d07",
+        "original_text": "يوجد مخرج صرف صحي بغرفه الانسكابات مكشوف ويؤدي الى انبعاث رائحه كريهه بالقسم",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:26.305664+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق دلالي عالي الثقة: تطابق فتحات ومطابق الصرف الصحي المكشوفة"
+      },
+      {
+        "id": "cb0eb380-42e2-43dd-9926-7a8f39b311a2",
+        "recurrence_group_id": "4564e044-89bc-4f96-89f7-f42eb7ec4d07",
+        "original_text": "جميع البلاعات بالقسم مكشوفه ويوجد مخرج صرف صحي مكشوف بغرفه الانسكابات مما يؤدي الى وجود رائحه كريهه بالقسم",
+        "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+        "created_at": "2026-08-25T07:00:21.570196+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "b7aa198f-14ac-4496-adbd-d55ae665f778",
+      "title": "لا يوجد ترخيص اسانسير",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "08e7c518-f6ad-4cbf-8617-c573ee67d78f",
+        "recurrence_group_id": "b7aa198f-14ac-4496-adbd-d55ae665f778",
+        "original_text": "لا يوجد ترخيص اسانسير",
+        "hospital_id": "70e29487-f756-4cc6-8279-d4b35315a7ca",
+        "created_at": "2026-09-06T00:28:10.21336+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "02d46d28-9e85-4984-9b8c-0e7e4363efd8",
+        "recurrence_group_id": "b7aa198f-14ac-4496-adbd-d55ae665f778",
+        "original_text": "لا يوجد ترخيص اسانسير",
+        "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+        "created_at": "2026-08-25T08:15:11.88568+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "2f567acb-ad01-42d6-8038-b96d9dfeb2aa",
+      "title": "لا يوجد ترخيص حمايه مدنيه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "0934c9d5-d697-4640-a4ee-11de3fb3fa3b",
+        "recurrence_group_id": "2f567acb-ad01-42d6-8038-b96d9dfeb2aa",
+        "original_text": "لا يوجد ترخيص حماية مدنيه",
+        "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+        "created_at": "2026-08-25T08:15:11.778649+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "5a6ed9f1-ed6e-4ab6-8a3e-2f1a7d97b1dd",
+        "recurrence_group_id": "2f567acb-ad01-42d6-8038-b96d9dfeb2aa",
+        "original_text": "لا يوجد ترخيص حماية مدنيه",
+        "hospital_id": "70e29487-f756-4cc6-8279-d4b35315a7ca",
+        "created_at": "2026-09-06T00:28:09.777686+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "27945ddb-7fd4-4413-b983-bd8c14435d75",
+      "title": "لا يوجد نماذج الجراحه بالقسم",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "fe3c968b-bb14-4aa7-a03b-929b1df1abbc",
+        "recurrence_group_id": "27945ddb-7fd4-4413-b983-bd8c14435d75",
+        "original_text": "لا يوجد نماذج الجراحة بالقسم",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T08:17:05.841494+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "86ef36f9-cc92-407a-8a27-1a001325ca12",
+        "recurrence_group_id": "27945ddb-7fd4-4413-b983-bd8c14435d75",
+        "original_text": "لا يوجد نماذج الجراحة بالقسم",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:18:23.819581+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "86f4e5ad-023a-4731-8df4-1abc4d1f0e3c",
+      "title": "العاملون غير مدربون علي SDS",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "8ab1c570-fbd1-4d85-b083-99d6b31218b2",
+        "recurrence_group_id": "86f4e5ad-023a-4731-8df4-1abc4d1f0e3c",
+        "original_text": "العاملون غير مدربون علي SDS",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:18:22.293471+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      },
+      {
+        "id": "b8b6b695-2559-40b0-b894-40d0bc2a3159",
+        "recurrence_group_id": "86f4e5ad-023a-4731-8df4-1abc4d1f0e3c",
+        "original_text": "العاملون غير مدربون علي SDS",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T08:17:05.187189+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "3aaf5f38-ee6f-43c0-b5de-c80ee752a4a8",
+      "title": "لا يوجد قائمه بالاختصارات المسموحه و الممنوعه",
+      "confidence": "UNCERTAIN",
+      "review_status": "pending_review"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "451af470-5365-4706-bcda-d576ccecb1f2",
+        "recurrence_group_id": "3aaf5f38-ee6f-43c0-b5de-c80ee752a4a8",
+        "original_text": "لا يوجد قائمة بالاختصارات المسموحة و الممنوعة",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T08:17:06.130145+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "990c145e-0319-4866-bcf8-10b9e3507aaf",
+        "recurrence_group_id": "3aaf5f38-ee6f-43c0-b5de-c80ee752a4a8",
+        "original_text": "لا يوجد قائمة بالاختصارات المسموحة و الممنوعة",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:18:24.151466+00:00",
+        "review_status": "pending_review",
+        "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "462f74ab-7d53-4bcf-af73-8086f505e178",
+      "title": "لا يوجد نموذج التثقيف",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "ec295dc2-94bb-4ef0-a8e7-771d83a0c15b",
+        "recurrence_group_id": "462f74ab-7d53-4bcf-af73-8086f505e178",
+        "original_text": "لا يوجد نموذج التثقيف",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:18:24.671596+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "4d7be9c6-e77d-44cd-888a-c355cc856b83",
+        "recurrence_group_id": "462f74ab-7d53-4bcf-af73-8086f505e178",
+        "original_text": "لا يوجد نموذج التثقيف",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T08:17:06.648578+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "ad681067-ed41-4cf7-a155-27eacb40da5c",
+      "title": "لا يوجد نموذج الخطه العلاجيه",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "f3a0a666-b3c5-4a3d-a961-48c459e89c89",
+        "recurrence_group_id": "ad681067-ed41-4cf7-a155-27eacb40da5c",
+        "original_text": "لا يوجد نموذج الخطة العلاجية",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T08:18:24.458985+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      },
+      {
+        "id": "03ada9af-41f2-4f30-8281-1919aff65ab0",
+        "recurrence_group_id": "ad681067-ed41-4cf7-a155-27eacb40da5c",
+        "original_text": "لا يوجد نموذج الخطة العلاجية",
+        "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+        "created_at": "2026-08-25T08:17:06.432974+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      }
+    ]
+  },
+  {
+    "group": {
+      "id": "3371abea-00d8-46ff-abe9-2e3376a080d9",
+      "title": "لا يوجد دفتر مرور خارجي",
+      "confidence": "DISTINCT",
+      "review_status": "single"
+    },
+    "count": 2,
+    "items": [
+      {
+        "id": "31bcae22-02d1-4325-9a3c-fbaf9cb6fbd2",
+        "recurrence_group_id": "3371abea-00d8-46ff-abe9-2e3376a080d9",
+        "original_text": "لا يوجد دفتر مرور خارجي",
+        "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+        "created_at": "2026-08-25T07:28:22.225907+00:00",
+        "review_status": "confirmed",
+        "match_reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة (Same Entity + Same Defect)"
+      },
+      {
+        "id": "14bdb990-7fd3-491c-a462-8ef33f09d1a4",
+        "recurrence_group_id": "3371abea-00d8-46ff-abe9-2e3376a080d9",
+        "original_text": "لا يوجد دفتر مرور خارجي.",
+        "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+        "created_at": "2026-08-25T11:26:29.567781+00:00",
+        "review_status": "single",
+        "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها"
+      }
+    ]
+  }
+]

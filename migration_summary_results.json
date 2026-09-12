@@ -1,0 +1,10 @@
+{
+  "stats": {
+    "total": 1340,
+    "highConfidence": 74,
+    "uncertain": 82,
+    "distinct": 1184,
+    "groupsCreated": 1266
+  },
+  "total_groups": 1266
+}

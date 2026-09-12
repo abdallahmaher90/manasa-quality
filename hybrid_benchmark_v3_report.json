@@ -1,0 +1,86 @@
+{
+  "v3_tuning_metrics": {
+    "averageCandidateGroupsPerFinding": "4.04",
+    "zeroCandidates": 0,
+    "geminiCallsReduction": "Group-level architecture replaces FindingxFinding calls."
+  },
+  "lexicalDisjointResults": [
+    {
+      "id": "LD1",
+      "input": "عربة الإنعاش غير موجودة",
+      "expected": "نقص كراش كار",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false
+    },
+    {
+      "id": "LD2",
+      "input": "النتائج الحرجة لا تبلغ",
+      "expected": "قصور في نظام تبليغ القيم الحرجة",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false
+    },
+    {
+      "id": "LD3",
+      "input": "جهاز المراقبة معطل",
+      "expected": "المونيتور لا يعمل",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD4",
+      "input": "ملف المريض غير مرتب",
+      "expected": "سجلات المرضى مبعثرة",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD5",
+      "input": "الموظف لا يرتدي البطاقة",
+      "expected": "غياب الهوية التعريفية للكادر",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD6",
+      "input": "عدم وجود امبو باج",
+      "expected": "نقص جهاز تنفس يدوي",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD7",
+      "input": "تخزين ادوية LASA خاطئ",
+      "expected": "الادوية المتشابهة غير مفصولة",
+      "recallAt3": false,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "id": "LD8",
+      "input": "لا يوجد Medical forms",
+      "expected": "نقص النماذج الطبية",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": true
+    },
+    {
+      "id": "LD9",
+      "input": "Oral orders not documented",
+      "expected": "الاوامر الشفهية غير موثقة",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    }
+  ],
+  "geminiVolumeProjections": {
+    "20_findings_report": 81,
+    "30_findings_report": 122,
+    "1366_historical": 5519
+  }
+}

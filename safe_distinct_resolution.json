@@ -1,0 +1,41 @@
+[
+  {
+    "finding_id": "1ebd9c93-5109-47ea-878a-2df65dc71518",
+    "original_text": "غرفة الأرشيف غير مطابقة للمواصفات",
+    "old_recurrence_group_id": null,
+    "previous_local_decision": "LOCAL_UNCERTAIN",
+    "new_proposed_decision": "DISTINCT",
+    "proposed_new_recurrence_group_id": "cd30ccdd-0812-4b5e-a386-ca10d64e4d41",
+    "proposed_title": "غرفة الأرشيف غير مطابقة للمواصفات",
+    "normalized_key": "غرفه الارشيف غير مطابقه للمواصفات",
+    "reason": "Safe distinct override confirmed by Deep Review.",
+    "evidence": "General room compliance vs specific archive room compliance. Distinct contexts.",
+    "confidence": "HIGH"
+  },
+  {
+    "finding_id": "63c41f52-dd9c-4a92-bcee-f8937d7e46bc",
+    "original_text": "يوجد ألات منتهية التعقيم و آخري منتهية التطهير",
+    "old_recurrence_group_id": null,
+    "previous_local_decision": "LOCAL_UNCERTAIN",
+    "new_proposed_decision": "DISTINCT",
+    "proposed_new_recurrence_group_id": "4721c3ee-5aea-4b7a-ad1f-9fa6b46f8526",
+    "proposed_title": "يوجد ألات منتهية التعقيم و آخري منتهية التطهير",
+    "normalized_key": "يوجد الات منتهيه التعقيم و اخري منتهيه التطهير",
+    "reason": "Safe distinct override confirmed by Deep Review.",
+    "evidence": "Both relate to CSSD sterilization, but one is about mixing clean/dirty instruments and the other is about autoclave physical placement.",
+    "confidence": "HIGH"
+  },
+  {
+    "finding_id": "8a72c2b7-b2ab-4c21-82e3-08b49d8ce192",
+    "original_text": "سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للآلات المعقمة و تسليم الآلات الملوثة للتعقيم",
+    "old_recurrence_group_id": null,
+    "previous_local_decision": "LOCAL_UNCERTAIN",
+    "new_proposed_decision": "DISTINCT",
+    "proposed_new_recurrence_group_id": "a1e33baf-658d-4d2b-a67b-ac2e16183157",
+    "proposed_title": "سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للآلات المعقمة و تسليم الآلات الملوثة للتعقيم",
+    "normalized_key": "سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للالات المعقمه و تسليم الالات الملوثه للتعقيم",
+    "reason": "Safe distinct override confirmed by Deep Review.",
+    "evidence": "Same defect but applies to completely different entities (departments).",
+    "confidence": "HIGH"
+  }
+]

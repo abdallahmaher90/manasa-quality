@@ -1,0 +1,49 @@
+{
+  "cleanup_successful": true,
+  "results": [
+    {
+      "scenario": "SCENARIO 1: CLEAR MATCH",
+      "input": "توقيع الاطباء غير مكتمل فورمه",
+      "expected": "SAME_ISSUE",
+      "actual": "HIGH_CONFIDENCE",
+      "passed": true,
+      "newly_created_group": false,
+      "recurrence_group_id": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "review_status": "pending_review",
+      "match_reason": "Mocked AI Reason for E2E Test"
+    },
+    {
+      "scenario": "SCENARIO 2: CLEAR DISTINCT",
+      "input": "تسرب مياه في سقف غرفة العمليات الكبرى",
+      "expected": "DISTINCT",
+      "actual": "DISTINCT",
+      "passed": true,
+      "newly_created_group": true,
+      "recurrence_group_id": "f75ab24f-7b07-4295-8550-a7eb7330c870",
+      "review_status": "single",
+      "match_reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "scenario": "SCENARIO 3: AMBIGUOUS (UNCERTAIN)",
+      "input": "لا يوجد سجل اعطال",
+      "expected": "UNCERTAIN",
+      "actual": "UNCERTAIN",
+      "passed": true,
+      "newly_created_group": true,
+      "recurrence_group_id": "6066485f-141c-4a70-8aa5-82fe26aeae8c",
+      "review_status": "pending_review",
+      "match_reason": "Mocked AI Reason for E2E Test"
+    },
+    {
+      "scenario": "SCENARIO 4: HARD NEGATIVE",
+      "input": "جهاز الصدمات الكهربائية DC يعمل بكفاءة ولكن لم يتم تفريغ الشحنة",
+      "expected": "DISTINCT_DUE_TO_HARD_NEGATIVE",
+      "actual": "DISTINCT",
+      "passed": true,
+      "newly_created_group": true,
+      "recurrence_group_id": "e00fd003-9e8f-4068-9a79-dc30675946ba",
+      "review_status": "single",
+      "match_reason": "Decision Gate: DISTINCT (No valid candidates)"
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+[
+  {
+    "original_text": "المجفف لا يعمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "3bc80526-f918-4a8f-9928-56e517c7a016",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "خط السير المغسله غير مطابق",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "69affb87-f0f8-43d4-8c9e-cd0c80fba4ab",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "دفتر تسليم وتسلم المفروشات لا يوجد محضر فتح وغير معتمد والتوقيع احادى",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "71e5f94a-a424-4909-860c-d695476664aa",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "يوجد غساله بها عطل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "3a9d74b0-6c30-4431-b6a8-bf2557cf43cc",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد عنونه على بعض اماكن العمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "45c648c3-e497-4fd5-9d8b-e15571f0f1cc",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "قائمه الداون تايم غير مكتملة البيانات على الثلاجات",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "6260007d-5838-41ac-811d-f8d5ea9d8cf2",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "الغلايه لا تعمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "ffb7dde8-d14d-4d7c-bd4d-8b1ed69447b2",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "بعض الأجهزة لا يوجد كارت صيانه",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "06fb2da5-70ab-4700-8548-a8e98c895d43",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد سياسات خاصه ولا عامه بالمغسله",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "46914191-d256-45c8-8b48-3eab7c64f212",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "مضخات المنظفات الخاصة ب الغساله لا تعمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "19761f3b-a3b5-4faf-b641-e035822878fd",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد كروت صيانه ؛ تعريف على الغسالات ؛ نموذج الفحص اليومى",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "a203f8be-9817-45d0-bf0a-dc19f2db47cf",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لوحة المفاتيح غير مامنه وغير معرفه",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "39f05583-c903-4d62-8d23-46723c54c358",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "d5a4a16b-6abd-4ec0-839e-21e6fed8c878",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "الميزان الخاص بوزن الوجبات بالجرامات لا يعمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "cab18c4d-78fa-4939-bd1a-12fbca717a49",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "وجبات المرضى غير معرفه بيانات المريض ؛ نوع الوجبه",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "4a6e95b1-0218-4ebd-94ef-932454a8bc63",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": [
+      {
+        "text": "وجبات المرضي غير معرفه ببيانات المريض",
+        "groupId": "72bbccd2-1911-496e-b5fb-27bfdc3b618b",
+        "similarity": 0.5
+      },
+      {
+        "text": "وجبات المرضى غير معرفة",
+        "groupId": "57e2de54-7cdf-4677-b8d3-55405254994e",
+        "similarity": 0.42857142857142855
+      }
+    ]
+  },
+  {
+    "original_text": "منشار اللحم غير نظيف",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "a42c8789-03bf-400d-a806-c250735649e6",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد جدول معتمد لمكونات ومحتوى الرايل فى منطقة تحضير التغذيه الانبوبيه",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "57d510a7-a5aa-456c-8183-441eecd4c49d",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد مستلزمات غسيل الايدي علي حوض غسيل ايدى",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "e2c697a5-df89-43fe-b255-4ba913206708",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": [
+      {
+        "text": "-لا يوجد تعريف لحوض غسيل الايدي وحوض الانسكابات",
+        "groupId": "5a1c34bf-7492-48ce-a49c-f35eb940ae6e",
+        "similarity": 0.3333333333333333
+      }
+    ]
+  },
+  {
+    "original_text": "يوجد صراصير بالمطبخ",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "062638d2-2ef1-4f96-b9dd-97e66e7d9280",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "سخان غساله الملابس لا يعمل",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "d99e1823-77d3-4585-8024-7f1db4082f60",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد كروت صيانه ؛ تعريف على ثلاجات وفريزرات المطبخ",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "83a23c51-32a7-4a97-9196-8b8e6c2439ea",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "الثلاجه الخاصه بالالبان والزبادي لا تعمل وتقرا درجه حرارة ٢٣",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "d60a6ff8-ebb8-416f-b789-3db0d6698b06",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "دفتر النفايات التوقيع احادي وغير معتمد",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "8a7f2ad8-0e8a-4d2a-a6ce-2d265d4ab4ee",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "قائمه النتائج الحرجه غير محدثه",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "1b1f3b06-d602-43fc-92cd-da35f7152b09",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": [
+      {
+        "text": "قائمه النتائج الحرجه غير معتمده أو مختومه",
+        "groupId": "427af5e7-7ead-44a7-a723-264bc4af852e",
+        "similarity": 0.5
+      },
+      {
+        "text": "قائمه النتائج الحرجه غير معتمده وبدون مرجع",
+        "groupId": "7c738cd2-7750-4145-8e37-69152cffaa7a",
+        "similarity": 0.42857142857142855
+      },
+      {
+        "text": "لايوجد تاريخ على قائمة النتائج الحرجه وغير معتمدة",
+        "groupId": "ef1234cf-7513-47f6-9fe0-f37c3e5c0cea",
+        "similarity": 0.375
+      }
+    ]
+  },
+  {
+    "original_text": "سجل التردد الاسم ثلاثى للمرضي ولا يوجد توقيع للطاقم الطبي",
+    "review_status": "single",
+    "match_reason": "سلبية جديدة تمثل مشكلة مستقلة لم يتم رصد تطابق مؤكد لها",
+    "groupId": "0bde5e2f-651e-4f65-9489-89991e65ddec",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  },
+  {
+    "original_text": "لا يوجد سجل معايرة الأجهزة",
+    "review_status": "pending_review",
+    "match_reason": "اشتباه تشابه دلالي بحاجة لمراجعة الجودة: تقارب نسبي في الكلمات الجوهرية دون تطابق حاسم في العيب",
+    "groupId": "d326de58-7f92-4281-8ed1-173851076349",
+    "candidateTrigger": [],
+    "missedCandidatesSameHosp": []
+  }
+]

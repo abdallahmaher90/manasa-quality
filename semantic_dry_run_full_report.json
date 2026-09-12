@@ -1,0 +1,2661 @@
+{
+  "total": 1366,
+  "HIGH_CONFIDENCE": 1127,
+  "UNCERTAIN": 67,
+  "DISTINCT": 172,
+  "proposedMerges": [
+    {
+      "findingId": "2acc1993-2d4b-4259-9c93-8ed8611f1152",
+      "textA": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "textB": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+      "score": 1,
+      "reason": "Evaluating A [يوجد اختصارات غير مسموحه بالملف الطبي] vs B [يوجد اختصارات غير مسموحه بالملف الطبي].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+      "textA": "لا يوجد سجل اعطال بالقسم .",
+      "textB": "لا يوجد سجل اعطال",
+      "oldGroup": "b6df7e3e-377e-4146-a1e0-d8ea3d6eaa98",
+      "newGroup": "ab4e3bd9-80b0-4848-9a54-b0cc98f1f044",
+      "score": 1,
+      "reason": "Evaluating A [لا يوجد سجل اعطال بالقسم .] vs B [لا يوجد سجل اعطال].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9562b74b-3e98-46f0-ba53-c570e4607971",
+      "textA": "الكراش كارت مفتوحة وغير مامنه",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "3f90c830-5172-4cc9-814b-e6198557ccbc",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت مفتوحة وغير مامنه] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "80c37c69-4f08-4df7-9ef8-572f842a2784",
+      "textA": "قائمه النتائج الحرجه غير معتمده أو مختومه",
+      "textB": "قائمه النتائج الحرجه الاكلينيكيه غير معتمده",
+      "oldGroup": "427af5e7-7ead-44a7-a723-264bc4af852e",
+      "newGroup": "ba504bc6-f4ed-40cb-8b2e-f1bf008693dd",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه النتائج الحرجه غير معتمده أو مختومه] vs B [قائمه النتائج الحرجه الاكلينيكيه غير معتمده].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "25e1bde9-a0ec-4a8e-bdeb-5704ec18a174",
+      "textA": "لا يوجد قائمه الاختصارات المسموحه والممنوعه",
+      "textB": "قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار",
+      "oldGroup": "dd3f1d6d-b6e8-49de-8f0c-413af0699795",
+      "newGroup": "e6a507b1-4d58-47ac-b787-1213abcb9f7b",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمه الاختصارات المسموحه والممنوعه] vs B [قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+      "textA": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+      "textB": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+      "oldGroup": "efb8441c-a008-42e3-b713-e755b43daeaf",
+      "newGroup": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب] vs B [لا يوجد مكان لحفظ وتخزين المفروشات النظيفه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "39e1312a-24a4-4de6-adae-451f31523593",
+      "textA": "الوصفه الطبيه غير مكتملة",
+      "textB": "الوصفه الدوائيه غير مكتمله",
+      "oldGroup": "2f875c01-9708-44cb-86d3-da626a9cec1c",
+      "newGroup": "3e78798a-32ee-464c-9b65-46e5074737cf",
+      "score": 0.9,
+      "reason": "Evaluating A [الوصفه الطبيه غير مكتملة] vs B [الوصفه الدوائيه غير مكتمله].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92da6ad3-7b5b-42b9-8c40-5d8bf15d7b26",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f45bab24-7149-43bb-a552-037387c50d02",
+      "textA": "تخزين الأدوية بثلاجة الصيدلية غير مطابق",
+      "textB": "لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح",
+      "oldGroup": "6b80dd42-b4c7-49f4-8818-cd6bb408d777",
+      "newGroup": "8f5da3c4-d154-4c78-b20b-92903796e54e",
+      "score": 0.9,
+      "reason": "Evaluating A [تخزين الأدوية بثلاجة الصيدلية غير مطابق] vs B [لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "21705967-14f2-4928-b5af-a4a48654c0ef",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "98cf29f9-965c-4bb0-b3f8-518e273773b8",
+      "textA": "الكراش كار غير مؤمنة (لا يوجد قفل للكراش )",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "0400aa49-8086-4069-b4bc-6a7767641c41",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كار غير مؤمنة (لا يوجد قفل للكراش )] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8efce46f-7965-4be4-b7ea-b2fadc26372b",
+      "textA": "لا يوجد ماسة علي المواد الكيميائية والخطرة",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "ded21913-6783-4011-b7e9-689c10158ce9",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة علي المواد الكيميائية والخطرة] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "963bbc27-fbe3-438b-af5d-1d5da7e578f8",
+      "textA": "التوافق الدوائي غير مفعل",
+      "textB": "التوافق الدوائي غير مطبق",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "23055763-1b7d-49e0-9275-174107ea6e24",
+      "score": 0.9,
+      "reason": "Evaluating A [التوافق الدوائي غير مفعل] vs B [التوافق الدوائي غير مطبق].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92decf12-8b87-4d42-a673-402efb3952fd",
+      "textA": "لا يوجد غرفة لتخزين المخلفات الكيميائية",
+      "textB": "اشتراطات التخزين غير متوفره في المخزن",
+      "oldGroup": "15865dc9-0333-46ad-bc24-2b79a7f62031",
+      "newGroup": "c154386b-1120-403d-bf47-5df15fa4082c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غرفة لتخزين المخلفات الكيميائية] vs B [اشتراطات التخزين غير متوفره في المخزن].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f9deb99d-89cc-42eb-b223-946931cd9704",
+      "textA": "لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه",
+      "textB": "لا يوجد كروت تعريف او صيانه",
+      "oldGroup": "f112d4aa-2e0a-4ceb-af72-d5f7fbd8ecb5",
+      "newGroup": "2709a3a3-d4c2-48e5-bf74-0f45bd0bd12a",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه] vs B [لا يوجد كروت تعريف او صيانه].\nEntity Matches (0.6, 1.5) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e5a57b04-a2c4-4a9e-b2b9-77226206e83f",
+      "textA": "يوجد علاجات طرف المرضى",
+      "textB": "يوجد ادويه طرف المرضي",
+      "oldGroup": "8eb0c2ff-83a8-41b4-93d3-4f80f7fa0ab6",
+      "newGroup": "490e9770-9de8-495d-a395-8758c7474c1e",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد علاجات طرف المرضى] vs B [يوجد ادويه طرف المرضي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a063680f-7445-4fca-af15-06677d4a3c7e",
+      "textA": "كروت تعريف الادوية غير محدثة في دولاب الطوارئ",
+      "textB": "كروت تعريف الادويه غير محدثه",
+      "oldGroup": "59106f8c-63b7-42ba-ba2f-aa707dd83006",
+      "newGroup": "351b81c5-d072-47f0-8338-bac50262d0bc",
+      "score": 0.9,
+      "reason": "Evaluating A [كروت تعريف الادوية غير محدثة في دولاب الطوارئ] vs B [كروت تعريف الادويه غير محدثه].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "16dbd494-af19-48b1-be0b-00e8038b99db",
+      "textA": "يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "89f72493-0b90-47c0-9917-a61057314b96",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8983ae2c-d28d-4fd0-8c93-b7d49935f68b",
+      "textA": "عدم وجود كروت تعريف للاصناف في الكراش كارت",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "667ccf28-8e63-4ffd-bde9-d3752bb6a1ea",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [عدم وجود كروت تعريف للاصناف في الكراش كارت] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "13cdaae2-a933-4212-9406-b13955267dc3",
+      "textA": "بعض التذاكر لا يوجد عليها تشخيص",
+      "textB": "بعض التذاكر لا يوجد بها تشخيص",
+      "oldGroup": "8a0f7fbe-e381-406b-97a4-1aa644891c49",
+      "newGroup": "a962d17c-11ff-40c4-a673-0a234cdeac88",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض التذاكر لا يوجد عليها تشخيص] vs B [بعض التذاكر لا يوجد بها تشخيص].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "50086249-d144-4ed9-b198-5cf224cc627f",
+      "textA": "الصيدلية غير مرتبة وغير نظيفة",
+      "textB": "غرفه الملفات غير مرتبه وغير نظيفه",
+      "oldGroup": "3d2865de-86fc-410b-a7eb-d19802a92a33",
+      "newGroup": "f07e785b-39a7-4ea3-9e9f-c048b491d294",
+      "score": 0.9,
+      "reason": "Evaluating A [الصيدلية غير مرتبة وغير نظيفة] vs B [غرفه الملفات غير مرتبه وغير نظيفه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ae9199ca-8e7b-4a71-a450-2d2314828f35",
+      "textA": "بعض الأدوية غير مميزة في الكراش كارت",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "5ef36948-eb05-436c-84ad-62b1bb1db401",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأدوية غير مميزة في الكراش كارت] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6ae4d3a2-906d-4df1-b158-43ac6bbd265d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "4dd4c317-9c3a-44a5-bf84-a7fce1bb2de1",
+      "textA": "[الكراش كار] يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9ec5ecdc-9f5d-4ce1-993f-02194a25c420",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "432fcf73-9fa3-4374-9352-dfd42a56f01d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a11728ce-cddb-49c9-a222-5dcc5b30ef41",
+      "textA": "لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه",
+      "textB": "لا يوجد قائمه بالاختصارات المسموحه الممنوعه",
+      "oldGroup": "3784e30b-1e51-4033-8a81-0c52902810a5",
+      "newGroup": "e863b01a-28f1-4e2b-a330-1996958844a4",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه] vs B [لا يوجد قائمه بالاختصارات المسموحه الممنوعه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ba93d899-964d-46fa-b251-1eecc6ad9d57",
+      "textA": "اسماء المرضى غير واضحه",
+      "textB": "بعض اسماء المرضي ثلاثي",
+      "oldGroup": "26645939-d85a-4827-948a-5d9a6d481b00",
+      "newGroup": "15870eae-bb71-4439-b68c-2b2e1ef770ca",
+      "score": 0.9,
+      "reason": "Evaluating A [اسماء المرضى غير واضحه] vs B [بعض اسماء المرضي ثلاثي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "03365545-49d2-4114-832d-b3fe6bbae8df",
+      "textA": "توقيع بعض الاطباء فورمه او ثنائي",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "e66e2ac8-3c4f-4de8-90a1-035245535812",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع بعض الاطباء فورمه او ثنائي] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e6a7f07e-b4e3-42d2-8b7b-1aa023f03722",
+      "textA": "توقيع بعض الاطباء فورمة او ثنائي",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "e66e2ac8-3c4f-4de8-90a1-035245535812",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع بعض الاطباء فورمة او ثنائي] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1f962bdd-4683-4d9b-abf5-745ff35d246e",
+      "textA": "لا يوجد توقيع صيدلي على صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي على صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "fa2bc877-a4c7-4f48-92e2-206460612131",
+      "textA": "لا يوجد توقيع صيدلي ع صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي ع صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6db2d4f6-579a-4f0f-9263-90df2d1cbad4",
+      "textA": "بعض الأطباء التوقيع فورمه",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "138b97ee-f11c-454d-98d4-df80f21ec14e",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأطباء التوقيع فورمه] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0b5481fe-e5cb-44a1-960f-d2f4d5a61803",
+      "textA": "الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "e96690f3-1973-47ae-b6da-063fea237916",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "35b45582-3c22-405a-9242-038124292f2f",
+      "textA": ". صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام",
+      "textB": "لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق",
+      "oldGroup": "dd53c22c-b7b3-4e4f-8d94-fc35a4d079a0",
+      "newGroup": "69f90354-9767-47ae-bc6c-907571e6b6ef",
+      "score": 0.9,
+      "reason": "Evaluating A [. صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام] vs B [لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق].\nEntity Matches (0.75, 0.8571428571428571) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0ff2d45f-a850-4581-9314-b67ec1e5cf94",
+      "textA": "لا يوجد غاسله أعين داخل المعمل",
+      "textB": "لا يوجد غاسله اعين بالمعمل",
+      "oldGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "newGroup": "90c51fe1-0f9d-45ac-b873-e7ac1cfb3dca",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غاسله أعين داخل المعمل] vs B [لا يوجد غاسله اعين بالمعمل].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+      "textA": "لا يوجد ماسة على المواد الكيميائية",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "83d2e331-6a3c-415e-8a51-4b073d22d76c",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة على المواد الكيميائية] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (1, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "68ea9db5-1df7-4675-964c-effb52b78eab",
+      "textA": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "textB": "سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد",
+      "oldGroup": "20b2e50c-4ce5-4a2c-9d01-4b42882b9c63",
+      "newGroup": "d5a4a16b-6abd-4ec0-839e-21e6fed8c878",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم] vs B [سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+      "textA": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+      "textB": "لا يوجد ترمومتر رطوبه علي الكراش كار",
+      "oldGroup": "69cc31aa-4791-4176-8dc7-68dd9a0c456a",
+      "newGroup": "f0fa03ad-85ac-4f2d-903a-779989140fb8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .] vs B [لا يوجد ترمومتر رطوبه علي الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "172c9b18-782a-4267-92c9-f7831c1bf311",
+      "textA": "دفتر النتائج الحرجه بالقسم غير مطابق",
+      "textB": "بعض النتائج غير مطابق للقائمه النتائج الحرجه",
+      "oldGroup": "a53a97ad-7c9d-4ee4-a889-8355a4588b96",
+      "newGroup": "fcbb5fed-6cfc-475f-b38f-321b3bb0b957",
+      "score": 0.9,
+      "reason": "Evaluating A [دفتر النتائج الحرجه بالقسم غير مطابق] vs B [بعض النتائج غير مطابق للقائمه النتائج الحرجه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6f54edaf-744b-4aaa-8000-53dc08cb2982",
+      "textA": "مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "1d096538-8691-4a0e-81e0-e8f09169c7f8",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "764ac11b-8e2a-4775-8abd-b344b4d134c3",
+      "textA": "لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات",
+      "textB": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+      "oldGroup": "0051d559-91b9-4e15-bff0-20c8ec9d729c",
+      "newGroup": "dd63042c-6cc6-4163-a0b3-bb26b73d3ec8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات] vs B [لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "816e4fec-e98c-4ee8-a636-797675dfe875",
+      "textA": "قائمه ادويه الكراش كار غير مكتمله",
+      "textB": "الكراش كارت داخل الطواري غير مكتمله",
+      "oldGroup": "6839d387-a0e9-418b-a730-cba9fa62ee89",
+      "newGroup": "245a76aa-72ec-4816-932b-518669fefc81",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه ادويه الكراش كار غير مكتمله] vs B [الكراش كارت داخل الطواري غير مكتمله].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+      "textA": "توقيع الصيدلي الاكلينيكي احادي",
+      "textB": "توقيع الصيدلي في شيت الادويه احادي",
+      "oldGroup": "050b4819-0d44-4157-86a3-634b13b259e3",
+      "newGroup": "ce0db2f8-5757-42d6-9dc9-2580f777e52d",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع الصيدلي الاكلينيكي احادي] vs B [توقيع الصيدلي في شيت الادويه احادي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "d429330c-ad90-49c1-b39c-8d8c3374ebfd",
+      "textA": "لا يوجد سجل سي بي ار او محاضر فتح للكراش كار",
+      "textB": "يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء",
+      "oldGroup": "5fa8340c-0d15-400c-aba6-a4cd528b619f",
+      "newGroup": "377bfe4f-1b2a-454c-91f3-723b3af9febf",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد سجل سي بي ار او محاضر فتح للكراش كار] vs B [يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "592fd414-4d53-4f04-8c7e-2dfec4837787",
+      "textA": "لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق",
+      "textB": "لا يوجد فصل بين الادويه المتشابهه في الشكل",
+      "oldGroup": "8cf199cb-04b0-4053-9d8c-a352fcf8ac35",
+      "newGroup": "cb2609bf-da2d-4b70-8d46-94d2d8bd5e82",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق] vs B [لا يوجد فصل بين الادويه المتشابهه في الشكل].\nEntity Matches (0.6666666666666666, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e814d609-359c-4268-824e-f5ab6dfa06d2",
+      "textA": "لا يوجد فصل للادوية المتشابهة في الشكل و النطق",
+      "textB": "لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق",
+      "oldGroup": "127e32d8-f549-4df7-8f6e-196eb5283e11",
+      "newGroup": "fe83956f-db4d-4997-8108-14cf94bcaf82",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد فصل للادوية المتشابهة في الشكل و النطق] vs B [لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق].\nEntity Matches (1, 0.8333333333333334) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "41629a20-c4bd-4ab6-8e28-060f52cec777",
+      "textA": "السجلات غير مرقمة وغير معتمدة",
+      "textB": "سجلات الاستقبال غير مرقمه وغير معتمده",
+      "oldGroup": "97244892-e739-4618-9e11-64aea471896b",
+      "newGroup": "8059b2fe-a5d8-43fe-84bd-053c349bc6cc",
+      "score": 0.9,
+      "reason": "Evaluating A [السجلات غير مرقمة وغير معتمدة] vs B [سجلات الاستقبال غير مرقمه وغير معتمده].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "aab05d31-64ad-4f92-abd8-280be42b60dd",
+      "textA": "[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش",
+      "textB": "خريطه الكراش كار غير مطابقه لمعايير الدواء",
+      "oldGroup": "dff07fad-4f9b-488f-8d89-5536a48307ee",
+      "newGroup": "edae4bd2-12eb-4222-bc9b-62410a6d7b2c",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش] vs B [خريطه الكراش كار غير مطابقه لمعايير الدواء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "2ab246b3-3370-4b5c-982a-ab7b5d6c72a8",
+      "textA": "بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم",
+      "textB": "من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم",
+      "oldGroup": "ca2e645b-819b-4991-8150-1d5c3f1059d9",
+      "newGroup": "a2ab9999-4e76-4a1a-b0d9-3e83479568c2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم] vs B [من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9bc828ec-621a-43a9-bd6e-a38b79c35d9e",
+      "textA": "لا يتوفر غاسله أعين داخل المعمل",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "e54e4a20-4c73-4baf-8261-a0fb12ff8d60",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتوفر غاسله أعين داخل المعمل] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f56146a1-432b-49e7-b1d7-c6d8e04ababf",
+      "textA": "يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه",
+      "textB": "الادويه عاليه الخطوره غير مميزه",
+      "oldGroup": "91f4ca43-b450-45ff-a730-e18a521da54f",
+      "newGroup": "24ca6262-eb47-4c19-9987-452b541b6875",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه] vs B [الادويه عاليه الخطوره غير مميزه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ed44f2a9-5829-4d78-80fb-bef5e6e925b2",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8e2e732a-b1e7-43d2-ad8c-833ab908ba0f",
+      "textA": "المعمل يحتاج الي غاسله أعين ودش",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "fab515c1-82b4-423f-acc4-0988778ce268",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [المعمل يحتاج الي غاسله أعين ودش] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.6, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "751e1dfe-a6a6-4670-9e4f-fb9d2659c460",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    }
+  ],
+  "proposedSplits": [
+    {
+      "findingId": "5df7f150-0881-4292-8e86-b766d644fa6f",
+      "text": ". لايوجد تعريف لمفاتيح الكهرباء",
+      "oldGroup": "acd07277-4ff2-407f-aefa-dcc1a9536b1f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "648b19e9-f014-4f62-b7b1-36c606d482ca",
+      "text": ".التثقيف الصحى للحالات غير مفعل بطريقة صحيحة",
+      "oldGroup": "5c3547d5-2a84-45fc-b526-2189bc2388a4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6a472cb2-b1b4-4b29-8f0a-69a820ae6102",
+      "text": "لا يوجد تمييز للادويه المتشابهه في الشكل والنطق داخل صيدليه الداخلي بقسم جراحات النسا",
+      "oldGroup": "5674ee61-cd19-4045-91b8-bfe8b08e745f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "5f2aabbe-0e61-449b-b21f-55a207aebc2d",
+      "text": "لا يوجد ترمومترات غرفة في اماكن حفظ الأدوية ولا يتم متابعة درجة الحرارة والرطوبة",
+      "oldGroup": "79181404-d08c-4456-a515-07b9699a236e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c6ca071b-760c-4060-a7fc-055c85a34012",
+      "text": "لا يوجد معايرة لأجهزة السكر الموجودة بالأقسام",
+      "oldGroup": "ff45d49b-9106-49c1-bea5-ac95f83739a7",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "673198af-c916-434a-879b-3eb3dde7854c",
+      "text": "يتم تسجل مرور العرض في نموذج الاستشارة الطبية حيث مسجل مرور التغذية في نموذج الاستشارة",
+      "oldGroup": "e3d07dd8-309b-410e-812d-fa2abe8340a1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "20617b21-7a11-4d87-a95f-cbd3b65daf01",
+      "text": "وجد في تذكره الحاله الجاريه عبد العظيم مخيمر يوسف أنه في تذكره الدخول قسم الطوارئ غير مكتمله البيانات من حيث عدم تسجيل علامات حيوية ولا الرقم القومي ومكان التحويل",
+      "oldGroup": "e350afac-80c9-4c00-9690-015cb489aa7b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c8efe9f8-e9ea-4d3b-9ec8-fc6b71e6ae1e",
+      "text": "لا يتم التسجيل نموذج تسلبم وتسلم الاطباء بشكل صحيح",
+      "oldGroup": "4e85dc6c-65be-4b9a-bf66-2e8bc6bcb9d0",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "63c41f52-dd9c-4a92-bcee-f8937d7e46bc",
+      "text": "يوجد ألات منتهية التعقيم و آخري منتهية التطهير",
+      "oldGroup": "45e32dfa-a781-492f-b9aa-4f5ee5677fbc",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1f78f692-4eec-4dcb-89ff-290d546f26e2",
+      "text": "وجبات الإفطار بجانب المرضى بدون تعريف ونوع الوجبه",
+      "oldGroup": "e7e162c8-559a-4580-98bd-3e02a453476d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "28759644-dfec-4559-b9f3-dbc9847be28c",
+      "text": "بعض الحالات bed reddin بدون مراتب هوائيه",
+      "oldGroup": "a41c336a-cd8a-4ac8-be48-732aa5247d86",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2922f50c-600d-4598-bff8-3a4c252a534c",
+      "text": "لايوجد ادارج او علب لفصل ادويه المرضي على حده",
+      "oldGroup": "fb015a31-1a03-431a-aa33-00439172841e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "915ebf98-1ece-453f-806d-1f51165971f7",
+      "text": "نموذج الإقرار المبني على المعرفة غير مطابق (لا يوجد تعريف كامل بمخاطر ومضاعفات عمل وعدم عمل  الاجراء).",
+      "oldGroup": "268f4f01-a19d-4b31-b513-a3703b7ee07a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "256efcfb-a336-44ab-9c30-4aeca8711585",
+      "text": "يوجد أدوية متعددة الجرعات مفتوحة لايوجد عليها اسم القائم بالفتح",
+      "oldGroup": "d7da585d-f29e-4724-80ce-9b9e276ba05d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "526bd5af-bc98-4940-8ab8-a86a1ae2da0f",
+      "text": "التهوية غير جيدة ولا يوجد سلك على الشباك",
+      "oldGroup": "b963e127-6ff5-4e40-9079-3e50ab56ce1a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2d5415c8-bf23-4e19-a609-ddaaa4492568",
+      "text": "توقيع الاسم ثنائي في سجل الدخول",
+      "oldGroup": "9163b05a-81a8-48cc-b26c-1e0675358a54",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "411b8fac-ddee-4d57-b19c-359d44e8a4da",
+      "text": "لا يوجد غلايه لشطف الالات بعد الاستخراج من السايدكس",
+      "oldGroup": "dd9acb25-6271-4166-8078-6fa7ae03bffd",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c957c8c7-ab7a-4b08-97d4-0f99ba1ae7a8",
+      "text": "العاملين بالقسم غير مدربين على الامان المعملي\nالإنعاش القلبي الرئويCPR  .\nالتعامل مع الانسكابات الكيميائية او البيولوجية. \nخطة الحريق والاخلاء   RACE  PASS",
+      "oldGroup": "f7931949-95b0-44fb-a248-1ef8d813a6b1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ab7b3fe5-aa7f-453e-bcc1-b321806326ec",
+      "text": "مؤشر 4غير متوفر",
+      "oldGroup": "9ef9b4bb-a05c-4bf4-904e-7283995b5e28",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "e7b02d4c-8533-4059-81d7-96507b601bd6",
+      "text": "لا يوجد كارت تعريف علي اسطونة الاكسجين ولا بيانات القائم بالملء و هل ممتلة",
+      "oldGroup": "d0db0a3f-c7b9-4340-a301-09f7f86278ce",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "62f45b67-6e8a-4559-9a2d-0e213fd505ae",
+      "text": "الخضار غير مفروز",
+      "oldGroup": "772178f4-0dba-492f-a5a8-9bb04f1e423e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "3b910867-7f3c-4aec-8e3c-01fe2d2c04a0",
+      "text": "مفرمه اللحمه غير نظيفه",
+      "oldGroup": "ab2c95e3-2613-4e08-87bc-a20995aa46ee",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "593fc054-3e59-4d3d-98a1-2679b54e5055",
+      "text": "لا يوجد خصوصية للمرضى أثناء الفحص او الإجراء(عدم وجود ستائر ).",
+      "oldGroup": "b323d829-ba24-4013-936f-0761052688bf",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6886a0f9-304c-4884-9e42-da4cc4f5b69c",
+      "text": "بعض الملفات التثقيف الصحي غير مكتمل",
+      "oldGroup": "012bb264-44ba-4cbe-88da-3550d66035e3",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6a99bd4f-c9e8-4cc5-8c15-b860be81701c",
+      "text": "المراتب الجلد ممزقه",
+      "oldGroup": "22c15bd4-d8ea-488c-ba57-8e4a7c725295",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "eb384b2d-6f8d-4654-8323-aacb02ba9b5e",
+      "text": "تقرير كواشف البيولوجى غير معتمد",
+      "oldGroup": "8670e90a-2129-48fc-9226-ff39433f683b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "b82cba27-7dc0-49a8-8e2f-62927debc7a2",
+      "text": "لايوجد تهوية مناسبة",
+      "oldGroup": "abe925c6-df44-4df5-9821-76dad66d506a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "87492a42-f8dc-4877-97fc-f3fe1342af4c",
+      "text": "بعض الاقرارات على اجراء تداخلي غير مكتمل البيانات( المضاعفات)",
+      "oldGroup": "184c037f-99dd-4ae0-9c75-7ae5226e60ab",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4a478dde-d6ab-49a7-9fe1-311d15c50dac",
+      "text": "الماسه sds غير موجوده على الكيماويات",
+      "oldGroup": "b779dd61-9c69-4ffe-b7b6-5e5ff68b263f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "7e3bc5fa-a67d-452e-82e1-acd17c1602e9",
+      "text": "لا يتم معايره جهاز السكر بالقسم من المعمل",
+      "oldGroup": "88e5a286-5667-4fc8-bf76-c0bdc31795ef",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "3c9c007f-7070-48d1-b33e-6cb4cbe33c96",
+      "text": "لا يوجد غرفة طوارىء ولا نظام فرز لحالات السقوط او الأمراض المعدية",
+      "oldGroup": "bd16a4e9-729d-4cd8-a18b-ab3b0797e99b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "f339c563-65b8-4bf5-849e-36a092fac983",
+      "text": "يوجد اسلاك مكشوفه على الارض",
+      "oldGroup": "2ff457af-4bc1-4568-bc90-b0069cc2ffe0",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "47482132-a5ea-4df5-b100-00260b275af3",
+      "text": "لا يتم توثيق مرور الصيدلي على الكراش كار",
+      "oldGroup": "228d9b0f-f99e-4abe-b809-0fa2d8af2151",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "031cc313-fa88-4c12-8c75-20d9dba958d7",
+      "text": "عدم اتباع سياسة التعريف الصحيح للمريض",
+      "oldGroup": "cf829591-bc1c-4429-9e39-e31b1e941c7d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c50a7898-66e5-408c-a17f-553e7832e3a0",
+      "text": "لا يوجد مرور منتظم الصيدلى الاكلينيكي يومى ومنتظم",
+      "oldGroup": "af66a9ce-cd1f-4b01-b12b-f44e1cbbbff6",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c6dc8bca-f85c-4d44-82f7-df2322888c24",
+      "text": "بعض الكومودينات مكسورة",
+      "oldGroup": "30e740d5-282d-4e94-acab-b0eb6a96f1bd",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a155478d-2be6-4b30-a213-6b292f68be00",
+      "text": "لا يوجد I.D للعاملين بالقسم",
+      "oldGroup": "7784fea0-d3b3-4547-83a1-76eb3232cbdd",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8a72c2b7-b2ab-4c21-82e3-08b49d8ce192",
+      "text": "سجل التسليم و التسلم للتعقيم غير مكتمل وقت و تاريخ الاستلام للآلات المعقمة و تسليم الآلات الملوثة للتعقيم",
+      "oldGroup": "8d262b00-7502-4ee0-9761-9e41f7520898",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "18a44881-9106-420e-b66e-37a9bdc433af",
+      "text": "لا يتم الالتزام بابلاغ النتائج الحرجة في الموعد المحدد وفق السياسة",
+      "oldGroup": "9ad817ee-3a45-46ec-82eb-cefafdc10667",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "da5dbaec-7697-45a3-8ef5-75f77f088823",
+      "text": "لا يوجد ملف طبى كامل الموجود ملف ٤٨ ساعه",
+      "oldGroup": "331d5524-a6b1-460f-ac4e-9e8093411550",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "dfbcb859-eff8-4ea8-8bb7-57465435066f",
+      "text": "لا يوجد خيوط جراحيه بالاستقبال منذ ٢٩ /٦ طبقا لطلبيه الصرف",
+      "oldGroup": "736fd567-18ab-492a-bf9d-4331f4c42532",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6f42c490-5165-47f6-95b1-1fd597ebbbdc",
+      "text": "لا يتم كتابة رقم ملف المريض في الاقرارات التداخليه",
+      "oldGroup": "1bf62ed1-adfb-4c54-8619-20383529f338",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "9a251b3f-79db-4e92-805e-747b9b641e36",
+      "text": "نتيجة الاشعه في الاقسام بدون اعتماد او توقيع الاستشاري ولا يتم كتابة رقم الملف للمريض على النتيجه",
+      "oldGroup": "4648bb97-5039-4d17-bf5a-702635df94b1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "0e93050d-4368-4eea-8a29-2e165ae08851",
+      "text": "لا يتم تفريغ ال D.C بشكل منتظم",
+      "oldGroup": "f64cea19-ee1a-4c93-9f25-f1034bc13f62",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "79adbc54-ea91-4986-98a9-18d9d0bf0670",
+      "text": "مطلوب تفعيل فريق RRT وعمل جدول يومي معلن به",
+      "oldGroup": "68c1ce68-e60b-4787-92cb-559094fdaafa",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a8f2c6f8-6156-42c1-802b-5ca6510ec173",
+      "text": "لا يوجد تحديث لسجل التسليم و التسلم للملفات إلي الارشيف",
+      "oldGroup": "88f233dc-aea7-4a89-bd4e-3bb73941fb87",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "85cc4183-15c2-4295-8afa-f583a3de4177",
+      "text": "جهاز الأشعة السينية لا يعمل(محتاج UPS )",
+      "oldGroup": "e44d0b14-2680-441f-8229-ee92417fffef",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2ee281fb-2f28-402d-b115-7cbe0d58ebe0",
+      "text": "لا يوجد قائمة المسموح لهم بدخول غرفة حفظ ملفات المرضي",
+      "oldGroup": "566e5a8c-fa73-4163-bcc7-7e0557496958",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8a2038cd-b82a-420d-a382-0251782c5c83",
+      "text": "مطلوب تفعيل الترياج (Australian triage) لتحديد اوليه تقديم الخدمه الطبيه الطارئه للمرضي بقسم الاستقبال",
+      "oldGroup": "b4c925d4-6b32-4240-8453-3acd3a5941e4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "655de6f5-6591-4266-b5e7-af8ce60b4579",
+      "text": "لا يتم كتابه القائم بالفتح ثلاثي وتاريخ انتهاء صلاحيه الكواشف بعد فتحها طبقا لقائمه ثبات الكواشف",
+      "oldGroup": "41ffe283-590a-4ec5-82f9-325e8353dc7d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "005f7949-717b-4092-8ea5-aff7b3791500",
+      "text": "يوجد حالة نتائج حرجه من الساعه ١١ حتى الساعه ١٢ونص ولم يتم الابلاغ عنها حتى وقت المرور",
+      "oldGroup": "d62a1077-f824-4112-bc25-4e5eaaccc116",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ec3d13ac-7fae-41b0-9a9f-179a8e6756d7",
+      "text": "يوجد تراكم رواسب علي كشاف يونيت الأسنان",
+      "oldGroup": "7e98452a-fdb7-4998-b6c9-cb4bd4c89475",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "3723e5b9-1d0f-4ec9-871c-cecf5a297d64",
+      "text": "الفريق الطبي بالعنايه يحتاج الي التدريب علي SDS",
+      "oldGroup": "17636ec3-ad3a-4c30-a69d-968cad3c4995",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d11fa7cd-a75d-4100-ad6a-98dfb518dc42",
+      "text": "يتم حفظ ادوات النظافه بحمام المرضي",
+      "oldGroup": "1899cb44-6880-44f1-ac70-577d65cb1a94",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "89463b36-f268-4334-894b-0d9b5bc7deed",
+      "text": "لايوجد تفعيل لسياسة التدخين",
+      "oldGroup": "b79aa5a3-b70f-461c-85a8-cc3848e18ff1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "47dc0713-da67-47f5-8917-95959b2eeac4",
+      "text": "قائمة نتائج الاشعه الحرجه غير محدثه",
+      "oldGroup": "9d11c73b-658a-46d5-8955-2216735096d3",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4a79800f-28db-487d-843c-132bdd66a8d5",
+      "text": "يوجد اختصارات في التذاكر الخاصه بالعيادات",
+      "oldGroup": "ad354290-bf95-4139-a159-51c927bd3374",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "616f7b14-b213-4b87-9193-60b0a86af33e",
+      "text": "لا يوجد توقيع لطبيب التخدير في نموذج اقرار الموافقه على اجراء جراحي",
+      "oldGroup": "9b1dd60d-2ace-435b-aaaf-daa8ba1c9e40",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "822f7595-7114-484c-9adf-8705ca435697",
+      "text": "بعض التذاكر غير مسجل عليها الرقم القومي",
+      "oldGroup": "b942a62c-14f2-4e79-9cc0-92c9c01ac805",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8710849f-6672-4641-a6ed-5429a2b7599b",
+      "text": "السياسات الخاصه بالقسم منتهيه بتاريخ يناير ٢٠٢٢",
+      "oldGroup": "9f28c15f-49e6-41e0-8a1f-56ebd3c6ce63",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "952c7e06-82ec-40b2-899d-82795304fdab",
+      "text": "لا يتم الالتزام بوضع علامة مكان الاجراء الجراحي",
+      "oldGroup": "1b92580a-91aa-4dcd-acf3-695b37edea02",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "9e97f438-3e9d-47f1-94ed-6ada89f80fb2",
+      "text": "لا يتم اخذ التاريخ المرضى للمريض والادويه التي يستعملها المريض",
+      "oldGroup": "8720ef92-a540-4a72-9a95-5047f26a7023",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ec4eda5f-5e8d-45fc-86c4-03d56f848013",
+      "text": "نماذج تخدير العمليات غير مكتمله",
+      "oldGroup": "69962fc1-7165-4535-8796-d2658651611e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "26eb014e-b2e2-451b-bc68-78cc53c06e96",
+      "text": "بعض النماذج بدون التشخيص النهائى",
+      "oldGroup": "acdc195d-6c24-4ebe-8b42-2d2f1f08a78f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8f52e4f0-a219-4c2e-b71e-8c63358158b7",
+      "text": "نموذج طلب الدم بدون بيانات المريض مكتملة",
+      "oldGroup": "7a8ec2a2-8240-434d-b53d-3581eae78dc2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8a95588c-255c-4a0f-bd23-87f899533434",
+      "text": "وجبات الرايل غير مطابقة لكراسه الشروط ( كوسه فقط )",
+      "oldGroup": "3e11bdf4-59ed-4fc6-b778-6ec2fe6fe0f1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "fb3ce402-54c3-431c-a9a5-b89151192df4",
+      "text": "لا يوجد توقيع للمريض ع نموذج التثقيف الصحي",
+      "oldGroup": "835aa0da-cc00-46c1-8125-af5427490324",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1cd50d51-d2bb-4395-a924-70070e35e642",
+      "text": "عربه تجميع الغسيل الغير نظيف غير مطابق",
+      "oldGroup": "f2513460-3c8a-4f02-a24d-a52ce5da8710",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "004446bd-c6c6-4e62-bd84-aaf08db41003",
+      "text": "قوائم دولاب المستلزمات غير معتمده",
+      "oldGroup": "89dea498-38dd-442b-b0a3-1f9c340c9728",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "12f141af-bb20-40a0-879c-9b0e6fd16207",
+      "text": "جدول التنظيف اليومي غير معتمد واخر تسجيل له يوم 9/4/2026",
+      "oldGroup": "830c221b-9c58-4df5-b65b-01d065cca02c",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "174fab2b-6a23-40b9-8bc8-ef82d642906d",
+      "text": "ملاحظات الطبيب في الطوارئ غير مكتمله",
+      "oldGroup": "82888700-c630-4b64-b47b-826ddaca4c89",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "3561540b-083a-4dee-852c-72016041877d",
+      "text": ". الآلات المستخدمة لايتم غمرها بالماء والصابون",
+      "oldGroup": "a555a241-9398-481c-9003-91b59689937f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "575d3500-2520-4eb4-b8ec-a39c7625c8f5",
+      "text": ". الإجراءات غير مكتملة التسجيل فى سجل النتائج الحرجة",
+      "oldGroup": "ca9bea0d-8c0e-43aa-abcf-a6c22ab95839",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d4560c2b-4715-43c2-8f29-778762de3272",
+      "text": "اسطوانات الاكسجين غير مؤمنه",
+      "oldGroup": "bf86c74d-1736-463e-af18-e83b980031bb",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "e75082e3-5da3-4506-9dfb-7ecf8b7e005e",
+      "text": "لا يوجد نموذج الاوامر الشفوية",
+      "oldGroup": "7b0bc3c9-1372-4246-a933-ca22ad5960b1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "7a4381fb-b864-488d-947c-d05159bddd1e",
+      "text": "سجل النتائج الحرجة غير مكتمل تعريف المريض و عدم الالتزام بالتبليغ خلال المدة المحددة",
+      "oldGroup": "587b88a8-8757-479f-bd92-b3d7fd5a687b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "dd251de2-174f-4ca5-b0e7-07f00bbebae5",
+      "text": "تحديد جهة تركيب الواصلة غير مطابقة بين نموذج التركيبات و الوصلات و ملاحظات التمريض",
+      "oldGroup": "f55dbab2-f9ee-4db0-835c-59c6d09e6e1e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "0be17502-f831-47e2-94d1-342bb8d6f41b",
+      "text": "لا يوجد يورينال بجانب كل سرير مخصص للمريض .",
+      "oldGroup": "13bd01b4-f3ba-4681-a2a0-cbcadd68fd09",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "7bf30926-5176-4365-8788-26d225042950",
+      "text": "لا يوجد ما يفيد بعمل ضبط الجودة بالمعمل ولا يوجد مؤشرات او إجراءات تصحيحية  في حالة outlier.",
+      "oldGroup": "e1a8b6d4-85f9-4a7a-85d7-5aa4788724d7",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6498b325-c6fe-42d3-bcfc-0cce3010deb9",
+      "text": "لا يوجد سجل معايرة او اي بيانات تفيد معايرة البادج فيلم .",
+      "oldGroup": "94df4a72-445e-44a6-848b-ac6e5ea0d454",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "3639abab-54ca-4985-a85e-0fa861009949",
+      "text": "لا يتم تثقيف وعمل تعليمات للمرضى المشتبه بهم  مثل ارتداء ماسك جراحي  و   cough  etiquette.",
+      "oldGroup": "48f4ddac-810b-4bad-8c8c-7c501394dcfc",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6993e92f-ebad-40fb-b7c2-5c47057db421",
+      "text": "لم يتم عمل CBC للعاملين بالقسم بصفة دورية (مرتين سنويا على الأقل ).",
+      "oldGroup": "f4f431ae-1618-4142-b49c-33e416ba6003",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1af3134f-2608-4134-a11c-f37357fe2047",
+      "text": "يوجد تكييف به تسريب للمياه ولم تتم  صيانته او اتخاذ إجراء تصحيحي .",
+      "oldGroup": "de43c7df-ad02-44c8-bada-bf3e85ba1521",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "26f22a85-51cf-452b-890f-293f441f3642",
+      "text": "يتم عمل تقييم الوقاية من الجلطات  VTE عند الدخول فقط ولا يتم إعادة التقييم .",
+      "oldGroup": "d38b06fa-7667-427d-a165-1af5d5f49b10",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "7bba0c69-c3e5-454f-a572-506d4e2238ea",
+      "text": "لا يوجد تسليم وتسلم للأطباء منذ الدخول الحاله للقسم",
+      "oldGroup": "399e5bce-5fee-43f9-889c-be766c0011b9",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "37b36390-ece2-49bc-a221-11c0455aec6f",
+      "text": "لا يوجد admission criteria or discharge criteria",
+      "oldGroup": "9daaff6a-c49f-4c79-9a76-fa19e40908c2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "627a6d58-30d8-40d1-8fb8-fcc9c87aa518",
+      "text": "لا يوجد نموذج نتائج حرجة بتذاكر المرضى",
+      "oldGroup": "a0e4fc24-1db0-43ae-a324-1290b08d490f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a8904600-4730-4c32-8c4f-83bd4d706d9c",
+      "text": "قوائم مرور الفحص اليومي لفني الاشعه غير مكتمله (آخر مرور عليها يوم 9/7/2026.",
+      "oldGroup": "0bfeff42-bd49-49ec-8290-4b9704623a4b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6143ea10-cca4-49f8-9ae5-f669507efdaf",
+      "text": "قائمة الاسعار غير معلنه خارج المعمل",
+      "oldGroup": "8c55ae58-0f90-4fbd-a80e-49d239082cc8",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "233673cd-802f-4623-b6ed-8fbfd6807521",
+      "text": "يوجد اسلاك مكشوفه بعموم القسم",
+      "oldGroup": "c6688697-066d-4fa2-9aa1-00caeadd7293",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "50630445-f3dd-4ad3-93ef-9cc47ae444d4",
+      "text": "يوجد تكدس بالادويه في الثلاجه",
+      "oldGroup": "5b1e0f43-86dd-41b1-aafc-34bdaef2c5a8",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "edaf7b7a-7754-4a72-99de-6f0e6aa1e373",
+      "text": "لا يوجد تعريف لكربول بنج الاسنان.",
+      "oldGroup": "1e3cb05a-16c9-40a4-bba2-30767b2f5696",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2271b2e4-601f-4fae-b738-f3501f823776",
+      "text": "لا يوجد حوض مخصص لشطف الالات بالماء سبق غليه",
+      "oldGroup": "8dcb0187-9e22-4ea5-8899-a30f355be0b2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "bd6383b1-90a3-41d1-83ab-d1520b1a5909",
+      "text": "العاملين بالقسم غير مدربين على الامان الإشعاعي\nسياسة النتائج الحرجة  \nالإنعاش القلبي الرئويCPR  \nتقرير الإبلاغ عن حادث عارض OVR\nالتعامل مع الانسكابات الكيميائية او البيولوجية \nخطة الحريق والاخلاء  RACE PASS",
+      "oldGroup": "f7931949-95b0-44fb-a248-1ef8d813a6b1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "08407476-238c-48db-9cee-1e055793ebd8",
+      "text": "بعض جرعات الادوية غير مكتوبه",
+      "oldGroup": "d4c72b84-de08-4adf-828b-e9097f273326",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a1f45979-b516-4e4d-919c-5e2e87627d9e",
+      "text": "لا يتم عمل فرز لحالة المريض  طبقا لأدلة العالمية (الأسترالي-الكندي).",
+      "oldGroup": "7d056963-b10a-42ed-80df-b8eebb6a32b1",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "626b3c26-68f2-4183-8132-e474836d872d",
+      "text": "لا يوجد indicators كافيه لاختبار فاعليه السايدكس",
+      "oldGroup": "f9f48654-3bc5-401d-8584-8e978c550d5f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "781d799a-4041-44fd-84f6-5c3b7d548de0",
+      "text": "المريله الرصاص معلقه بطريقة غير مناسبة",
+      "oldGroup": "6d9ab7d6-b11a-416c-aa0b-9446758c088e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "87f9da23-dad8-4330-9fee-4e77d879722f",
+      "text": "جهاز الصدمات لا يعمل ولم يتم تفريغ الشحنه",
+      "oldGroup": "d9159d4a-608c-47dd-8bd3-ef365932a272",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a3cb0ed3-9a85-4124-9a81-6fc08618777e",
+      "text": "لا يوجد تاريخ فتح على أدوية الاشربه",
+      "oldGroup": "10e2950b-4d75-4276-9275-ed1eb5e44dd5",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "92b64888-13c2-4676-b6f9-5cfc9510b7cc",
+      "text": "لا يوجد قائمة بالاجهزة POCT خارج المعمل",
+      "oldGroup": "3516fccd-252c-4b2e-85b9-3c17d18f0de3",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ae0cc4fd-a399-4c97-a4b6-f5e5432895b4",
+      "text": "يوجد اختصارات ف التذكره",
+      "oldGroup": "56c42f15-87f7-4c90-a0d4-3d10bf768db4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "b8551c00-a343-412a-910a-088b4c628320",
+      "text": "قائمه النتائج الحرجه غير معتمده وبدون تاريخ اصدار والمرجع الخاص الخاص بها يخص الاطفال",
+      "oldGroup": "109cf814-ebbe-4c58-ad20-d033c6b6541e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "b6fcdb9a-4804-44f7-bc92-46f0f57de83f",
+      "text": "لم يتم تسجيل وقت الدخول والخروج لبعض الحالات بالاستقبال",
+      "oldGroup": "5175f947-3470-4dcf-a32b-6ccd5770b5d0",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ece58dd3-a770-4cb7-a798-3da7a21fa440",
+      "text": "لم يتم قياس أو تسجيل الضغط لجميع الحالات بالطوارى",
+      "oldGroup": "9d9ccf37-ed9e-4b32-a33c-b1d0b280cf97",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "f1ef3380-eea3-45eb-924a-fc19b95feb03",
+      "text": "لا يتم كتابة اسم المرضى على العينات المسحوبه",
+      "oldGroup": "03285c55-5b81-458b-97c2-c349bb01e55f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "603853a2-acd8-4e81-81cc-d4e026a90f0b",
+      "text": "[عموم العناية] لا يوجد استعاضة الأدوية لبعض الحالات التي تم لها عمل cpr",
+      "oldGroup": "8f2c40ac-b6f1-4688-9e16-59be664fce6c",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "502051ac-4b7c-4d04-a3f2-b4ae09295bf5",
+      "text": "صندوق الانسكابات يوجد به رمل لا حاجة. له غير معقم و غير مطابق لمعايير مكافحة العدوي",
+      "oldGroup": "0ab3a7d1-5ef5-43cc-9d98-d0cce522a80b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4e2c9842-e180-4809-818e-0b2a8088be38",
+      "text": "لا يوجد كارت تعريف للأدوية بالثلاجة",
+      "oldGroup": "160c79b2-ff2c-4664-b7f1-34f4a693fec3",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "fc55c9f1-bbfd-4de1-8a13-710224141855",
+      "text": "لا يتم عمل معايره للاجهزه الموزعه بالاقسام",
+      "oldGroup": "16874617-878c-4132-a180-517fee15e36a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "141f4a81-1ed7-4160-a6b6-fdadd9733cf4",
+      "text": "[الكراش كار] التمريض غير مدرب علي التعامل مع الإنذارات الحرجة لل DC",
+      "oldGroup": "5fe56476-46d2-481d-b386-6de7b2febb09",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "24065175-3a46-43e9-bd69-380c3e658703",
+      "text": "[عموم العناية] لا يتم تسجيل حالات MDR في سجل النتائج الحرجة",
+      "oldGroup": "9a63a9f9-8a97-4285-bbf3-2f07e3f70b6d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "0f6043f6-783e-45be-afde-e9577a2174f0",
+      "text": "لا يوجد استاندات كافية للتخزين",
+      "oldGroup": "649424e4-4273-4aab-9022-57cde00f5a43",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a4039d60-6774-4a75-be11-25d74ac1bab1",
+      "text": "لا يتم تحديد  خطورة السقوط بعد حساب مجموع الدرجات",
+      "oldGroup": "7d200c59-60e5-4c3a-be19-2438f7d5c4d7",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d635da6e-a92f-4a3d-8fb4-4dc813afb250",
+      "text": "يوجد مخزن مستلزمات غير مرتب وتم التعديل أثناء المرور",
+      "oldGroup": "5b2b0ee7-636e-4e0f-8aac-61b4c41f8dca",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "842ef087-1dd3-4861-98ab-6a27db30f4d9",
+      "text": "الحالة مقيدة دون عمل نموذج تقييد للحالة",
+      "oldGroup": "13b3956f-aefc-40ac-b90f-9ca508d1e4ae",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "27142ddd-9aeb-474d-84ec-647619fed21e",
+      "text": "لا يوجد توقيع للصيادلة على صرف والعطاء الدواء",
+      "oldGroup": "1fc604ad-0ff0-448e-afa6-81bd90362570",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d16db240-1575-4792-89ce-a837dc2c4158",
+      "text": "لا يوجد ممر هوائي بالكراش",
+      "oldGroup": "a4e41fc6-07d7-43ea-a22e-1c6bce904a54",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "b6253327-1ab8-4bac-9757-d0437fe9042e",
+      "text": "التمريض غير مدرب على التعامل مع النتأئج الحرجة",
+      "oldGroup": "ad8739f1-71c7-43fb-9e01-7e0c3d07c7c8",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "eb4719ec-19f0-48e5-b724-d6bdb2f3df85",
+      "text": "يوجد سرنجات بها أدرينالين غير معرفة",
+      "oldGroup": "3629367f-f506-4ddd-b41e-fd7bf7934838",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "09c42fed-03f8-4a29-a286-4346f51e38bd",
+      "text": "لا يتم مرور العلاج الطبيعي على المريض بانتظام",
+      "oldGroup": "230499b5-d8fe-4a78-9fa1-94ad107483cf",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "29c263fc-273e-4d47-b7cd-a2f49bc565a2",
+      "text": "لا يوجد فهرسة للغرفة و بالتالي مكان حفظ الملف في سجل الارشيف غير واضح",
+      "oldGroup": "d25370d9-69d8-42bf-a803-387f0a70c226",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1ae9dea6-62db-4da5-a169-1ffa687c925a",
+      "text": "لا يوجد قائمة بالعينات المقبولة دون المستوي",
+      "oldGroup": "b07c6642-5c8d-41c6-8570-4a048b5bb854",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "03bc77ea-545c-4d64-8262-7e05e9a1b675",
+      "text": "لا يتم وضع حرف f للمرضى",
+      "oldGroup": "ee614c08-b9ac-49e0-829d-5d83ed95ff00",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "fddf3816-ca90-45f2-89f4-95fd93e2a107",
+      "text": "سجل تسليم التذاكر الطبية للأرشيف لا يتم توقيع المسلم والمستلم",
+      "oldGroup": "c5d201a3-4d40-43af-b679-f4287ea16fd4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4d771038-9c38-4f1f-826f-726423cf97e7",
+      "text": "لم يتم عمل اقرارات الموافقة",
+      "oldGroup": "734710e0-4c96-4c35-8ec4-fe0e6199382d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "ab495872-a22f-46a6-b3ae-e481a0923262",
+      "text": "لا يتم عمل ملائمة دوائية",
+      "oldGroup": "0926c752-4297-414c-b7dd-49b5e8b16302",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d90703b3-0b55-42ad-bdda-885e15a33424",
+      "text": "توقيع الفريق الطبي بسجل تسليم النفايات ثنائي",
+      "oldGroup": "49fd1bbb-ac55-4bba-9ed9-a43c92504628",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8d187dd9-3a24-4edc-8c60-6966c8e5a4ca",
+      "text": "لا يوجد مرور صيدلي علي دولاب الطوارئ",
+      "oldGroup": "5fb9db60-4da1-4865-ad84-ebb22377940c",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "391bf437-807f-4fd6-a687-877b7ddc13f7",
+      "text": "لا يوجد مقياس كلور حديث طبقا لتعليمات الوزارة",
+      "oldGroup": "a0c34b9c-5bc7-4f41-aa3b-56038d70800d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2a9f7b6f-cdf3-4330-8df4-e5b645dea793",
+      "text": "لا توجد قائمه معتمده بمحتويات صندوق الانسكابات والصندوق غير معرف و غير مستكمل",
+      "oldGroup": "e2c03559-b4dd-43d9-a9f7-e48d6f918cc5",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "f96d4710-73ce-4e4f-9391-fdca3eace333",
+      "text": "لا يوجد ترمومتر غرفة",
+      "oldGroup": "aa09e9ca-763a-43b5-ae3e-5d18dc8c2b77",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "9cc7b88a-ceee-4692-b22e-ca61c2bb73b3",
+      "text": "بيانات الدخول غير مكتملة",
+      "oldGroup": "7b6376c7-f7e0-43e6-9060-3a41a7a30ca7",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "be5ed8f7-312d-41fe-971a-40f0c141017a",
+      "text": "لا يوجد امبوباج اطفال",
+      "oldGroup": "b996a40f-220f-44fa-8c95-5410f0719070",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "23a8c931-8306-4362-976b-d7c71c444667",
+      "text": "يتم كتابة الاعراض في التذكرة الطبيه وليس التشخيص الطبي",
+      "oldGroup": "81c0dd68-ed4b-4e05-ab95-1f134e8f37ed",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "16f197d4-5e6d-455c-9e7e-74717a3e6099",
+      "text": "لا يوجد ترخيص لوحدات الكلي",
+      "oldGroup": "9c9235d1-7817-4bf6-a0cd-17a4a141b615",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4d63b999-9da4-407f-a79d-aeac5ce051a9",
+      "text": "لا يوجد سنون بنج بالعياده",
+      "oldGroup": "e68a1d05-e6b0-4d1e-aea9-1d274a7ec50d",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "45c6767e-eaa3-4e93-a425-71f4d75f9013",
+      "text": "الغرفة غير مطابقة للشروط و غير مؤمنة و يوجد بداخلها عدد كبير من الموظفين بأقسام أخري",
+      "oldGroup": "a546bff5-98d7-42f7-ad12-fc2c8e4e9563",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "4c1b6179-0a7d-46e8-a793-c01dd6ae00ec",
+      "text": "بعض العينات لا يتم التسجيل عليها بيانات المريض كامله",
+      "oldGroup": "a6c9ec69-ee48-452e-adb2-085a52e1dd62",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "805bc321-2999-4503-9903-00900bd30467",
+      "text": "يوجد اسطوانة اكسجين غير مؤمنه وبدون بيانات",
+      "oldGroup": "bf86c74d-1736-463e-af18-e83b980031bb",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c6145849-ce95-4e12-bdc4-67b74794a71c",
+      "text": "لا يوجد تسجيل للقيم المرجعية الخاصة بستاندر الخاص بالجودة الداخلية",
+      "oldGroup": "b3e4b710-43bf-40fc-9167-bfbde7529ae0",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "d5e1ca8c-7f99-4e98-a0da-c3f4d770e06b",
+      "text": "لا يوجد عنوانة للأرفف و بالتالي صعوبة استخراج الملف",
+      "oldGroup": "fa01a394-8e02-44cb-86a0-b3421b5e67ae",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "cb27878c-5d6b-428d-813a-18c495204c03",
+      "text": "قائمة ثبات الكيماويات منتهيه وبدون مرجع طبي معتمد",
+      "oldGroup": "57818f98-89b7-433f-8fa4-2f371ec04fe2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8bddc66b-1bed-41bf-9a6e-3bde73ff441e",
+      "text": "لا يوجد ستاندات كافية للحفظ",
+      "oldGroup": "8d766052-7e86-483f-990d-db9d234ec35e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "b7d7f6a1-c54b-45b3-bbb6-4a9ab0edaf8d",
+      "text": "توقيت الدخول والخروج في دفتر تردد الاستقبال غير دقيق",
+      "oldGroup": "3f0f1812-d262-4c42-9a61-fb3bfe2e14e9",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "05632bc9-1841-4405-bf59-bf3a25ee2dad",
+      "text": "مطلوب عمل افاده للديزل حيث انه قدرته أقل من 750 وات",
+      "oldGroup": "4db9a81f-beb8-4725-b7a8-ea5c62bc0256",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1a6b727d-3f96-4fd0-b29a-e61d50fd8da0",
+      "text": "مطلوب تسجيل المرور بالقائمه التفقدية للديزل وتانك السولار",
+      "oldGroup": "cf5baba9-8595-42e0-a99b-c46e19b7fa5f",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "277d8674-f584-45ef-b552-9701c68c476f",
+      "text": "مطلوب توفير طفايه حريق بجانب الديزل وتانك السولار والطلمبات",
+      "oldGroup": "97ec21bc-05e9-45ab-871a-5cb95e4aea9b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "f78701f6-ae56-41ea-a65a-08ddda350199",
+      "text": "لا يوجد قائمة بالعاملين بغرفة حفظ ملفات المرضي",
+      "oldGroup": "88faf07d-900e-4586-8d2e-ce27aeb82b45",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6e34f4c2-f28f-4ac2-a242-a2c2e5f1305b",
+      "text": "ملفات حفظ تذاكر المرضي متهالكه",
+      "oldGroup": "96c735b1-ac68-4035-9e66-f74dac51ea1e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1f425411-8f8a-421b-abb5-dde7efd4989e",
+      "text": "مطلوب تسجيل الفحص اليومي والاسبوعي",
+      "oldGroup": "61c73c62-9339-4634-96a2-9df798491ee2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "13bda07e-8c5f-4c9a-8037-1f726371d40e",
+      "text": "مطلوب عمل علامات تحذيرية بجانب الديزل وتانك السولار والطلمبات وغرف الكهرباء",
+      "oldGroup": "2f8918a9-6123-409d-b235-f9bacb88d37a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "e4812222-38f0-491d-895e-998d2ead0530",
+      "text": "لا يتم استكمال نماذج ال progress notes  من قبل الاطباء",
+      "oldGroup": "362720e4-323a-4187-bc31-c37b15701f1e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a70ab0c1-bb91-4084-99aa-beeeaef7f0d3",
+      "text": "عدم وجود اساور تعريف لمرضي الاستقبال",
+      "oldGroup": "0d0e91e5-638c-467e-ab4e-f1c60053f23c",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "76c88301-5c99-48a2-a983-75e4cad457e1",
+      "text": "لايوجد خريطة للكراش",
+      "oldGroup": "99a2cbcb-312e-44c9-a95a-eade5256e3e8",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "611bc1c3-fbda-4178-a4be-93000705523a",
+      "text": "مطلوب تفعيل فرز السقوط",
+      "oldGroup": "6a6e28c5-0909-439c-a4dd-ac25f60b4fc4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a2d51556-ac92-48f6-961d-b396f739c7c1",
+      "text": "مطلوب عمل بروتكول تعاون رسمي للمعيرات الخارجيه مع مستشفي الحميات",
+      "oldGroup": "2a773800-a6b8-4fc3-84bf-f2c61bdd0582",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "2f68002c-293a-4200-9018-f86c68b465cb",
+      "text": "مطلوب اعتماد وكتابه مرجع لقائمه النتائج الحرجه",
+      "oldGroup": "44fdae16-faed-47cc-9cf0-2f8703868ecd",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c7513f66-3fff-400a-bfe7-f80890a3fe09",
+      "text": "مطلوب تفعيل سياسه منع التدخين وخاصه بجوار الديزل وتانك السولار",
+      "oldGroup": "74cf25c5-9378-4401-a7b1-7d0853d2d3a4",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "18cca97f-d0f7-408f-8aad-b40d5536337a",
+      "text": "لايوجد قائمة بالمسموح لهم الاطلاع على الملف الطبى",
+      "oldGroup": "898d31e3-6595-4ba1-acc4-1e0f80428886",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8b7865b1-035e-456f-bb6e-5520a97e4a39",
+      "text": "مطلوب ترمومتر لثلاجه الادويه",
+      "oldGroup": "6d43c792-2deb-42f6-8efd-c38a59110b47",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c75b7926-697f-4111-890e-69487a607e45",
+      "text": "جهاز الصدمات معطل ومسحوب من قبل الشركه",
+      "oldGroup": "9e38eb60-4b41-4d19-876c-2a24d1df49d2",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "7acab74b-d999-4450-a953-001e93775aca",
+      "text": "لايوجد نموذج خطة رعاية متعددة التخصصات",
+      "oldGroup": "e131a838-1e6c-4932-85c7-55d1cd03d2f6",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a7c9930d-c093-4008-88fb-d079287fba23",
+      "text": "لا يوجد توقيع من قبل الأطباء والصيادلة علي صرف بعض الادويه بالملف الطبي",
+      "oldGroup": "8ec638ba-a566-49f5-aad0-b382e5bb79db",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "e66f02db-644d-4d1f-b0b0-2df598a0b59a",
+      "text": "بعض العينات بدون رقم طبي",
+      "oldGroup": "8f8a2a94-55ea-4311-8aa8-21eb91d40600",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "a54eb133-2dbc-4e6e-8f75-91216c1b7e04",
+      "text": "عدم وجود خريطة للكراش",
+      "oldGroup": "fa991a79-494e-4cc8-93bd-19ff005c3b83",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "6410a21f-fb29-4aef-9fa9-2901457b0c1f",
+      "text": "كفاءه الجلسه لشهر اغسطس أقل من 60% لعدد 23 حاله",
+      "oldGroup": "93f16989-d0cd-44c0-b505-2576bae3394c",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "08058493-080b-4ee1-be0a-c8ad91eba373",
+      "text": "يوجد نماذج بدون تعريف بالملف الطبي",
+      "oldGroup": "9b8fb710-8fc2-46bc-aca4-fb4e33be019a",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "8617de3e-3123-47a0-95ee-0f6f793af363",
+      "text": "وجبات المرضى غير معرفة",
+      "oldGroup": "57e2de54-7cdf-4677-b8d3-55405254994e",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "1e805395-399c-42c7-a643-dcfb6c20d5bc",
+      "text": "المغسله لا يوجد بها مجفف ويتم نقلها إلى المركز الطبي بدون سياسه لنقلها وعدم اتباع إجراءات مكافحة العدوى أثناء النقل",
+      "oldGroup": "272ced1f-cfaa-4dbe-be2c-00a0c43826b3",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "c00c79ba-51c8-43a0-911a-9c0c531f67d4",
+      "text": "لايوجد قائمة بالمسموح لهم بدخول الغرفة",
+      "oldGroup": "ed765f5b-2c9b-4392-b7cd-a9e87e856741",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    },
+    {
+      "findingId": "280d83b6-cbca-4088-8694-56b4fce4786d",
+      "text": "عدم تفعيل ovrفي وحدة الغسيل الكلوي",
+      "oldGroup": "56614e9d-7277-4e98-810d-204a78fafa6b",
+      "reason": "Decision Gate: DISTINCT (No valid candidates)"
+    }
+  ],
+  "sameHospitalCrossWording": [],
+  "crossDepartmentMerges": [
+    {
+      "findingId": "9562b74b-3e98-46f0-ba53-c570e4607971",
+      "textA": "الكراش كارت مفتوحة وغير مامنه",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "3f90c830-5172-4cc9-814b-e6198557ccbc",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت مفتوحة وغير مامنه] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "80c37c69-4f08-4df7-9ef8-572f842a2784",
+      "textA": "قائمه النتائج الحرجه غير معتمده أو مختومه",
+      "textB": "قائمه النتائج الحرجه الاكلينيكيه غير معتمده",
+      "oldGroup": "427af5e7-7ead-44a7-a723-264bc4af852e",
+      "newGroup": "ba504bc6-f4ed-40cb-8b2e-f1bf008693dd",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه النتائج الحرجه غير معتمده أو مختومه] vs B [قائمه النتائج الحرجه الاكلينيكيه غير معتمده].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "25e1bde9-a0ec-4a8e-bdeb-5704ec18a174",
+      "textA": "لا يوجد قائمه الاختصارات المسموحه والممنوعه",
+      "textB": "قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار",
+      "oldGroup": "dd3f1d6d-b6e8-49de-8f0c-413af0699795",
+      "newGroup": "e6a507b1-4d58-47ac-b787-1213abcb9f7b",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمه الاختصارات المسموحه والممنوعه] vs B [قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+      "textA": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+      "textB": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+      "oldGroup": "efb8441c-a008-42e3-b713-e755b43daeaf",
+      "newGroup": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب] vs B [لا يوجد مكان لحفظ وتخزين المفروشات النظيفه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "39e1312a-24a4-4de6-adae-451f31523593",
+      "textA": "الوصفه الطبيه غير مكتملة",
+      "textB": "الوصفه الدوائيه غير مكتمله",
+      "oldGroup": "2f875c01-9708-44cb-86d3-da626a9cec1c",
+      "newGroup": "3e78798a-32ee-464c-9b65-46e5074737cf",
+      "score": 0.9,
+      "reason": "Evaluating A [الوصفه الطبيه غير مكتملة] vs B [الوصفه الدوائيه غير مكتمله].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92da6ad3-7b5b-42b9-8c40-5d8bf15d7b26",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f45bab24-7149-43bb-a552-037387c50d02",
+      "textA": "تخزين الأدوية بثلاجة الصيدلية غير مطابق",
+      "textB": "لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح",
+      "oldGroup": "6b80dd42-b4c7-49f4-8818-cd6bb408d777",
+      "newGroup": "8f5da3c4-d154-4c78-b20b-92903796e54e",
+      "score": 0.9,
+      "reason": "Evaluating A [تخزين الأدوية بثلاجة الصيدلية غير مطابق] vs B [لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "21705967-14f2-4928-b5af-a4a48654c0ef",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "98cf29f9-965c-4bb0-b3f8-518e273773b8",
+      "textA": "الكراش كار غير مؤمنة (لا يوجد قفل للكراش )",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "0400aa49-8086-4069-b4bc-6a7767641c41",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كار غير مؤمنة (لا يوجد قفل للكراش )] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8efce46f-7965-4be4-b7ea-b2fadc26372b",
+      "textA": "لا يوجد ماسة علي المواد الكيميائية والخطرة",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "ded21913-6783-4011-b7e9-689c10158ce9",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة علي المواد الكيميائية والخطرة] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "963bbc27-fbe3-438b-af5d-1d5da7e578f8",
+      "textA": "التوافق الدوائي غير مفعل",
+      "textB": "التوافق الدوائي غير مطبق",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "23055763-1b7d-49e0-9275-174107ea6e24",
+      "score": 0.9,
+      "reason": "Evaluating A [التوافق الدوائي غير مفعل] vs B [التوافق الدوائي غير مطبق].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92decf12-8b87-4d42-a673-402efb3952fd",
+      "textA": "لا يوجد غرفة لتخزين المخلفات الكيميائية",
+      "textB": "اشتراطات التخزين غير متوفره في المخزن",
+      "oldGroup": "15865dc9-0333-46ad-bc24-2b79a7f62031",
+      "newGroup": "c154386b-1120-403d-bf47-5df15fa4082c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غرفة لتخزين المخلفات الكيميائية] vs B [اشتراطات التخزين غير متوفره في المخزن].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e5a57b04-a2c4-4a9e-b2b9-77226206e83f",
+      "textA": "يوجد علاجات طرف المرضى",
+      "textB": "يوجد ادويه طرف المرضي",
+      "oldGroup": "8eb0c2ff-83a8-41b4-93d3-4f80f7fa0ab6",
+      "newGroup": "490e9770-9de8-495d-a395-8758c7474c1e",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد علاجات طرف المرضى] vs B [يوجد ادويه طرف المرضي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a063680f-7445-4fca-af15-06677d4a3c7e",
+      "textA": "كروت تعريف الادوية غير محدثة في دولاب الطوارئ",
+      "textB": "كروت تعريف الادويه غير محدثه",
+      "oldGroup": "59106f8c-63b7-42ba-ba2f-aa707dd83006",
+      "newGroup": "351b81c5-d072-47f0-8338-bac50262d0bc",
+      "score": 0.9,
+      "reason": "Evaluating A [كروت تعريف الادوية غير محدثة في دولاب الطوارئ] vs B [كروت تعريف الادويه غير محدثه].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "16dbd494-af19-48b1-be0b-00e8038b99db",
+      "textA": "يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "89f72493-0b90-47c0-9917-a61057314b96",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8983ae2c-d28d-4fd0-8c93-b7d49935f68b",
+      "textA": "عدم وجود كروت تعريف للاصناف في الكراش كارت",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "667ccf28-8e63-4ffd-bde9-d3752bb6a1ea",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [عدم وجود كروت تعريف للاصناف في الكراش كارت] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "13cdaae2-a933-4212-9406-b13955267dc3",
+      "textA": "بعض التذاكر لا يوجد عليها تشخيص",
+      "textB": "بعض التذاكر لا يوجد بها تشخيص",
+      "oldGroup": "8a0f7fbe-e381-406b-97a4-1aa644891c49",
+      "newGroup": "a962d17c-11ff-40c4-a673-0a234cdeac88",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض التذاكر لا يوجد عليها تشخيص] vs B [بعض التذاكر لا يوجد بها تشخيص].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "50086249-d144-4ed9-b198-5cf224cc627f",
+      "textA": "الصيدلية غير مرتبة وغير نظيفة",
+      "textB": "غرفه الملفات غير مرتبه وغير نظيفه",
+      "oldGroup": "3d2865de-86fc-410b-a7eb-d19802a92a33",
+      "newGroup": "f07e785b-39a7-4ea3-9e9f-c048b491d294",
+      "score": 0.9,
+      "reason": "Evaluating A [الصيدلية غير مرتبة وغير نظيفة] vs B [غرفه الملفات غير مرتبه وغير نظيفه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ae9199ca-8e7b-4a71-a450-2d2314828f35",
+      "textA": "بعض الأدوية غير مميزة في الكراش كارت",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "5ef36948-eb05-436c-84ad-62b1bb1db401",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأدوية غير مميزة في الكراش كارت] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6ae4d3a2-906d-4df1-b158-43ac6bbd265d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "4dd4c317-9c3a-44a5-bf84-a7fce1bb2de1",
+      "textA": "[الكراش كار] يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9ec5ecdc-9f5d-4ce1-993f-02194a25c420",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "432fcf73-9fa3-4374-9352-dfd42a56f01d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a11728ce-cddb-49c9-a222-5dcc5b30ef41",
+      "textA": "لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه",
+      "textB": "لا يوجد قائمه بالاختصارات المسموحه الممنوعه",
+      "oldGroup": "3784e30b-1e51-4033-8a81-0c52902810a5",
+      "newGroup": "e863b01a-28f1-4e2b-a330-1996958844a4",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه] vs B [لا يوجد قائمه بالاختصارات المسموحه الممنوعه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ba93d899-964d-46fa-b251-1eecc6ad9d57",
+      "textA": "اسماء المرضى غير واضحه",
+      "textB": "بعض اسماء المرضي ثلاثي",
+      "oldGroup": "26645939-d85a-4827-948a-5d9a6d481b00",
+      "newGroup": "15870eae-bb71-4439-b68c-2b2e1ef770ca",
+      "score": 0.9,
+      "reason": "Evaluating A [اسماء المرضى غير واضحه] vs B [بعض اسماء المرضي ثلاثي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1f962bdd-4683-4d9b-abf5-745ff35d246e",
+      "textA": "لا يوجد توقيع صيدلي على صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي على صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "fa2bc877-a4c7-4f48-92e2-206460612131",
+      "textA": "لا يوجد توقيع صيدلي ع صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي ع صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6db2d4f6-579a-4f0f-9263-90df2d1cbad4",
+      "textA": "بعض الأطباء التوقيع فورمه",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "138b97ee-f11c-454d-98d4-df80f21ec14e",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأطباء التوقيع فورمه] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0b5481fe-e5cb-44a1-960f-d2f4d5a61803",
+      "textA": "الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "e96690f3-1973-47ae-b6da-063fea237916",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "35b45582-3c22-405a-9242-038124292f2f",
+      "textA": ". صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام",
+      "textB": "لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق",
+      "oldGroup": "dd53c22c-b7b3-4e4f-8d94-fc35a4d079a0",
+      "newGroup": "69f90354-9767-47ae-bc6c-907571e6b6ef",
+      "score": 0.9,
+      "reason": "Evaluating A [. صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام] vs B [لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق].\nEntity Matches (0.75, 0.8571428571428571) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0ff2d45f-a850-4581-9314-b67ec1e5cf94",
+      "textA": "لا يوجد غاسله أعين داخل المعمل",
+      "textB": "لا يوجد غاسله اعين بالمعمل",
+      "oldGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "newGroup": "90c51fe1-0f9d-45ac-b873-e7ac1cfb3dca",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غاسله أعين داخل المعمل] vs B [لا يوجد غاسله اعين بالمعمل].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+      "textA": "لا يوجد ماسة على المواد الكيميائية",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "83d2e331-6a3c-415e-8a51-4b073d22d76c",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة على المواد الكيميائية] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (1, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "68ea9db5-1df7-4675-964c-effb52b78eab",
+      "textA": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "textB": "سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد",
+      "oldGroup": "20b2e50c-4ce5-4a2c-9d01-4b42882b9c63",
+      "newGroup": "d5a4a16b-6abd-4ec0-839e-21e6fed8c878",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم] vs B [سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+      "textA": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+      "textB": "لا يوجد ترمومتر رطوبه علي الكراش كار",
+      "oldGroup": "69cc31aa-4791-4176-8dc7-68dd9a0c456a",
+      "newGroup": "f0fa03ad-85ac-4f2d-903a-779989140fb8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .] vs B [لا يوجد ترمومتر رطوبه علي الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "172c9b18-782a-4267-92c9-f7831c1bf311",
+      "textA": "دفتر النتائج الحرجه بالقسم غير مطابق",
+      "textB": "بعض النتائج غير مطابق للقائمه النتائج الحرجه",
+      "oldGroup": "a53a97ad-7c9d-4ee4-a889-8355a4588b96",
+      "newGroup": "fcbb5fed-6cfc-475f-b38f-321b3bb0b957",
+      "score": 0.9,
+      "reason": "Evaluating A [دفتر النتائج الحرجه بالقسم غير مطابق] vs B [بعض النتائج غير مطابق للقائمه النتائج الحرجه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6f54edaf-744b-4aaa-8000-53dc08cb2982",
+      "textA": "مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "1d096538-8691-4a0e-81e0-e8f09169c7f8",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "764ac11b-8e2a-4775-8abd-b344b4d134c3",
+      "textA": "لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات",
+      "textB": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+      "oldGroup": "0051d559-91b9-4e15-bff0-20c8ec9d729c",
+      "newGroup": "dd63042c-6cc6-4163-a0b3-bb26b73d3ec8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات] vs B [لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "816e4fec-e98c-4ee8-a636-797675dfe875",
+      "textA": "قائمه ادويه الكراش كار غير مكتمله",
+      "textB": "الكراش كارت داخل الطواري غير مكتمله",
+      "oldGroup": "6839d387-a0e9-418b-a730-cba9fa62ee89",
+      "newGroup": "245a76aa-72ec-4816-932b-518669fefc81",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه ادويه الكراش كار غير مكتمله] vs B [الكراش كارت داخل الطواري غير مكتمله].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+      "textA": "توقيع الصيدلي الاكلينيكي احادي",
+      "textB": "توقيع الصيدلي في شيت الادويه احادي",
+      "oldGroup": "050b4819-0d44-4157-86a3-634b13b259e3",
+      "newGroup": "ce0db2f8-5757-42d6-9dc9-2580f777e52d",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع الصيدلي الاكلينيكي احادي] vs B [توقيع الصيدلي في شيت الادويه احادي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "d429330c-ad90-49c1-b39c-8d8c3374ebfd",
+      "textA": "لا يوجد سجل سي بي ار او محاضر فتح للكراش كار",
+      "textB": "يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء",
+      "oldGroup": "5fa8340c-0d15-400c-aba6-a4cd528b619f",
+      "newGroup": "377bfe4f-1b2a-454c-91f3-723b3af9febf",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد سجل سي بي ار او محاضر فتح للكراش كار] vs B [يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "592fd414-4d53-4f04-8c7e-2dfec4837787",
+      "textA": "لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق",
+      "textB": "لا يوجد فصل بين الادويه المتشابهه في الشكل",
+      "oldGroup": "8cf199cb-04b0-4053-9d8c-a352fcf8ac35",
+      "newGroup": "cb2609bf-da2d-4b70-8d46-94d2d8bd5e82",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق] vs B [لا يوجد فصل بين الادويه المتشابهه في الشكل].\nEntity Matches (0.6666666666666666, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "41629a20-c4bd-4ab6-8e28-060f52cec777",
+      "textA": "السجلات غير مرقمة وغير معتمدة",
+      "textB": "سجلات الاستقبال غير مرقمه وغير معتمده",
+      "oldGroup": "97244892-e739-4618-9e11-64aea471896b",
+      "newGroup": "8059b2fe-a5d8-43fe-84bd-053c349bc6cc",
+      "score": 0.9,
+      "reason": "Evaluating A [السجلات غير مرقمة وغير معتمدة] vs B [سجلات الاستقبال غير مرقمه وغير معتمده].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "aab05d31-64ad-4f92-abd8-280be42b60dd",
+      "textA": "[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش",
+      "textB": "خريطه الكراش كار غير مطابقه لمعايير الدواء",
+      "oldGroup": "dff07fad-4f9b-488f-8d89-5536a48307ee",
+      "newGroup": "edae4bd2-12eb-4222-bc9b-62410a6d7b2c",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش] vs B [خريطه الكراش كار غير مطابقه لمعايير الدواء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "2ab246b3-3370-4b5c-982a-ab7b5d6c72a8",
+      "textA": "بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم",
+      "textB": "من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم",
+      "oldGroup": "ca2e645b-819b-4991-8150-1d5c3f1059d9",
+      "newGroup": "a2ab9999-4e76-4a1a-b0d9-3e83479568c2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم] vs B [من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9bc828ec-621a-43a9-bd6e-a38b79c35d9e",
+      "textA": "لا يتوفر غاسله أعين داخل المعمل",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "e54e4a20-4c73-4baf-8261-a0fb12ff8d60",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتوفر غاسله أعين داخل المعمل] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f56146a1-432b-49e7-b1d7-c6d8e04ababf",
+      "textA": "يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه",
+      "textB": "الادويه عاليه الخطوره غير مميزه",
+      "oldGroup": "91f4ca43-b450-45ff-a730-e18a521da54f",
+      "newGroup": "24ca6262-eb47-4c19-9987-452b541b6875",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه] vs B [الادويه عاليه الخطوره غير مميزه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ed44f2a9-5829-4d78-80fb-bef5e6e925b2",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8e2e732a-b1e7-43d2-ad8c-833ab908ba0f",
+      "textA": "المعمل يحتاج الي غاسله أعين ودش",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "fab515c1-82b4-423f-acc4-0988778ce268",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [المعمل يحتاج الي غاسله أعين ودش] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.6, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "751e1dfe-a6a6-4670-9e4f-fb9d2659c460",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    }
+  ],
+  "falseNegativeDiscoveries": [
+    {
+      "findingId": "9562b74b-3e98-46f0-ba53-c570e4607971",
+      "textA": "الكراش كارت مفتوحة وغير مامنه",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "3f90c830-5172-4cc9-814b-e6198557ccbc",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت مفتوحة وغير مامنه] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "80c37c69-4f08-4df7-9ef8-572f842a2784",
+      "textA": "قائمه النتائج الحرجه غير معتمده أو مختومه",
+      "textB": "قائمه النتائج الحرجه الاكلينيكيه غير معتمده",
+      "oldGroup": "427af5e7-7ead-44a7-a723-264bc4af852e",
+      "newGroup": "ba504bc6-f4ed-40cb-8b2e-f1bf008693dd",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه النتائج الحرجه غير معتمده أو مختومه] vs B [قائمه النتائج الحرجه الاكلينيكيه غير معتمده].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "25e1bde9-a0ec-4a8e-bdeb-5704ec18a174",
+      "textA": "لا يوجد قائمه الاختصارات المسموحه والممنوعه",
+      "textB": "قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار",
+      "oldGroup": "dd3f1d6d-b6e8-49de-8f0c-413af0699795",
+      "newGroup": "e6a507b1-4d58-47ac-b787-1213abcb9f7b",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمه الاختصارات المسموحه والممنوعه] vs B [قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+      "textA": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+      "textB": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+      "oldGroup": "efb8441c-a008-42e3-b713-e755b43daeaf",
+      "newGroup": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب] vs B [لا يوجد مكان لحفظ وتخزين المفروشات النظيفه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "39e1312a-24a4-4de6-adae-451f31523593",
+      "textA": "الوصفه الطبيه غير مكتملة",
+      "textB": "الوصفه الدوائيه غير مكتمله",
+      "oldGroup": "2f875c01-9708-44cb-86d3-da626a9cec1c",
+      "newGroup": "3e78798a-32ee-464c-9b65-46e5074737cf",
+      "score": 0.9,
+      "reason": "Evaluating A [الوصفه الطبيه غير مكتملة] vs B [الوصفه الدوائيه غير مكتمله].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92da6ad3-7b5b-42b9-8c40-5d8bf15d7b26",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f45bab24-7149-43bb-a552-037387c50d02",
+      "textA": "تخزين الأدوية بثلاجة الصيدلية غير مطابق",
+      "textB": "لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح",
+      "oldGroup": "6b80dd42-b4c7-49f4-8818-cd6bb408d777",
+      "newGroup": "8f5da3c4-d154-4c78-b20b-92903796e54e",
+      "score": 0.9,
+      "reason": "Evaluating A [تخزين الأدوية بثلاجة الصيدلية غير مطابق] vs B [لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "21705967-14f2-4928-b5af-a4a48654c0ef",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "98cf29f9-965c-4bb0-b3f8-518e273773b8",
+      "textA": "الكراش كار غير مؤمنة (لا يوجد قفل للكراش )",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "0400aa49-8086-4069-b4bc-6a7767641c41",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كار غير مؤمنة (لا يوجد قفل للكراش )] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8efce46f-7965-4be4-b7ea-b2fadc26372b",
+      "textA": "لا يوجد ماسة علي المواد الكيميائية والخطرة",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "ded21913-6783-4011-b7e9-689c10158ce9",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة علي المواد الكيميائية والخطرة] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "963bbc27-fbe3-438b-af5d-1d5da7e578f8",
+      "textA": "التوافق الدوائي غير مفعل",
+      "textB": "التوافق الدوائي غير مطبق",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "23055763-1b7d-49e0-9275-174107ea6e24",
+      "score": 0.9,
+      "reason": "Evaluating A [التوافق الدوائي غير مفعل] vs B [التوافق الدوائي غير مطبق].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92decf12-8b87-4d42-a673-402efb3952fd",
+      "textA": "لا يوجد غرفة لتخزين المخلفات الكيميائية",
+      "textB": "اشتراطات التخزين غير متوفره في المخزن",
+      "oldGroup": "15865dc9-0333-46ad-bc24-2b79a7f62031",
+      "newGroup": "c154386b-1120-403d-bf47-5df15fa4082c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غرفة لتخزين المخلفات الكيميائية] vs B [اشتراطات التخزين غير متوفره في المخزن].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f9deb99d-89cc-42eb-b223-946931cd9704",
+      "textA": "لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه",
+      "textB": "لا يوجد كروت تعريف او صيانه",
+      "oldGroup": "f112d4aa-2e0a-4ceb-af72-d5f7fbd8ecb5",
+      "newGroup": "2709a3a3-d4c2-48e5-bf74-0f45bd0bd12a",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه] vs B [لا يوجد كروت تعريف او صيانه].\nEntity Matches (0.6, 1.5) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e5a57b04-a2c4-4a9e-b2b9-77226206e83f",
+      "textA": "يوجد علاجات طرف المرضى",
+      "textB": "يوجد ادويه طرف المرضي",
+      "oldGroup": "8eb0c2ff-83a8-41b4-93d3-4f80f7fa0ab6",
+      "newGroup": "490e9770-9de8-495d-a395-8758c7474c1e",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد علاجات طرف المرضى] vs B [يوجد ادويه طرف المرضي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a063680f-7445-4fca-af15-06677d4a3c7e",
+      "textA": "كروت تعريف الادوية غير محدثة في دولاب الطوارئ",
+      "textB": "كروت تعريف الادويه غير محدثه",
+      "oldGroup": "59106f8c-63b7-42ba-ba2f-aa707dd83006",
+      "newGroup": "351b81c5-d072-47f0-8338-bac50262d0bc",
+      "score": 0.9,
+      "reason": "Evaluating A [كروت تعريف الادوية غير محدثة في دولاب الطوارئ] vs B [كروت تعريف الادويه غير محدثه].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "16dbd494-af19-48b1-be0b-00e8038b99db",
+      "textA": "يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "89f72493-0b90-47c0-9917-a61057314b96",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8983ae2c-d28d-4fd0-8c93-b7d49935f68b",
+      "textA": "عدم وجود كروت تعريف للاصناف في الكراش كارت",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "667ccf28-8e63-4ffd-bde9-d3752bb6a1ea",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [عدم وجود كروت تعريف للاصناف في الكراش كارت] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "13cdaae2-a933-4212-9406-b13955267dc3",
+      "textA": "بعض التذاكر لا يوجد عليها تشخيص",
+      "textB": "بعض التذاكر لا يوجد بها تشخيص",
+      "oldGroup": "8a0f7fbe-e381-406b-97a4-1aa644891c49",
+      "newGroup": "a962d17c-11ff-40c4-a673-0a234cdeac88",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض التذاكر لا يوجد عليها تشخيص] vs B [بعض التذاكر لا يوجد بها تشخيص].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "50086249-d144-4ed9-b198-5cf224cc627f",
+      "textA": "الصيدلية غير مرتبة وغير نظيفة",
+      "textB": "غرفه الملفات غير مرتبه وغير نظيفه",
+      "oldGroup": "3d2865de-86fc-410b-a7eb-d19802a92a33",
+      "newGroup": "f07e785b-39a7-4ea3-9e9f-c048b491d294",
+      "score": 0.9,
+      "reason": "Evaluating A [الصيدلية غير مرتبة وغير نظيفة] vs B [غرفه الملفات غير مرتبه وغير نظيفه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ae9199ca-8e7b-4a71-a450-2d2314828f35",
+      "textA": "بعض الأدوية غير مميزة في الكراش كارت",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "5ef36948-eb05-436c-84ad-62b1bb1db401",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأدوية غير مميزة في الكراش كارت] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6ae4d3a2-906d-4df1-b158-43ac6bbd265d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "2acc1993-2d4b-4259-9c93-8ed8611f1152",
+      "textA": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "textB": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+      "score": 1,
+      "reason": "Evaluating A [يوجد اختصارات غير مسموحه بالملف الطبي] vs B [يوجد اختصارات غير مسموحه بالملف الطبي].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "4dd4c317-9c3a-44a5-bf84-a7fce1bb2de1",
+      "textA": "[الكراش كار] يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9ec5ecdc-9f5d-4ce1-993f-02194a25c420",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "432fcf73-9fa3-4374-9352-dfd42a56f01d",
+      "textA": "يوجد اختصارات بالملف الطبي",
+      "textB": "يوجد اختصارات في الملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d673b07a-fb23-49ee-822e-db8e9b283856",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد اختصارات بالملف الطبي] vs B [يوجد اختصارات في الملف الطبي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a11728ce-cddb-49c9-a222-5dcc5b30ef41",
+      "textA": "لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه",
+      "textB": "لا يوجد قائمه بالاختصارات المسموحه الممنوعه",
+      "oldGroup": "3784e30b-1e51-4033-8a81-0c52902810a5",
+      "newGroup": "e863b01a-28f1-4e2b-a330-1996958844a4",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمة بالاختصاراات الطبيه الممنوعه او المسموحه] vs B [لا يوجد قائمه بالاختصارات المسموحه الممنوعه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ba93d899-964d-46fa-b251-1eecc6ad9d57",
+      "textA": "اسماء المرضى غير واضحه",
+      "textB": "بعض اسماء المرضي ثلاثي",
+      "oldGroup": "26645939-d85a-4827-948a-5d9a6d481b00",
+      "newGroup": "15870eae-bb71-4439-b68c-2b2e1ef770ca",
+      "score": 0.9,
+      "reason": "Evaluating A [اسماء المرضى غير واضحه] vs B [بعض اسماء المرضي ثلاثي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "03365545-49d2-4114-832d-b3fe6bbae8df",
+      "textA": "توقيع بعض الاطباء فورمه او ثنائي",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "e66e2ac8-3c4f-4de8-90a1-035245535812",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع بعض الاطباء فورمه او ثنائي] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e6a7f07e-b4e3-42d2-8b7b-1aa023f03722",
+      "textA": "توقيع بعض الاطباء فورمة او ثنائي",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "e66e2ac8-3c4f-4de8-90a1-035245535812",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع بعض الاطباء فورمة او ثنائي] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1f962bdd-4683-4d9b-abf5-745ff35d246e",
+      "textA": "لا يوجد توقيع صيدلي على صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي على صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "fa2bc877-a4c7-4f48-92e2-206460612131",
+      "textA": "لا يوجد توقيع صيدلي ع صرف الادويه",
+      "textB": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+      "oldGroup": "a4465b38-fbae-4513-9105-06f52c6fc292",
+      "newGroup": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد توقيع صيدلي ع صرف الادويه] vs B [لا يوجد توقيع للصيدلي علي صرف الادويه].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6db2d4f6-579a-4f0f-9263-90df2d1cbad4",
+      "textA": "بعض الأطباء التوقيع فورمه",
+      "textB": "توقيع الاطباء فورمه",
+      "oldGroup": "138b97ee-f11c-454d-98d4-df80f21ec14e",
+      "newGroup": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الأطباء التوقيع فورمه] vs B [توقيع الاطباء فورمه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0b5481fe-e5cb-44a1-960f-d2f4d5a61803",
+      "textA": "الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث",
+      "textB": "الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار",
+      "oldGroup": "e96690f3-1973-47ae-b6da-063fea237916",
+      "newGroup": "56b61b92-c2a6-4ab7-a40d-9380bc5cfdf2",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت قائمة الأدوية عالية الخطورة تحتاج إلي تحديث] vs B [الادويه المتشابهه في الشكل النطق غير مميزه داخل الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "35b45582-3c22-405a-9242-038124292f2f",
+      "textA": ". صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام",
+      "textB": "لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق",
+      "oldGroup": "dd53c22c-b7b3-4e4f-8d94-fc35a4d079a0",
+      "newGroup": "69f90354-9767-47ae-bc6c-907571e6b6ef",
+      "score": 0.9,
+      "reason": "Evaluating A [. صناديق الحريق لايوجد بجوارها بوسترات إرشادات لكيفية الاستخدام] vs B [لايوجد ارشادات لكيفيه الاستخدام بجوار صناديق الحريق].\nEntity Matches (0.75, 0.8571428571428571) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "0ff2d45f-a850-4581-9314-b67ec1e5cf94",
+      "textA": "لا يوجد غاسله أعين داخل المعمل",
+      "textB": "لا يوجد غاسله اعين بالمعمل",
+      "oldGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "newGroup": "90c51fe1-0f9d-45ac-b873-e7ac1cfb3dca",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غاسله أعين داخل المعمل] vs B [لا يوجد غاسله اعين بالمعمل].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+      "textA": "لا يوجد ماسة على المواد الكيميائية",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "83d2e331-6a3c-415e-8a51-4b073d22d76c",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة على المواد الكيميائية] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (1, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "68ea9db5-1df7-4675-964c-effb52b78eab",
+      "textA": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "textB": "سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد",
+      "oldGroup": "20b2e50c-4ce5-4a2c-9d01-4b42882b9c63",
+      "newGroup": "d5a4a16b-6abd-4ec0-839e-21e6fed8c878",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم] vs B [سجل التردد لا يوجد محضر فتح وغير مرقم وغير معتمد].\nEntity Matches (0.75, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+      "textA": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+      "textB": "لا يوجد ترمومتر رطوبه علي الكراش كار",
+      "oldGroup": "69cc31aa-4791-4176-8dc7-68dd9a0c456a",
+      "newGroup": "f0fa03ad-85ac-4f2d-903a-779989140fb8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .] vs B [لا يوجد ترمومتر رطوبه علي الكراش كار].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "172c9b18-782a-4267-92c9-f7831c1bf311",
+      "textA": "دفتر النتائج الحرجه بالقسم غير مطابق",
+      "textB": "بعض النتائج غير مطابق للقائمه النتائج الحرجه",
+      "oldGroup": "a53a97ad-7c9d-4ee4-a889-8355a4588b96",
+      "newGroup": "fcbb5fed-6cfc-475f-b38f-321b3bb0b957",
+      "score": 0.9,
+      "reason": "Evaluating A [دفتر النتائج الحرجه بالقسم غير مطابق] vs B [بعض النتائج غير مطابق للقائمه النتائج الحرجه].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "6f54edaf-744b-4aaa-8000-53dc08cb2982",
+      "textA": "مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "1d096538-8691-4a0e-81e0-e8f09169c7f8",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [مرور الصيدلي على الكراش كار غير موثق ولا يوجد شيك ليست لمرور الصيدلي] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+      "textA": "لا يوجد سجل اعطال بالقسم .",
+      "textB": "لا يوجد سجل اعطال",
+      "oldGroup": "b6df7e3e-377e-4146-a1e0-d8ea3d6eaa98",
+      "newGroup": "ab4e3bd9-80b0-4848-9a54-b0cc98f1f044",
+      "score": 1,
+      "reason": "Evaluating A [لا يوجد سجل اعطال بالقسم .] vs B [لا يوجد سجل اعطال].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "764ac11b-8e2a-4775-8abd-b344b4d134c3",
+      "textA": "لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات",
+      "textB": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+      "oldGroup": "0051d559-91b9-4e15-bff0-20c8ec9d729c",
+      "newGroup": "dd63042c-6cc6-4163-a0b3-bb26b73d3ec8",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتم كتابة تاريخ الانتهاء بعد الفتح على فايلات التطعيمات] vs B [لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "816e4fec-e98c-4ee8-a636-797675dfe875",
+      "textA": "قائمه ادويه الكراش كار غير مكتمله",
+      "textB": "الكراش كارت داخل الطواري غير مكتمله",
+      "oldGroup": "6839d387-a0e9-418b-a730-cba9fa62ee89",
+      "newGroup": "245a76aa-72ec-4816-932b-518669fefc81",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه ادويه الكراش كار غير مكتمله] vs B [الكراش كارت داخل الطواري غير مكتمله].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+      "textA": "توقيع الصيدلي الاكلينيكي احادي",
+      "textB": "توقيع الصيدلي في شيت الادويه احادي",
+      "oldGroup": "050b4819-0d44-4157-86a3-634b13b259e3",
+      "newGroup": "ce0db2f8-5757-42d6-9dc9-2580f777e52d",
+      "score": 0.9,
+      "reason": "Evaluating A [توقيع الصيدلي الاكلينيكي احادي] vs B [توقيع الصيدلي في شيت الادويه احادي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "d429330c-ad90-49c1-b39c-8d8c3374ebfd",
+      "textA": "لا يوجد سجل سي بي ار او محاضر فتح للكراش كار",
+      "textB": "يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء",
+      "oldGroup": "5fa8340c-0d15-400c-aba6-a4cd528b619f",
+      "newGroup": "377bfe4f-1b2a-454c-91f3-723b3af9febf",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد سجل سي بي ار او محاضر فتح للكراش كار] vs B [يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "592fd414-4d53-4f04-8c7e-2dfec4837787",
+      "textA": "لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق",
+      "textB": "لا يوجد فصل بين الادويه المتشابهه في الشكل",
+      "oldGroup": "8cf199cb-04b0-4053-9d8c-a352fcf8ac35",
+      "newGroup": "cb2609bf-da2d-4b70-8d46-94d2d8bd5e82",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد فصل وتميز الادوية المتشابهة في الشكل والنطق] vs B [لا يوجد فصل بين الادويه المتشابهه في الشكل].\nEntity Matches (0.6666666666666666, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e814d609-359c-4268-824e-f5ab6dfa06d2",
+      "textA": "لا يوجد فصل للادوية المتشابهة في الشكل و النطق",
+      "textB": "لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق",
+      "oldGroup": "127e32d8-f549-4df7-8f6e-196eb5283e11",
+      "newGroup": "fe83956f-db4d-4997-8108-14cf94bcaf82",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد فصل للادوية المتشابهة في الشكل و النطق] vs B [لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق].\nEntity Matches (1, 0.8333333333333334) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "41629a20-c4bd-4ab6-8e28-060f52cec777",
+      "textA": "السجلات غير مرقمة وغير معتمدة",
+      "textB": "سجلات الاستقبال غير مرقمه وغير معتمده",
+      "oldGroup": "97244892-e739-4618-9e11-64aea471896b",
+      "newGroup": "8059b2fe-a5d8-43fe-84bd-053c349bc6cc",
+      "score": 0.9,
+      "reason": "Evaluating A [السجلات غير مرقمة وغير معتمدة] vs B [سجلات الاستقبال غير مرقمه وغير معتمده].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "aab05d31-64ad-4f92-abd8-280be42b60dd",
+      "textA": "[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش",
+      "textB": "خريطه الكراش كار غير مطابقه لمعايير الدواء",
+      "oldGroup": "dff07fad-4f9b-488f-8d89-5536a48307ee",
+      "newGroup": "edae4bd2-12eb-4222-bc9b-62410a6d7b2c",
+      "score": 0.9,
+      "reason": "Evaluating A [[الكراش كار] خريطة الكراش كار و تمييزها غير مطابقة للأدوية الفعلية بالكراش] vs B [خريطه الكراش كار غير مطابقه لمعايير الدواء].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "2ab246b3-3370-4b5c-982a-ab7b5d6c72a8",
+      "textA": "بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم",
+      "textB": "من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم",
+      "oldGroup": "ca2e645b-819b-4991-8150-1d5c3f1059d9",
+      "newGroup": "a2ab9999-4e76-4a1a-b0d9-3e83479568c2",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض الالات المعقمه لم يتم التنظيف الجيد قبل التعقيم] vs B [من الالات بها دم و ترسبات لم يتم التنظيف الجيد قبل التعقيم].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9bc828ec-621a-43a9-bd6e-a38b79c35d9e",
+      "textA": "لا يتوفر غاسله أعين داخل المعمل",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "e54e4a20-4c73-4baf-8261-a0fb12ff8d60",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يتوفر غاسله أعين داخل المعمل] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.75, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f56146a1-432b-49e7-b1d7-c6d8e04ababf",
+      "textA": "يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه",
+      "textB": "الادويه عاليه الخطوره غير مميزه",
+      "oldGroup": "91f4ca43-b450-45ff-a730-e18a521da54f",
+      "newGroup": "24ca6262-eb47-4c19-9987-452b541b6875",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد ادويه عاليه الخطوره غير مميزه في الثلاجه] vs B [الادويه عاليه الخطوره غير مميزه].\nEntity Matches (0.6, 0.75) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "ed44f2a9-5829-4d78-80fb-bef5e6e925b2",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8e2e732a-b1e7-43d2-ad8c-833ab908ba0f",
+      "textA": "المعمل يحتاج الي غاسله أعين ودش",
+      "textB": "توفير غاسله اعين داخل المعمل",
+      "oldGroup": "fab515c1-82b4-423f-acc4-0988778ce268",
+      "newGroup": "d1306770-83c6-4bf5-811e-ed3616afef07",
+      "score": 0.9,
+      "reason": "Evaluating A [المعمل يحتاج الي غاسله أعين ودش] vs B [توفير غاسله اعين داخل المعمل].\nEntity Matches (0.6, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "751e1dfe-a6a6-4670-9e4f-fb9d2659c460",
+      "textA": "النظافه العامه غير جيده",
+      "textB": "النظافه العامه سيئه",
+      "oldGroup": "ccdf76fd-99bc-449c-9095-b011e8206c38",
+      "newGroup": "b1d62e76-eeb6-4efa-a145-bfe8d34a772f",
+      "score": 0.9,
+      "reason": "Evaluating A [النظافه العامه غير جيده] vs B [النظافه العامه سيئه].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    }
+  ],
+  "riskiestMerges": [],
+  "strongestMerges": [
+    {
+      "findingId": "2acc1993-2d4b-4259-9c93-8ed8611f1152",
+      "textA": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "textB": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "oldGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "newGroup": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+      "score": 1,
+      "reason": "Evaluating A [يوجد اختصارات غير مسموحه بالملف الطبي] vs B [يوجد اختصارات غير مسموحه بالملف الطبي].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+      "textA": "لا يوجد سجل اعطال بالقسم .",
+      "textB": "لا يوجد سجل اعطال",
+      "oldGroup": "b6df7e3e-377e-4146-a1e0-d8ea3d6eaa98",
+      "newGroup": "ab4e3bd9-80b0-4848-9a54-b0cc98f1f044",
+      "score": 1,
+      "reason": "Evaluating A [لا يوجد سجل اعطال بالقسم .] vs B [لا يوجد سجل اعطال].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "9562b74b-3e98-46f0-ba53-c570e4607971",
+      "textA": "الكراش كارت مفتوحة وغير مامنه",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "3f90c830-5172-4cc9-814b-e6198557ccbc",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كارت مفتوحة وغير مامنه] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "80c37c69-4f08-4df7-9ef8-572f842a2784",
+      "textA": "قائمه النتائج الحرجه غير معتمده أو مختومه",
+      "textB": "قائمه النتائج الحرجه الاكلينيكيه غير معتمده",
+      "oldGroup": "427af5e7-7ead-44a7-a723-264bc4af852e",
+      "newGroup": "ba504bc6-f4ed-40cb-8b2e-f1bf008693dd",
+      "score": 0.9,
+      "reason": "Evaluating A [قائمه النتائج الحرجه غير معتمده أو مختومه] vs B [قائمه النتائج الحرجه الاكلينيكيه غير معتمده].\nEntity Matches (0.8, 0.8) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "25e1bde9-a0ec-4a8e-bdeb-5704ec18a174",
+      "textA": "لا يوجد قائمه الاختصارات المسموحه والممنوعه",
+      "textB": "قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار",
+      "oldGroup": "dd3f1d6d-b6e8-49de-8f0c-413af0699795",
+      "newGroup": "e6a507b1-4d58-47ac-b787-1213abcb9f7b",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد قائمه الاختصارات المسموحه والممنوعه] vs B [قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+      "textA": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+      "textB": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+      "oldGroup": "efb8441c-a008-42e3-b713-e755b43daeaf",
+      "newGroup": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب] vs B [لا يوجد مكان لحفظ وتخزين المفروشات النظيفه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "39e1312a-24a4-4de6-adae-451f31523593",
+      "textA": "الوصفه الطبيه غير مكتملة",
+      "textB": "الوصفه الدوائيه غير مكتمله",
+      "oldGroup": "2f875c01-9708-44cb-86d3-da626a9cec1c",
+      "newGroup": "3e78798a-32ee-464c-9b65-46e5074737cf",
+      "score": 0.9,
+      "reason": "Evaluating A [الوصفه الطبيه غير مكتملة] vs B [الوصفه الدوائيه غير مكتمله].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92da6ad3-7b5b-42b9-8c40-5d8bf15d7b26",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f45bab24-7149-43bb-a552-037387c50d02",
+      "textA": "تخزين الأدوية بثلاجة الصيدلية غير مطابق",
+      "textB": "لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح",
+      "oldGroup": "6b80dd42-b4c7-49f4-8818-cd6bb408d777",
+      "newGroup": "8f5da3c4-d154-4c78-b20b-92903796e54e",
+      "score": 0.9,
+      "reason": "Evaluating A [تخزين الأدوية بثلاجة الصيدلية غير مطابق] vs B [لا يتم الالتزام بسياسه تخزين الادويه بشكل صحيح].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "21705967-14f2-4928-b5af-a4a48654c0ef",
+      "textA": "نموذج التوافق الدوائى غير مفعل",
+      "textB": "عدم اضافه اللقاحات في نموذج التوافق الدوائي",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "19f9494c-676e-4d76-b918-8aae834f47cb",
+      "score": 0.9,
+      "reason": "Evaluating A [نموذج التوافق الدوائى غير مفعل] vs B [عدم اضافه اللقاحات في نموذج التوافق الدوائي].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "98cf29f9-965c-4bb0-b3f8-518e273773b8",
+      "textA": "الكراش كار غير مؤمنة (لا يوجد قفل للكراش )",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "0400aa49-8086-4069-b4bc-6a7767641c41",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [الكراش كار غير مؤمنة (لا يوجد قفل للكراش )] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8efce46f-7965-4be4-b7ea-b2fadc26372b",
+      "textA": "لا يوجد ماسة علي المواد الكيميائية والخطرة",
+      "textB": "ماسه المواد الكيميائيه SDS غير متوفره",
+      "oldGroup": "ded21913-6783-4011-b7e9-689c10158ce9",
+      "newGroup": "f1683bc1-de2e-4f02-9289-f222da0d011c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد ماسة علي المواد الكيميائية والخطرة] vs B [ماسه المواد الكيميائيه SDS غير متوفره].\nEntity Matches (0.75, 0.6) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "963bbc27-fbe3-438b-af5d-1d5da7e578f8",
+      "textA": "التوافق الدوائي غير مفعل",
+      "textB": "التوافق الدوائي غير مطبق",
+      "oldGroup": "7ae204fa-93d6-40dd-9a02-6dfdc07a8fc7",
+      "newGroup": "23055763-1b7d-49e0-9275-174107ea6e24",
+      "score": 0.9,
+      "reason": "Evaluating A [التوافق الدوائي غير مفعل] vs B [التوافق الدوائي غير مطبق].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "92decf12-8b87-4d42-a673-402efb3952fd",
+      "textA": "لا يوجد غرفة لتخزين المخلفات الكيميائية",
+      "textB": "اشتراطات التخزين غير متوفره في المخزن",
+      "oldGroup": "15865dc9-0333-46ad-bc24-2b79a7f62031",
+      "newGroup": "c154386b-1120-403d-bf47-5df15fa4082c",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد غرفة لتخزين المخلفات الكيميائية] vs B [اشتراطات التخزين غير متوفره في المخزن].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "f9deb99d-89cc-42eb-b223-946931cd9704",
+      "textA": "لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه",
+      "textB": "لا يوجد كروت تعريف او صيانه",
+      "oldGroup": "f112d4aa-2e0a-4ceb-af72-d5f7fbd8ecb5",
+      "newGroup": "2709a3a3-d4c2-48e5-bf74-0f45bd0bd12a",
+      "score": 0.9,
+      "reason": "Evaluating A [لا يوجد كروت تعريف للاجهزه وكذلك كروت صيانه] vs B [لا يوجد كروت تعريف او صيانه].\nEntity Matches (0.6, 1.5) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "e5a57b04-a2c4-4a9e-b2b9-77226206e83f",
+      "textA": "يوجد علاجات طرف المرضى",
+      "textB": "يوجد ادويه طرف المرضي",
+      "oldGroup": "8eb0c2ff-83a8-41b4-93d3-4f80f7fa0ab6",
+      "newGroup": "490e9770-9de8-495d-a395-8758c7474c1e",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد علاجات طرف المرضى] vs B [يوجد ادويه طرف المرضي].\nEntity Matches (0.6666666666666666, 0.6666666666666666) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "a063680f-7445-4fca-af15-06677d4a3c7e",
+      "textA": "كروت تعريف الادوية غير محدثة في دولاب الطوارئ",
+      "textB": "كروت تعريف الادويه غير محدثه",
+      "oldGroup": "59106f8c-63b7-42ba-ba2f-aa707dd83006",
+      "newGroup": "351b81c5-d072-47f0-8338-bac50262d0bc",
+      "score": 0.9,
+      "reason": "Evaluating A [كروت تعريف الادوية غير محدثة في دولاب الطوارئ] vs B [كروت تعريف الادويه غير محدثه].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "16dbd494-af19-48b1-be0b-00e8038b99db",
+      "textA": "يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي",
+      "textB": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+      "oldGroup": "89f72493-0b90-47c0-9917-a61057314b96",
+      "newGroup": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+      "score": 0.9,
+      "reason": "Evaluating A [يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي] vs B [سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "8983ae2c-d28d-4fd0-8c93-b7d49935f68b",
+      "textA": "عدم وجود كروت تعريف للاصناف في الكراش كارت",
+      "textB": "الكراش كار لا يوجد كروت تعريف",
+      "oldGroup": "667ccf28-8e63-4ffd-bde9-d3752bb6a1ea",
+      "newGroup": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+      "score": 0.9,
+      "reason": "Evaluating A [عدم وجود كروت تعريف للاصناف في الكراش كارت] vs B [الكراش كار لا يوجد كروت تعريف].\nEntity Matches (1, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    },
+    {
+      "findingId": "13cdaae2-a933-4212-9406-b13955267dc3",
+      "textA": "بعض التذاكر لا يوجد عليها تشخيص",
+      "textB": "بعض التذاكر لا يوجد بها تشخيص",
+      "oldGroup": "8a0f7fbe-e381-406b-97a4-1aa644891c49",
+      "newGroup": "a962d17c-11ff-40c4-a673-0a234cdeac88",
+      "score": 0.9,
+      "reason": "Evaluating A [بعض التذاكر لا يوجد عليها تشخيص] vs B [بعض التذاكر لا يوجد بها تشخيص].\nEntity Matches (0.6666666666666666, 1) & Polarity Matches. => HIGH_CONFIDENCE"
+    }
+  ]
+}

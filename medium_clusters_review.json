@@ -1,0 +1,1453 @@
+{
+  "summary": {
+    "total_medium_findings": 26,
+    "cluster_count": 10,
+    "LIKELY_SAME_ISSUE": 0,
+    "LIKELY_DISTINCT": 0,
+    "INSUFFICIENT_EVIDENCE": 26,
+    "candidate_for_safe_resolution": [],
+    "top_suspicious_clusters": [
+      {
+        "cluster_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+        "target_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+        "finding_count": 5
+      },
+      {
+        "cluster_id": "25261ce2-25ef-4a25-9752-2652700f744d",
+        "target_title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+        "finding_count": 4
+      },
+      {
+        "cluster_id": "22c82579-ea67-46ff-93a9-12b07439bd32",
+        "target_title": "لا يوجد قائمه بمحتويات الثلاجه من الادويه بالصيدليات",
+        "finding_count": 3
+      },
+      {
+        "cluster_id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+        "target_title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+        "target_title": "لا يتم كتابه التاريخ المرضي للمريض في الملف الطبي",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+        "target_title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+        "target_title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+        "target_title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+        "target_title": "لا يوجد نموذج الخطه العلاجيه",
+        "finding_count": 2
+      },
+      {
+        "cluster_id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+        "target_title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+        "finding_count": 2
+      }
+    ]
+  },
+  "clusters": [
+    {
+      "cluster_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+      "target_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+      "count": 5,
+      "reason_for_medium": [
+        "Cluster attracted 5 uncertain findings. Requires review."
+      ],
+      "findings": [
+        {
+          "finding_id": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+          "original_text": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "97276630-7b72-40c6-b017-91c4dabbffbc",
+          "current_recurrence_group_id": "efb8441c-a008-42e3-b713-e755b43daeaf",
+          "best_candidate_group": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+              "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+              "score": 0.753818985846338
+            },
+            {
+              "title": "لا يوجد قائمه بثبات و حفظ تخزين الكواشف",
+              "id": "f4b069a3-1982-4e85-8bfa-8e3257e3bcd4",
+              "score": 0.7325508902157916
+            },
+            {
+              "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+              "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+              "score": 0.7229205986461161
+            },
+            {
+              "title": "لا يوجد كروت تعريف علي انواع المستلزمات الموجوده بدولاب المستلزمات الخاص بالقسم",
+              "id": "d9697d89-d5e2-43bc-8975-c5739de4cc23",
+              "score": 0.7195111280301865
+            },
+            {
+              "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+              "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+              "score": 0.7194005075170843
+            }
+          ],
+          "candidate_score": 0.753818985846338,
+          "score_gap": 0.021268095630546435,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "f78701f6-ae56-41ea-a65a-08ddda350199",
+          "original_text": "لا يوجد قائمة بالعاملين بغرفة حفظ ملفات المرضي",
+          "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+          "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+              "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+              "score": 0.78414180325352
+            },
+            {
+              "title": "لا يوجد مكان مطابق مخصص لحفظ ادويه المرضي",
+              "id": "f7c62325-4339-49ec-b149-acf397190bab",
+              "score": 0.7609913851025247
+            },
+            {
+              "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+              "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+              "score": 0.759587976854727
+            },
+            {
+              "title": "لا يوجد قائمه بثبات و حفظ تخزين الكواشف",
+              "id": "f4b069a3-1982-4e85-8bfa-8e3257e3bcd4",
+              "score": 0.7593892576877572
+            },
+            {
+              "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+              "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+              "score": 0.7580613555599979
+            }
+          ],
+          "candidate_score": 0.78414180325352,
+          "score_gap": 0.023150418150995278,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "POSSIBLE_MISMATCH (Room context)",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "29c263fc-273e-4d47-b7cd-a2f49bc565a2",
+          "original_text": "لا يوجد فهرسة للغرفة و بالتالي مكان حفظ الملف في سجل الارشيف غير واضح",
+          "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+          "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+              "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+              "score": 0.7513345431610273
+            },
+            {
+              "title": "لا يوجد سجل لاستلام الادوات المعقمه من غرفه التعقيم",
+              "id": "c50b9d77-e25f-409b-81e9-fdec350bd3c3",
+              "score": 0.729916879349809
+            },
+            {
+              "title": "لايوجد تسجيل درجه حراره ورطوبه وغير مرتب ولا يوجد كروت تعريف بمخزن بجوار الاستقبال",
+              "id": "9bc89afa-67c3-4dea-852f-60d1f35f50a3",
+              "score": 0.7276383032988955
+            },
+            {
+              "title": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+              "id": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+              "score": 0.7240598690334887
+            },
+            {
+              "title": "لا يوجد مكان مطابق مخصص لحفظ ادويه المرضي",
+              "id": "f7c62325-4339-49ec-b149-acf397190bab",
+              "score": 0.7221725637441037
+            }
+          ],
+          "candidate_score": 0.7513345431610273,
+          "score_gap": 0.021417663811218346,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "POSSIBLE_MISMATCH (Register/Log)",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "POSSIBLE_MISMATCH (Room context)",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "d5e1ca8c-7f99-4e98-a0da-c3f4d770e06b",
+          "original_text": "لا يوجد عنوانة للأرفف و بالتالي صعوبة استخراج الملف",
+          "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+          "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+              "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+              "score": 0.7404777506488435
+            },
+            {
+              "title": "لا يوجد كروت تعريف علي انواع المستلزمات الموجوده بدولاب المستلزمات الخاص بالقسم",
+              "id": "d9697d89-d5e2-43bc-8975-c5739de4cc23",
+              "score": 0.7339087324238807
+            },
+            {
+              "title": "غرفه المستلزمات الطبيه غير مؤمنه الباب غير مغلق ولا يوجد قفل علي الدولاب",
+              "id": "ac318189-e0c9-43c6-bd47-8fd28dea584d",
+              "score": 0.7281665855957156
+            },
+            {
+              "title": "لا يوجد فصل للادويه عاليه الخطوره في رف منفصل",
+              "id": "04412dab-ae1c-490d-b4ae-5506b7766a90",
+              "score": 0.7267195349339097
+            },
+            {
+              "title": "لا يوجد تصنيف بمخزن المستلزمات بقسم الاشعه او تعريف لبعض المستلزمات",
+              "id": "fd95979b-20fc-4f9c-86a4-4ecc68627974",
+              "score": 0.7239423843586259
+            }
+          ],
+          "candidate_score": 0.7404777506488435,
+          "score_gap": 0.006569018224962808,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "c00c79ba-51c8-43a0-911a-9c0c531f67d4",
+          "original_text": "لايوجد قائمة بالمسموح لهم بدخول الغرفة",
+          "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+          "department_id": "98ac1bb0-cdfe-4e53-ad9d-23f728732df2",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+              "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+              "score": 0.3834823771798017
+            },
+            {
+              "title": "لايوجد قائمه انذارت حرجه او سجل انذارات حرجه",
+              "id": "477c1982-42e7-499d-bcb2-ed557e7f0a00",
+              "score": 0.33159913644054717
+            },
+            {
+              "title": "لايوجد DC",
+              "id": "49b417cf-5943-486d-8009-66ebdbcfe01a",
+              "score": 0.2524332027758266
+            }
+          ],
+          "candidate_score": 0.3834823771798017,
+          "score_gap": 0.051883240739254544,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "POSSIBLE_MISMATCH (Room context)",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "25261ce2-25ef-4a25-9752-2652700f744d",
+      "target_title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+      "count": 4,
+      "reason_for_medium": [
+        "Cluster attracted 4 uncertain findings. Requires review."
+      ],
+      "findings": [
+        {
+          "finding_id": "05632bc9-1841-4405-bf59-bf3a25ee2dad",
+          "original_text": "مطلوب عمل افاده للديزل حيث انه قدرته أقل من 750 وات",
+          "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+          "department_id": "cdcb3804-4a3d-44a5-a000-aa3d275fdd5b",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25261ce2-25ef-4a25-9752-2652700f744d",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+              "id": "25261ce2-25ef-4a25-9752-2652700f744d",
+              "score": 0.3493341889860811
+            },
+            {
+              "title": "مطلوب عمل تقارير لنتائج المعمل",
+              "id": "2ba9c52b-7319-47fc-8bea-dcd5a70b669d",
+              "score": 0.3241194899226026
+            }
+          ],
+          "candidate_score": 0.3493341889860811,
+          "score_gap": 0.025214699063478507,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "1a6b727d-3f96-4fd0-b29a-e61d50fd8da0",
+          "original_text": "مطلوب تسجيل المرور بالقائمه التفقدية للديزل وتانك السولار",
+          "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+          "department_id": "cdcb3804-4a3d-44a5-a000-aa3d275fdd5b",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25261ce2-25ef-4a25-9752-2652700f744d",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+              "id": "25261ce2-25ef-4a25-9752-2652700f744d",
+              "score": 0.4142347165503092
+            },
+            {
+              "title": "يوجد تسريب سولار اسفل التانك",
+              "id": "f552d3af-cff4-4c9d-9cd5-77068955c5c3",
+              "score": 0.37055086963825545
+            }
+          ],
+          "candidate_score": 0.4142347165503092,
+          "score_gap": 0.043683846912053736,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "277d8674-f584-45ef-b552-9701c68c476f",
+          "original_text": "مطلوب توفير طفايه حريق بجانب الديزل وتانك السولار والطلمبات",
+          "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+          "department_id": "cdcb3804-4a3d-44a5-a000-aa3d275fdd5b",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25261ce2-25ef-4a25-9752-2652700f744d",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+              "id": "25261ce2-25ef-4a25-9752-2652700f744d",
+              "score": 0.3874643718536812
+            },
+            {
+              "title": "لا يوجد كارت فحص علي طفايه الحريق بالعنايه",
+              "id": "bfe8ceb7-9dc2-4d89-be8c-f312189d6227",
+              "score": 0.3853086798987805
+            },
+            {
+              "title": "طفايه الحريق منتهيه 12 5 2026",
+              "id": "cf092d50-6f6a-4006-9e52-95c7e8dcb876",
+              "score": 0.3825793504804773
+            },
+            {
+              "title": "لا يوجد توقيع علي كارت الفحص علي طفايه الحريق",
+              "id": "378cb614-d8c0-4648-adc2-68bc84545952",
+              "score": 0.3817222076929661
+            },
+            {
+              "title": "لا يوجد كارت فحص ولا pass race علي طفايه الحريق",
+              "id": "6a6204c7-8753-49c8-b2b7-61a39a32ff32",
+              "score": 0.37720463633953516
+            }
+          ],
+          "candidate_score": 0.3874643718536812,
+          "score_gap": 0.002155691954900729,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "13bda07e-8c5f-4c9a-8037-1f726371d40e",
+          "original_text": "مطلوب عمل علامات تحذيرية بجانب الديزل وتانك السولار والطلمبات وغرف الكهرباء",
+          "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+          "department_id": "cdcb3804-4a3d-44a5-a000-aa3d275fdd5b",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25261ce2-25ef-4a25-9752-2652700f744d",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج لتسجيل فحص الطلمبات الديزيل وتانك السولار",
+              "id": "25261ce2-25ef-4a25-9752-2652700f744d",
+              "score": 0.39342428686672126
+            },
+            {
+              "title": "يوجد تسريب سولار اسفل التانك",
+              "id": "f552d3af-cff4-4c9d-9cd5-77068955c5c3",
+              "score": 0.3607587383025571
+            }
+          ],
+          "candidate_score": 0.39342428686672126,
+          "score_gap": 0.03266554856416415,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "22c82579-ea67-46ff-93a9-12b07439bd32",
+      "target_title": "لا يوجد قائمه بمحتويات الثلاجه من الادويه بالصيدليات",
+      "count": 3,
+      "reason_for_medium": [
+        "Cluster attracted 3 uncertain findings. Requires review."
+      ],
+      "findings": [
+        {
+          "finding_id": "8b7865b1-035e-456f-bb6e-5520a97e4a39",
+          "original_text": "مطلوب ترمومتر لثلاجه الادويه",
+          "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+          "department_id": "cc520e56-dd65-4e66-93af-eb81170bfc8d",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "22c82579-ea67-46ff-93a9-12b07439bd32",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه بمحتويات الثلاجه من الادويه بالصيدليات",
+              "id": "22c82579-ea67-46ff-93a9-12b07439bd32",
+              "score": 0.3887127581620574
+            },
+            {
+              "title": "مخزن الصيدليه غير نظيف ويحتاج الي ترمومتر حراره ورطوبه",
+              "id": "a9e284b9-4c4d-49b6-b599-d0b885419349",
+              "score": 0.38351564837138874
+            },
+            {
+              "title": "لا يوجد ترمومتر حراره و رطوبه",
+              "id": "3d440069-5ecb-4a44-8293-1faf766eb496",
+              "score": 0.3788724714509467
+            },
+            {
+              "title": "كروت تعريف الادويه داخل الثلاجه غير محدثه",
+              "id": "5607e705-be1d-49f5-9473-e95be69c8d77",
+              "score": 0.37862825647089826
+            },
+            {
+              "title": "لا يوجد ترمومتر غرفه ولا يتم قياس درجه حراره ورطوبه الغرفه",
+              "id": "a245b3a7-2bb9-42ab-a158-ab11c54a1b15",
+              "score": 0.3644742181454735
+            }
+          ],
+          "candidate_score": 0.3887127581620574,
+          "score_gap": 0.005197109790668675,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "50630445-f3dd-4ad3-93ef-9cc47ae444d4",
+          "original_text": "يوجد تكدس بالادويه في الثلاجه",
+          "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+          "department_id": "a7580774-2ac2-4762-aa8b-be67dbb9d445",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "22c82579-ea67-46ff-93a9-12b07439bd32",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه بمحتويات الثلاجه من الادويه بالصيدليات",
+              "id": "22c82579-ea67-46ff-93a9-12b07439bd32",
+              "score": 0.40264147292394475
+            },
+            {
+              "title": "كروت تعريف الادويه داخل الثلاجه غير محدثه",
+              "id": "5607e705-be1d-49f5-9473-e95be69c8d77",
+              "score": 0.382454485926416
+            },
+            {
+              "title": "يتم وضع العينات مع الكيماويات في ثلاجه واحده ولا يتم وضعها في ثلاجه منفصله",
+              "id": "fd2fd440-79fc-41f1-8c11-cd0346b058ce",
+              "score": 0.3711711297134474
+            },
+            {
+              "title": "يوجد عينات في باب الثلاجه",
+              "id": "2eed9c6c-73ab-47b7-ac73-3477ca7b9b53",
+              "score": 0.3691208402422781
+            },
+            {
+              "title": "لايوجد تسجيل لتاريخ صلاحيه بعض الامصال في قائمه الثلاجه بصيدليه السهر",
+              "id": "90af60b0-f6d7-42b2-a92d-f263af254729",
+              "score": 0.36648422925339363
+            }
+          ],
+          "candidate_score": 0.40264147292394475,
+          "score_gap": 0.020186986997528744,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "1b3de949-5f78-4743-9c47-6329aad5ed1d",
+          "original_text": "يوجد ادويه في كراتين في الثلاجه",
+          "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+          "department_id": "a7580774-2ac2-4762-aa8b-be67dbb9d445",
+          "current_recurrence_group_id": "e3c204d3-93ef-4458-9927-ccdc9433fcb0",
+          "best_candidate_group": "22c82579-ea67-46ff-93a9-12b07439bd32",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد قائمه بمحتويات الثلاجه من الادويه بالصيدليات",
+              "id": "22c82579-ea67-46ff-93a9-12b07439bd32",
+              "score": 0.4362286655550074
+            },
+            {
+              "title": "يوجد كراتين ادويه علي الارض مباشره",
+              "id": "e08454c9-d6f0-49a3-b7a3-47678894afea",
+              "score": 0.4236724633435387
+            },
+            {
+              "title": "كروت تعريف الادويه داخل الثلاجه غير محدثه",
+              "id": "5607e705-be1d-49f5-9473-e95be69c8d77",
+              "score": 0.4201086037180926
+            },
+            {
+              "title": "يوجد كراتين ادويه ومحاصيل بدون ترتيب ويوجد تحتها اتربه",
+              "id": "70847df9-36e7-44e4-8c59-2fc607907e93",
+              "score": 0.38703926275796313
+            },
+            {
+              "title": "تخزين الادويه بطريقه غير صحيحه في الصيدليات",
+              "id": "d82ec414-771d-42f0-89a2-ae79aa9422b1",
+              "score": 0.3744853533741864
+            }
+          ],
+          "candidate_score": 0.4362286655550074,
+          "score_gap": 0.012556202211468692,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+      "target_title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.007). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "b7d7f6a1-c54b-45b3-bbb6-4a9ab0edaf8d",
+          "original_text": "توقيت الدخول والخروج في دفتر تردد الاستقبال غير دقيق",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "8d04eac6-9abd-4c25-b7c5-81f1bd447a90",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+          "top_5_candidates": [
+            {
+              "title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+              "id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+              "score": 0.33590664781886803
+            },
+            {
+              "title": "دفتر التردد غير مرقم وغير معتمد",
+              "id": "0134cc2c-7a5b-467d-b982-9208e5c71ab5",
+              "score": 0.3247453975673582
+            },
+            {
+              "title": "تسجيل دفتر احوال عنايه الاستقبال غير دقيق وغير منظم",
+              "id": "b3cc0a20-ef42-46f8-a520-147895bf410e",
+              "score": 0.31435768201443115
+            }
+          ],
+          "candidate_score": 0.33590664781886803,
+          "score_gap": 0.011161250251509824,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "9cc7b88a-ceee-4692-b22e-ca61c2bb73b3",
+          "original_text": "بيانات الدخول غير مكتملة",
+          "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+          "department_id": "1bda0184-252d-44c3-b6c2-d3c162c8f6da",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+          "top_5_candidates": [
+            {
+              "title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+              "id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+              "score": 0.7602751694468072
+            },
+            {
+              "title": "بعض النماذج داخل تذكره العمليات غير مكتمله البيانات",
+              "id": "1387dad1-ff1d-47e0-97ff-7a7fe89e886e",
+              "score": 0.7570691822662294
+            },
+            {
+              "title": "كروت تعريف الادويه غير مكتمله البيانات",
+              "id": "92f23cda-8fa8-4194-aea8-4bae4d7aad48",
+              "score": 0.7402724773542414
+            },
+            {
+              "title": "سجل النتائج الحرجه غير مكتمل البيانات",
+              "id": "514f95ea-81c2-4b2b-bd5b-2990aacdc667",
+              "score": 0.7272688854704026
+            },
+            {
+              "title": "كروت الصيانه غير مكتمله",
+              "id": "b84be0ab-d4b9-48e5-9c66-a7cf6f3dd422",
+              "score": 0.7260306334251947
+            }
+          ],
+          "candidate_score": 0.7602751694468072,
+          "score_gap": 0.0032059871805777407,
+          "entity": [],
+          "defect": [
+            "DEF_INCOMPLETE"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+      "target_title": "لا يتم كتابه التاريخ المرضي للمريض في الملف الطبي",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.021). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "23a8c931-8306-4362-976b-d7c71c444667",
+          "original_text": "يتم كتابة الاعراض في التذكرة الطبيه وليس التشخيص الطبي",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "8d04eac6-9abd-4c25-b7c5-81f1bd447a90",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+          "top_5_candidates": [
+            {
+              "title": "لا يتم كتابه التاريخ المرضي للمريض في الملف الطبي",
+              "id": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+              "score": 0.39327556032068195
+            },
+            {
+              "title": "بعض النماذج الموجوده داخل التذكره الطبيه ليس عليها تعريف المريض",
+              "id": "15e8c0d5-a951-46a1-ac84-57353f639977",
+              "score": 0.38895474380477746
+            },
+            {
+              "title": "التسليم التسلم غير واضح داخل التذكره الطبيه",
+              "id": "2813ba6e-4ea6-4ba7-9940-b7c3cdddc068",
+              "score": 0.37637873298083363
+            },
+            {
+              "title": "التسليم وتسلم بين الاطباء غير دقيق كما لا يتم كتابه التشخيص النهائي للحالات وفي كل نموذج تسليم يتم كتابه تشخيص مختلف لنفس المريض",
+              "id": "f42f76b6-22c3-4c93-9032-308618170190",
+              "score": 0.37602316035684596
+            },
+            {
+              "title": "لا يتم الكتابه المتابعه في نموذج progress notes للاطباء",
+              "id": "b611bc24-2109-49b7-a942-9d461cc8e6e1",
+              "score": 0.37121123043785687
+            }
+          ],
+          "candidate_score": 0.39327556032068195,
+          "score_gap": 0.004320816515904491,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "9e97f438-3e9d-47f1-94ed-6ada89f80fb2",
+          "original_text": "لا يتم اخذ التاريخ المرضى للمريض والادويه التي يستعملها المريض",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "b26e96ba-cf27-4557-a288-f98fbf5ec5ec",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+          "top_5_candidates": [
+            {
+              "title": "لا يتم كتابه التاريخ المرضي للمريض في الملف الطبي",
+              "id": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+              "score": 0.42332579191724395
+            },
+            {
+              "title": "ادويه المرضي غير مكتمله تعريف المريض",
+              "id": "6b12ecfd-4d4e-4ba7-8cd9-3094ff374aa7",
+              "score": 0.3853188973282468
+            },
+            {
+              "title": "لا يتم فحص الادويه طرف المريض من خارج المستشفي من قبل الصيدلي المسؤول",
+              "id": "b8a97886-fcf7-47f1-93d7-0154dfb1b397",
+              "score": 0.3814135797470406
+            },
+            {
+              "title": "لا يتم كتابه الادويه التي يتعاطاها المريض ويتم كتابه فقط ادويه للضغط او ادويه للكبد",
+              "id": "d47b95e6-b2ea-452e-905a-1c4541d1d1fc",
+              "score": 0.37764460672862504
+            },
+            {
+              "title": "لا يتم تعريف المريض بشكل صحيح في سجل المشوره",
+              "id": "cf8bc370-7a53-462d-8cc5-cf699e8ee8e6",
+              "score": 0.37271512993924893
+            }
+          ],
+          "candidate_score": 0.42332579191724395,
+          "score_gap": 0.03800689458899714,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+      "target_title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.013). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "9a251b3f-79db-4e92-805e-747b9b641e36",
+          "original_text": "نتيجة الاشعه في الاقسام بدون اعتماد او توقيع الاستشاري ولا يتم كتابة رقم الملف للمريض على النتيجه",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "82b79504-b728-4d2d-89e4-5e424e4312f3",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "top_5_candidates": [
+            {
+              "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+              "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+              "score": 0.7735145121774645
+            },
+            {
+              "title": "بعد اجهزه الاشعه بدون كارت تعريف وكارت الصيانه",
+              "id": "90d03953-1020-4ff7-b911-e037c735ada6",
+              "score": 0.76513575936214
+            },
+            {
+              "title": "اقرارات الموافقه علي اجراء العمليه ممضيه من المريض بدون توضيح الاجراء علي الاقرار",
+              "id": "1f065d22-78be-4c94-a631-249215e7cc9f",
+              "score": 0.7601616530741396
+            },
+            {
+              "title": "معظم الاطباء بالقسم الاطباء المسؤولين عن الرد علي الاستشارات غير ملتزمين بالزي الرسمي وكارت التعريف",
+              "id": "ea2c1343-bade-452d-9681-3e3d3fce770d",
+              "score": 0.7548126853438807
+            },
+            {
+              "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+              "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+              "score": 0.7445463528090668
+            }
+          ],
+          "candidate_score": 0.7735145121774645,
+          "score_gap": 0.00837875281532452,
+          "entity": [],
+          "defect": [
+            "DEF_NOT_WEARING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "8f52e4f0-a219-4c2e-b71e-8c63358158b7",
+          "original_text": "نموذج طلب الدم بدون بيانات المريض مكتملة",
+          "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+          "department_id": "8dc13ad4-79f3-419f-ad80-bd90652d352a",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "top_5_candidates": [
+            {
+              "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+              "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+              "score": 0.7764467629343723
+            },
+            {
+              "title": "اقرارات الموافقه علي اجراء العمليه ممضيه من المريض بدون توضيح الاجراء علي الاقرار",
+              "id": "1f065d22-78be-4c94-a631-249215e7cc9f",
+              "score": 0.7578823980007332
+            },
+            {
+              "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+              "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+              "score": 0.7423819225367161
+            },
+            {
+              "title": "يقوم التمريض بعمل تحليل السكر للمرضي كل ست ساعات بدون امر طبيب مع العلم بان المريض ليس مريض سكر مما يؤدي الي استهلاك شرائط السكر بدون فائده",
+              "id": "1496c4f3-782d-47ad-898b-2a35ded54935",
+              "score": 0.7404498385769092
+            },
+            {
+              "title": "قائمه النتائج الحرجه المعمليه غير مؤرخه وبدون مرجع",
+              "id": "5e251a23-96b5-403d-9fd1-4e71f6ac34a3",
+              "score": 0.7322582572452504
+            }
+          ],
+          "candidate_score": 0.7764467629343723,
+          "score_gap": 0.01856436493363911,
+          "entity": [],
+          "defect": [
+            "DEF_NOT_WEARING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+      "target_title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.010). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "45c6767e-eaa3-4e93-a425-71f4d75f9013",
+          "original_text": "الغرفة غير مطابقة للشروط و غير مؤمنة و يوجد بداخلها عدد كبير من الموظفين بأقسام أخري",
+          "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+          "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+              "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+              "score": 0.737601579547182
+            },
+            {
+              "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+              "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+              "score": 0.7274115114723295
+            },
+            {
+              "title": "بعض الملفات يوجد بها توصيفات وظيفيه غير محدثه وبدون توقيع الموظف",
+              "id": "295de136-c2e1-4ba7-b16c-396696dc5799",
+              "score": 0.7256076964788793
+            },
+            {
+              "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+              "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+              "score": 0.7208610149243215
+            },
+            {
+              "title": "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير",
+              "id": "2fa7049e-d012-4590-bf2f-446ebe88ea3a",
+              "score": 0.7183753661431646
+            }
+          ],
+          "candidate_score": 0.737601579547182,
+          "score_gap": 0.010190068074852454,
+          "entity": [
+            "ENT_STAFF"
+          ],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "POSSIBLE_MISMATCH (Room context)",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "dfbcb859-eff8-4ea8-8bb7-57465435066f",
+          "original_text": "لا يوجد خيوط جراحيه بالاستقبال منذ ٢٩ /٦ طبقا لطلبيه الصرف",
+          "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+          "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+              "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+              "score": 0.7479543125307708
+            },
+            {
+              "title": "لا يوجد دقه في تسجيل وقت ظهور وابلاغ النتائج الحرجه بالطوارئ طبقا للسياسه",
+              "id": "2da5b374-c972-4de7-8183-50f5e9afcbdd",
+              "score": 0.7372782816905743
+            },
+            {
+              "title": "يوجد غرفه واحد للادويه المستلزمات مشتركه بين غرف العزل ولا يوجد وقايات شخصيه امام كل غرفه علي حده",
+              "id": "8f0f0db9-48ed-45ff-8b8a-c8188a79aa41",
+              "score": 0.7330159209289315
+            },
+            {
+              "title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+              "id": "5416707b-63bb-4a62-8fa7-009b675da879",
+              "score": 0.7322703561991222
+            },
+            {
+              "title": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+              "id": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+              "score": 0.7310978179478146
+            }
+          ],
+          "candidate_score": 0.7479543125307708,
+          "score_gap": 0.010676030840196526,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+      "target_title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.006). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "c6145849-ce95-4e12-bdc4-67b74794a71c",
+          "original_text": "لا يوجد تسجيل للقيم المرجعية الخاصة بستاندر الخاص بالجودة الداخلية",
+          "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+          "department_id": "9032b48b-75ee-4b3b-8eec-15e34809b8f5",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+              "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+              "score": 0.7439806472473487
+            },
+            {
+              "title": "لا يوجد سجل لمراقبه الجوده",
+              "id": "d8a157f6-8252-4544-a7ed-d396aa3ca461",
+              "score": 0.7425628291262798
+            },
+            {
+              "title": "لا يوجد دقه في تسجيل وقت ظهور وابلاغ النتائج الحرجه بالطوارئ طبقا للسياسه",
+              "id": "2da5b374-c972-4de7-8183-50f5e9afcbdd",
+              "score": 0.7404183728699079
+            },
+            {
+              "title": "لا يوجد ما يفيد بالقسم بعمل مراقبه جوده الاجهزه",
+              "id": "3ee539d7-fc12-4d91-b0ed-439a40088fbf",
+              "score": 0.7392830899428791
+            },
+            {
+              "title": "لا يوجد دقه في تسجيل النتائج الحرجه بقسم الاشعه",
+              "id": "b79512a2-3d30-4e44-83d6-6ba6b2a51f5d",
+              "score": 0.7362811907418002
+            }
+          ],
+          "candidate_score": 0.7439806472473487,
+          "score_gap": 0.0014178181210688923,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "3a8fdb05-42bd-4e51-8715-cb786671d80b",
+          "original_text": "لا يوجد توقيع للطبيب او الصيدلي في شيت الادويه",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "b4447bbc-2442-4af2-ac46-b49e52dea655",
+          "current_recurrence_group_id": "4a0ec196-a69f-49d4-8d21-8490b6cf76ca",
+          "best_candidate_group": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+              "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+              "score": 0.7515873276463718
+            },
+            {
+              "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+              "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+              "score": 0.7412685200809974
+            },
+            {
+              "title": "لا يوجد توقيع الطبيب علي بعض التذاكر",
+              "id": "85fea0ef-1340-41ea-bd75-1555fbb3dc77",
+              "score": 0.7265047338781251
+            },
+            {
+              "title": "لا يوجد وسيله تواصل بين المعمل الطبيب",
+              "id": "f03c5ae6-006e-4e2d-97a3-69b9147517f9",
+              "score": 0.7213711568412844
+            },
+            {
+              "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+              "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+              "score": 0.7086641642642184
+            }
+          ],
+          "candidate_score": 0.7515873276463718,
+          "score_gap": 0.0103188075653744,
+          "entity": [
+            "ENT_STAFF"
+          ],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+      "target_title": "لا يوجد نموذج الخطه العلاجيه",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.021). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "7acab74b-d999-4450-a953-001e93775aca",
+          "original_text": "لايوجد نموذج خطة رعاية متعددة التخصصات",
+          "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+          "department_id": "8d3dc26a-232a-4cff-b4fa-795f3d89acb7",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج الخطه العلاجيه",
+              "id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+              "score": 0.40158231297639907
+            },
+            {
+              "title": "الخطه التمريضيه غير مطابقه لحاله المريض",
+              "id": "55d551a5-ceef-4206-a703-5e2238c11df6",
+              "score": 0.36692434447593164
+            },
+            {
+              "title": "لايوجد خطه توظيف المستشفي",
+              "id": "68a463e5-521e-4eff-943a-812d4ab9a671",
+              "score": 0.35884750233553225
+            },
+            {
+              "title": "لا يتم كتابه plan of care في الملف",
+              "id": "52d952de-64d0-4180-8573-38249f4ab362",
+              "score": 0.34544207601228616
+            },
+            {
+              "title": "لايوجد DC",
+              "id": "49b417cf-5943-486d-8009-66ebdbcfe01a",
+              "score": 0.22718579504539477
+            }
+          ],
+          "candidate_score": 0.40158231297639907,
+          "score_gap": 0.03465796850046743,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "e75082e3-5da3-4506-9dfb-7ecf8b7e005e",
+          "original_text": "لا يوجد نموذج الاوامر الشفوية",
+          "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+          "department_id": "d1f8ead3-df4f-41e4-94b5-7980e01c8b77",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد نموذج الخطه العلاجيه",
+              "id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+              "score": 0.7246249009018781
+            },
+            {
+              "title": "لا يوجد نموذج اعطال لا يوجد سجل اعطال",
+              "id": "12b3c773-f0c0-4f59-890f-b983c857f7f3",
+              "score": 0.7178862832318658
+            },
+            {
+              "title": "نموذج فحص الانذارات الحرجه غير موجود",
+              "id": "034ba012-b7ba-4107-a2a5-4c4b3b2eae70",
+              "score": 0.7164450854554583
+            },
+            {
+              "title": "لا يوجد نموذج طلب ابلاغ عطل",
+              "id": "a918676e-2978-4d49-87b8-b35d50dc3b38",
+              "score": 0.7133135674920488
+            },
+            {
+              "title": "لا يوجد نموذج النتائج الحرجه بالملف الطبي",
+              "id": "a0b4845b-4de0-478a-a61a-42d44c5b6462",
+              "score": 0.7088255793776994
+            }
+          ],
+          "candidate_score": 0.7246249009018781,
+          "score_gap": 0.006738617670012381,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+      "target_title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+      "count": 2,
+      "reason_for_medium": [
+        "Very narrow score gap to next candidate (avg 0.003). Ambiguous."
+      ],
+      "findings": [
+        {
+          "finding_id": "c50a7898-66e5-408c-a17f-553e7832e3a0",
+          "original_text": "لا يوجد مرور منتظم الصيدلى الاكلينيكي يومى ومنتظم",
+          "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+          "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+              "id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+              "score": 0.7606372991080917
+            },
+            {
+              "title": "لا يوجد امضاء الصيدلي علي نموذج الادويه",
+              "id": "37423f8e-af2b-4dad-96e0-5beff76a7053",
+              "score": 0.7592346408433223
+            },
+            {
+              "title": "لا يوجد توثيق لمرور الصيدلي علي دولاب وسائل تنظيم الاسره",
+              "id": "226b3ee8-6db4-4dae-aba7-bfecaa2dc7d8",
+              "score": 0.7494458345438835
+            },
+            {
+              "title": "لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق داخل الصيدليه",
+              "id": "7d292a47-c279-4305-bf85-f08fdeb6ac55",
+              "score": 0.7440744442556165
+            },
+            {
+              "title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+              "id": "5416707b-63bb-4a62-8fa7-009b675da879",
+              "score": 0.7440667510456024
+            }
+          ],
+          "candidate_score": 0.7606372991080917,
+          "score_gap": 0.0014026582647694852,
+          "entity": [],
+          "defect": [
+            "DEF_MISSING"
+          ],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        },
+        {
+          "finding_id": "08407476-238c-48db-9cee-1e055793ebd8",
+          "original_text": "بعض جرعات الادوية غير مكتوبه",
+          "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+          "department_id": "8d5d3de5-0dfc-4e5d-9dfe-b4546e793a08",
+          "current_recurrence_group_id": null,
+          "best_candidate_group": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+          "top_5_candidates": [
+            {
+              "title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+              "id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+              "score": 0.39601456839306665
+            },
+            {
+              "title": "يوجد ادويه طرف المرضي",
+              "id": "490e9770-9de8-495d-a395-8758c7474c1e",
+              "score": 0.39071602269678424
+            },
+            {
+              "title": "تمييز الادويه غير مكتمل",
+              "id": "98d91746-5e27-465b-9a96-c1258ad82ebe",
+              "score": 0.3895141270344651
+            },
+            {
+              "title": "قوائم الادويه غير محدثه",
+              "id": "e6ac5ba9-c11b-4438-a73d-5d203f8626fc",
+              "score": 0.38866116789753713
+            },
+            {
+              "title": "يوجد ادويه بجوار المريض",
+              "id": "29849a0a-a623-4289-ae09-4f2e44de08c1",
+              "score": 0.3871443415393182
+            }
+          ],
+          "candidate_score": 0.39601456839306665,
+          "score_gap": 0.0052985456962824085,
+          "entity": [],
+          "defect": [],
+          "requirement": [],
+          "hard_negative_flags": [],
+          "review_label": "INSUFFICIENT_EVIDENCE",
+          "semantic_comparison": {
+            "entity": "UNKNOWN",
+            "defect": "UNKNOWN",
+            "requirement": "UNKNOWN",
+            "context": "UNKNOWN",
+            "temporal": "UNKNOWN",
+            "polarity": "UNKNOWN",
+            "analysis": "No hard negative flags triggered by V4 engine. Semantic dimensions overlap ambiguously."
+          }
+        }
+      ]
+    }
+  ]
+}

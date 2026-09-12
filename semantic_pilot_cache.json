@@ -1,0 +1,1178 @@
+{
+  "يوجد عجز في عدد التمريض_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الكادر التمريضي",
+    "defect": "وجود عجز ونقص في القوة البشرية للتمريض",
+    "requirement": "توفير العدد الكافي من التمريض لتغطية احتياجات المرضى وضمان السلامة",
+    "polarity": "unavailable",
+    "scope": "أقسام الرعاية بالمستشفى",
+    "context": "إدارة الموارد البشرية والتشغيل الإكلينيكي",
+    "important_qualifiers": "عالي الخطورة، تمريضي، تنظيمي"
+  },
+  "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "سجلات عربة الطوارئ (كراش كار)",
+    "defect": "السجلات تفتقر لمحضر فحص، وغير مرقمة أو مختومة",
+    "requirement": "ترقيم، ختم، وإرفاق محضر الفحص الدوري لسجلات عربة الطوارئ لضمان جاهزيتها",
+    "polarity": "incomplete",
+    "scope": "عربة الطوارئ (Crash Cart) بالقسم",
+    "context": "الاستعداد لحالات الطوارئ والإنعاش الرئوي",
+    "important_qualifiers": "عالي الخطورة / طبي حرج"
+  },
+  "طفايات الحريق لايوجد بجوارها بوسترات RACE وعليها صدا_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "طفايات الحريق وملصقات الطوارئ (RACE)",
+    "defect": "وجود صدأ على طفايات الحريق وعدم وجود بوسترات RACE بجوارها",
+    "requirement": "صيانة معدات مكافحة الحريق دورياً ووضع إرشادات التعامل مع الحريق (RACE) بجوار الطفايات",
+    "polarity": "damaged",
+    "scope": "مرافق المنشأة",
+    "context": "السلامة والصحة المهنية وإدارة المرافق (FMS)",
+    "important_qualifiers": "عالي الخطورة، بيئي، سلامة المنشأة"
+  },
+  "قوائم الادويه عاليه الخطوره الادويه المتشابهه في الشكل النطق تحتاج الي تحديث_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قوائم الأدوية عالية الخطورة والأدوية المتشابهة (LASA)",
+    "defect": "القوائم قديمة وتحتاج إلى تحديث",
+    "requirement": "تحديث قوائم الأدوية عالية الخطورة والمتشابهة في الشكل والنطق بشكل دوري",
+    "polarity": "incomplete",
+    "scope": "المستشفى ككل / الصيدلية والأقسام العلاجية",
+    "context": "سلامة إدارة الدواء (Medication Safety)",
+    "important_qualifiers": "عالي الخطورة، دوائي"
+  },
+  "لا توجد قائمه بالنتائج الحرجه السونار العياده بعياده تنظيم الاسره_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قائمة النتائج الحرجة للسونار",
+    "defect": "عدم وجود قائمة بالنتائج الحرجة الخاصة بجهاز السونار بعيادة تنظيم الأسرة",
+    "requirement": "توفير قائمة معتمدة بالنتائج الحرجة للسونار للعمل بها وإبلاغها فوراً",
+    "polarity": "missing",
+    "scope": "عيادة تنظيم الأسرة",
+    "context": "التشخيص الطبي وتوصيل النتائج الحرجة",
+    "important_qualifiers": "طبي / تشخيصي"
+  },
+  "توقيع الطبيب فورمه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "توقيع الطبيب في المستندات الطبية",
+    "defect": "التوقيع بصيغة فورمة غير واضحة",
+    "requirement": "أن يكون التوقيع ثلاثياً وواضحاً ومرفقاً بالصفة الطبية لضمان المسؤولية القانونية",
+    "polarity": "incorrect",
+    "scope": "الملفات الطبية",
+    "context": "التوثيق الطبي القانوني",
+    "important_qualifiers": "طبي، قانوني"
+  },
+  "قائمه الادويه غير موضح بها تاريخ الاصدار_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قائمة الأدوية",
+    "defect": "عدم توضيح تاريخ الإصدار",
+    "requirement": "كتابة تاريخ إصدار وثيقة قائمة الأدوية لضمان التحكم في الوثائق وتحديثها",
+    "polarity": "incomplete",
+    "scope": "الصيدلية / إدارة الدواء",
+    "context": "نظام إدارة الجودة والتحكم بالوثائق",
+    "important_qualifiers": "إداري، طبي"
+  },
+  "لايوجد تعريف لمفاتيح الكهرباء_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "مفاتيح الكهرباء",
+    "defect": "غياب التعريف والتمييز لمفاتيح الكهرباء",
+    "requirement": "وضع ملصقات تعريفية على كافة مفاتيح الكهرباء لتسهيل التحكم والتعامل السريع",
+    "polarity": "missing",
+    "scope": "صيانة المنشأة",
+    "context": "إدارة السلامة والمرافق (FMS)",
+    "important_qualifiers": "غير طبي، سلامة وصيانة"
+  },
+  "كروت تعريف الادويه غير محدثه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "كروت تعريف الأدوية",
+    "defect": "عدم تحديث الكروت التعريفية",
+    "requirement": "مراجعة وتحديث كروت تعريف الأدوية باستمرار لضمان دقة البيانات وصرف الدواء الآمن",
+    "polarity": "expired",
+    "scope": "الصيدلية والمخازن الدوائية",
+    "context": "إدارة الدواء وسلامة المرضى",
+    "important_qualifiers": "طبي"
+  },
+  "لا يوجد سياسات خاصه بالاشعه العلاجيه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "سياسات الأشعة العلاجية",
+    "defect": "عدم وجود سياسات معتمدة للأشعة العلاجية",
+    "requirement": "إعداد وتوفير سياسات وإجراءات عمل واضحة لتنظيم تقديم خدمات الأشعة العلاجية",
+    "polarity": "missing",
+    "scope": "قسم الأشعة العلاجية",
+    "context": "الحوكمة الإكلينيكية وجودة الخدمات",
+    "important_qualifiers": "عالي الخطورة، طبي"
+  },
+  "لا يوجد فصل بين الادويه المتشابهه في الشكل_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الأدوية المتشابهة في الشكل (LASA)",
+    "defect": "غياب الفصل المادي والتخزيني بين الأدوية المتشابهة",
+    "requirement": "تطبيق سياسة فصل وتمييز الأدوية المتشابهة شكلاً لمنع حدوث الأخطاء الدوائية",
+    "polarity": "incorrect",
+    "scope": "الصيدلية وأقسام التمريض",
+    "context": "سلامة المرضى وصرف الدواء",
+    "important_qualifiers": "عالي الخطورة، طبي"
+  },
+  "القسم غير نظيف يوجد تراكم النفايات_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "القسم والبيئة العلاجية",
+    "defect": "عدم النظافة وتراكم النفايات",
+    "requirement": "المحافظة على نظافة الأقسام الطبية والتخلص الآمن والمنظم من النفايات لمنع انتشار العدوى",
+    "polarity": "incorrect",
+    "scope": "البيئة المحيطة بالمرضى",
+    "context": "مكافحة العدوى والصحة البيئية في المستشفيات",
+    "important_qualifiers": "طبي، مكافحة عدوى"
+  },
+  "لا يوجد مرور للصيانه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "مرور الصيانة",
+    "defect": "عدم إجراء مرور الصيانة الدوري",
+    "requirement": "تنفيذ وتوثيق جولات المرور الدورية للصيانة الوقائية والطارئة لكافة المرافق",
+    "polarity": "missing",
+    "scope": "إدارة الصيانة والمرافق",
+    "context": "إدارة المرافق والأجهزة (FMS)",
+    "important_qualifiers": "صيانة"
+  },
+  "لا يوجد فحص يومي للاجهزه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الفحص اليومي للأجهزة الطبية",
+    "defect": "عدم إجراء الفحص والتحقق اليومي للأجهزة",
+    "requirement": "التزام الأطقم الطبية والفنية بإجراء فحص تشغيلي يومي للأجهزة للتأكد من جاهزيتها قبل الاستخدام",
+    "polarity": "missing",
+    "scope": "الأجهزة الطبية بالقسم",
+    "context": "إدارة الأجهزة الطبية وسلامتها",
+    "important_qualifiers": "طبي، صيانة"
+  },
+  "يوجد عدد 2 جهاز سونار معطلين بالعياده وجهاز واحد يعمل_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "أجهزة السونار",
+    "defect": "تعطل جهازين من أصل ثلاثة",
+    "requirement": "سرعة صيانة الأجهزة المعطلة لضمان استمرارية تقديم الخدمة وعدم تأخير المرضى",
+    "polarity": "damaged",
+    "scope": "العيادة / قسم الأشعة",
+    "context": "إدارة الأصول الطبية وتوافر الخدمات",
+    "important_qualifiers": "طبي، صيانة"
+  },
+  "الملفات الطبيه يتم استلامها من العنايه غير مكتمله التسجيل ولايوجد تسليم وتسلم الاطباء_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الملفات الطبية وعملية تسليم وتسلم المرضى بالأقسام",
+    "defect": "استلام ملفات غير مكتملة من الرعاية وغياب التسليم والتسلم الموثق بين الأطباء",
+    "requirement": "اكتمال الملف الطبي للمريض قبل النقل وإجراء تسليم وتسلم طبي منظم وموثق",
+    "polarity": "incomplete",
+    "scope": "قسم الرعاية المركزة والأقسام الداخلية",
+    "context": "انتقال الرعاية (Transition of Care) والتوثيق الطبي",
+    "important_qualifiers": "عالي الخطورة، طبي، سلامة المرضى"
+  },
+  "عدم استكمال القائمه التفقديه للجراحه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "القائمة التفقدية للجراحة الآمنة (Surgical Safety Checklist)",
+    "defect": "عدم استكمال بنود القائمة التفقدية للجراحة",
+    "requirement": "الالتزام بالاستكمال الكامل لقائمة التحقق من الجراحة الآمنة لكل مريض جراحي",
+    "polarity": "incomplete",
+    "scope": "غرف العمليات الجراحية",
+    "context": "سلامة المرضى في العمليات الجراحية",
+    "important_qualifiers": "عالي الخطورة، جراحي"
+  },
+  "لوحه المفاتيح غير مؤمنه وغير معرفه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "لوحة المفاتيح والتحكم الكهربائية",
+    "defect": "غير مؤمنة وغير معرفة",
+    "requirement": "تأمين غلق لوحات التحكم والكهرباء وتوفير ملصقات تعريفية دقيقة لكل مفتاح لمنع الحوادث",
+    "polarity": "incorrect",
+    "scope": "صيانة المنشأة والسلامة",
+    "context": "إدارة السلامة والمرافق (FMS)",
+    "important_qualifiers": "غير طبي، سلامة"
+  },
+  "الهيكل التنظيمي غير محدث_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الهيكل التنظيمي للمنشأة",
+    "defect": "الهيكل غير محدث",
+    "requirement": "تحديث الهيكل التنظيمي ليعكس المسؤوليات والخطوط الإدارية الحالية بدقة",
+    "polarity": "expired",
+    "scope": "إدارة المنشأة / الموارد البشرية",
+    "context": "الحوكمة والإدارة الإدارية",
+    "important_qualifiers": "إداري"
+  },
+  "السياسات غير محدثه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "السياسات وإجراءات العمل",
+    "defect": "السياسات غير محدثة وصلاحيتها منتهية",
+    "requirement": "مراجعة وتحديث السياسات بشكل دوري لضمان ملاءمتها لأحدث المعايير والممارسات",
+    "polarity": "expired",
+    "scope": "إدارة الجودة والتحكم بالوثائق",
+    "context": "الحوكمة ونظام إدارة الجودة",
+    "important_qualifiers": "إداري، طبي"
+  },
+  "لا يوجد بطاريه لعمل الطلمبات_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "طلمبات / بطارية",
+    "defect": "عدم وجود بطارية لتشغيل الطلمبات",
+    "requirement": "توفير مصدر طاقة احتياطي (بطارية) لتشغيل الطلمبات عند الحاجة",
+    "polarity": "missing",
+    "scope": "طلمبات القسم / المنشأة",
+    "context": "تشغيل الأجهزة والمعدات الطبية",
+    "important_qualifiers": "طبي / حرج"
+  },
+  "يوجد alarm مستمر باحد اللوحات_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "لوحة إنذار",
+    "defect": "وجود إنذار مستمر غير معالج في أحد اللوحات",
+    "requirement": "متابعة وصيانة لوحات الإنذار لضمان عملها بشكل سليم ومعالجة التنبيهات فوراً",
+    "polarity": "other",
+    "scope": "أحد لوحات الإنذار بالمنشأة",
+    "context": "أنظمة الإنذار والسلامة العامة",
+    "important_qualifiers": "سلامة وصيانة"
+  },
+  "يوجد تراكم نفايات_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "نفايات",
+    "defect": "تراكم النفايات بالمنشأة دون تخلص دوري",
+    "requirement": "التخلص الآمن والمستمر من النفايات لمنع تراكمها",
+    "polarity": "other",
+    "scope": "البيئة المحيطة بالمنشأة",
+    "context": "مكافحة العدوى والصحة البيئية",
+    "important_qualifiers": "مكافحة عدوى / خطورة بيئية"
+  },
+  "لا يتم تعريف الاسطوانات_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "اسطوانات الغاز",
+    "defect": "عدم تعريف وتمييز اسطوانات الغاز",
+    "requirement": "وضع كروت تعريف وتمييز واضحة على جميع الاسطوانات",
+    "polarity": "missing",
+    "scope": "اسطوانات الغاز بالمنشأة",
+    "context": "إدارة الغازات الطبية والسلامة المهنية",
+    "important_qualifiers": "سلامة وصحة مهنية"
+  },
+  "لا يوجد معايره من الشركه المسؤله لاجهزه الاشعه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "أجهزة الأشعة",
+    "defect": "عدم إجراء المعايرة الدورية للأجهزة من قبل الشركة المسؤولة",
+    "requirement": "التزام الشركة المسؤولة بإجراء المعايرة الدورية لأجهزة الأشعة لضمان دقتها وسلامتها",
+    "polarity": "missing",
+    "scope": "قسم الأشعة",
+    "context": "صيانة الأجهزة الطبية المعقدة والوقاية الإشعاعية",
+    "important_qualifiers": "أجهزة طبية عالية الخطورة / إشعاع"
+  },
+  "لا يوجد كروت تعريف وصيانه لبعض الاجهزه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الأجهزة",
+    "defect": "غياب كروت التعريف وبطاقات الصيانة لبعض الأجهزة",
+    "requirement": "توفير وتعليق كروت التعريف والصيانة الدورية على كافة الأجهزة",
+    "polarity": "missing",
+    "scope": "بعض الأجهزة بالمنشأة",
+    "context": "إدارة الأصول والصيانة الطبية وغير الطبية",
+    "important_qualifiers": "تقني / طبي"
+  },
+  "القوائم الادويه عاليه الخطورهوالتركيز و المتشابهه في الشكل النطق تحتاج تحديث_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قوائم الأدوية عالية الخطورة والتركيز والمتشابهة (LASA)",
+    "defect": "القوائم بحاجة إلى تحديث",
+    "requirement": "التحديث الدوري والمستمر لقوائم الأدوية عالية الخطورة والمتشابهة",
+    "polarity": "incomplete",
+    "scope": "الصيدلية وأقسام التمريض بالمستشفى",
+    "context": "السلامة الدوائية ورعاية المرضى",
+    "important_qualifiers": "عالي الخطورة / سلامة المرضى"
+  },
+  "يتم تداول العينات وتسليمها للمعمل عن طريق المنتفعين وليس عن طريقه الممرضه المسؤوله عن ذلك_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "عينات المعمل",
+    "defect": "تداول ونقل العينات وتسليمها للمعمل عن طريق المرضى (المنتفعين) بدلاً من الممرضة المسؤولة",
+    "requirement": "التزام التمريض بنقل وتداول العينات الطبية للمعمل لضمان سلامة العينات ومكافحة العدوى",
+    "polarity": "incorrect",
+    "scope": "عملية نقل العينات بين الأقسام والمعمل",
+    "context": "مكافحة العدوى وسلامة تداول العينات",
+    "important_qualifiers": "خطر بيولوجي / سلامة المرضى"
+  },
+  "لا يوجد مرور موثق علي محتويات حقيبه الانسكابات الكيميائيه البيولوجيه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "حقيبة الانسكابات الكيميائية والبيولوجية",
+    "defect": "عدم وجود مرور موثق لفحص محتويات حقيبة الانسكابات",
+    "requirement": "إجراء مرور دوري موثق ومسجل للتأكد من سلامة واكتمال محتويات حقيبة الانسكابات",
+    "polarity": "undocumented",
+    "scope": "حقيبة الانسكابات بالمنشأة",
+    "context": "السلامة والصحة المهنية ومواجهة الطوارئ البيئية",
+    "important_qualifiers": "كيميائي وبيولوجي"
+  },
+  "لا توجد قائمه بالانذارات الحرجه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قائمة الإنذارات الحرجة للأجهزة",
+    "defect": "غياب قائمة الإنذارات الحرجة للأجهزة",
+    "requirement": "توفير قائمة معتمدة بالإنذارات الحرجة للأجهزة الطبية والتأكد من تفعيلها",
+    "polarity": "missing",
+    "scope": "الأقسام الحرجة / الأجهزة الطبية",
+    "context": "سلامة المرضى والأجهزة الطبية",
+    "important_qualifiers": "عالي الخطورة / طبي"
+  },
+  "الوصفه الدوائيه غير مكتمله_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الوصفة الدوائية",
+    "defect": "عدم اكتمال بيانات الوصفة الدوائية",
+    "requirement": "كتابة الوصفات الدوائية مستوفية لكافة البيانات الطبية المطلوبة",
+    "polarity": "incomplete",
+    "scope": "الوصفات الطبية للمرضى",
+    "context": "العملية العلاجية وإدارة الأدوية",
+    "important_qualifiers": "طبي / سلامة دوائية"
+  },
+  "توجد ادويه طرف المريض بجانب المريض_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "أدوية المريض الشخصية",
+    "defect": "وجود أدوية خاصة بالمريض بجانبه دون تخزين آمن أو إشراف",
+    "requirement": "التحفظ على الأدوية الخاصة بالمرضى وإدارتها عبر الكادر التمريضي وفق السياسة المعتمدة",
+    "polarity": "incorrect",
+    "scope": "محيط سرير المريض",
+    "context": "إدارة الأدوية وسلامة المرضى داخل الأقسام الداستشفائية",
+    "important_qualifiers": "سلامة دوائية"
+  },
+  "الovr غير مفعل في كل الاقسام_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "نظام الإبلاغ عن الأحداث العارضة (OVR)",
+    "defect": "عدم تفعيل نظام الـ OVR في جميع أقسام المستشفى",
+    "requirement": "تفعيل واستخدام نظام الإبلاغ عن الأحداث العارضة بجميع أقسام المستشفى دون استثناء",
+    "polarity": "incomplete",
+    "scope": "كافة أقسام المستشفى",
+    "context": "إدارة المخاطر وتحسين جودة الرعاية الصحية",
+    "important_qualifiers": "إداري / جودة"
+  },
+  "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الملف الطبي والإقرارات للطفل مالك محمد السعيد (رقم 1090245)",
+    "defect": "عدم اكتمال بيانات الإقرارات (غياب أسماء الطبيب المعالج، التمريض، وطبيب التخدير)",
+    "requirement": "استكمال وتوقيع كافة البيانات الطبية والإدارية بالإقرارات بالملف الطبي للمريض",
+    "polarity": "incomplete",
+    "scope": "ملف طبي لمريض محدد",
+    "context": "التوثيق الطبي والقانوني لملفات المرضى",
+    "important_qualifiers": "طبي / قانوني"
+  },
+  "يوجد مخزن بها اجهزه كثيره تحتاج الي تكهين_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "مخزن الأجهزة",
+    "defect": "تكدس أجهزة تالفة/قديمة تحتاج للتكهين داخل المخزن دون إجراء رسمي",
+    "requirement": "فرز الأجهزة وتكهين التالف وغير الصالح منها بشكل دوري لتفريغ المخازن",
+    "polarity": "other",
+    "scope": "مخزن الأجهزة بالمنشأة",
+    "context": "إدارة العهدة والأصول والمخازن",
+    "important_qualifiers": "إداري / مالي"
+  },
+  "لايوجد تقييم لل Vital signs_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "العلامات الحيوية (Vital signs)",
+    "defect": "عدم وجود تقييم وتسجيل للعلامات الحيوية للمرضى",
+    "requirement": "القياس الدوري وتقييم وتوثيق العلامات الحيوية لكافة المرضى",
+    "polarity": "missing",
+    "scope": "المرضى الخاضعين للملاحظة / الرعاية",
+    "context": "التقييم الإكلينيكي والتمريضي للمريض",
+    "important_qualifiers": "إكلينيكي حرج"
+  },
+  "تمييز الادويه غير مكتمل_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الأدوية",
+    "defect": "عدم اكتمال عملية تمييز وتعريف الأدوية",
+    "requirement": "تمييز وتعريف كافة الأدوية المتداولة بوضوح لمنع الخطأ الدوائي",
+    "polarity": "incomplete",
+    "scope": "صيدلية وأقسام المستشفى",
+    "context": "السلامة الدوائية وصرف الأدوية",
+    "important_qualifiers": "سلامة المرضى / طبي"
+  },
+  "يوجد ثلاجه في بنك الدم معطله منذ يوم 3 ابريل 2026 رقم 9265044 وتم عمل مذكره بذلك_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "ثلاجة بنك الدم (رقم 9265044)",
+    "defect": "عطل مستمر في الثلاجة منذ تاريخ 3 أبريل 2026 رغم تحرير مذكرة",
+    "requirement": "سرعة إصلاح وصيانة ثلاجات بنك الدم المعطلة فوراً للحفاظ على سلامة مخزون الدم",
+    "polarity": "damaged",
+    "scope": "بنك الدم بالمستشفى",
+    "context": "صيانة أجهزة حفظ الدم والمشتقات",
+    "important_qualifiers": "عالي الخطورة / طبي"
+  },
+  "اطباء تنظيم الاسره غير مدربين علي OVR_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "أطباء تنظيم الأسرة",
+    "defect": "عدم التدريب على نظام الإبلاغ عن الأحداث العارضة (OVR)",
+    "requirement": "تدريب الكوادر الطبية على آلية الإبلاغ عن الأحداث العارضة OVR",
+    "polarity": "missing",
+    "scope": "عيادة تنظيم الأسرة",
+    "context": "إدارة المخاطر وسلامة المرضى",
+    "important_qualifiers": "طبي، تدريب"
+  },
+  "الكراش كار لا يوجد كروت تعريف_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "عربة الطوارئ (الكراش كار)",
+    "defect": "غياب كروت التعريف الخاصة بمحتويات العربة",
+    "requirement": "وضع كروت تعريفية واضحة ومحدثة على عربة الطوارئ ومحتوياتها",
+    "polarity": "missing",
+    "scope": "أقسام الرعاية الحرجة والطوارئ",
+    "context": "سلامة المرضى وإدارة الحالات الحرجة",
+    "important_qualifiers": "عالي الخطورة، طبي، طوارئ"
+  },
+  "لا يوجد توثيق لمرور الصيدلي علي دولاب وسائل تنظيم الاسره_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "دولاب وسائل تنظيم الأسرة / مرور الصيدلي",
+    "defect": "عدم توثيق المرور الدوري للصيدلي على دولاب الوسائل",
+    "requirement": "توثيق مرور الصيدلي الإكلينيكي على دواليب الأدوية والوسائل للتأكد من سلامتها وصلاحيتها",
+    "polarity": "undocumented",
+    "scope": "عيادة تنظيم الأسرة",
+    "context": "إدارة الدواء والمستلزمات الطبية",
+    "important_qualifiers": "رقابي، توثيقي"
+  },
+  "عدم الدقه في تسجيل نموذج قياس الالم ونموذج تقييم السقوط ونموذج قرح الفراش_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "نموذج قياس الألم ونموذج تقييم السقوط ونموذج قرح الفراش",
+    "defect": "عدم الدقة والتهاون في تسجيل بيانات النماذج التمريضية",
+    "requirement": "التسجيل الدقيق والكامل للتقييمات التمريضية بملف المريض",
+    "polarity": "incorrect",
+    "scope": "ملفات المرضى بالأقسام الداخلية",
+    "context": "التوثيق الطبي ورعاية المرضى",
+    "important_qualifiers": "تمريضي، سلامة المرضى"
+  },
+  "قائمه الاختصارات المسموحه لا يوجد بها تاريخ اصدار_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "قائمة الاختصارات المسموحة",
+    "defect": "خلو القائمة من تاريخ الإصدار",
+    "requirement": "وجود تاريخ إصدار وتاريخ مراجعة معتمد على كافة الوثائق والسياسات بالمستشفى",
+    "polarity": "incomplete",
+    "scope": "المستشفى ككل",
+    "context": "التحكم في الوثائق وإدارة الجودة",
+    "important_qualifiers": "إداري، رقابة الوثائق"
+  },
+  "تقرير العمليهoperative report تم كتابته بواسطه النائب وليس الاخصائي_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "تقرير العملية الجراحية (Operative Report)",
+    "defect": "كتابة التقرير بواسطة الطبيب المقيم (النائب) بدلاً من الأخصائي الجراح المسؤول",
+    "requirement": "كتابة واعتماد تقرير العمليات الجراحية بواسطة الأخصائي أو الاستشاري الذي أجرى الجراحة",
+    "polarity": "unapproved",
+    "scope": "قسم العمليات الجراحية",
+    "context": "التوثيق الطبي والمسؤولية المهنية",
+    "important_qualifiers": "عالي الخطورة، جراحي، طبي"
+  },
+  "لا يوجد توقيع للمريض صلاح احمد فتح الله علي اقرار نقل الدم 3676_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "إقرار نقل الدم الخاص بالمريض (صلاح أحمد فتح الله)",
+    "defect": "عدم وجود توقيع المريض على نموذج إقرار نقل الدم للملف رقم 3676",
+    "requirement": "الحصول على توقيع المريض بالموافقة المستنيرة قبل البدء في نقل الدم ومشتقاته",
+    "polarity": "missing",
+    "scope": "ملف مريض محدد (حالة فردية)",
+    "context": "حقوق المرضى والعمليات الإكلينيكية عالية الخطورة",
+    "important_qualifiers": "عالي الخطورة، قانوني، طبي"
+  },
+  "حقيبه الانسكابات الكيميائيه غير مكتمله_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "حقيبة الانسكابات الكيميائية",
+    "defect": "محتويات حقيبة التعامل مع الانسكابات الكيميائية غير مكتملة",
+    "requirement": "توفير حقيبة انسكابات كيميائية متكاملة ومطابقة للمعايير وجاهزة للاستخدام الطارئ",
+    "polarity": "incomplete",
+    "scope": "مواقع تخزين أو استخدام المواد الكيميائية (المختبر/المخازن/المغسلة)",
+    "context": "السلامة والصحة المهنية وإدارة المواد الخطرة (HAZMAT)",
+    "important_qualifiers": "بيئي، سلامة مهنية"
+  },
+  "لايوجد تمييز للوصلات عاليه الخطوره_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "الوصلات الطبية والأنابيب عالية الخطورة",
+    "defect": "عدم تمييز أو تسمية الوصلات والأنابيب الطبية عالية الخطورة",
+    "requirement": "تمييز وتسمية الوصلات الطبية لمنع حدوث أخطاء التوصيل الخاطئ للأنابيب",
+    "polarity": "missing",
+    "scope": "أقسام الرعاية المركزة والتمريض",
+    "context": "سلامة المرضى والممارسات الطبية الآمنة",
+    "important_qualifiers": "عالي الخطورة، طبي، تمريضي"
+  },
+  "الprogress notes غير مكتمل التسجيل_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "ملاحظات تطور الحالة (Progress Notes)",
+    "defect": "عدم اكتمال تسجيل الملاحظات الطبية اليومية بالملف الطبي",
+    "requirement": "التوثيق اليومي والمكتمل لملاحظات تطور الحالة الطبية للمريض",
+    "polarity": "incomplete",
+    "scope": "الملفات الطبية للمرضى بالأقسام الداخلية",
+    "context": "التوثيق الطبي المستمر للرعاية",
+    "important_qualifiers": "طبي، توثيقي"
+  },
+  "لايوجد تدريب علي سياسه الانذارات الحرجه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "سياسة الإنذارات الحرجة للأجهزة الطبية",
+    "defect": "عدم تدريب الكادر الطبي والتمريضي على سياسة التعامل مع الإنذارات الحرجة",
+    "requirement": "تدريب العاملين بالأقسام الحرجة على إدارة وضبط أجهزة الإنذار الطبية بسلامة فعالة",
+    "polarity": "missing",
+    "scope": "الأقسام الحرجة (العناية المركزة، الطوارئ، العمليات)",
+    "context": "سلامة استخدام التكنولوجيا الطبية ورعاية المرضى",
+    "important_qualifiers": "عالي الخطورة، تدريب، طبي"
+  },
+  "لا يوجد فصل وتمييز للوسائل المتشابهه في الشكل النطق او قوائم بها_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "وسائل تنظيم الأسرة المتشابهة (LASA)",
+    "defect": "غياب الفصل والتمييز وقوائم التوجيه للوسائل المتشابهة في الشكل أو النطق",
+    "requirement": "تطبيق متطلبات فصل وتمييز الأدوية والوسائل المتشابهة لمنع الخلط بينها",
+    "polarity": "missing",
+    "scope": "عيادة تنظيم الأسرة / صيدلية العيادة",
+    "context": "سلامة إدارة الدواء والمستلزمات الطبية",
+    "important_qualifiers": "دوائي، سلامة المرضى"
+  },
+  "اسماء الادويه مكتوبه بالاسم التجاري علي كروت التعريف وفي التذاكر الدفاتر الخاصه بوحده الغسيل الكلوي_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "التذاكر والدفاتر وكروت التعريف بوحدة الغسيل الكلوي",
+    "defect": "كتابة أسماء الأدوية بالاسم التجاري بدلاً من الاسم العلمي المعتمد",
+    "requirement": "كتابة الأدوية بالاسم العلمي (Generic Name) في جميع الوثائق والملصقات الطبية والتمريضية",
+    "polarity": "incorrect",
+    "scope": "وحدة الغسيل الكلوي",
+    "context": "سلامة الدواء والتوثيق السريري",
+    "important_qualifiers": "طبي، دوائي، تخصصي"
+  },
+  "لا توجد كروت تعريف داخل دولاب مستلزمات عياده تنظيم الاسره_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "دولاب مستلزمات عيادة تنظيم الأسرة",
+    "defect": "غياب كروت التعريف على المستلزمات الطبية بداخل الدولاب",
+    "requirement": "وضع كروت تعريفية (الاسم، تاريخ الصلاحية، إلخ) للمستلزمات المخزنة بدواليب العيادات",
+    "polarity": "missing",
+    "scope": "عيادة تنظيم الأسرة",
+    "context": "إدارة المخازن والمستلزمات الطبية والوقائية",
+    "important_qualifiers": "تنظيم الإمداد، طبي"
+  },
+  "تواريخ الصابون الكلور علي الحوض ليست محدثه_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash",
+    "prompt_version": "v2_bulk",
+    "entity": "عبوات الصابون والكلور على أحواض الغسيل",
+    "defect": "تواريخ التحضير أو الصلاحية على عبوات الصابون والكلور غير محدثة",
+    "requirement": "كتابة وتحديث تاريخ الفتح والتخفيف والصلاحية للمطهرات والمنظفات على الأحواض للتأكد من فعاليتها",
+    "polarity": "expired",
+    "scope": "أحواض غسيل الأيدي بالمنشأة",
+    "context": "مكافحة العدوى والبيئة الصحية الآمنة",
+    "important_qualifiers": "وقائي، مكافحة عدوى"
+  },
+  "ADJ_ab1a872e-0b8b-41d1-b100-efaa6c747816_65aa4bc0-64df-44f2-8e9c-cebdcbf91450": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_ab1a872e-0b8b-41d1-b100-efaa6c747816_8ab7246f-6605-422c-9ab5-70a48bbe3289": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_ab1a872e-0b8b-41d1-b100-efaa6c747816_ffff866e-5ae1-4fb0-b5d6-7201fa615b19": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_f63b450d-b043-4131-9831-b5cc27b46fe4_ccadeead-9e2f-4088-bc3e-8d05af8f5c37": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_f63b450d-b043-4131-9831-b5cc27b46fe4_8059b2fe-a5d8-43fe-84bd-053c349bc6cc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_f63b450d-b043-4131-9831-b5cc27b46fe4_e8e5f47b-8047-4482-abfe-900c6564f4f3": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_a1cacc7d-b412-478e-88ee-7ffc25becb96_a1e0e311-bac0-464d-af70-781749878550": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_a1cacc7d-b412-478e-88ee-7ffc25becb96_80ced435-e104-4df3-b760-b50a0c8c77ac": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_a1cacc7d-b412-478e-88ee-7ffc25becb96_be379a55-cbda-4067-bc69-69afa67f0794": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b489960a-8cfc-43a6-b799-c8b1e860cd75_14e4af7b-f0d6-4ee8-a4d2-3a470af99d94": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b489960a-8cfc-43a6-b799-c8b1e860cd75_540416c8-be78-489a-ac50-3ddf7a7d3455": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b489960a-8cfc-43a6-b799-c8b1e860cd75_6ecebcea-91af-4236-8a1e-bd96271957cc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_54fc2d20-ce8f-4782-8ee2-fab094ff7ab8_ae0a25ca-cbda-4810-bcc4-fdfe9a6d31fc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_54fc2d20-ce8f-4782-8ee2-fab094ff7ab8_1c040098-b848-4c89-b044-51adaf04da27": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_54fc2d20-ce8f-4782-8ee2-fab094ff7ab8_92299208-8318-474c-875d-ccde3129b347": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6a61f206-fe95-451c-ae20-492f71a0bb6b_8b386668-ab1a-4900-9949-b39b662f97e3": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6a61f206-fe95-451c-ae20-492f71a0bb6b_31e6faaa-f311-41e3-9a82-4cf1f27f679a": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6a61f206-fe95-451c-ae20-492f71a0bb6b_85fea0ef-1340-41ea-bd75-1555fbb3dc77": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_393ac887-5a36-4170-8efd-1811ae79a2e9_41873509-3cbb-41ff-9891-f0e99c1f81a8": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_393ac887-5a36-4170-8efd-1811ae79a2e9_e6a507b1-4d58-47ac-b787-1213abcb9f7b": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_393ac887-5a36-4170-8efd-1811ae79a2e9_290ba1a9-8645-4ddb-bc66-b69b21fd8789": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5df7f150-0881-4292-8e86-b766d644fa6f_49b417cf-5943-486d-8009-66ebdbcfe01a": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5df7f150-0881-4292-8e86-b766d644fa6f_ba06646d-5c3c-484a-bbc8-7225fff627b7": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5df7f150-0881-4292-8e86-b766d644fa6f_66c52c38-36cc-4f62-b639-14befacac2d9": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61dd9a56-3041-4cd4-866e-2c66eb22b680_351b81c5-d072-47f0-8338-bac50262d0bc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61dd9a56-3041-4cd4-866e-2c66eb22b680_5607e705-be1d-49f5-9473-e95be69c8d77": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61dd9a56-3041-4cd4-866e-2c66eb22b680_92f23cda-8fa8-4194-aea8-4bae4d7aad48": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_950ff129-ec86-4236-a999-6a1f36a09394_5fd9d5d6-e9c9-4d90-b916-cff1800c2194": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_950ff129-ec86-4236-a999-6a1f36a09394_46914191-d256-45c8-8b48-3eab7c64f212": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_950ff129-ec86-4236-a999-6a1f36a09394_6adc7425-de2f-4c27-b354-6cccd4c2d0dc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5e4e0e4b-80ea-47a2-abda-9186e807c96a_cb2609bf-da2d-4b70-8d46-94d2d8bd5e82": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5e4e0e4b-80ea-47a2-abda-9186e807c96a_fe83956f-db4d-4997-8108-14cf94bcaf82": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_5e4e0e4b-80ea-47a2-abda-9186e807c96a_c25f8f59-5065-412a-90ee-1344f34e067e": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b7c893c8-2439-4095-ad41-97d0d6dcd9ed_1245e6fb-9df0-4418-bc9f-211f7319d5a9": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b7c893c8-2439-4095-ad41-97d0d6dcd9ed_a42c8789-03bf-400d-a806-c250735649e6": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b7c893c8-2439-4095-ad41-97d0d6dcd9ed_41292631-b624-4d15-a28f-f6337e9abb53": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b59bcbd0-53ec-4b3d-a435-0c9764fbf341_1e240c73-cc59-43d2-af19-0dc7bf4b7784": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b59bcbd0-53ec-4b3d-a435-0c9764fbf341_76c31dfc-af2b-4524-af85-6ad05402f35f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_b59bcbd0-53ec-4b3d-a435-0c9764fbf341_aa55ac6a-0679-4552-a36a-e1acbd1adc5b": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_d6674871-8e49-42f4-bbe8-ccb6365a867c_4a1ab8ed-6ccf-4fbe-9401-3800985704cc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_d6674871-8e49-42f4-bbe8-ccb6365a867c_a1d24182-bec0-4d21-922e-4392844e51ec": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_d6674871-8e49-42f4-bbe8-ccb6365a867c_2e2edef9-67bf-45f5-987d-1462c6a10490": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_dfedf419-e487-4669-b652-176772241698_59308d19-285f-4f07-894c-ff8e3421d36c": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_dfedf419-e487-4669-b652-176772241698_8ab7246f-6605-422c-9ab5-70a48bbe3289": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_dfedf419-e487-4669-b652-176772241698_65aa4bc0-64df-44f2-8e9c-cebdcbf91450": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_926aba47-2ade-4be1-b4cc-bb26b78b57a2_a8c6ac42-5bdc-4ef0-8812-13cf66c5408f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_926aba47-2ade-4be1-b4cc-bb26b78b57a2_f07e785b-39a7-4ea3-9e9f-c048b491d294": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_926aba47-2ade-4be1-b4cc-bb26b78b57a2_f13b0dc6-0b38-4474-8ea9-fe969bb28b83": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_8a5a731d-b66d-4617-85a9-605a48a7eead_f1e0181a-5cf3-4dfb-bef7-3ed0729813de": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_8a5a731d-b66d-4617-85a9-605a48a7eead_4319ea3c-70b8-4240-b254-bb169a1c9298": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_8a5a731d-b66d-4617-85a9-605a48a7eead_6987ba61-500d-4015-abd0-ab9f50090192": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_35659171-0fac-4467-846f-74496bd3359e_24059df1-c749-4275-aed8-72439ecd5d56": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_35659171-0fac-4467-846f-74496bd3359e_39f05583-c903-4d62-8d23-46723c54c358": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_35659171-0fac-4467-846f-74496bd3359e_57c29c21-9382-4bc3-b91b-8758de59383e": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_262d8f42-7b45-4ab5-a753-c1a8ffe7cd71_9637b255-eccd-455b-b5a1-97b6046a8427": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_262d8f42-7b45-4ab5-a753-c1a8ffe7cd71_3e78798a-32ee-464c-9b65-46e5074737cf": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_262d8f42-7b45-4ab5-a753-c1a8ffe7cd71_c49475a1-3d9c-4e60-8fa1-319d3772f245": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6dcccdae-0e0e-41dd-ba4c-b906d3dba0a9_9ca8440d-4174-4ade-8e71-ca016a041474": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6dcccdae-0e0e-41dd-ba4c-b906d3dba0a9_d52ad6d4-b8cc-4116-9ecd-6f803da1d01f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6dcccdae-0e0e-41dd-ba4c-b906d3dba0a9_92e6de16-1dfa-41dc-b523-1995376711b9": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_30bb9e9f-93fd-42af-b9c7-dde76dd00ffd_12b94c92-b5e6-44e9-80ae-d6952492feba": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_30bb9e9f-93fd-42af-b9c7-dde76dd00ffd_6e1d9c5d-f3a2-4482-8517-cce2b634235d": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_30bb9e9f-93fd-42af-b9c7-dde76dd00ffd_d47a0e42-26f9-42f8-aff8-93a14e4bb415": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_1cbb2350-7a50-4145-b972-31c66026c199_63c4a8c3-963d-409f-b8b2-554c7b2dddf1": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_1cbb2350-7a50-4145-b972-31c66026c199_65aa4bc0-64df-44f2-8e9c-cebdcbf91450": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_1cbb2350-7a50-4145-b972-31c66026c199_f737982e-12f3-4fbb-b1f0-1209cd08fedc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61baac04-2e18-48a6-871f-3a4c1bae76d7_74ddc9a2-d042-4d8e-9d87-188020ff5257": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61baac04-2e18-48a6-871f-3a4c1bae76d7_410b4796-03f1-44ef-bd2e-eeb1151f78b6": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_61baac04-2e18-48a6-871f-3a4c1bae76d7_54247ead-5f02-488a-ad64-910e807faaa3": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6c4d4b7a-5f64-4721-a7b7-0f81186514fe_72ad96b7-91e3-43cd-918f-234343e50903": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6c4d4b7a-5f64-4721-a7b7-0f81186514fe_95d2ad90-fe7a-41a4-adc9-b8712c654bb0": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_6c4d4b7a-5f64-4721-a7b7-0f81186514fe_45628563-3ead-42f0-b84c-f0af55e9aa44": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_ae64c44c-b244-4dcd-bf32-8460b87517bf_188249ff-212e-4a96-873f-079c5b6053fe": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_ae64c44c-b244-4dcd-bf32-8460b87517bf_066b2a5b-9a05-4445-b9de-b81d5496b045": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_ae64c44c-b244-4dcd-bf32-8460b87517bf_d326de58-7f92-4281-8ed1-173851076349": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_24eae24f-8e4a-4958-9a19-547491b659f2_f887aaee-41a8-416c-b421-63ed1f7bf152": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_24eae24f-8e4a-4958-9a19-547491b659f2_702d5509-0ef0-42e0-8b09-f2bcc9835bc6": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_24eae24f-8e4a-4958-9a19-547491b659f2_2709a3a3-d4c2-48e5-bf74-0f45bd0bd12a": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_c74e6710-f822-4cd7-ba05-978026c0cd71_540416c8-be78-489a-ac50-3ddf7a7d3455": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_c74e6710-f822-4cd7-ba05-978026c0cd71_14e4af7b-f0d6-4ee8-a4d2-3a470af99d94": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_c74e6710-f822-4cd7-ba05-978026c0cd71_290ba1a9-8645-4ddb-bc66-b69b21fd8789": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_4d3ea53f-6ee8-4ad0-a5d8-430c41ccf883_05cf7c00-692c-42d4-b4c9-8de63e62d75f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_4d3ea53f-6ee8-4ad0-a5d8-430c41ccf883_1b5b934a-0759-496c-9384-48549a8c6f33": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_4d3ea53f-6ee8-4ad0-a5d8-430c41ccf883_831710f1-345d-460f-a209-907d90e46f5d": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_cec1a69a-6b81-4304-b61e-7e4f7f8154f3_036713d5-2f35-4736-ac1a-b393fa1256e6": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_cec1a69a-6b81-4304-b61e-7e4f7f8154f3_76c31dfc-af2b-4524-af85-6ad05402f35f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_cec1a69a-6b81-4304-b61e-7e4f7f8154f3_401458cd-993b-4d94-8ec3-21de1bc2b41f": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_2d2d025f-22a0-4bb5-9695-ec0a676d7663_184301fd-f89d-41e6-a440-6e14650707bf": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_2d2d025f-22a0-4bb5-9695-ec0a676d7663_973118d6-9405-44c8-a2a1-81db3b81b24b": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  },
+  "ADJ_2d2d025f-22a0-4bb5-9695-ec0a676d7663_ae0a25ca-cbda-4810-bcc4-fdfe9a6d31fc": {
+    "decision": "UNCERTAIN",
+    "score": 0.5,
+    "reasonLog": "AI_UNAVAILABLE: CIRCUIT_BREAKER_OPEN",
+    "jaccard": 0.5
+  }
+}

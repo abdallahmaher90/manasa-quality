@@ -1,0 +1,22 @@
+{
+  "تقييم التمريض قبل الجلسه غير مكتمل_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "entity": "تقييم التمريض",
+    "defect": "غير مكتمل",
+    "polarity": "incomplete",
+    "requirement": "اكتمال التقييم التمريضي والتوثيق السريري",
+    "scope": "process",
+    "context": "قبل الجلسة",
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash"
+  },
+  "توقيع التمريض ثنائي_SEMANTIC_SIGNATURE_V1_gemini-3.8-flash": {
+    "entity": "توقيع التمريض",
+    "defect": "توقيع ثنائي غير مكتمل",
+    "polarity": "incomplete",
+    "requirement": "سياسة التوثيق والاسم الثلاثي",
+    "scope": "process",
+    "context": "",
+    "signature_version": "SEMANTIC_SIGNATURE_V1",
+    "model_version": "gemini-3.8-flash"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "total": 1000,
+  "high_confidence": 963,
+  "uncertain": 0,
+  "distinct": 37,
+  "proposedMerges": [
+    {
+      "findingId": "2acc1993-2d4b-4259-9c93-8ed8611f1152",
+      "text": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "currentGroup": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "proposedGroup": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+      "proposedTitle": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "reason": "تطابق لفظي وتطبيعي تام مع مجموعة تكرار قائمة"
+    }
+  ],
+  "proposedSplits": [],
+  "uncertainties": []
+}

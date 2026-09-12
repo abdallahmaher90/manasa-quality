@@ -1,0 +1,11 @@
+{
+  "processed": 1366,
+  "local_SAME_ISSUE": 1186,
+  "local_DISTINCT": 1,
+  "local_UNCERTAIN": 179,
+  "missing_embeddings": 30,
+  "zero_candidates": 37,
+  "hard_negative_blocks": 1,
+  "total_candidates_evaluated": 6388,
+  "average_candidates_per_finding": "4.68"
+}

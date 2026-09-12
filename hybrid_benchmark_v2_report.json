@@ -1,0 +1,83 @@
+{
+  "thresholdComparison": {
+    "0.8": {
+      "avgCandidates": "6.95",
+      "lexicalOnly": 326,
+      "vectorOnly": 2145,
+      "overlap": 385,
+      "zeroCandidates": 0
+    },
+    "0.82": {
+      "avgCandidates": "6.55",
+      "lexicalOnly": 362,
+      "vectorOnly": 1234,
+      "overlap": 349,
+      "zeroCandidates": 0
+    },
+    "0.84": {
+      "avgCandidates": "6.03",
+      "lexicalOnly": 411,
+      "vectorOnly": 684,
+      "overlap": 300,
+      "zeroCandidates": 0
+    },
+    "0.86": {
+      "avgCandidates": "5.56",
+      "lexicalOnly": 461,
+      "vectorOnly": 336,
+      "overlap": 250,
+      "zeroCandidates": 0
+    },
+    "0.88": {
+      "avgCandidates": "5.16",
+      "lexicalOnly": 499,
+      "vectorOnly": 159,
+      "overlap": 212,
+      "zeroCandidates": 0
+    },
+    "0.9": {
+      "avgCandidates": "4.98",
+      "lexicalOnly": 525,
+      "vectorOnly": 80,
+      "overlap": 186,
+      "zeroCandidates": 0
+    }
+  },
+  "lexicalDisjointResults": [
+    {
+      "input": "عربة الإنعاش غير موجودة",
+      "expected": "نقص كراش كار",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false
+    },
+    {
+      "input": "النتائج الحرجة لا تبلغ",
+      "expected": "قصور في نظام تبليغ القيم الحرجة",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "input": "جهاز المراقبة معطل",
+      "expected": "المونيتور لا يعمل",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "input": "ملف المريض غير مرتب",
+      "expected": "سجلات المرضى مبعثرة",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true
+    },
+    {
+      "input": "الموظف لا يرتدي البطاقة",
+      "expected": "غياب الهوية التعريفية للكادر",
+      "recallAt3": false,
+      "recallAt5": true,
+      "recallAt8": true
+    }
+  ]
+}

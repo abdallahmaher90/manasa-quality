@@ -1,0 +1,2826 @@
+{
+  "summary": {
+    "total_cases": 65,
+    "candidate_groups_count": 57,
+    "strongest_candidates_count": 6,
+    "highest_risk_cases": 0,
+    "cases_with_hard_negative_conflicts": 0,
+    "cases_with_narrow_score_gap": 45
+  },
+  "cases": [
+    {
+      "finding_id": "c1ec625a-91c5-46a3-a94e-f4432702cb5d",
+      "original_text": "توقيع الصيدلي الاكلينيكي احادي",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": "050b4819-0d44-4157-86a3-634b13b259e3",
+      "candidate_group_id": "97b8e2b2-9c5b-462c-9531-448dd5741f8f",
+      "candidate_title": "توقيع الصيدلي الاكلينيكي احادي في نموذج مرور الصيدلي الاكلينيكي",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "7bba0c69-c3e5-454f-a572-506d4e2238ea",
+      "original_text": "لا يوجد تسليم وتسلم للأطباء منذ الدخول الحاله للقسم",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "f595abe4-a387-48fa-a85b-648c9d4b580a",
+      "candidate_title": "لا يوجد تسليم وتسلم للاطباء",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "f2a7650f-7f2e-45fc-a6f6-f2a6eb2f0272",
+      "original_text": "لا يوجد ترمومتر حرارة او رطوبة فوق او بجانب عربة الكراش كارت .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "69cc31aa-4791-4176-8dc7-68dd9a0c456a",
+      "candidate_group_id": "3d440069-5ecb-4a44-8293-1faf766eb496",
+      "candidate_title": "لا يوجد ترمومتر حراره و رطوبه",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "1ae8ea68-898f-40c0-9f11-2ed45912ccc1",
+      "original_text": "لا يوجد ماسة على المواد الكيميائية",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "83d2e331-6a3c-415e-8a51-4b073d22d76c",
+      "candidate_group_id": "8c55467b-1e02-4084-a39e-d62da6c949d8",
+      "candidate_title": "لا يتم وضع ماسه المواد الكيميائيه الخطره علي زجاجات الصابون",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "bd6383b1-90a3-41d1-83ab-d1520b1a5909",
+      "original_text": "العاملين بالقسم غير مدربين على الامان الإشعاعي\nسياسة النتائج الحرجة  \nالإنعاش القلبي الرئويCPR  \nتقرير الإبلاغ عن حادث عارض OVR\nالتعامل مع الانسكابات الكيميائية او البيولوجية \nخطة الحريق والاخلاء  RACE PASS",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "3c8851ff-e04e-41c9-a11a-4150ad80e770",
+      "candidate_title": "لا يوجد PASS RACE",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "f50b960f-5a0a-43b2-a863-b819c509cdf3",
+      "original_text": "لا يوجد سجل اعطال بالقسم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": "b6df7e3e-377e-4146-a1e0-d8ea3d6eaa98",
+      "candidate_group_id": "ab4e3bd9-80b0-4848-9a54-b0cc98f1f044",
+      "candidate_title": "لا يوجد سجل اعطال",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 1,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a15559b7-1b96-4e7a-b344-dead85d5770b",
+      "original_text": "تاريخ الانتهاء بعد الفتح غير مسجل  .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "d0682a48-12b7-4441-9762-a9fe7d080a94",
+      "candidate_group_id": "dd63042c-6cc6-4163-a0b3-bb26b73d3ec8",
+      "candidate_title": "لا يتم كتابه تاريخ الانتهاء بعد الفتح علي الكيماويات المفتوحه",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.8,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "90951121-6e4b-4ac7-bb81-abf4e298c586",
+      "original_text": "لا يوجد جاونات للمرضي",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "9cd8091c-ba97-47c0-b73e-a716abe089bb",
+      "current_recurrence_group_id": "12849d3c-222b-4a56-a432-85744dd64e92",
+      "candidate_group_id": "b9afaf6b-8794-4937-b91f-ae89ac91b448",
+      "candidate_title": "لا يوجد خصوصيه للمرضي",
+      "top_5_candidates": [
+        {
+          "id": "b9afaf6b-8794-4937-b91f-ae89ac91b448",
+          "title": "لا يوجد خصوصيه للمرضي",
+          "score": 0.7714096902698475
+        },
+        {
+          "id": "0bde5e2f-651e-4f65-9489-89991e65ddec",
+          "title": "سجل التردد الاسم ثلاثي للمرضي ولا يوجد توقيع للطاقم الطبي",
+          "score": 0.7075848142457564
+        },
+        {
+          "id": "8f0f0db9-48ed-45ff-8b8a-c8188a79aa41",
+          "title": "يوجد غرفه واحد للادويه المستلزمات مشتركه بين غرف العزل ولا يوجد وقايات شخصيه امام كل غرفه علي حده",
+          "score": 0.7072303910424513
+        },
+        {
+          "id": "f7c62325-4339-49ec-b149-acf397190bab",
+          "title": "لا يوجد مكان مطابق مخصص لحفظ ادويه المرضي",
+          "score": 0.7020244293576181
+        },
+        {
+          "id": "25fec2d7-7880-4b97-8626-c0d9894798ee",
+          "title": "لا يوجد فصل ولا تمييز لمناطق الاستقبال الفرز للمرضي بقسم اشعه الرنين MRI",
+          "score": 0.7011479187967576
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7714096902698475,
+      "score_gap": 0.06382487602409115,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "6309743a-5392-416b-8ed9-33548b8c7166",
+      "original_text": "لا يوجد بيتادين ٧.٥ % ولا صابون سائل",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "7f5d81ab-47bb-4983-8432-a2fb302d4579",
+      "candidate_group_id": "7376d48c-a459-45d4-a5fd-ac044aeb1e4d",
+      "candidate_title": "لا يوجد صابون سائل علي الاحواض",
+      "top_5_candidates": [
+        {
+          "id": "7376d48c-a459-45d4-a5fd-ac044aeb1e4d",
+          "title": "لا يوجد صابون سائل علي الاحواض",
+          "score": 0.7635291663314469
+        },
+        {
+          "id": "850336c9-dccd-4cdd-bde7-cafa77ed46c6",
+          "title": "لا يوجد مستلزمات تطهير الايدي وواقيات شخصيه",
+          "score": 0.670832131879985
+        },
+        {
+          "id": "8f0f0db9-48ed-45ff-8b8a-c8188a79aa41",
+          "title": "يوجد غرفه واحد للادويه المستلزمات مشتركه بين غرف العزل ولا يوجد وقايات شخصيه امام كل غرفه علي حده",
+          "score": 0.6671442647088163
+        },
+        {
+          "id": "6a05db15-9f9c-4501-879e-f3415facccc9",
+          "title": "دولاب الادويه بالطواريء لا يوجد به كروت تعريف ادويه ولا يوجد فصل او تمييز للادويه عاليه الخطوره مثل الادرينالين",
+          "score": 0.6644886212051581
+        },
+        {
+          "id": "9bc89afa-67c3-4dea-852f-60d1f35f50a3",
+          "title": "لايوجد تسجيل درجه حراره ورطوبه وغير مرتب ولا يوجد كروت تعريف بمخزن بجوار الاستقبال",
+          "score": 0.6632728834015951
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7635291663314469,
+      "score_gap": 0.09269703445146182,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "68ea9db5-1df7-4675-964c-effb52b78eab",
+      "original_text": "لا يوجد محضر فتح لسجل الطوارئ وغير معتمد وغير مرقم",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "20b2e50c-4ce5-4a2c-9d01-4b42882b9c63",
+      "candidate_group_id": "51a00b68-b130-45fa-a451-cacc0fadf601",
+      "candidate_title": "لا يوجد محضر فتح لسجل المعمل",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.75,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "26f22a85-51cf-452b-890f-293f441f3642",
+      "original_text": "يتم عمل تقييم الوقاية من الجلطات  VTE عند الدخول فقط ولا يتم إعادة التقييم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "138c4b0e-95b3-4e3c-8c73-db5158fe2117",
+      "candidate_title": "تقييم الوقايه من الجلطات غير دقيق",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.75,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a8904600-4730-4c32-8c4f-83bd4d706d9c",
+      "original_text": "قوائم مرور الفحص اليومي لفني الاشعه غير مكتمله (آخر مرور عليها يوم 9/7/2026.",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "a0e39459-c27c-4403-a145-eb21dd8d9ceb",
+      "candidate_title": "لا يوجد مرور الفحص اليومي للاجهزه",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.75,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "174fab2b-6a23-40b9-8bc8-ef82d642906d",
+      "original_text": "ملاحظات الطبيب في الطوارئ غير مكتمله",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "9d51a784-c040-4f75-917f-bf26c67d7dc2",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "81a4a5f3-f021-4b07-861b-690120dc5d9c",
+      "candidate_title": "تقييم الطبيب التمريض غير مكتمل",
+      "top_5_candidates": [
+        {
+          "id": "81a4a5f3-f021-4b07-861b-690120dc5d9c",
+          "title": "تقييم الطبيب التمريض غير مكتمل",
+          "score": 0.7484122513728244
+        },
+        {
+          "id": "2fa7049e-d012-4590-bf2f-446ebe88ea3a",
+          "title": "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير",
+          "score": 0.6868918185345669
+        },
+        {
+          "id": "f374f076-54bd-4651-beea-629af6703ec3",
+          "title": "لا يتم كتابه تاريخ الرد علي العروض وتوقيع الطبيب ثنائي غير مقروء",
+          "score": 0.6006132963905575
+        },
+        {
+          "id": "8b386668-ab1a-4900-9949-b39b662f97e3",
+          "title": "توقيع الطبيب فورمه",
+          "score": 0.5998613853689968
+        },
+        {
+          "id": "0552a343-043d-481a-a908-8e14a40a75ba",
+          "title": "يتم طلب استشاره طبيب اخر دون تسجيلها في نموذج doctor order",
+          "score": 0.5954335271370829
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7484122513728244,
+      "score_gap": 0.06152043283825748,
+      "entity": [
+        "ENT_STAFF"
+      ],
+      "defect": [
+        "DEF_INCOMPLETE"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "be5ed8f7-312d-41fe-971a-40f0c141017a",
+      "original_text": "لا يوجد امبوباج اطفال",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "1bda0184-252d-44c3-b6c2-d3c162c8f6da",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "bec003ae-ef39-41fc-b9f1-1650067edac8",
+      "candidate_title": "لا يوجد امبوباج اطفال ف الكراش كار",
+      "top_5_candidates": [
+        {
+          "id": "bec003ae-ef39-41fc-b9f1-1650067edac8",
+          "title": "لا يوجد امبوباج اطفال ف الكراش كار",
+          "score": 0.74513364527456
+        },
+        {
+          "id": "3b84a24c-d29f-4581-80fd-e10c679d372e",
+          "title": "لا يوجد حقيبه انسكابات",
+          "score": 0.6350359415282794
+        },
+        {
+          "id": "f1fdb980-572f-43ac-b819-95fcc1c4b867",
+          "title": "لا يوجد فصل للنفايات",
+          "score": 0.6064901758123599
+        },
+        {
+          "id": "1bd1f741-6a99-41b6-b913-1c105c114142",
+          "title": "لا يوجد هيكل تنظيمي محدث",
+          "score": 0.6018878447183427
+        },
+        {
+          "id": "122f91b3-e4fd-47b9-8602-ba96fae96493",
+          "title": "لا يوجد طفايه حريق",
+          "score": 0.6014916371076651
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.74513364527456,
+      "score_gap": 0.1100977037462807,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "fdd80f5d-24d9-4b83-8b17-5f8db5441463",
+      "original_text": "عدم تمييز الأصناف المتشابهة في الشكل والنطق في دولاب الطوارئ",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "8fa9b717-019d-498a-bcbb-4cdd10673c6f",
+      "current_recurrence_group_id": "f2fc3938-0c7f-4923-9c8e-781484f8a04f",
+      "candidate_group_id": "5416707b-63bb-4a62-8fa7-009b675da879",
+      "candidate_title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.7142857142857143,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "c75b7926-697f-4111-890e-69487a607e45",
+      "original_text": "جهاز الصدمات معطل ومسحوب من قبل الشركه",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "9cd8091c-ba97-47c0-b73e-a716abe089bb",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "190e298a-9c57-40dc-ac2d-c9bdbbdd96ca",
+      "candidate_title": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+      "top_5_candidates": [
+        {
+          "id": "190e298a-9c57-40dc-ac2d-c9bdbbdd96ca",
+          "title": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+          "score": 0.7969769297146141
+        },
+        {
+          "id": "40ab949e-0bf9-4342-8690-d7d8fbe94b1e",
+          "title": "يوجد جهاز تنفس معطل بالعنايه",
+          "score": 0.7831875480837033
+        },
+        {
+          "id": "59308d19-285f-4f07-894c-ff8e3421d36c",
+          "title": "يوجد عدد 2 جهاز سونار معطلين بالعياده وجهاز واحد يعمل",
+          "score": 0.7315551221583962
+        },
+        {
+          "id": "65e99b25-069b-4b5a-8593-0869774c9bc6",
+          "title": "يوجد عدد خمسه اجهزه تنفس صناعي وخمس اجهزه مونيتور معطله داخل الحضان منذ 29 3 2026",
+          "score": 0.7257950907033953
+        },
+        {
+          "id": "a10bc0b0-e4c6-43fd-8cf0-0a27f16163b2",
+          "title": "ثلاجه الطوارئ معطله منذ ١١ ٥ ٢٠٢٦",
+          "score": 0.7116165485183599
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7969769297146141,
+      "score_gap": 0.013789381630910813,
+      "entity": [],
+      "defect": [
+        "DEF_BROKEN"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "92decf12-8b87-4d42-a673-402efb3952fd",
+      "original_text": "لا يوجد غرفة لتخزين المخلفات الكيميائية",
+      "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+      "department_id": "1f45fd05-2d99-4449-9b00-e638f0c95bcb",
+      "current_recurrence_group_id": "15865dc9-0333-46ad-bc24-2b79a7f62031",
+      "candidate_group_id": "d64a596f-6701-40e2-a181-f95471ac44fe",
+      "candidate_title": "لا يوجد عقد نفايات كيميائيه",
+      "top_5_candidates": [
+        {
+          "id": "d64a596f-6701-40e2-a181-f95471ac44fe",
+          "title": "لا يوجد عقد نفايات كيميائيه",
+          "score": 0.7926528153556099
+        },
+        {
+          "id": "5df0df3e-8d26-4dcd-a8b7-bd75f4d8bc73",
+          "title": "لا يوجد قوائم بالمواد الكيميائيه الخطره",
+          "score": 0.7770278022410693
+        },
+        {
+          "id": "b99aefa1-33ff-43b9-b679-117dff2ff8dd",
+          "title": "لا يوجد حقيبه انسكابات كيميائيه",
+          "score": 0.768058841315292
+        },
+        {
+          "id": "036713d5-2f35-4736-ac1a-b393fa1256e6",
+          "title": "لا يوجد مرور موثق علي محتويات حقيبه الانسكابات الكيميائيه البيولوجيه",
+          "score": 0.7557795727263055
+        },
+        {
+          "id": "0786403e-101d-4e8c-a722-ab6effa4bf97",
+          "title": "لا يوجد علامه ماسه علي المواد الكميائيه و المواد الخطره",
+          "score": 0.7473919959067206
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7926528153556099,
+      "score_gap": 0.015625013114540676,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "f78701f6-ae56-41ea-a65a-08ddda350199",
+      "original_text": "لا يوجد قائمة بالعاملين بغرفة حفظ ملفات المرضي",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+      "candidate_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+      "top_5_candidates": [
+        {
+          "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+          "score": 0.78414180325352
+        },
+        {
+          "id": "f7c62325-4339-49ec-b149-acf397190bab",
+          "title": "لا يوجد مكان مطابق مخصص لحفظ ادويه المرضي",
+          "score": 0.7609913851025247
+        },
+        {
+          "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+          "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+          "score": 0.759587976854727
+        },
+        {
+          "id": "f4b069a3-1982-4e85-8bfa-8e3257e3bcd4",
+          "title": "لا يوجد قائمه بثبات و حفظ تخزين الكواشف",
+          "score": 0.7593892576877572
+        },
+        {
+          "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+          "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+          "score": 0.7580613555599979
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.78414180325352,
+      "score_gap": 0.023150418150995278,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "e7b02d4c-8533-4059-81d7-96507b601bd6",
+      "original_text": "لا يوجد كارت تعريف علي اسطونة الاكسجين ولا بيانات القائم بالملء و هل ممتلة",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "1bda0184-252d-44c3-b6c2-d3c162c8f6da",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "a77bcdab-276c-4a9f-af5a-7553394bd58b",
+      "candidate_title": "لا يوجد تعريف لاسطوانات الاكسجين ولا يوجد تاريخ الملء",
+      "top_5_candidates": [
+        {
+          "id": "a77bcdab-276c-4a9f-af5a-7553394bd58b",
+          "title": "لا يوجد تعريف لاسطوانات الاكسجين ولا يوجد تاريخ الملء",
+          "score": 0.7785278123867778
+        },
+        {
+          "id": "6a6204c7-8753-49c8-b2b7-61a39a32ff32",
+          "title": "لا يوجد كارت فحص ولا pass race علي طفايه الحريق",
+          "score": 0.7719226739684462
+        },
+        {
+          "id": "bfe8ceb7-9dc2-4d89-be8c-f312189d6227",
+          "title": "لا يوجد كارت فحص علي طفايه الحريق بالعنايه",
+          "score": 0.7672010955237745
+        },
+        {
+          "id": "f1cf7771-034b-4872-a729-96b524a4f5e0",
+          "title": "ولا يوجد توقيع علي كارت الفحص الطفايه",
+          "score": 0.7670228332409341
+        },
+        {
+          "id": "dfce267e-2e9d-4a43-9fa1-f3c6e894be98",
+          "title": "لا يوجد طفايه بجانب تانك الاكسجين",
+          "score": 0.76640111801436
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7785278123867778,
+      "score_gap": 0.0066051384183316575,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "8f52e4f0-a219-4c2e-b71e-8c63358158b7",
+      "original_text": "نموذج طلب الدم بدون بيانات المريض مكتملة",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "8dc13ad4-79f3-419f-ad80-bd90652d352a",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+      "candidate_title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+      "top_5_candidates": [
+        {
+          "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+          "score": 0.7764467629343723
+        },
+        {
+          "id": "1f065d22-78be-4c94-a631-249215e7cc9f",
+          "title": "اقرارات الموافقه علي اجراء العمليه ممضيه من المريض بدون توضيح الاجراء علي الاقرار",
+          "score": 0.7578823980007332
+        },
+        {
+          "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+          "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+          "score": 0.7423819225367161
+        },
+        {
+          "id": "1496c4f3-782d-47ad-898b-2a35ded54935",
+          "title": "يقوم التمريض بعمل تحليل السكر للمرضي كل ست ساعات بدون امر طبيب مع العلم بان المريض ليس مريض سكر مما يؤدي الي استهلاك شرائط السكر بدون فائده",
+          "score": 0.7404498385769092
+        },
+        {
+          "id": "5e251a23-96b5-403d-9fd1-4e71f6ac34a3",
+          "title": "قائمه النتائج الحرجه المعمليه غير مؤرخه وبدون مرجع",
+          "score": 0.7322582572452504
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7764467629343723,
+      "score_gap": 0.01856436493363911,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "ce1bf771-f4df-4341-9e6f-fb6e345f3808",
+      "original_text": "يوجد بعض الكيماويات مفتوحه بدون بيانات الفتح",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "fdbab245-fa3d-472a-97b7-e2465484b97f",
+      "current_recurrence_group_id": "20d866ed-8d11-49a8-82a3-29d6e1dc27f0",
+      "candidate_group_id": "8b1788f9-b9e6-442a-8034-d4ad47878339",
+      "candidate_title": "يوجد زجاجه زيلوكايين مفتوحه بدون تاريخ ولا ساعه فتح",
+      "top_5_candidates": [
+        {
+          "id": "8b1788f9-b9e6-442a-8034-d4ad47878339",
+          "title": "يوجد زجاجه زيلوكايين مفتوحه بدون تاريخ ولا ساعه فتح",
+          "score": 0.7739657124679379
+        },
+        {
+          "id": "70847df9-36e7-44e4-8c59-2fc607907e93",
+          "title": "يوجد كراتين ادويه ومحاصيل بدون ترتيب ويوجد تحتها اتربه",
+          "score": 0.7355960135984836
+        },
+        {
+          "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+          "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+          "score": 0.7273365398399774
+        },
+        {
+          "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+          "score": 0.7249515174504721
+        },
+        {
+          "id": "9340910c-faa4-4694-a3c0-fe528bf3d0e7",
+          "title": "يوجد بلاعه كبيره جدا مفتوحه وبدون غطاء امام قسم العزل",
+          "score": 0.7243050111295294
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7739657124679379,
+      "score_gap": 0.038369698869454294,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "16dbd494-af19-48b1-be0b-00e8038b99db",
+      "original_text": "يوجد كراش كار غير مستخدمه مطلوب تفعيلها بالقسم الداخلي",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "521d2722-fce1-4800-a349-3f890fd3da25",
+      "current_recurrence_group_id": "89f72493-0b90-47c0-9917-a61057314b96",
+      "candidate_group_id": "bec003ae-ef39-41fc-b9f1-1650067edac8",
+      "candidate_title": "لا يوجد امبوباج اطفال ف الكراش كار",
+      "top_5_candidates": [
+        {
+          "id": "bec003ae-ef39-41fc-b9f1-1650067edac8",
+          "title": "لا يوجد امبوباج اطفال ف الكراش كار",
+          "score": 0.7739051550929383
+        },
+        {
+          "id": "9c0aad8b-e225-4ff6-93e4-765335783259",
+          "title": "الكراش كار غير مؤمنه في عنايه الاطفال",
+          "score": 0.7714132713807279
+        },
+        {
+          "id": "ccadeead-9e2f-4088-bc3e-8d05af8f5c37",
+          "title": "سجلات الكراش كار ليس لها محضر فحص وغير مرقمه او مختومه",
+          "score": 0.77044323697202
+        },
+        {
+          "id": "64bb164c-c945-4780-90cf-f6b197eaaa82",
+          "title": "لايوجد كروت لتعريف الادويه داخل الكراش كار",
+          "score": 0.7650746751197444
+        },
+        {
+          "id": "245a76aa-72ec-4816-932b-518669fefc81",
+          "title": "الكراش كارت داخل الطواري غير مكتمله",
+          "score": 0.7595144081331677
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7739051550929383,
+      "score_gap": 0.00249188371221043,
+      "entity": [
+        "ENT_CRASH_CART"
+      ],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "9a251b3f-79db-4e92-805e-747b9b641e36",
+      "original_text": "نتيجة الاشعه في الاقسام بدون اعتماد او توقيع الاستشاري ولا يتم كتابة رقم الملف للمريض على النتيجه",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "82b79504-b728-4d2d-89e4-5e424e4312f3",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+      "candidate_title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+      "top_5_candidates": [
+        {
+          "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+          "score": 0.7735145121774645
+        },
+        {
+          "id": "90d03953-1020-4ff7-b911-e037c735ada6",
+          "title": "بعد اجهزه الاشعه بدون كارت تعريف وكارت الصيانه",
+          "score": 0.76513575936214
+        },
+        {
+          "id": "1f065d22-78be-4c94-a631-249215e7cc9f",
+          "title": "اقرارات الموافقه علي اجراء العمليه ممضيه من المريض بدون توضيح الاجراء علي الاقرار",
+          "score": 0.7601616530741396
+        },
+        {
+          "id": "ea2c1343-bade-452d-9681-3e3d3fce770d",
+          "title": "معظم الاطباء بالقسم الاطباء المسؤولين عن الرد علي الاستشارات غير ملتزمين بالزي الرسمي وكارت التعريف",
+          "score": 0.7548126853438807
+        },
+        {
+          "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+          "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+          "score": 0.7445463528090668
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7735145121774645,
+      "score_gap": 0.00837875281532452,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "20617b21-7a11-4d87-a95f-cbd3b65daf01",
+      "original_text": "وجد في تذكره الحاله الجاريه عبد العظيم مخيمر يوسف أنه في تذكره الدخول قسم الطوارئ غير مكتمله البيانات من حيث عدم تسجيل علامات حيوية ولا الرقم القومي ومكان التحويل",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "bc4e5f9d-6c6e-4fd6-a2e7-37091fab2648",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "b1c1fd48-87e5-465a-9d0a-8fffa816ca82",
+      "candidate_title": "تذكره الطوارئ غير معرفه بطريقه صحيحه و غير مكتمله الترياج و التقييم الطبي",
+      "top_5_candidates": [
+        {
+          "id": "b1c1fd48-87e5-465a-9d0a-8fffa816ca82",
+          "title": "تذكره الطوارئ غير معرفه بطريقه صحيحه و غير مكتمله الترياج و التقييم الطبي",
+          "score": 0.7693589683397561
+        },
+        {
+          "id": "2fa7049e-d012-4590-bf2f-446ebe88ea3a",
+          "title": "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير",
+          "score": 0.765747728232751
+        },
+        {
+          "id": "4c8cb314-36a7-4e95-a9e7-fc1b98b7e4ab",
+          "title": "تسليم وتسلم الاطباء غير مكتمل لبعض الايام حيث لا يوجد تسليم وتسلم ليوم 13 6 ويوم 17 6 علي الرغم من دخول الطفل بتاريخ 9 6",
+          "score": 0.7607285681307419
+        },
+        {
+          "id": "5defaf50-f055-45f4-bd9d-83ef817eff6b",
+          "title": "تذكره العيادات الخارجيه غير مكتمله التسجيل",
+          "score": 0.7592480310009505
+        },
+        {
+          "id": "1bc169cd-6736-46b0-b73c-377cb259aed3",
+          "title": "نموذج قسم الطوارئ غير مكتمل بملفات المرضي",
+          "score": 0.7567187590045542
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7693589683397561,
+      "score_gap": 0.003611240107005198,
+      "entity": [],
+      "defect": [
+        "DEF_INCOMPLETE"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a7c9930d-c093-4008-88fb-d079287fba23",
+      "original_text": "لا يوجد توقيع من قبل الأطباء والصيادلة علي صرف بعض الادويه بالملف الطبي",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "9cd8091c-ba97-47c0-b73e-a716abe089bb",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+      "candidate_title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+      "top_5_candidates": [
+        {
+          "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+          "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+          "score": 0.7692528147217998
+        },
+        {
+          "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+          "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+          "score": 0.7651254317512122
+        },
+        {
+          "id": "a0b4845b-4de0-478a-a61a-42d44c5b6462",
+          "title": "لا يوجد نموذج النتائج الحرجه بالملف الطبي",
+          "score": 0.7553990267139954
+        },
+        {
+          "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+          "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+          "score": 0.7520620209201467
+        },
+        {
+          "id": "54619088-39bd-41eb-af00-7d061055f023",
+          "title": "لا يوجد تجديد restrain order في الملف الطبي الخاص بالمريضه عزيزه عبدالصمد من يوم ٥ ٥ ٢٠٢٥ حتي تاريخ ١٠ مايو",
+          "score": 0.7315487937548545
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7692528147217998,
+      "score_gap": 0.0041273829705876786,
+      "entity": [
+        "ENT_PATIENT_FILE"
+      ],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "e378f940-49c3-4903-9cfe-4462b1385537",
+      "original_text": "عدم وجود سياسات محدثة في المستشفي",
+      "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+      "department_id": "859a7125-d7b8-416b-8ab7-a6906478a6bf",
+      "current_recurrence_group_id": "0b5a21dd-8cfb-465f-bea7-a86ade39c99a",
+      "candidate_group_id": "df36a6a0-3857-4085-8e58-01bf53b04491",
+      "candidate_title": "قوائم الادويه غير محدثه بصيدليات المستشفي وتحتوي علي ادويه غير موجوده بالصيدليه",
+      "top_5_candidates": [
+        {
+          "id": "df36a6a0-3857-4085-8e58-01bf53b04491",
+          "title": "قوائم الادويه غير محدثه بصيدليات المستشفي وتحتوي علي ادويه غير موجوده بالصيدليه",
+          "score": 0.768683430711469
+        },
+        {
+          "id": "6adc7425-de2f-4c27-b354-6cccd4c2d0dc",
+          "title": "لا يوجد سياسات بالاقسام",
+          "score": 0.7661503007122069
+        },
+        {
+          "id": "5fd9d5d6-e9c9-4d90-b916-cff1800c2194",
+          "title": "لا يوجد سياسات خاصه بالاشعه العلاجيه",
+          "score": 0.763045890341157
+        },
+        {
+          "id": "c44d676c-c4d5-4759-a271-952aac64a3b7",
+          "title": "لا يوجد قائمه باجهزه ال poct داخل المستشفي",
+          "score": 0.7482781875515462
+        },
+        {
+          "id": "5416707b-63bb-4a62-8fa7-009b675da879",
+          "title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+          "score": 0.7464601139165319
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.768683430711469,
+      "score_gap": 0.0025331299992621403,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "b0b86bb9-a467-4082-adbe-ab125ca5192e",
+      "original_text": "توقيع الطاقم الطبي ثنائي بسجل الطوارئ",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "b238945f-cb73-4dfe-beb9-9dad4f145099",
+      "candidate_group_id": "8cabf29d-45c6-480b-90fd-e8afbb830dfd",
+      "candidate_title": "توقيع التمريض ثنائي",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.6666666666666666,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "35843c3b-9c2d-4d9e-9a1f-9909bab1503e",
+      "original_text": "لا يوجد قائمه محتويات الثلاجه",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": "189b661e-5bea-4550-93d1-b525e0d5fd09",
+      "candidate_group_id": "b721a395-e605-4f17-b2fe-cc0b55139e20",
+      "candidate_title": "قائمه الثلاجه تحتاج الي تحديث",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.6666666666666666,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "82c46142-a066-45fe-bd73-37d2a2bf433c",
+      "original_text": "جهاز الصدمات DC معطل.",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "347dfda2-9c7d-4bcf-9168-c5f60f886d1b",
+      "current_recurrence_group_id": "8f7c5fa5-563a-4f7a-9a37-5be11a688ea1",
+      "candidate_group_id": "190e298a-9c57-40dc-ac2d-c9bdbbdd96ca",
+      "candidate_title": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.6666666666666666,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "6498b325-c6fe-42d3-bcfc-0cce3010deb9",
+      "original_text": "لا يوجد سجل معايرة او اي بيانات تفيد معايرة البادج فيلم .",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "3d24b7f2-3440-4e23-bbcb-f124aa9dbaba",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "066b2a5b-9a05-4445-b9de-b81d5496b045",
+      "candidate_title": "لا يوجد سجل معايره الميزان",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.6666666666666666,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "d635da6e-a92f-4a3d-8fb4-4dc813afb250",
+      "original_text": "يوجد مخزن مستلزمات غير مرتب وتم التعديل أثناء المرور",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "9596b032-eded-468d-b36e-9fc9474765a7",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "9bc89afa-67c3-4dea-852f-60d1f35f50a3",
+      "candidate_title": "لايوجد تسجيل درجه حراره ورطوبه وغير مرتب ولا يوجد كروت تعريف بمخزن بجوار الاستقبال",
+      "top_5_candidates": [
+        {
+          "id": "9bc89afa-67c3-4dea-852f-60d1f35f50a3",
+          "title": "لايوجد تسجيل درجه حراره ورطوبه وغير مرتب ولا يوجد كروت تعريف بمخزن بجوار الاستقبال",
+          "score": 0.7646914924948396
+        },
+        {
+          "id": "b3cc0a20-ef42-46f8-a520-147895bf410e",
+          "title": "تسجيل دفتر احوال عنايه الاستقبال غير دقيق وغير منظم",
+          "score": 0.7358412913825905
+        },
+        {
+          "id": "f07e785b-39a7-4ea3-9e9f-c048b491d294",
+          "title": "غرفه الملفات غير مرتبه وغير نظيفه",
+          "score": 0.7342765941480753
+        },
+        {
+          "id": "0e22291f-14f0-4d40-9e1c-3a762b4ed0e1",
+          "title": "صيدليه السهر غير مرتبه وغير نظيفه ويوجد كراتين علي الارض",
+          "score": 0.7233446006002828
+        },
+        {
+          "id": "1f778b89-ce30-4f97-9343-a8b7048bceb3",
+          "title": "الملفات غير مرتبه حسب الترقيم داخل الفهرس",
+          "score": 0.7158865436118812
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7646914924948396,
+      "score_gap": 0.02885020111224912,
+      "entity": [],
+      "defect": [
+        "DEF_MESSY"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "411b8fac-ddee-4d57-b19c-359d44e8a4da",
+      "original_text": "لا يوجد غلايه لشطف الالات بعد الاستخراج من السايدكس",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "4430df35-86e2-4216-8de1-5260d947c169",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "3dd19e16-d270-43da-8b36-8f4134ec3704",
+      "candidate_title": "لا يوجد علي الالات المسلمه بعد المعالجه في سجل التعقيم المسلم و المستلم ووقت الاستلام و التسليم",
+      "top_5_candidates": [
+        {
+          "id": "3dd19e16-d270-43da-8b36-8f4134ec3704",
+          "title": "لا يوجد علي الالات المسلمه بعد المعالجه في سجل التعقيم المسلم و المستلم ووقت الاستلام و التسليم",
+          "score": 0.7640706124478484
+        },
+        {
+          "id": "5985e144-06a2-4b72-91b5-b54350ba8a33",
+          "title": "لا يوجد مؤشرات كميائيه داخليه للتعقيم داخل الالات المعقمه",
+          "score": 0.7573708394000577
+        },
+        {
+          "id": "c50b9d77-e25f-409b-81e9-fdec350bd3c3",
+          "title": "لا يوجد سجل لاستلام الادوات المعقمه من غرفه التعقيم",
+          "score": 0.7349360325611233
+        },
+        {
+          "id": "ae57204a-83cb-48f3-8c0e-83e2f08d026a",
+          "title": "لا يتم التعامل الصحيح مع الكواشف متعدده الجرعات لا يوجد اسم القائم بالفتح التاريخ الصلاحيه بعد الفتح",
+          "score": 0.7256623399697002
+        },
+        {
+          "id": "84e3ba0c-2861-4c9b-be52-b532674e35ba",
+          "title": "لا يوجد كروت تعريف للالات بدولاب الالات",
+          "score": 0.7254385759938826
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7640706124478484,
+      "score_gap": 0.00669977304779068,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "33fb0905-992a-487e-8def-ec76f706eb95",
+      "original_text": "لا يوجد SDS لبعض المواد",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "e492a65a-8dba-45de-adfa-2fcfaf1055a1",
+      "current_recurrence_group_id": "892048f7-db8e-4869-aefa-bffd350923a7",
+      "candidate_group_id": "69a2e1ac-68de-40aa-a995-1a65739226a7",
+      "candidate_title": "لا يوجد SDS",
+      "top_5_candidates": [
+        {
+          "id": "69a2e1ac-68de-40aa-a995-1a65739226a7",
+          "title": "لا يوجد SDS",
+          "score": 0.763838689320198
+        },
+        {
+          "id": "27eb4dd1-44d2-4ebe-b14c-7c2f4e56ddf7",
+          "title": "لا يوجد SDS للمواد الخطره",
+          "score": 0.7515998124690008
+        },
+        {
+          "id": "9d86006a-565b-4eee-baff-c7bb4801380f",
+          "title": "لا يوجد علامات تحذيريهوsds",
+          "score": 0.7190287031186376
+        },
+        {
+          "id": "0e33daf8-ca62-49f0-9abf-c9321c68cae3",
+          "title": "عدم وجود الماسه علي المواد الكيميائيه SDS بالمعمل",
+          "score": 0.7132456004108801
+        },
+        {
+          "id": "1469e652-92c7-4826-be5d-08b96a581be4",
+          "title": "عدم وجود ماسه المواد الكيميائيه علي العبوات SDS ولا يوجد دليل التعامل مع المواد في حاله التعرض لها",
+          "score": 0.7102355113032706
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.763838689320198,
+      "score_gap": 0.012238876851197289,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "87492a42-f8dc-4877-97fc-f3fe1342af4c",
+      "original_text": "بعض الاقرارات على اجراء تداخلي غير مكتمل البيانات( المضاعفات)",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "8d04eac6-9abd-4c25-b7c5-81f1bd447a90",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "c22d173c-f8e3-4f9d-8119-a5449232c483",
+      "candidate_title": "سجل النتائج الحرجه غير مكتمل البيانات لا يوجد وسيله الابلاغ وقت الابلاغ اسم المبلغ اسم مستلم النتيجه الاجراء المتخذ",
+      "top_5_candidates": [
+        {
+          "id": "c22d173c-f8e3-4f9d-8119-a5449232c483",
+          "title": "سجل النتائج الحرجه غير مكتمل البيانات لا يوجد وسيله الابلاغ وقت الابلاغ اسم المبلغ اسم مستلم النتيجه الاجراء المتخذ",
+          "score": 0.7612170475864335
+        },
+        {
+          "id": "514f95ea-81c2-4b2b-bd5b-2990aacdc667",
+          "title": "سجل النتائج الحرجه غير مكتمل البيانات",
+          "score": 0.7606180666256637
+        },
+        {
+          "id": "1387dad1-ff1d-47e0-97ff-7a7fe89e886e",
+          "title": "بعض النماذج داخل تذكره العمليات غير مكتمله البيانات",
+          "score": 0.7517940854908107
+        },
+        {
+          "id": "3a64cd0a-4e5b-4fd1-b78b-99b9957f7266",
+          "title": "تعريف العينات بالمعمل غير مكتمل البيانات طبقا لسياسه تعريف المريض",
+          "score": 0.7498686437664823
+        },
+        {
+          "id": "2fa7049e-d012-4590-bf2f-446ebe88ea3a",
+          "title": "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير",
+          "score": 0.7423206754611702
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7612170475864335,
+      "score_gap": 0.0005989809607698238,
+      "entity": [],
+      "defect": [
+        "DEF_INCOMPLETE"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "915ebf98-1ece-453f-806d-1f51165971f7",
+      "original_text": "نموذج الإقرار المبني على المعرفة غير مطابق (لا يوجد تعريف كامل بمخاطر ومضاعفات عمل وعدم عمل  الاجراء).",
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "department_id": "21c6d1fa-768e-4159-bc98-e2a987654129",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "0b17cf53-b2b0-44f7-8612-888c055bef64",
+      "candidate_title": "لا يوجد تطبيق معايير الاجراءات التداخليه الامنه لعياده الاسنان مثل وضع علامه علي مكان الاجراء الوقت المستقطع",
+      "top_5_candidates": [
+        {
+          "id": "0b17cf53-b2b0-44f7-8612-888c055bef64",
+          "title": "لا يوجد تطبيق معايير الاجراءات التداخليه الامنه لعياده الاسنان مثل وضع علامه علي مكان الاجراء الوقت المستقطع",
+          "score": 0.7608962323274271
+        },
+        {
+          "id": "414adbba-f529-4aa8-b903-fc70b12b39b2",
+          "title": "لا يوجد تعريف صحيح للمريض علي تقارير الاشعه طبقا للسياسه",
+          "score": 0.7592973442918172
+        },
+        {
+          "id": "2b53fbdb-3bbf-482f-a82b-4f8072abec5a",
+          "title": "لا يوجد وسيله توثيق تعريف المريض مثل كارت تعريف او ارتداء اسوره",
+          "score": 0.7546300438104566
+        },
+        {
+          "id": "8204786a-919c-4822-80d8-cad807e1448c",
+          "title": "لا يوجد تعريف صحيح للمريض علي تذاكر العياده الخارجيه",
+          "score": 0.7528732888246117
+        },
+        {
+          "id": "10445a04-16ea-4e19-820d-a87032c1f1e4",
+          "title": "لا يوجد توقيع للمريض صلاح احمد فتح الله علي اقرار نقل الدم 3676",
+          "score": 0.7496274262544695
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7608962323274271,
+      "score_gap": 0.0015988880356099244,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "c50a7898-66e5-408c-a17f-553e7832e3a0",
+      "original_text": "لا يوجد مرور منتظم الصيدلى الاكلينيكي يومى ومنتظم",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+      "candidate_title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+      "top_5_candidates": [
+        {
+          "id": "4e6888e9-52b6-47ed-b962-f61104b8dad2",
+          "title": "لا يوجد توقيع صيدلي في بعض الايام علي شيت الادويه",
+          "score": 0.7606372991080917
+        },
+        {
+          "id": "37423f8e-af2b-4dad-96e0-5beff76a7053",
+          "title": "لا يوجد امضاء الصيدلي علي نموذج الادويه",
+          "score": 0.7592346408433223
+        },
+        {
+          "id": "226b3ee8-6db4-4dae-aba7-bfecaa2dc7d8",
+          "title": "لا يوجد توثيق لمرور الصيدلي علي دولاب وسائل تنظيم الاسره",
+          "score": 0.7494458345438835
+        },
+        {
+          "id": "7d292a47-c279-4305-bf85-f08fdeb6ac55",
+          "title": "لا يوجد فصل وتمييز للادويه المتشابهه في الشكل النطق داخل الصيدليه",
+          "score": 0.7440744442556165
+        },
+        {
+          "id": "5416707b-63bb-4a62-8fa7-009b675da879",
+          "title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+          "score": 0.7440667510456024
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7606372991080917,
+      "score_gap": 0.0014026582647694852,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "9cc7b88a-ceee-4692-b22e-ca61c2bb73b3",
+      "original_text": "بيانات الدخول غير مكتملة",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "1bda0184-252d-44c3-b6c2-d3c162c8f6da",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+      "candidate_title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+      "top_5_candidates": [
+        {
+          "id": "a4a5c79a-bd11-4c8b-83dd-ecb11e2bc18a",
+          "title": "تذكره الاستقبال غير مكتمله التسجيل وقت الدخول الخروج",
+          "score": 0.7602751694468072
+        },
+        {
+          "id": "1387dad1-ff1d-47e0-97ff-7a7fe89e886e",
+          "title": "بعض النماذج داخل تذكره العمليات غير مكتمله البيانات",
+          "score": 0.7570691822662294
+        },
+        {
+          "id": "92f23cda-8fa8-4194-aea8-4bae4d7aad48",
+          "title": "كروت تعريف الادويه غير مكتمله البيانات",
+          "score": 0.7402724773542414
+        },
+        {
+          "id": "514f95ea-81c2-4b2b-bd5b-2990aacdc667",
+          "title": "سجل النتائج الحرجه غير مكتمل البيانات",
+          "score": 0.7272688854704026
+        },
+        {
+          "id": "b84be0ab-d4b9-48e5-9c66-a7cf6f3dd422",
+          "title": "كروت الصيانه غير مكتمله",
+          "score": 0.7260306334251947
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7602751694468072,
+      "score_gap": 0.0032059871805777407,
+      "entity": [],
+      "defect": [
+        "DEF_INCOMPLETE"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a8f2c6f8-6156-42c1-802b-5ca6510ec173",
+      "original_text": "لا يوجد تحديث لسجل التسليم و التسلم للملفات إلي الارشيف",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "97276630-7b72-40c6-b017-91c4dabbffbc",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "71e5f94a-a424-4909-860c-d695476664aa",
+      "candidate_title": "دفتر تسليم وتسلم المفروشات لا يوجد محضر فتح وغير معتمد التوقيع احادي",
+      "top_5_candidates": [
+        {
+          "id": "71e5f94a-a424-4909-860c-d695476664aa",
+          "title": "دفتر تسليم وتسلم المفروشات لا يوجد محضر فتح وغير معتمد التوقيع احادي",
+          "score": 0.7587434339830694
+        },
+        {
+          "id": "3dd19e16-d270-43da-8b36-8f4134ec3704",
+          "title": "لا يوجد علي الالات المسلمه بعد المعالجه في سجل التعقيم المسلم و المستلم ووقت الاستلام و التسليم",
+          "score": 0.7447295678283944
+        },
+        {
+          "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+          "score": 0.7411767136316352
+        },
+        {
+          "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+          "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+          "score": 0.7398272075421217
+        },
+        {
+          "id": "a57ffeed-d20e-4425-a60f-e2a416ebbe2c",
+          "title": "لا يوجد توقيع مشرفه القسم علي التسليم وتسلم التمريض",
+          "score": 0.7370141471477412
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7587434339830694,
+      "score_gap": 0.014013866154675036,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "47482132-a5ea-4df5-b100-00260b275af3",
+      "original_text": "لا يتم توثيق مرور الصيدلي على الكراش كار",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "8d04eac6-9abd-4c25-b7c5-81f1bd447a90",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "4cf5db1d-3ef9-4493-b139-811ade507a03",
+      "candidate_title": "لا يتم الفصل بين الادويه متشابهه في الشكل داخل الكراش كار",
+      "top_5_candidates": [
+        {
+          "id": "4cf5db1d-3ef9-4493-b139-811ade507a03",
+          "title": "لا يتم الفصل بين الادويه متشابهه في الشكل داخل الكراش كار",
+          "score": 0.7560944171858008
+        },
+        {
+          "id": "64bb164c-c945-4780-90cf-f6b197eaaa82",
+          "title": "لايوجد كروت لتعريف الادويه داخل الكراش كار",
+          "score": 0.7439485074362397
+        },
+        {
+          "id": "1e3466a6-6829-4c41-93cf-7f9f3f2d531f",
+          "title": "لا يوجد فصل للادويه متشابهه الشكل داخل الكراش كار",
+          "score": 0.7422310423783314
+        },
+        {
+          "id": "f0fa03ad-85ac-4f2d-903a-779989140fb8",
+          "title": "لا يوجد ترمومتر رطوبه علي الكراش كار",
+          "score": 0.7388456845367257
+        },
+        {
+          "id": "9c0aad8b-e225-4ff6-93e4-765335783259",
+          "title": "الكراش كار غير مؤمنه في عنايه الاطفال",
+          "score": 0.7382076534316936
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7560944171858008,
+      "score_gap": 0.01214590974956109,
+      "entity": [
+        "ENT_CRASH_CART"
+      ],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "1ae9dea6-62db-4da5-a169-1ffa687c925a",
+      "original_text": "لا يوجد قائمة بالعينات المقبولة دون المستوي",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "9032b48b-75ee-4b3b-8eec-15e34809b8f5",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "93c56c95-7c4d-40bb-a1e6-c909fb0fff35",
+      "candidate_title": "لا يوجد سجل للعينات المرفوضه",
+      "top_5_candidates": [
+        {
+          "id": "93c56c95-7c4d-40bb-a1e6-c909fb0fff35",
+          "title": "لا يوجد سجل للعينات المرفوضه",
+          "score": 0.7559811139078833
+        },
+        {
+          "id": "c88fa5cd-8507-4f6d-a0ee-e7089d37c2f3",
+          "title": "لا يوجد سجل العينات المرفوضه",
+          "score": 0.7464288029909425
+        },
+        {
+          "id": "b7869f97-ef0f-4215-a7f7-bb6ee339c4cd",
+          "title": "لا يوجد قائمه بالمواد الخطره الموجوده بالمعمل",
+          "score": 0.7351019014735736
+        },
+        {
+          "id": "7bbd6ef2-4dd0-4955-a573-c35d1a4778cc",
+          "title": "قائمه النتائج الحرجه لا يوجد بها مرجع علمي و لا تاريخ اصدار",
+          "score": 0.7340081265167107
+        },
+        {
+          "id": "d2959752-aa92-40d2-ba14-7386fc9ba8a4",
+          "title": "لا يوجد قائمه بالخدمات المقدمه امام المعمل",
+          "score": 0.733428320303591
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7559811139078833,
+      "score_gap": 0.009552310916940754,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "da5dbaec-7697-45a3-8ef5-75f77f088823",
+      "original_text": "لا يوجد ملف طبى كامل الموجود ملف ٤٨ ساعه",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "54619088-39bd-41eb-af00-7d061055f023",
+      "candidate_title": "لا يوجد تجديد restrain order في الملف الطبي الخاص بالمريضه عزيزه عبدالصمد من يوم ٥ ٥ ٢٠٢٥ حتي تاريخ ١٠ مايو",
+      "top_5_candidates": [
+        {
+          "id": "54619088-39bd-41eb-af00-7d061055f023",
+          "title": "لا يوجد تجديد restrain order في الملف الطبي الخاص بالمريضه عزيزه عبدالصمد من يوم ٥ ٥ ٢٠٢٥ حتي تاريخ ١٠ مايو",
+          "score": 0.7552874994926624
+        },
+        {
+          "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+          "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+          "score": 0.7538401452715887
+        },
+        {
+          "id": "a0b4845b-4de0-478a-a61a-42d44c5b6462",
+          "title": "لا يوجد نموذج النتائج الحرجه بالملف الطبي",
+          "score": 0.752561289407938
+        },
+        {
+          "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+          "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+          "score": 0.7491757554141809
+        },
+        {
+          "id": "7a1df4d3-615a-4f92-a28a-0fa15efd11e3",
+          "title": "لا يوجد اسم المسلم المستلم في بعض النماذج في الملف الطبي",
+          "score": 0.7413432289779842
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7552874994926624,
+      "score_gap": 0.0014473542210736712,
+      "entity": [
+        "ENT_PATIENT_FILE"
+      ],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "1caa4016-34c5-428d-a16c-f44e89e837dc",
+      "original_text": "لا يوجد نظام فهرسة و تخزين يسمح بسهولة استرجاع الملف عند الطلب",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "97276630-7b72-40c6-b017-91c4dabbffbc",
+      "current_recurrence_group_id": "efb8441c-a008-42e3-b713-e755b43daeaf",
+      "candidate_group_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+      "candidate_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+      "top_5_candidates": [
+        {
+          "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+          "score": 0.753818985846338
+        },
+        {
+          "id": "f4b069a3-1982-4e85-8bfa-8e3257e3bcd4",
+          "title": "لا يوجد قائمه بثبات و حفظ تخزين الكواشف",
+          "score": 0.7325508902157916
+        },
+        {
+          "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+          "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+          "score": 0.7229205986461161
+        },
+        {
+          "id": "d9697d89-d5e2-43bc-8975-c5739de4cc23",
+          "title": "لا يوجد كروت تعريف علي انواع المستلزمات الموجوده بدولاب المستلزمات الخاص بالقسم",
+          "score": 0.7195111280301865
+        },
+        {
+          "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+          "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+          "score": 0.7194005075170843
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.753818985846338,
+      "score_gap": 0.021268095630546435,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "85cc4183-15c2-4295-8afa-f583a3de4177",
+      "original_text": "جهاز الأشعة السينية لا يعمل(محتاج UPS )",
+      "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+      "department_id": "1f45fd05-2d99-4449-9b00-e638f0c95bcb",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "59308d19-285f-4f07-894c-ff8e3421d36c",
+      "candidate_title": "يوجد عدد 2 جهاز سونار معطلين بالعياده وجهاز واحد يعمل",
+      "top_5_candidates": [
+        {
+          "id": "59308d19-285f-4f07-894c-ff8e3421d36c",
+          "title": "يوجد عدد 2 جهاز سونار معطلين بالعياده وجهاز واحد يعمل",
+          "score": 0.7525696426552412
+        },
+        {
+          "id": "190e298a-9c57-40dc-ac2d-c9bdbbdd96ca",
+          "title": "بطاريه جهاز الصدمات الكهربيه بقسم الكلي معطله",
+          "score": 0.7414572898187212
+        },
+        {
+          "id": "40ab949e-0bf9-4342-8690-d7d8fbe94b1e",
+          "title": "يوجد جهاز تنفس معطل بالعنايه",
+          "score": 0.7213334131433676
+        },
+        {
+          "id": "5cb84dc5-6b5c-4e29-9b4b-f6dc99daaf97",
+          "title": "المولد لا يعمل تلقائيا في حاله انقطاع التيار الكهربائي",
+          "score": 0.7177541021152339
+        },
+        {
+          "id": "65e99b25-069b-4b5a-8593-0869774c9bc6",
+          "title": "يوجد عدد خمسه اجهزه تنفس صناعي وخمس اجهزه مونيتور معطله داخل الحضان منذ 29 3 2026",
+          "score": 0.7078961367391381
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7525696426552412,
+      "score_gap": 0.011112352836520012,
+      "entity": [],
+      "defect": [
+        "DEF_BROKEN"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "3a8fdb05-42bd-4e51-8715-cb786671d80b",
+      "original_text": "لا يوجد توقيع للطبيب او الصيدلي في شيت الادويه",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "b4447bbc-2442-4af2-ac46-b49e52dea655",
+      "current_recurrence_group_id": "4a0ec196-a69f-49d4-8d21-8490b6cf76ca",
+      "candidate_group_id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+      "candidate_title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+      "top_5_candidates": [
+        {
+          "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+          "score": 0.7515873276463718
+        },
+        {
+          "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+          "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+          "score": 0.7412685200809974
+        },
+        {
+          "id": "85fea0ef-1340-41ea-bd75-1555fbb3dc77",
+          "title": "لا يوجد توقيع الطبيب علي بعض التذاكر",
+          "score": 0.7265047338781251
+        },
+        {
+          "id": "f03c5ae6-006e-4e2d-97a3-69b9147517f9",
+          "title": "لا يوجد وسيله تواصل بين المعمل الطبيب",
+          "score": 0.7213711568412844
+        },
+        {
+          "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+          "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+          "score": 0.7086641642642184
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7515873276463718,
+      "score_gap": 0.0103188075653744,
+      "entity": [
+        "ENT_STAFF"
+      ],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "29c263fc-273e-4d47-b7cd-a2f49bc565a2",
+      "original_text": "لا يوجد فهرسة للغرفة و بالتالي مكان حفظ الملف في سجل الارشيف غير واضح",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+      "candidate_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+      "top_5_candidates": [
+        {
+          "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+          "score": 0.7513345431610273
+        },
+        {
+          "id": "c50b9d77-e25f-409b-81e9-fdec350bd3c3",
+          "title": "لا يوجد سجل لاستلام الادوات المعقمه من غرفه التعقيم",
+          "score": 0.729916879349809
+        },
+        {
+          "id": "9bc89afa-67c3-4dea-852f-60d1f35f50a3",
+          "title": "لايوجد تسجيل درجه حراره ورطوبه وغير مرتب ولا يوجد كروت تعريف بمخزن بجوار الاستقبال",
+          "score": 0.7276383032988955
+        },
+        {
+          "id": "72ce3b1f-8ecb-407e-871b-5dedb8f91cc2",
+          "title": "لا يوجد مكان لحفظ وتخزين المفروشات النظيفه",
+          "score": 0.7240598690334887
+        },
+        {
+          "id": "f7c62325-4339-49ec-b149-acf397190bab",
+          "title": "لا يوجد مكان مطابق مخصص لحفظ ادويه المرضي",
+          "score": 0.7221725637441037
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7513345431610273,
+      "score_gap": 0.021417663811218346,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "4d63b999-9da4-407f-a79d-aeac5ce051a9",
+      "original_text": "لا يوجد سنون بنج بالعياده",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "e492a65a-8dba-45de-adfa-2fcfaf1055a1",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "f5612608-20ca-423e-b211-2893ceebdfb2",
+      "candidate_title": "لا يوجد كارت تعريف لبنج الاسنان او تمييزه بانه عالي الخطوره",
+      "top_5_candidates": [
+        {
+          "id": "f5612608-20ca-423e-b211-2893ceebdfb2",
+          "title": "لا يوجد كارت تعريف لبنج الاسنان او تمييزه بانه عالي الخطوره",
+          "score": 0.7493358470567466
+        },
+        {
+          "id": "a5f674b7-fa59-4968-8106-0354ed9d4cd3",
+          "title": "لا يوجد توثيق لمرور الصيانه علي عياده العلاج الطبيعي وعياده الاسنان",
+          "score": 0.7244935182279468
+        },
+        {
+          "id": "0b17cf53-b2b0-44f7-8612-888c055bef64",
+          "title": "لا يوجد تطبيق معايير الاجراءات التداخليه الامنه لعياده الاسنان مثل وضع علامه علي مكان الاجراء الوقت المستقطع",
+          "score": 0.7221982861328232
+        },
+        {
+          "id": "a4970123-33b5-478a-b1bc-690f16f38bd1",
+          "title": "لا يوجد تذكره مريض وبالتالي لا يوجد تقييم طبي وتمريضي بالعيادات الخارجيه مثل ملاحظات التمريض بالعياده الخارجيه وتقييم الالم السقوط",
+          "score": 0.7192236483228212
+        },
+        {
+          "id": "8204786a-919c-4822-80d8-cad807e1448c",
+          "title": "لا يوجد تعريف صحيح للمريض علي تذاكر العياده الخارجيه",
+          "score": 0.7164691076278279
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7493358470567466,
+      "score_gap": 0.024842328828799776,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "dfbcb859-eff8-4ea8-8bb7-57465435066f",
+      "original_text": "لا يوجد خيوط جراحيه بالاستقبال منذ ٢٩ /٦ طبقا لطلبيه الصرف",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "75d8f81f-9e46-4602-84b0-4ee27834de65",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+      "candidate_title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+      "top_5_candidates": [
+        {
+          "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+          "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+          "score": 0.7479543125307708
+        },
+        {
+          "id": "2da5b374-c972-4de7-8183-50f5e9afcbdd",
+          "title": "لا يوجد دقه في تسجيل وقت ظهور وابلاغ النتائج الحرجه بالطوارئ طبقا للسياسه",
+          "score": 0.7372782816905743
+        },
+        {
+          "id": "8f0f0db9-48ed-45ff-8b8a-c8188a79aa41",
+          "title": "يوجد غرفه واحد للادويه المستلزمات مشتركه بين غرف العزل ولا يوجد وقايات شخصيه امام كل غرفه علي حده",
+          "score": 0.7330159209289315
+        },
+        {
+          "id": "5416707b-63bb-4a62-8fa7-009b675da879",
+          "title": "لا يوجد تمييز وفصل للادويه المتشابهه في الشكل النطق في جميع صيدليات المستشفي سواء الاقتصادي او المجاني او الطوارئ او الداخلي",
+          "score": 0.7322703561991222
+        },
+        {
+          "id": "89dd6398-86f9-46fe-a73b-f8d976ea9bdb",
+          "title": "لا يوجد توقيع للصيدلي علي صرف الادويه",
+          "score": 0.7310978179478146
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7479543125307708,
+      "score_gap": 0.010676030840196526,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a155478d-2be6-4b30-a213-6b292f68be00",
+      "original_text": "لا يوجد I.D للعاملين بالقسم",
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "department_id": "07b7d7b8-c086-46ed-98f1-53d3edcab259",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "b69c8b73-8315-4814-9d43-203cb0b3511a",
+      "candidate_title": "لا يوجد سياسات بالقسم",
+      "top_5_candidates": [
+        {
+          "id": "b69c8b73-8315-4814-9d43-203cb0b3511a",
+          "title": "لا يوجد سياسات بالقسم",
+          "score": 0.7479414901141016
+        },
+        {
+          "id": "efa83a04-e547-495b-b1fe-9434a3bd33c4",
+          "title": "لا يوجد العمال ،id",
+          "score": 0.7079769002726408
+        },
+        {
+          "id": "135b7a36-25a4-434c-93f7-e93741f8dad3",
+          "title": "لا يوجد سجل للنفايات خاص بالقسم الداخلي",
+          "score": 0.6925116803239588
+        },
+        {
+          "id": "8d5333fa-2123-4712-8621-4d0adcf843b1",
+          "title": "لا يوجد تقييم للعاملين بالملفات",
+          "score": 0.6909844835656167
+        },
+        {
+          "id": "c62f8d8c-d1eb-4992-b72a-3e6f9140754a",
+          "title": "لا يوجد كروت تعريف للمستلزمات",
+          "score": 0.6536041653816413
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7479414901141016,
+      "score_gap": 0.039964589841460785,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "4dd4c317-9c3a-44a5-bf84-a7fce1bb2de1",
+      "original_text": "[الكراش كار] يوجد اختصارات بالملف الطبي",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "8d3dc26a-232a-4cff-b4fa-795f3d89acb7",
+      "current_recurrence_group_id": "55c594db-dfdf-478c-9a1e-82e63751c4b5",
+      "candidate_group_id": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+      "candidate_title": "يوجد اختصارات غير مسموحه بالملف الطبي",
+      "top_5_candidates": [
+        {
+          "id": "d3749b5e-f52b-4814-80af-6fdedfff38bd",
+          "title": "يوجد اختصارات غير مسموحه بالملف الطبي",
+          "score": 0.7440684918627498
+        },
+        {
+          "id": "82613bd0-b883-4fdb-aca2-bbf404f49116",
+          "title": "وجود اختصارات ممنوعه بالملف الطبي",
+          "score": 0.7401273443675593
+        },
+        {
+          "id": "9ef1bc51-55ef-4a9f-8f75-b76ca60e66b7",
+          "title": "يوجد اختصارات بالملف الطبي غير موجوده في قائمه الاختصارات",
+          "score": 0.73365675891638
+        },
+        {
+          "id": "9a3cc87a-3755-4e66-b114-72d3626d28de",
+          "title": "يوجد اختصارات ممنوعه بالملف الطبي مسجله من قبل الاطباء",
+          "score": 0.7217669761566208
+        },
+        {
+          "id": "daf7f524-5cb4-4d09-8801-2c8904c1c1cd",
+          "title": "يوجد اختصارات بالملف الطبي ولا يوجد قائمه بالاختصارات المسموحه",
+          "score": 0.7212913523390577
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7440684918627498,
+      "score_gap": 0.003941147495190478,
+      "entity": [
+        "ENT_PATIENT_FILE"
+      ],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "c6145849-ce95-4e12-bdc4-67b74794a71c",
+      "original_text": "لا يوجد تسجيل للقيم المرجعية الخاصة بستاندر الخاص بالجودة الداخلية",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "9032b48b-75ee-4b3b-8eec-15e34809b8f5",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+      "candidate_title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+      "top_5_candidates": [
+        {
+          "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+          "score": 0.7439806472473487
+        },
+        {
+          "id": "d8a157f6-8252-4544-a7ed-d396aa3ca461",
+          "title": "لا يوجد سجل لمراقبه الجوده",
+          "score": 0.7425628291262798
+        },
+        {
+          "id": "2da5b374-c972-4de7-8183-50f5e9afcbdd",
+          "title": "لا يوجد دقه في تسجيل وقت ظهور وابلاغ النتائج الحرجه بالطوارئ طبقا للسياسه",
+          "score": 0.7404183728699079
+        },
+        {
+          "id": "3ee539d7-fc12-4d91-b0ed-439a40088fbf",
+          "title": "لا يوجد ما يفيد بالقسم بعمل مراقبه جوده الاجهزه",
+          "score": 0.7392830899428791
+        },
+        {
+          "id": "b79512a2-3d30-4e44-83d6-6ba6b2a51f5d",
+          "title": "لا يوجد دقه في تسجيل النتائج الحرجه بقسم الاشعه",
+          "score": 0.7362811907418002
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7439806472473487,
+      "score_gap": 0.0014178181210688923,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "a5a96fc7-aae2-4f0e-be99-99dcf7b81e2a",
+      "original_text": "يوجد بعض النماذج في الملف الطبي بدون تعريف للمريض",
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "department_id": "b2d49bb8-3685-44bd-9652-89641d0d0db5",
+      "current_recurrence_group_id": "de074ad2-ef93-4de5-9ec7-ba1c4e4cd0a5",
+      "candidate_group_id": "cfdd79b7-d396-4dba-8ebd-0bec7f43fa8a",
+      "candidate_title": "لا يتم الالتزام بتعريف المريض في بعض نماذج الملف الطبي",
+      "top_5_candidates": [
+        {
+          "id": "cfdd79b7-d396-4dba-8ebd-0bec7f43fa8a",
+          "title": "لا يتم الالتزام بتعريف المريض في بعض نماذج الملف الطبي",
+          "score": 0.7439127008016073
+        },
+        {
+          "id": "c0c5ee7d-6327-4a9d-b3bf-3c9e635e6b09",
+          "title": "نماذج الملف الطبي معظمها غير مستكمله",
+          "score": 0.7148581801215399
+        },
+        {
+          "id": "234f7a5f-9ba6-4e9d-8d40-c2529b6bcf8f",
+          "title": "لا يتم كتابه التاريخ المرضي للمريض في الملف الطبي",
+          "score": 0.7015126864332363
+        },
+        {
+          "id": "a6e0245e-3ff5-4b1f-b469-da8937ae4b3e",
+          "title": "يوجد في الملف الطبي اختصارات",
+          "score": 0.6723369267155606
+        },
+        {
+          "id": "c9c7b40e-32c2-481c-9b65-6c71fc9d1c8e",
+          "title": "عدم استكمال تسجيل الاطباء وبعض التمريض في الملف الطبي",
+          "score": 0.6637682864322154
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7439127008016073,
+      "score_gap": 0.02905452068006742,
+      "entity": [
+        "ENT_PATIENT_FILE"
+      ],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "d5e1ca8c-7f99-4e98-a0da-c3f4d770e06b",
+      "original_text": "لا يوجد عنوانة للأرفف و بالتالي صعوبة استخراج الملف",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+      "candidate_title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+      "top_5_candidates": [
+        {
+          "id": "abe0afbc-87aa-4cbe-83d8-4bda5df48bf9",
+          "title": "لا يوجد قائمه لمن مسموح لهم دخول غرفه الملفات العاملين الاطلاع عليها",
+          "score": 0.7404777506488435
+        },
+        {
+          "id": "d9697d89-d5e2-43bc-8975-c5739de4cc23",
+          "title": "لا يوجد كروت تعريف علي انواع المستلزمات الموجوده بدولاب المستلزمات الخاص بالقسم",
+          "score": 0.7339087324238807
+        },
+        {
+          "id": "ac318189-e0c9-43c6-bd47-8fd28dea584d",
+          "title": "غرفه المستلزمات الطبيه غير مؤمنه الباب غير مغلق ولا يوجد قفل علي الدولاب",
+          "score": 0.7281665855957156
+        },
+        {
+          "id": "04412dab-ae1c-490d-b4ae-5506b7766a90",
+          "title": "لا يوجد فصل للادويه عاليه الخطوره في رف منفصل",
+          "score": 0.7267195349339097
+        },
+        {
+          "id": "fd95979b-20fc-4f9c-86a4-4ecc68627974",
+          "title": "لا يوجد تصنيف بمخزن المستلزمات بقسم الاشعه او تعريف لبعض المستلزمات",
+          "score": 0.7239423843586259
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7404777506488435,
+      "score_gap": 0.006569018224962808,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "616f7b14-b213-4b87-9193-60b0a86af33e",
+      "original_text": "لا يوجد توقيع لطبيب التخدير في نموذج اقرار الموافقه على اجراء جراحي",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "b26e96ba-cf27-4557-a288-f98fbf5ec5ec",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+      "candidate_title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+      "top_5_candidates": [
+        {
+          "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+          "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+          "score": 0.7382873613039039
+        },
+        {
+          "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+          "score": 0.7339938146935931
+        },
+        {
+          "id": "85fea0ef-1340-41ea-bd75-1555fbb3dc77",
+          "title": "لا يوجد توقيع الطبيب علي بعض التذاكر",
+          "score": 0.7193019860956085
+        },
+        {
+          "id": "f03c5ae6-006e-4e2d-97a3-69b9147517f9",
+          "title": "لا يوجد وسيله تواصل بين المعمل الطبيب",
+          "score": 0.7064123411024208
+        },
+        {
+          "id": "09751368-224e-4d60-9be7-30693a315c49",
+          "title": "لا يوجد توقيع طبيب علي نموذج VTE",
+          "score": 0.7059620055668299
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7382873613039039,
+      "score_gap": 0.004293546610310783,
+      "entity": [
+        "ENT_STAFF"
+      ],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "45c6767e-eaa3-4e93-a425-71f4d75f9013",
+      "original_text": "الغرفة غير مطابقة للشروط و غير مؤمنة و يوجد بداخلها عدد كبير من الموظفين بأقسام أخري",
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "department_id": "741aba9b-e0ab-485f-8f2e-5ce1253430a9",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+      "candidate_title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+      "top_5_candidates": [
+        {
+          "id": "ffff866e-5ae1-4fb0-b5d6-7201fa615b19",
+          "title": "لا يوجد عدد تمريض كافي ٤ ممرضات ٧ غرف بالاستقبال",
+          "score": 0.737601579547182
+        },
+        {
+          "id": "2b33a787-e513-466a-b727-52e8bbee2abf",
+          "title": "لا يوجد دقه في تسجيل ميعاد ظهور النتائج الحرجه وابلاغها للطبيب",
+          "score": 0.7274115114723295
+        },
+        {
+          "id": "295de136-c2e1-4ba7-b16c-396696dc5799",
+          "title": "بعض الملفات يوجد بها توصيفات وظيفيه غير محدثه وبدون توقيع الموظف",
+          "score": 0.7256076964788793
+        },
+        {
+          "id": "2bd51ce9-5a88-43c5-ad94-e049616f239a",
+          "title": "نماذج تسليم وتسلم الاطباء داخل عنايه الاطفال غير واضح بها الطبيب المسلم المستلم ولا يوجد رقم ملف المريض",
+          "score": 0.7208610149243215
+        },
+        {
+          "id": "2fa7049e-d012-4590-bf2f-446ebe88ea3a",
+          "title": "الملف الطبي الخاص بالطفل مالك محمد السعيد رقم 1090245 الاقرارات غير مكتمله البيانات باسم الطبيب المعالج التمريض وطبيب التخدير",
+          "score": 0.7183753661431646
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.737601579547182,
+      "score_gap": 0.010190068074852454,
+      "entity": [
+        "ENT_STAFF"
+      ],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "391bf437-807f-4fd6-a687-877b7ddc13f7",
+      "original_text": "لا يوجد مقياس كلور حديث طبقا لتعليمات الوزارة",
+      "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+      "department_id": "1f45fd05-2d99-4449-9b00-e638f0c95bcb",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "86f443ce-df85-469a-8187-ea69285d5153",
+      "candidate_title": "لا يوجد مقياس لرطوبه الغرفه داخل الصيدليات",
+      "top_5_candidates": [
+        {
+          "id": "86f443ce-df85-469a-8187-ea69285d5153",
+          "title": "لا يوجد مقياس لرطوبه الغرفه داخل الصيدليات",
+          "score": 0.7322654602158487
+        },
+        {
+          "id": "3f6d03e8-9f5c-4075-ab70-43fe318c6e64",
+          "title": "لا يوجد مقياس الحراره الرطوبه داخل الغرفه",
+          "score": 0.7174670428557453
+        },
+        {
+          "id": "99d00155-f3f4-48a9-98b7-bda3c0cf9f92",
+          "title": "لا يوجد قرار تكليف لمسئول مراقبه الجوده داخل المعمل",
+          "score": 0.7138144007011127
+        },
+        {
+          "id": "cd93e994-945a-42aa-b0a9-2276bb128e89",
+          "title": "لا يوجد سجل معايره لجهاز السكر بالطواري",
+          "score": 0.7106820195602015
+        },
+        {
+          "id": "578e403c-29e1-4ff4-849b-9be659fc9cd5",
+          "title": "لا يوجد ترمومتر غرفه ولا يتم قياس درجه حراره ورطوبه الغرفه بالرغم من وجود كراش كار ودولاب لحفظ ادويه المرضي",
+          "score": 0.7106288985218101
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7322654602158487,
+      "score_gap": 0.014798417360103455,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "1f78f692-4eec-4dcb-89ff-290d546f26e2",
+      "original_text": "وجبات الإفطار بجانب المرضى بدون تعريف ونوع الوجبه",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "ec5c515a-18d1-4dbc-8376-d76cde108a40",
+      "candidate_title": "بعض المرضي بدون اساور تعريف ولا اسوره حرف f",
+      "top_5_candidates": [
+        {
+          "id": "ec5c515a-18d1-4dbc-8376-d76cde108a40",
+          "title": "بعض المرضي بدون اساور تعريف ولا اسوره حرف f",
+          "score": 0.7318833313472661
+        },
+        {
+          "id": "5f86c44d-5ee2-4968-9145-63a075f5545c",
+          "title": "بعض الوجبات بدون تعريف",
+          "score": 0.7280685522434662
+        },
+        {
+          "id": "1496c4f3-782d-47ad-898b-2a35ded54935",
+          "title": "يقوم التمريض بعمل تحليل السكر للمرضي كل ست ساعات بدون امر طبيب مع العلم بان المريض ليس مريض سكر مما يؤدي الي استهلاك شرائط السكر بدون فائده",
+          "score": 0.7212953242460697
+        },
+        {
+          "id": "25a0ff40-52a6-40fe-9c71-f6019851b75f",
+          "title": "بعد نتائج التحاليل الخاصه بالمرضي بدون اسم مريض رباعي ورقم طبي موحد",
+          "score": 0.7210499350090029
+        },
+        {
+          "id": "ea2c1343-bade-452d-9681-3e3d3fce770d",
+          "title": "معظم الاطباء بالقسم الاطباء المسؤولين عن الرد علي الاستشارات غير ملتزمين بالزي الرسمي وكارت التعريف",
+          "score": 0.7124591031681413
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7318833313472661,
+      "score_gap": 0.0038147791037999035,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "e75082e3-5da3-4506-9dfb-7ecf8b7e005e",
+      "original_text": "لا يوجد نموذج الاوامر الشفوية",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "d1f8ead3-df4f-41e4-94b5-7980e01c8b77",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+      "candidate_title": "لا يوجد نموذج الخطه العلاجيه",
+      "top_5_candidates": [
+        {
+          "id": "34e86073-6dde-4fae-97c2-978fd5cedf0f",
+          "title": "لا يوجد نموذج الخطه العلاجيه",
+          "score": 0.7246249009018781
+        },
+        {
+          "id": "12b3c773-f0c0-4f59-890f-b983c857f7f3",
+          "title": "لا يوجد نموذج اعطال لا يوجد سجل اعطال",
+          "score": 0.7178862832318658
+        },
+        {
+          "id": "034ba012-b7ba-4107-a2a5-4c4b3b2eae70",
+          "title": "نموذج فحص الانذارات الحرجه غير موجود",
+          "score": 0.7164450854554583
+        },
+        {
+          "id": "a918676e-2978-4d49-87b8-b35d50dc3b38",
+          "title": "لا يوجد نموذج طلب ابلاغ عطل",
+          "score": 0.7133135674920488
+        },
+        {
+          "id": "a0b4845b-4de0-478a-a61a-42d44c5b6462",
+          "title": "لا يوجد نموذج النتائج الحرجه بالملف الطبي",
+          "score": 0.7088255793776994
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7246249009018781,
+      "score_gap": 0.006738617670012381,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "37b36390-ece2-49bc-a221-11c0455aec6f",
+      "original_text": "لا يوجد admission criteria or discharge criteria",
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "department_id": "07b7d7b8-c086-46ed-98f1-53d3edcab259",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "55bc4a9e-d269-4407-9237-fa17a20c3b5f",
+      "candidate_title": "لا يوجد قوائم للنتائج الحرجه الاكلينيكيه المعمليه بقسم الطوارئ",
+      "top_5_candidates": [
+        {
+          "id": "55bc4a9e-d269-4407-9237-fa17a20c3b5f",
+          "title": "لا يوجد قوائم للنتائج الحرجه الاكلينيكيه المعمليه بقسم الطوارئ",
+          "score": 0.7230174963788573
+        },
+        {
+          "id": "2b53fbdb-3bbf-482f-a82b-4f8072abec5a",
+          "title": "لا يوجد وسيله توثيق تعريف المريض مثل كارت تعريف او ارتداء اسوره",
+          "score": 0.7195290851550039
+        },
+        {
+          "id": "a4970123-33b5-478a-b1bc-690f16f38bd1",
+          "title": "لا يوجد تذكره مريض وبالتالي لا يوجد تقييم طبي وتمريضي بالعيادات الخارجيه مثل ملاحظات التمريض بالعياده الخارجيه وتقييم الالم السقوط",
+          "score": 0.7189425510996188
+        },
+        {
+          "id": "2da5b374-c972-4de7-8183-50f5e9afcbdd",
+          "title": "لا يوجد دقه في تسجيل وقت ظهور وابلاغ النتائج الحرجه بالطوارئ طبقا للسياسه",
+          "score": 0.7188396664007788
+        },
+        {
+          "id": "6bb9f9f1-d0f4-4f13-93da-fdb3a6f9afdb",
+          "title": "لا يوجد فرز لمرضي السقوط او الامراض المعديه او حاله الطواريء",
+          "score": 0.7177191284417977
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7230174963788573,
+      "score_gap": 0.0034884112238533493,
+      "entity": [],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "efe20fdd-b7f8-4c29-8cc8-2cf5d652e9a3",
+      "original_text": "قائمه الاختصارات المسموحه بدون تاريخ اصدار",
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "department_id": "07b7d7b8-c086-46ed-98f1-53d3edcab259",
+      "current_recurrence_group_id": "e6a507b1-4d58-47ac-b787-1213abcb9f7b",
+      "candidate_group_id": "e150ac12-a232-4617-ad58-f6820830092b",
+      "candidate_title": "قائمه النتائج الحرجه بدون مرجع علمي",
+      "top_5_candidates": [
+        {
+          "id": "e150ac12-a232-4617-ad58-f6820830092b",
+          "title": "قائمه النتائج الحرجه بدون مرجع علمي",
+          "score": 0.7229275558995046
+        },
+        {
+          "id": "d2a9c8d3-24de-4df7-a3bc-11388918e8e3",
+          "title": "قوائم الادويه بدون مراجع",
+          "score": 0.7224354435826739
+        },
+        {
+          "id": "d4b7d339-c498-4018-bfe8-ecb96650ea2e",
+          "title": "قوائم الادويه بتوقيع ثنائي وبدون تاريخ اعتماد",
+          "score": 0.7198566850396579
+        },
+        {
+          "id": "7c738cd2-7750-4145-8e37-69152cffaa7a",
+          "title": "قائمه النتائج الحرجه غير معتمده وبدون مرجع",
+          "score": 0.7162930733024868
+        },
+        {
+          "id": "5e251a23-96b5-403d-9fd1-4e71f6ac34a3",
+          "title": "قائمه النتائج الحرجه المعمليه غير مؤرخه وبدون مرجع",
+          "score": 0.7066091062572697
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7229275558995046,
+      "score_gap": 0.0004921123168307728,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "d429330c-ad90-49c1-b39c-8d8c3374ebfd",
+      "original_text": "لا يوجد سجل سي بي ار او محاضر فتح للكراش كار",
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "department_id": "b2d49bb8-3685-44bd-9652-89641d0d0db5",
+      "current_recurrence_group_id": "5fa8340c-0d15-400c-aba6-a4cd528b619f",
+      "candidate_group_id": "52994c1d-be67-415d-97e8-d2cd9e126c11",
+      "candidate_title": "لا يوجد اليه تنظم عمليه فتح الكراش كارت حيث لا يوجد تسلسل تحكم عمليه الفتح او الغلق",
+      "top_5_candidates": [
+        {
+          "id": "52994c1d-be67-415d-97e8-d2cd9e126c11",
+          "title": "لا يوجد اليه تنظم عمليه فتح الكراش كارت حيث لا يوجد تسلسل تحكم عمليه الفتح او الغلق",
+          "score": 0.7207894686741044
+        },
+        {
+          "id": "bec003ae-ef39-41fc-b9f1-1650067edac8",
+          "title": "لا يوجد امبوباج اطفال ف الكراش كار",
+          "score": 0.7171544327009192
+        },
+        {
+          "id": "b57ddbde-49e7-416f-a436-0bb69c871dd8",
+          "title": "الكراش كار لا يوجد كروت تعريف",
+          "score": 0.7140529369206021
+        },
+        {
+          "id": "1e3466a6-6829-4c41-93cf-7f9f3f2d531f",
+          "title": "لا يوجد فصل للادويه متشابهه الشكل داخل الكراش كار",
+          "score": 0.7114077909650276
+        },
+        {
+          "id": "377bfe4f-1b2a-454c-91f3-723b3af9febf",
+          "title": "يتم فتح كراش كارت في حالات غير مخصصه لعمليه الفتح مثل نقص بعد المحاليل لعدم وجود دولاب او صيدليه طواريء",
+          "score": 0.7034521539199121
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7207894686741044,
+      "score_gap": 0.0036350359731852633,
+      "entity": [
+        "ENT_CRASH_CART"
+      ],
+      "defect": [
+        "DEF_MISSING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "805bc321-2999-4503-9903-00900bd30467",
+      "original_text": "يوجد اسطوانة اكسجين غير مؤمنه وبدون بيانات",
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "department_id": "182957dc-6a86-4a24-b513-2f01c9d143a9",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "6dbca59c-6546-41bb-80c2-7dd7edc0de2d",
+      "candidate_title": "مروحه بدون كفر خارجي غير مؤمنه",
+      "top_5_candidates": [
+        {
+          "id": "6dbca59c-6546-41bb-80c2-7dd7edc0de2d",
+          "title": "مروحه بدون كفر خارجي غير مؤمنه",
+          "score": 0.7186709695572913
+        },
+        {
+          "id": "9340910c-faa4-4694-a3c0-fe528bf3d0e7",
+          "title": "يوجد بلاعه كبيره جدا مفتوحه وبدون غطاء امام قسم العزل",
+          "score": 0.7185765587905355
+        },
+        {
+          "id": "b49465bc-0c0e-4581-b5f5-6ed1c8d7d943",
+          "title": "توقيعات بعد الاطباء غير كامله وبدون تاريخ",
+          "score": 0.7135665800913027
+        },
+        {
+          "id": "4f621fbd-ac4e-4680-8074-415b493999ec",
+          "title": "يوجد دولاب ادويه بغرفه الافاقه بدون مرور للصيادله",
+          "score": 0.7126020240490809
+        },
+        {
+          "id": "8b1788f9-b9e6-442a-8034-d4ad47878339",
+          "title": "يوجد زجاجه زيلوكايين مفتوحه بدون تاريخ ولا ساعه فتح",
+          "score": 0.7107340191320559
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7186709695572913,
+      "score_gap": 0.00009441076675575921,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "28759644-dfec-4559-b9f3-dbc9847be28c",
+      "original_text": "بعض الحالات bed reddin بدون مراتب هوائيه",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "4f621fbd-ac4e-4680-8074-415b493999ec",
+      "candidate_title": "يوجد دولاب ادويه بغرفه الافاقه بدون مرور للصيادله",
+      "top_5_candidates": [
+        {
+          "id": "4f621fbd-ac4e-4680-8074-415b493999ec",
+          "title": "يوجد دولاب ادويه بغرفه الافاقه بدون مرور للصيادله",
+          "score": 0.7146386669993106
+        },
+        {
+          "id": "6dbca59c-6546-41bb-80c2-7dd7edc0de2d",
+          "title": "مروحه بدون كفر خارجي غير مؤمنه",
+          "score": 0.7117794345181783
+        },
+        {
+          "id": "70847df9-36e7-44e4-8c59-2fc607907e93",
+          "title": "يوجد كراتين ادويه ومحاصيل بدون ترتيب ويوجد تحتها اتربه",
+          "score": 0.7078992848296326
+        },
+        {
+          "id": "ec5c515a-18d1-4dbc-8376-d76cde108a40",
+          "title": "بعض المرضي بدون اساور تعريف ولا اسوره حرف f",
+          "score": 0.703688024962158
+        },
+        {
+          "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+          "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+          "score": 0.7028086997175618
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7146386669993106,
+      "score_gap": 0.00285923248113229,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "6886a0f9-304c-4884-9e42-da4cc4f5b69c",
+      "original_text": "بعض الملفات التثقيف الصحي غير مكتمل",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "8dc13ad4-79f3-419f-ad80-bd90652d352a",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "2c9393de-3687-4c0a-bb8e-dc9a56f1381f",
+      "candidate_title": "تعريف المريض في بعض النماذج غير مكتمل الاسم رباعي",
+      "top_5_candidates": [
+        {
+          "id": "2c9393de-3687-4c0a-bb8e-dc9a56f1381f",
+          "title": "تعريف المريض في بعض النماذج غير مكتمل الاسم رباعي",
+          "score": 0.7121070179559466
+        },
+        {
+          "id": "f041140b-871c-4981-8cfc-d4dd5ec1f186",
+          "title": "بعض الحالات نموذج physical assessment غير مكتمل",
+          "score": 0.7047539691412554
+        },
+        {
+          "id": "f0ecead4-6e98-4cbc-80ac-96b670a00f56",
+          "title": "بعض نماذج الملف الطبي غير مكتمله البيانات personal history Physical examination",
+          "score": 0.6933327484695003
+        },
+        {
+          "id": "573a2544-54cd-48ab-85a6-0025ebe7c2cd",
+          "title": "نموذج التوافق الدوائي غير مكتمل بالملف الطبي",
+          "score": 0.6920663223811669
+        },
+        {
+          "id": "6fa3bf17-e03a-42e2-a382-bcf7041cdcc8",
+          "title": "PROGRESS NOTESغير مكتمل",
+          "score": 0.6911325622216329
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7121070179559466,
+      "score_gap": 0.007353048814691121,
+      "entity": [],
+      "defect": [
+        "DEF_INCOMPLETE"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "26eb014e-b2e2-451b-bc68-78cc53c06e96",
+      "original_text": "بعض النماذج بدون التشخيص النهائى",
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "department_id": "f1201b3c-66d0-4f52-9b75-7d152302d0bf",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "f737982e-12f3-4fbb-b1f0-1209cd08fedc",
+      "candidate_title": "يوجد نموذج بدون تعريف",
+      "top_5_candidates": [
+        {
+          "id": "f737982e-12f3-4fbb-b1f0-1209cd08fedc",
+          "title": "يوجد نموذج بدون تعريف",
+          "score": 0.7108482219097445
+        },
+        {
+          "id": "5f86c44d-5ee2-4968-9145-63a075f5545c",
+          "title": "بعض الوجبات بدون تعريف",
+          "score": 0.7104972740699795
+        },
+        {
+          "id": "282b4844-d4b9-46f7-a42e-dd427b07760a",
+          "title": "بعض المستلزمات بدون كروت تعريف",
+          "score": 0.6740129592844739
+        },
+        {
+          "id": "b99b7140-1eac-40e3-93bc-1d1a63c7d50f",
+          "title": "بعض قوائم النتائج الحرجه الفيسيولوجيه بدون مرجع",
+          "score": 0.6389632596643808
+        },
+        {
+          "id": "807edc69-1e9e-46fe-889e-301b5dff7387",
+          "title": "تم صرف بلازما لبعض الحالات بدون اقرارات",
+          "score": 0.6306729705226495
+        }
+      ],
+      "lexical_score": null,
+      "vector_score": 0.7108482219097445,
+      "score_gap": 0.0003509478397649701,
+      "entity": [],
+      "defect": [
+        "DEF_NOT_WEARING"
+      ],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    },
+    {
+      "finding_id": "87f9da23-dad8-4330-9fee-4e77d879722f",
+      "original_text": "جهاز الصدمات لا يعمل ولم يتم تفريغ الشحنه",
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "department_id": "695583ab-97d8-41a6-95a3-6db02e10368c",
+      "current_recurrence_group_id": null,
+      "candidate_group_id": "c5393110-97cb-4dbb-bd01-ecc4d5490a6c",
+      "candidate_title": "لم يتم تسجيل تفريغ شحنات جهاز DC",
+      "top_5_candidates": [],
+      "lexical_score": null,
+      "vector_score": 0.6,
+      "score_gap": null,
+      "entity": [],
+      "defect": [],
+      "requirement": [],
+      "context": [],
+      "hard_negative_flags": [],
+      "why_local_engine_could_not_decide": "Candidate score was not high enough to automatically override ambiguity.",
+      "previous_gemini_status": null,
+      "review_status": "PENDING_SEMANTIC_ADJUDICATION",
+      "model_required": "gemini-3.5-flash"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-09-11T17:15:10.968Z",
+  "last_updated_at": "2026-09-11T17:17:59.517Z",
+  "total_findings": 1366,
+  "eligible_for_resume_at_start": 1344,
+  "processed_this_run": 16,
+  "successful_calls": 10,
+  "failed_calls": 6,
+  "current_remaining": 1328,
+  "count_429": 6,
+  "count_503": 0,
+  "other_errors": 0,
+  "average_latency": "9078",
+  "effective_rpm": "5.70",
+  "stop_reason": "PAUSED_FOR_API_STABILITY (Continuous failures: 3)"
+}

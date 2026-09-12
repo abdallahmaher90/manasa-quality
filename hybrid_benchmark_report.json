@@ -1,0 +1,69 @@
+{
+  "benchmarkSize": 100,
+  "candidateMetrics": {
+    "totalCandidatesGenerated": 1974,
+    "averageCandidatesPerFinding": "19.74",
+    "lexicalOnlyCandidates": 364,
+    "vectorOnlyCandidates": 1310,
+    "overlapCandidates": 300
+  },
+  "candidateDistribution": {
+    "0": 0,
+    "1": 5,
+    "2-3": 7,
+    "4-8": 30,
+    ">8": 58
+  },
+  "geminiAdjudicationEstimation": {
+    "percentageRequiringGemini": "100.0%",
+    "estimatedGeminiCallsFor100": 1974,
+    "projectedGeminiCallsFor1366": 26965
+  },
+  "lexicalDisjointTest": [
+    {
+      "input": "عربة الإنعاش غير موجودة",
+      "expected": "نقص كراش كار",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false,
+      "jaccardTop": 0,
+      "cosSimTop": 0.9041802013457905
+    },
+    {
+      "input": "النتائج الحرجة لا تبلغ",
+      "expected": "قصور في نظام تبليغ القيم الحرجة",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false,
+      "jaccardTop": 0.3333333333333333,
+      "cosSimTop": 0.9430992531988447
+    },
+    {
+      "input": "جهاز المراقبة معطل",
+      "expected": "المونيتور لا يعمل",
+      "recallAt3": false,
+      "recallAt5": false,
+      "recallAt8": false,
+      "jaccardTop": 0,
+      "cosSimTop": 0.8059290097302968
+    },
+    {
+      "input": "ملف المريض غير مرتب",
+      "expected": "سجلات المرضى مبعثرة",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true,
+      "jaccardTop": 0,
+      "cosSimTop": 0.7817269063568839
+    },
+    {
+      "input": "الموظف لا يرتدي البطاقة",
+      "expected": "غياب الهوية التعريفية للكادر",
+      "recallAt3": true,
+      "recallAt5": true,
+      "recallAt8": true,
+      "jaccardTop": 0,
+      "cosSimTop": 0.797725194425043
+    }
+  ]
+}

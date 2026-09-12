@@ -1,0 +1,89 @@
+{
+  "summary": {
+    "total_findings": 1366,
+    "finalized_assignments_checked": "YES",
+    "recurring_groups": 134,
+    "singletons": 1035,
+    "same_hospital_recurring": 19,
+    "cross_hospital_common": 115,
+    "orphan_group_count": 239,
+    "errors": []
+  },
+  "assertions": [
+    {
+      "name": "total_report_findings_valid",
+      "passed": true,
+      "details": "Found 1366"
+    },
+    {
+      "name": "orphan_groups_counted_safely",
+      "passed": true,
+      "details": "Found 239 orphans. Left untouched."
+    },
+    {
+      "name": "recurrence_group_id_is_grouping_key",
+      "passed": true,
+      "details": "Department ID is ignored for grouping logic"
+    },
+    {
+      "name": "test_case_found: الوصفه الدوائيه غير مكتمله",
+      "passed": true,
+      "details": "Members: 6, Hospitals: 5"
+    },
+    {
+      "name": "test_case_found: لا يوجد قائمه بالاختصارات المسموحه الممنوعه",
+      "passed": true,
+      "details": "Members: 12, Hospitals: 8"
+    },
+    {
+      "name": "test_case_found: توقيع الاطباء فورمه",
+      "passed": true,
+      "details": "Members: 4, Hospitals: 3"
+    },
+    {
+      "name": "test_case_found: غرفه الارشيف غير مطابقه للمواصفات",
+      "passed": true,
+      "details": "Members: 1, Hospitals: 1"
+    },
+    {
+      "name": "ui_api_consistency_canonical_title",
+      "passed": true,
+      "details": "Original text is preserved on finding level; canonical title remains on group level."
+    },
+    {
+      "name": "ui_api_consistency_recurrence_count",
+      "passed": true,
+      "details": "Total occurrences calculated correctly via group aggregation."
+    }
+  ],
+  "test_cases_validation": [
+    {
+      "testKey": "الوصفه الدوائيه غير مكتمله",
+      "found": true,
+      "group_id": "3e78798a-32ee-464c-9b65-46e5074737cf",
+      "totalOccurrences": 6,
+      "hospitals_involved": 5
+    },
+    {
+      "testKey": "لا يوجد قائمه بالاختصارات المسموحه الممنوعه",
+      "found": true,
+      "group_id": "e863b01a-28f1-4e2b-a330-1996958844a4",
+      "totalOccurrences": 12,
+      "hospitals_involved": 8
+    },
+    {
+      "testKey": "توقيع الاطباء فورمه",
+      "found": true,
+      "group_id": "31e6faaa-f311-41e3-9a82-4cf1f27f679a",
+      "totalOccurrences": 4,
+      "hospitals_involved": 3
+    },
+    {
+      "testKey": "غرفه الارشيف غير مطابقه للمواصفات",
+      "found": true,
+      "group_id": "cd30ccdd-0812-4b5e-a386-ca10d64e4d41",
+      "totalOccurrences": 1,
+      "hospitals_involved": 1
+    }
+  ]
+}
