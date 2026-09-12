@@ -210,6 +210,8 @@ export default function OpenFindingsPage() {
         @media print {
           .screen-only-inline { display: none !important; }
           .screen-only-block { display: none !important; }
+          .print-only-inline { display: inline !important; }
+          .print-only-block { display: block !important; }
           @page { margin: 1cm; size: A4 portrait; }
           body, html { background: #fff !important; color: #000 !important; }
           
@@ -399,7 +401,7 @@ export default function OpenFindingsPage() {
                             </div>
                           </div>
                           <div className="print-only-block" style={{ display: 'none', fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
-                            {checkedItems.has(finding.id) ? '( ✔ )' : '(   )'}
+                            {checkedItems.has(finding.id) ? '( \u00A0 ✔ \u00A0 )' : '( \u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0 )'}
                           </div>
                         </td>
                       </tr>
