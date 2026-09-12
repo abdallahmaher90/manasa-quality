@@ -36,6 +36,8 @@ export default function HospitalPage() {
   const [recentReports, setRecentReports] = useState([])
   const [criticalFindings, setCriticalFindings] = useState([])
   
+  const [totalRecurringKPI, setTotalRecurringKPI] = useState(0)
+
   // Team Management State
   const [showEditTeamModal, setShowEditTeamModal] = useState(false)
   const [savingTeam, setSavingTeam] = useState(false)
@@ -57,12 +59,10 @@ export default function HospitalPage() {
   }, [id])
 
   const fetchHospital = async () => {
-    const [hospRes, deptRes, reportsRes, criticalFindingsRes] = await Promise.all([
+    const [hospRes, deptRes, allFindingsRes, reportsRes, criticalFindingsRes] = await Promise.all([
       supabase.from('hospitals').select('*').eq('id', id).single(),
-      supabase.from('departments').select(`
-        id, name,
-        findings!findings_department_id_fkey(id, status, repeat_count, priority)
-      `).eq('hospital_id', id).order('name'),
+      supabase.from('departments').select('id, name').order('name'),
+      supabase.from('v_report_findings').select('id, department_id, status, priority, review_status, recurrence_group_id').eq('hospital_id', id),
       supabase.from('reports').select('id, inspection_date, inspector_name').eq('hospital_id', id).order('inspection_date', { ascending: false }).limit(5),
       supabase.from('v_report_findings').select('id, original_text, canonical_text, priority, repeat_count, status, departments(name, id)').eq('hospital_id', id).in('status', ['open', 'recurring']).or('priority.eq.high,repeat_count.gte.3').order('repeat_count', { ascending: false }).limit(5)
     ])
@@ -85,13 +85,45 @@ export default function HospitalPage() {
       if (profile) setUserRole(profile.role)
     }
 
-    if (deptRes.data) {
+    if (deptRes.data && allFindingsRes.data) {
+      const allFindings = allFindingsRes.data
+      
+      const groups = new Map()
+      allFindings.forEach(f => {
+        const grpKey = f.recurrence_group_id || f.id
+        if (!groups.has(grpKey)) groups.set(grpKey, { count: 0, findings: [] })
+        
+        const g = groups.get(grpKey)
+        g.findings.push(f)
+        if (f.review_status !== 'pending_review') {
+          g.count++
+        }
+      })
+      
+      const recurringGroupIds = new Set(
+        Array.from(groups.entries())
+          .filter(([_, g]) => g.count >= 2)
+          .map(([id]) => id)
+      )
+      
+      setTotalRecurringKPI(recurringGroupIds.size)
+
       const processed = deptRes.data.map(dept => {
-        const findings = dept.findings || []
+        const findings = allFindings.filter(f => f.department_id === dept.id)
+        
         const open = findings.filter(f => ['open', 'recurring'].includes(f.status)).length
-        const recurring = findings.filter(f => f.status === 'recurring').length
+        
+        const deptGroups = new Set()
+        findings.forEach(f => {
+          const grpKey = f.recurrence_group_id || f.id
+          if (recurringGroupIds.has(grpKey)) {
+             deptGroups.add(grpKey)
+          }
+        })
+        const recurring = deptGroups.size
+
         const resolved = findings.filter(f => f.status === 'resolved_confirmed').length
-        const pendingConfirm = findings.filter(f => f.status === 'resolved_by_hospital').length
+        const pendingConfirm = findings.filter(f => f.status === 'resolved_by_hospital' || f.status === 'pending_review').length
         const highPriority = findings.filter(f => f.priority === 'high' && ['open', 'recurring'].includes(f.status)).length
 
         return { ...dept, open, recurring, resolved, pendingConfirm, highPriority }
@@ -211,7 +243,7 @@ export default function HospitalPage() {
   }
 
   const totalOpen = departments.reduce((acc, d) => acc + d.open, 0)
-  const totalRecurring = departments.reduce((acc, d) => acc + d.recurring, 0)
+  const totalRecurring = totalRecurringKPI
   const totalResolved = departments.reduce((acc, d) => acc + d.resolved, 0)
   const totalPending = departments.reduce((acc, d) => acc + d.pendingConfirm, 0)
 
