@@ -139,6 +139,17 @@ export default function OpenFindingsPage() {
       el.style.fontSize = '12px';
     });
     
+    // Hide screen-only elements, show print-only elements
+    tableClone.querySelectorAll('.screen-only-inline, .screen-only-block').forEach(el => {
+      el.style.display = 'none';
+    });
+    tableClone.querySelectorAll('.print-only-inline').forEach(el => {
+      el.style.display = 'inline';
+    });
+    tableClone.querySelectorAll('.print-only-block').forEach(el => {
+      el.style.display = 'block';
+    });
+    
     const htmlContent = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
       <head>
@@ -193,8 +204,12 @@ export default function OpenFindingsPage() {
       <style dangerouslySetInnerHTML={{__html: `
         @media screen {
           .print-only-cell { display: none !important; }
+          .print-only-inline { display: none !important; }
+          .print-only-block { display: none !important; }
         }
         @media print {
+          .screen-only-inline { display: none !important; }
+          .screen-only-block { display: none !important; }
           @page { margin: 1cm; size: A4 portrait; }
           body, html { background: #fff !important; color: #000 !important; }
           
@@ -313,7 +328,10 @@ export default function OpenFindingsPage() {
               <tr>
                 <th style={{ padding: '6px 8px', border: '1px solid #333', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>السلبية (Item)</th>
                 <th className="print-only-cell" style={{ padding: '6px 8px', border: '1px solid #333', width: '25%', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>ملاحظات (Notes)</th>
-                <th style={{ padding: '6px 8px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>النتيجة (Result)</th>
+                <th style={{ padding: '6px 8px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold', fontSize: '14px' }}>
+                  <span className="screen-only-inline">النتيجة (Result)</span>
+                  <span className="print-only-inline" style={{ display: 'none' }}>(✔ / ✘)</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -366,9 +384,22 @@ export default function OpenFindingsPage() {
                         <td className="print-only-cell" style={{ padding: '4px 8px', border: '1px solid #333' }}></td>
                         
                         {/* Result Column (Checkbox) */}
-                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'middle', textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
-                          <div style={{ color: checkedItems.has(finding.id) ? '#10b981' : '#333' }}>
-                            {checkedItems.has(finding.id) ? '( ✓ )' : '(   )'}
+                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'middle', textAlign: 'center' }}>
+                          <div className="screen-only-block" style={{ display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ 
+                              width: '16px', 
+                              height: '16px', 
+                              border: checkedItems.has(finding.id) ? '2px solid #10b981' : '2px solid #333',
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              background: checkedItems.has(finding.id) ? '#10b981' : 'transparent',
+                            }}>
+                              {checkedItems.has(finding.id) && <CheckIcon style={{ width: '12px', height: '12px', color: '#fff' }} />}
+                            </div>
+                          </div>
+                          <div className="print-only-block" style={{ display: 'none', fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
+                            {checkedItems.has(finding.id) ? '( ✔ )' : '(   )'}
                           </div>
                         </td>
                       </tr>
