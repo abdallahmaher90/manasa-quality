@@ -357,13 +357,8 @@ export default function OpenFindingsPage() {
                       >
                         {/* Item Column */}
                         <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'top' }}>
-                          <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-                            <span style={{ marginTop: '0px' }}>•</span>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '12.5px', fontWeight: 600 }}>
-                                {finding.original_text}
-                              </div>
-                            </div>
+                          <div style={{ fontSize: '12.5px', fontWeight: 600 }}>
+                            {finding.original_text}
                           </div>
                         </td>
                         
@@ -371,21 +366,9 @@ export default function OpenFindingsPage() {
                         <td className="print-only-cell" style={{ padding: '4px 8px', border: '1px solid #333' }}></td>
                         
                         {/* Result Column (Checkbox) */}
-                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'middle' }}>
-                          <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <div style={{ 
-                              width: '16px', 
-                              height: '16px', 
-                              border: checkedItems.has(finding.id) ? '2px solid #10b981' : '2px solid #333',
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              justifyContent: 'center',
-                              background: checkedItems.has(finding.id) ? '#10b981' : 'transparent',
-                              WebkitPrintColorAdjust: 'exact',
-                              printColorAdjust: 'exact'
-                            }}>
-                              {checkedItems.has(finding.id) && <CheckIcon style={{ width: '12px', height: '12px', color: '#fff' }} />}
-                            </div>
+                        <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'middle', textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+                          <div style={{ color: checkedItems.has(finding.id) ? '#10b981' : '#333' }}>
+                            {checkedItems.has(finding.id) ? '( ✓ )' : '(   )'}
                           </div>
                         </td>
                       </tr>
