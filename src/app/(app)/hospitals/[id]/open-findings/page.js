@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -147,7 +147,7 @@ export default function OpenFindingsPage() {
       {/* Print Styles */}
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { margin: 0; size: A4; }
+          @page { margin: 1cm; size: A4 portrait; }
           body, html { background: #fff !important; color: #000 !important; }
           
           /* Hide sidebar, header, etc. */
@@ -161,21 +161,15 @@ export default function OpenFindingsPage() {
           
           .print-section, .print-section * { visibility: visible; }
           .print-section {
-            padding: 2cm !important;
             direction: rtl;
             background: white;
             color: black;
             width: 100%;
           }
           .print-header { display: block !important; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-          .print-dept-title { border-bottom: 1px solid #ccc; margin-top: 30px; margin-bottom: 15px; padding-bottom: 5px; font-size: 18px; font-weight: bold; page-break-after: avoid; }
-          .print-dept-wrapper { page-break-inside: auto; }
-          .print-item { display: flex; gap: 10px; margin-bottom: 12px; page-break-inside: avoid; }
-          .print-checkbox { width: 16px; height: 16px; border: 1px solid #000; display: inline-block; flex-shrink: 0; margin-top: 4px; }
-          .badge { border: 1px solid #999 !important; background: transparent !important; color: #333 !important; }
           
           /* Print only specific department if selected */
-          .print-dept-wrapper[data-dept-id] { display: block; }
+          .print-dept-wrapper[data-dept-id] { display: table-row; }
           ${printConfig.dept !== 'all' ? `.print-dept-wrapper:not([data-dept-id="${printConfig.dept}"]) { display: none !important; }` : ''}
           ${!printConfig.showPriority ? '.print-priority { display: none !important; }' : ''}
           ${!printConfig.showResponsible ? '.print-responsible { display: none !important; }' : ''}
@@ -293,82 +287,117 @@ export default function OpenFindingsPage() {
             <div className="empty-state-title">لا توجد سلبيات مفتوحة تطابق الفلاتر</div>
           </div>
         ) : (
-          Object.keys(groupedFindings).map(dName => {
-            const deptFindings = groupedFindings[dName]
-            const deptId = deptFindings[0]?.department_id
-            
-            return (
-              <div key={dName} className="print-dept-wrapper" data-dept-id={deptId} style={{ marginBottom: '32px' }}>
-                <div className="print-dept-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: 'var(--primary-dark)' }}>{dName}</h2>
-                  <span className="badge badge-primary no-print">{deptFindings.length} سلبيات</span>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {deptFindings.map(finding => (
-                    <div 
-                      key={finding.id} 
-                      className="print-item card" 
-                      style={{ 
-                        padding: '16px', 
-                        display: 'flex', 
-                        gap: '12px', 
-                        alignItems: 'flex-start',
-                        background: checkedItems.has(finding.id) ? 'rgba(16, 185, 129, 0.05)' : 'var(--bg-card)',
-                        border: checkedItems.has(finding.id) ? '1px solid var(--success)' : '1px solid var(--border)',
-                        transition: 'all 0.2s ease',
-                        cursor: 'pointer'
-                      }}
-                      onClick={() => toggleCheck(finding.id)}
-                    >
-                      {/* Checkbox */}
-                      <div className="no-print" style={{ 
-                        width: '24px', height: '24px', borderRadius: '6px', 
-                        border: checkedItems.has(finding.id) ? 'none' : '2px solid var(--border)',
-                        background: checkedItems.has(finding.id) ? 'var(--success)' : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0, marginTop: '2px'
+          <table style={{ 
+            width: '100%', 
+            borderCollapse: 'collapse', 
+            border: '2px solid #333',
+            background: '#fff',
+            color: '#333'
+          }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '12px', border: '1px solid #333', width: '70%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>السلبية (Item)</th>
+                <th style={{ padding: '12px', border: '1px solid #333', width: '20%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>ملاحظات (Notes)</th>
+                <th style={{ padding: '12px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>النتيجة (Result)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(groupedFindings).map((dName, dIndex) => {
+                const deptFindings = groupedFindings[dName]
+                const deptId = deptFindings[0]?.department_id
+                
+                return (
+                  <Fragment key={dName}>
+                    {/* Department Header */}
+                    <tr className="print-dept-wrapper" data-dept-id={deptId}>
+                      <td colSpan="3" style={{ 
+                        padding: '12px 16px', 
+                        border: '1px solid #333', 
+                        background: '#555', 
+                        color: '#fff', 
+                        fontWeight: 'bold', 
+                        fontSize: '18px',
+                        WebkitPrintColorAdjust: 'exact',
+                        printColorAdjust: 'exact'
                       }}>
-                        {checkedItems.has(finding.id) && <CheckIcon className="w-4 h-4 text-white" />}
-                      </div>
-                      <div className="print-checkbox" />
-
-                      {/* Content */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5, marginBottom: '8px' }}>
-                          {finding.original_text}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ fontSize: '24px', opacity: 0.6, fontWeight: 900 }}>{dIndex + 1}</span>
+                          <span>{dName}</span>
                         </div>
+                      </td>
+                    </tr>
+                    
+                    {/* Findings Rows */}
+                    {deptFindings.map((finding) => (
+                      <tr 
+                        key={finding.id}
+                        className="print-dept-wrapper" 
+                        data-dept-id={deptId}
+                        style={{ 
+                          background: checkedItems.has(finding.id) ? 'rgba(0,0,0,0.02)' : '#fff',
+                          cursor: 'pointer',
+                          pageBreakInside: 'avoid'
+                        }}
+                        onClick={() => toggleCheck(finding.id)}
+                      >
+                        {/* Item Column */}
+                        <td style={{ padding: '12px', border: '1px solid #333', verticalAlign: 'top' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                            <span style={{ marginTop: '2px' }}>•</span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '6px' }}>
+                                {finding.original_text}
+                              </div>
+                              <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '12px' }}>
+                                <span style={{ color: '#666' }}>الرصد: {formatDate(finding.first_seen_date)}</span>
+                                {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                                  <span className={`print-priority badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ padding: '2px 6px', fontSize: '11px' }}>
+                                    {PRIORITY_CONFIG[finding.priority].label}
+                                  </span>
+                                )}
+                                {finding.responsible && (
+                                  <span className="print-responsible badge" style={{ background: '#f0f0f0', color: '#666', padding: '2px 6px', fontSize: '11px' }}>
+                                    👤 {finding.responsible}
+                                  </span>
+                                )}
+                                {finding.deadline && (
+                                  <span className="print-deadline badge" style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 6px', fontSize: '11px' }}>
+                                    ⏰ {formatDate(finding.deadline)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
                         
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: 12 }}>
-                          <span style={{ color: 'var(--text-muted)' }}>
-                            الرصد: {formatDate(finding.first_seen_date)}
-                          </span>
-                          
-                          {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                            <span className={`print-priority badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ padding: '2px 6px', fontSize: 11 }}>
-                              {PRIORITY_CONFIG[finding.priority].label}
-                            </span>
-                          )}
-
-                          {finding.responsible && (
-                            <span className="print-responsible badge" style={{ background: 'var(--bg-secondary)', color: 'var(--text-secondary)', padding: '2px 6px', fontSize: 11 }}>
-                              👤 {finding.responsible}
-                            </span>
-                          )}
-
-                          {finding.deadline && (
-                            <span className="print-deadline badge" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger-dark)', padding: '2px 6px', fontSize: 11 }}>
-                              ⏰ {formatDate(finding.deadline)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })
+                        {/* Notes Column */}
+                        <td style={{ padding: '12px', border: '1px solid #333' }}></td>
+                        
+                        {/* Result Column (Checkbox) */}
+                        <td style={{ padding: '12px', border: '1px solid #333', verticalAlign: 'middle' }}>
+                          <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <div style={{ 
+                              width: '20px', 
+                              height: '20px', 
+                              border: '2px solid #333',
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              background: checkedItems.has(finding.id) ? '#333' : 'transparent',
+                              WebkitPrintColorAdjust: 'exact',
+                              printColorAdjust: 'exact'
+                            }}>
+                              {checkedItems.has(finding.id) && <CheckIcon style={{ width: '14px', height: '14px', color: '#fff' }} />}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                )
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
