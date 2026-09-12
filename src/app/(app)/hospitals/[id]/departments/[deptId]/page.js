@@ -707,12 +707,12 @@ export default function DepartmentPage() {
                     </td>
                     <td style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'center' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-                        {finding.status !== 'recurring' && (
+                        {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && (
                           <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
                             {STATUS_CONFIG[finding.status]?.label}
                           </span>
                         )}
-                        {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                        {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && finding.priority && PRIORITY_CONFIG[finding.priority] && (
                           <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 10.5, padding: '2px 7px' }}>
                             {PRIORITY_CONFIG[finding.priority].label}
                           </span>
@@ -869,7 +869,7 @@ export default function DepartmentPage() {
                   {/* 3. METADATA ROW: [الحالة] [الخطورة] [🔁 متكررة ×N عند الحاجة] in one compact row */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
                     {/* Status */}
-                    {finding.status !== 'recurring' && (
+                    {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && (
                       <span
                         style={{
                           display: 'inline-flex',
@@ -889,7 +889,7 @@ export default function DepartmentPage() {
                     )}
 
                     {/* Priority */}
-                    {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                    {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && finding.priority && PRIORITY_CONFIG[finding.priority] && (
                       <span
                         className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
                         style={{ fontSize: 10, padding: '2px 6px', lineHeight: 1.2 }}
