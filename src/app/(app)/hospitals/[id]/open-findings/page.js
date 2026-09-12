@@ -77,7 +77,7 @@ export default function OpenFindingsPage() {
         supabase.from('v_report_findings')
           .select('*')
           .eq('hospital_id', id)
-          .in('status', ['open', 'recurring'])
+          .in('status', ['open', 'recurring', 'resolved_by_hospital'])
           .order('department_id')
           .order('first_seen_date', { ascending: false })
       ])
@@ -444,8 +444,22 @@ export default function OpenFindingsPage() {
                       >
                         {/* Item Column */}
                         <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'top' }}>
-                          <div style={{ fontSize: '12.5px', fontWeight: 600 }}>
-                            {finding.original_text}
+                          <div style={{ fontSize: '12.5px', fontWeight: 600, display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+                            <span>{finding.original_text}</span>
+                            {finding.status === 'resolved_by_hospital' && (
+                              <span style={{ 
+                                display: 'inline-block', 
+                                padding: '2px 6px', 
+                                background: '#f59e0b', 
+                                color: '#fff', 
+                                fontSize: '10px', 
+                                borderRadius: '4px', 
+                                fontWeight: 'bold',
+                                whiteSpace: 'nowrap'
+                              }}>
+                                ⚠️ المستشفى أفادت بالحل
+                              </span>
+                            )}
                           </div>
                         </td>
                         
