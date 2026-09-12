@@ -51,7 +51,7 @@ export default function StatisticsPage() {
       findings.forEach(f => {
         if (f.status === 'open') openCount++
         else if (f.status === 'recurring') recurringCount++
-        else if (f.status === 'resolved_by_hospital') pendingCount++
+        else if (f.status === 'resolved_by_hospital' || f.status === 'pending_review') pendingCount++
         else if (f.status === 'resolved_confirmed') resolvedCount++
         else resolvedCount++ // fallback
 
@@ -62,7 +62,7 @@ export default function StatisticsPage() {
         }
         if (f.status === 'open') hospitalCounts[hName].open++
         else if (f.status === 'recurring') hospitalCounts[hName].recurring++
-        else if (f.status === 'resolved_by_hospital') hospitalCounts[hName].pending++
+        else if (f.status === 'resolved_by_hospital' || f.status === 'pending_review') hospitalCounts[hName].pending++
         else hospitalCounts[hName].resolved++
       })
 
