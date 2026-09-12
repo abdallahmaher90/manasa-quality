@@ -119,11 +119,6 @@ export default function ResolvedFindingsPage() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: 12, color: 'var(--text-secondary)' }}>
                   <span>تم الحل: <strong>{formatDate(finding.resolved_date)}</strong></span>
-                  {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                    <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ padding: '2px 6px', fontSize: 11 }}>
-                      {PRIORITY_CONFIG[finding.priority].label}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>

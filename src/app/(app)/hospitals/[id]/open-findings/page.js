@@ -146,6 +146,9 @@ export default function OpenFindingsPage() {
     <div className="open-findings-page">
       {/* Print Styles */}
       <style dangerouslySetInnerHTML={{__html: `
+        @media screen {
+          .print-only-cell { display: none !important; }
+        }
         @media print {
           @page { margin: 1cm; size: A4 portrait; }
           body, html { background: #fff !important; color: #000 !important; }
@@ -249,24 +252,6 @@ export default function OpenFindingsPage() {
               ))}
             </select>
           </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, marginBottom: '6px', color: 'var(--text-muted)' }}>الخطورة / الأولوية</label>
-            <select className="form-input" value={selectedPriority} onChange={e => setSelectedPriority(e.target.value)}>
-              <option value="all">الكل</option>
-              {Object.keys(PRIORITY_CONFIG).map(p => (
-                <option key={p} value={p}>{PRIORITY_CONFIG[p].label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, marginBottom: '6px', color: 'var(--text-muted)' }}>المسؤول</label>
-            <select className="form-input" value={selectedResponsible} onChange={e => setSelectedResponsible(e.target.value)}>
-              <option value="all">الكل</option>
-              {responsibles.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
 
@@ -296,8 +281,8 @@ export default function OpenFindingsPage() {
           }}>
             <thead>
               <tr>
-                <th style={{ padding: '12px', border: '1px solid #333', width: '70%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>السلبية (Item)</th>
-                <th style={{ padding: '12px', border: '1px solid #333', width: '20%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>ملاحظات (Notes)</th>
+                <th style={{ padding: '12px', border: '1px solid #333', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>السلبية (Item)</th>
+                <th className="print-only-cell" style={{ padding: '12px', border: '1px solid #333', width: '25%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>ملاحظات (Notes)</th>
                 <th style={{ padding: '12px', border: '1px solid #333', width: '10%', textAlign: 'center', background: '#fff', fontWeight: 'bold' }}>النتيجة (Result)</th>
               </tr>
             </thead>
@@ -345,33 +330,15 @@ export default function OpenFindingsPage() {
                           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                             <span style={{ marginTop: '2px' }}>•</span>
                             <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '6px' }}>
+                              <div style={{ fontSize: '15px', fontWeight: 600 }}>
                                 {finding.original_text}
-                              </div>
-                              <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '12px' }}>
-                                <span style={{ color: '#666' }}>الرصد: {formatDate(finding.first_seen_date)}</span>
-                                {finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                                  <span className={`print-priority badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ padding: '2px 6px', fontSize: '11px' }}>
-                                    {PRIORITY_CONFIG[finding.priority].label}
-                                  </span>
-                                )}
-                                {finding.responsible && (
-                                  <span className="print-responsible badge" style={{ background: '#f0f0f0', color: '#666', padding: '2px 6px', fontSize: '11px' }}>
-                                    👤 {finding.responsible}
-                                  </span>
-                                )}
-                                {finding.deadline && (
-                                  <span className="print-deadline badge" style={{ background: '#fee2e2', color: '#991b1b', padding: '2px 6px', fontSize: '11px' }}>
-                                    ⏰ {formatDate(finding.deadline)}
-                                  </span>
-                                )}
                               </div>
                             </div>
                           </div>
                         </td>
                         
                         {/* Notes Column */}
-                        <td style={{ padding: '12px', border: '1px solid #333' }}></td>
+                        <td className="print-only-cell" style={{ padding: '12px', border: '1px solid #333' }}></td>
                         
                         {/* Result Column (Checkbox) */}
                         <td style={{ padding: '12px', border: '1px solid #333', verticalAlign: 'middle' }}>
@@ -379,11 +346,11 @@ export default function OpenFindingsPage() {
                             <div style={{ 
                               width: '20px', 
                               height: '20px', 
-                              border: '2px solid #333',
+                              border: checkedItems.has(finding.id) ? '2px solid #10b981' : '2px solid #333',
                               display: 'flex', 
                               alignItems: 'center', 
                               justifyContent: 'center',
-                              background: checkedItems.has(finding.id) ? '#333' : 'transparent',
+                              background: checkedItems.has(finding.id) ? '#10b981' : 'transparent',
                               WebkitPrintColorAdjust: 'exact',
                               printColorAdjust: 'exact'
                             }}>

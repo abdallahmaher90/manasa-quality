@@ -857,15 +857,7 @@ export default function DepartmentPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
 
 
-                    {/* Priority */}
-                    {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                      <span
-                        className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
-                        style={{ fontSize: 10, padding: '2px 6px', lineHeight: 1.2 }}
-                      >
-                        {PRIORITY_CONFIG[finding.priority].label}
-                      </span>
-                    )}
+                    {/* Priority Removed */}
 
                     {/* Recurrence Badge (only if truly recurring) */}
                     {finding.totalOccurrences > 1 && !finding.isPendingReview && (
