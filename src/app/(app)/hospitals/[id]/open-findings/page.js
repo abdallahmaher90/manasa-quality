@@ -4,6 +4,8 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/Toast'
+
 const PRIORITY_CONFIG = {
   high: { label: 'خطورة عالية', class: 'badge-danger' },
   medium: { label: 'متوسطة', class: 'badge-warning' },
@@ -38,9 +40,13 @@ const CheckIcon = ({ className }) => (
 export default function OpenFindingsPage() {
   const params = useParams()
   const router = useRouter()
+  const { showToast } = useToast()
   const id = params.id // hospital ID
 
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [userRole, setUserRole] = useState(null)
+  const [currentUserId, setCurrentUserId] = useState(null)
   const [hospital, setHospital] = useState(null)
   const [findings, setFindings] = useState([])
   const [departments, setDepartments] = useState([])
@@ -58,6 +64,13 @@ export default function OpenFindingsPage() {
   const fetchData = async () => {
     setLoading(true)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setCurrentUserId(user.id)
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        if (profile) setUserRole(profile.role)
+      }
+
       const [hospRes, deptsRes, findingsRes] = await Promise.all([
         supabase.from('hospitals').select('id, name, governorate').eq('id', id).single(),
         supabase.from('departments').select('id, name'),
@@ -92,6 +105,50 @@ export default function OpenFindingsPage() {
       newChecked.add(findingId)
     }
     setCheckedItems(newChecked)
+  }
+
+  const handleSelectAllDepts = () => {
+    setSelectedDepts(new Set(departments.map(d => d.id)))
+  }
+
+  const handleDeselectAllDepts = () => {
+    setSelectedDepts(new Set())
+  }
+
+  const handleSave = async () => {
+    if (checkedItems.size === 0) return
+    setSaving(true)
+    
+    try {
+      const isDirectorate = userRole === 'directorate_admin' || userRole === 'directorate_member'
+      const newStatus = isDirectorate ? 'resolved_confirmed' : 'resolved_by_hospital'
+      const reviewStatus = isDirectorate ? 'approved' : null
+      
+      const payload = {
+        status: newStatus,
+        resolved_date: new Date().toISOString(),
+        resolved_by: currentUserId,
+        resolution_note: 'تم الحل عبر قائمة المراجعة السريعة'
+      }
+      
+      if (reviewStatus) payload.review_status = reviewStatus
+
+      const { error } = await supabase
+        .from('report_findings')
+        .update(payload)
+        .in('id', Array.from(checkedItems))
+        
+      if (error) throw error
+      
+      showToast('تم حفظ حالة السلبيات بنجاح!', 'success')
+      setFindings(prev => prev.filter(f => !checkedItems.has(f.id)))
+      setCheckedItems(new Set())
+    } catch (err) {
+      console.error(err)
+      showToast('حدث خطأ أثناء حفظ السلبيات', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   // Derived data
@@ -263,11 +320,21 @@ export default function OpenFindingsPage() {
 
       {/* Filters (No Print) */}
       <div className="card no-print" style={{ marginBottom: '24px', padding: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--text-secondary)' }}>
-          <FilterIcon className="w-5 h-5" />
-          <h3 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>اختر الأقسام المطلوبة في التقرير</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)' }}>
+            <FilterIcon className="w-5 h-5" />
+            <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>اختر الأقسام المطلوبة في التقرير</h3>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={handleSelectAllDepts} className="btn btn-ghost btn-sm" style={{ fontSize: '13px' }}>
+              تحديد الكل
+            </button>
+            <button onClick={handleDeselectAllDepts} className="btn btn-ghost btn-sm" style={{ fontSize: '13px', color: 'var(--danger)' }}>
+              إلغاء التحديد
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {departments.map(d => (
             <label key={d.id} style={{ 
               display: 'flex', 
@@ -409,12 +476,26 @@ export default function OpenFindingsPage() {
                       </tr>
                     ))}
                   </Fragment>
-                )
+                );
               })}
             </tbody>
           </table>
         )}
       </div>
+
+      {/* Save Button (No Print) */}
+      {filteredFindings.length > 0 && (
+        <div className="no-print" style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={handleSave}
+            disabled={saving || checkedItems.size === 0}
+            style={{ padding: '12px 32px', fontSize: '16px' }}
+          >
+            {saving ? 'جاري الحفظ...' : `حفظ السلبيات كـ "محلولة" (${checkedItems.size})`}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
