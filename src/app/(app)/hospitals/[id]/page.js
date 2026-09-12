@@ -614,31 +614,6 @@ export default function HospitalPage() {
         </div>
       </div>
 
-      {/* Urgent Action Items */}
-      {criticalFindings.length > 0 && (
-        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--danger)', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.1)' }}>
-          <div className="card-header" style={{ paddingBottom: '12px', marginBottom: '16px' }}>
-            <h2 className="card-title" style={{ color: 'var(--danger)' }}>⚠️ إجراءات عاجلة (سلبيات حرجة أو مكررة)</h2>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {criticalFindings.map(finding => (
-              <div key={finding.id} className={`finding-card ${finding.status}`} style={{ margin: 0 }}>
-                <div className="finding-header">
-                  <div className="finding-text">{finding.original_text || finding.canonical_text}</div>
-                </div>
-                <div className="finding-meta">
-                  <span className="badge badge-neutral">📍 {finding.departments?.name}</span>
-                  {finding.priority === 'high' && <span className="badge badge-danger">🔴 أولوية قصوى</span>}
-                  {finding.repeat_count > 1 && <span className="badge badge-repeat">🔁 مكررة {finding.repeat_count} مرات</span>}
-                  <Link href={`/hospitals/${id}/departments/${finding.departments?.id}`} className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto', padding: '2px 8px', fontSize: 11 }}>
-                    التفاصيل ←
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* KPIs Accordion */}
       <div className="no-print" style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card)', marginBottom: '24px' }}>

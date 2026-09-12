@@ -710,7 +710,7 @@ export default function DepartmentPage() {
                         <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
                           {STATUS_CONFIG[finding.status]?.label}
                         </span>
-                        {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                        {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
                           <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 10.5, padding: '2px 7px' }}>
                             {PRIORITY_CONFIG[finding.priority].label}
                           </span>
@@ -885,7 +885,7 @@ export default function DepartmentPage() {
                     </span>
 
                     {/* Priority */}
-                    {finding.priority && PRIORITY_CONFIG[finding.priority] && (
+                    {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
                       <span
                         className={`badge ${PRIORITY_CONFIG[finding.priority].class}`}
                         style={{ fontSize: 10, padding: '2px 6px', lineHeight: 1.2 }}
