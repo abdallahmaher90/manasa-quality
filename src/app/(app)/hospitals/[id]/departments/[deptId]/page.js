@@ -657,7 +657,7 @@ export default function DepartmentPage() {
                   <th style={{ padding: '8px 12px', width: 40 }}>#</th>
                   <th style={{ padding: '8px 12px' }}>نص السلبية والملاحظات</th>
                   <th style={{ padding: '8px 12px', width: 120 }}>تاريخ الرصد</th>
-                  <th style={{ padding: '8px 12px', textAlign: 'center', width: 120 }}>الحالة</th>
+
                   <th className="no-print" style={{ padding: '8px 12px', textAlign: 'left', width: 230 }}>الإجراء</th>
                 </tr>
               </thead>
@@ -686,8 +686,8 @@ export default function DepartmentPage() {
 
                       {finding.repeat_count > 1 && (
                         <div style={{ marginTop: 4 }}>
-                          <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                            (الظهور رقم {finding.repeat_count})
+                          <span style={{ fontSize: 12, color: 'var(--warning-dark)', fontWeight: 800 }}>
+                            🔁 مكررة × {finding.repeat_count}
                           </span>
                         </div>
                       )}
@@ -705,20 +705,7 @@ export default function DepartmentPage() {
                         <div style={{ marginTop: 2, color: 'var(--warning-dark)', fontSize: 11 }}>🔁 {formatDate(finding.last_seen_date)}</div>
                       )}
                     </td>
-                    <td style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'center' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-                        {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && (
-                          <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
-                            {STATUS_CONFIG[finding.status]?.label}
-                          </span>
-                        )}
-                        {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && finding.priority && PRIORITY_CONFIG[finding.priority] && (
-                          <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 10.5, padding: '2px 7px' }}>
-                            {PRIORITY_CONFIG[finding.priority].label}
-                          </span>
-                        )}
-                      </div>
-                    </td>
+
                     <td className="no-print" style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'left' }}>
                       {/* Direct Action Buttons - No Dropdown Menu */}
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
@@ -868,25 +855,7 @@ export default function DepartmentPage() {
 
                   {/* 3. METADATA ROW: [الحالة] [الخطورة] [🔁 متكررة ×N عند الحاجة] in one compact row */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
-                    {/* Status */}
-                    {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          fontSize: 10.5,
-                          fontWeight: 700,
-                          padding: '2px 6px',
-                          background: 'var(--bg-primary)',
-                          borderRadius: 100,
-                          border: '1px solid var(--border)',
-                          color: STATUS_CONFIG[finding.status]?.color,
-                          lineHeight: 1.2,
-                        }}
-                      >
-                        {STATUS_CONFIG[finding.status]?.label}
-                      </span>
-                    )}
+
 
                     {/* Priority */}
                     {!(finding.status === 'recurring' || finding.totalOccurrences > 1 || finding.repeat_count > 1) && finding.priority && PRIORITY_CONFIG[finding.priority] && (
