@@ -26,8 +26,11 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       // Fetch stats
-      const [pendingRes, hospitalsListRes, reportsRes, recurringRes, totalOpenRes, totalRecurringRes, totalReportsRes, totalHospitalsRes] =
-        await Promise.all([
+      const { data: { session } } = await supabase.auth.getSession()
+
+      // Fetch stats from DB and recurring endpoint in parallel
+      const [dbResults, recurringApiRes] = await Promise.all([
+        Promise.all([
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'resolved_by_hospital'),
           supabase.from('hospitals').select(`
             id, name, governorate,
@@ -37,43 +40,52 @@ export default function Dashboard() {
             .select('id, inspection_date, inspector_name, hospitals(name)')
             .order('inspection_date', { ascending: false })
             .limit(5),
-          supabase.from('v_report_findings')
-            .select(`
-              id,
-              canonical_text,
-              original_text,
-              repeat_count,
-              departments (name),
-              hospitals (name)
-            `)
-            .eq('status', 'recurring'),
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).in('status', ['open', 'recurring']),
-          supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'recurring'),
           supabase.from('reports').select('id', { count: 'exact', head: true }),
           supabase.from('hospitals').select('id', { count: 'exact', head: true })
-        ])
+        ]),
+        fetch('/api/analytics/recurring', {
+          headers: {
+            'Authorization': session ? `Bearer ${session.access_token}` : ''
+          }
+        })
+      ])
+
+      const [pendingRes, hospitalsListRes, reportsRes, totalOpenRes, totalReportsRes, totalHospitalsRes] = dbResults
+      
+      let recurringData = { recurringInSameHospital: [] }
+      if (recurringApiRes.ok) {
+        const json = await recurringApiRes.json()
+        if (json.success) recurringData = json.data
+      }
+      
+      const recurringGroups = recurringData.recurringInSameHospital
 
       setStats({
         pendingConfirmation: pendingRes.count || 0,
         totalOpen: totalOpenRes.count || 0,
-        totalRecurring: totalRecurringRes.count || 0,
+        totalRecurring: recurringGroups.length,
         totalReports: totalReportsRes.count || 0,
         totalHospitals: totalHospitalsRes.count || 0,
       })
 
-      // Group recurring findings by department
-      if (recurringRes.data) {
-        const grouped = {}
-        recurringRes.data.forEach(f => {
-          const deptName = f.departments?.name || 'أقسام أخرى'
-          if (!grouped[deptName]) grouped[deptName] = []
-          grouped[deptName].push(f)
-        })
+      // Group recurring issues by department (flatten allDepartments from groups)
+      const grouped = {}
+      recurringGroups.forEach(group => {
+        const depts = group.allDepartments && group.allDepartments.length > 0 
+                      ? group.allDepartments 
+                      : [{ name: 'أقسام أخرى' }]
         
-        // Sort by number of recurring findings
-        const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)
-        setRecurringByDept(sorted)
-      }
+        depts.forEach(dept => {
+          const deptName = dept.name || 'أقسام أخرى'
+          if (!grouped[deptName]) grouped[deptName] = []
+          grouped[deptName].push(group)
+        })
+      })
+      
+      // Sort by number of recurring groups
+      const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)
+      setRecurringByDept(sorted)
 
       // Process hospitals to get finding counts
       if (hospitalsListRes.data) {
