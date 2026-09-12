@@ -11,9 +11,9 @@ const PRIORITY_CONFIG = {
 }
 
 // SVG Icons
-const PrinterIcon = ({ className }) => (
+const DownloadIcon = ({ className }) => (
   <svg className={className} style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
   </svg>
 )
 
@@ -40,18 +40,7 @@ export default function OpenFindingsPage() {
   const [departments, setDepartments] = useState([])
 
   // Filters
-  const [selectedDept, setSelectedDept] = useState('all')
-  const [selectedPriority, setSelectedPriority] = useState('all')
-  const [selectedResponsible, setSelectedResponsible] = useState('all')
-
-  // Print Options
-  const [showPrintOptions, setShowPrintOptions] = useState(false)
-  const [printConfig, setPrintConfig] = useState({
-    dept: 'all', // 'all' or specific dept_id
-    showResponsible: true,
-    showPriority: true,
-    showDeadline: true
-  })
+  const [selectedDepts, setSelectedDepts] = useState(new Set())
 
   // Local checklist state for UI only (does NOT mutate DB)
   const [checkedItems, setCheckedItems] = useState(new Set())
@@ -75,8 +64,13 @@ export default function OpenFindingsPage() {
       ])
 
       if (hospRes.data) setHospital(hospRes.data)
-      if (deptsRes.data) setDepartments(deptsRes.data)
-      if (findingsRes.data) setFindings(findingsRes.data)
+      if (findingsRes.data && deptsRes.data) {
+        setFindings(findingsRes.data)
+        const hospDeptIds = [...new Set(findingsRes.data.map(f => f.department_id))]
+        const hospDepts = deptsRes.data.filter(d => hospDeptIds.includes(d.id))
+        setDepartments(hospDepts)
+        setSelectedDepts(new Set(hospDeptIds))
+      }
     } catch (err) {
       console.error('Error fetching open findings:', err)
     } finally {
@@ -96,18 +90,13 @@ export default function OpenFindingsPage() {
 
   // Derived data
   const deptMap = new Map(departments.map(d => [d.id, d.name]))
-  const responsibles = [...new Set(findings.map(f => f.responsible).filter(Boolean))]
 
   // Filter findings
   let filteredFindings = findings
-  if (selectedDept !== 'all') {
-    filteredFindings = filteredFindings.filter(f => f.department_id === selectedDept)
-  }
-  if (selectedPriority !== 'all') {
-    filteredFindings = filteredFindings.filter(f => f.priority === selectedPriority)
-  }
-  if (selectedResponsible !== 'all') {
-    filteredFindings = filteredFindings.filter(f => f.responsible === selectedResponsible)
+  if (selectedDepts.size > 0) {
+    filteredFindings = filteredFindings.filter(f => selectedDepts.has(f.department_id))
+  } else {
+    filteredFindings = []
   }
 
   // Group by department
@@ -125,7 +114,6 @@ export default function OpenFindingsPage() {
 
   const handlePrint = () => {
     window.print()
-    setShowPrintOptions(false)
   }
 
   if (loading) {
@@ -173,10 +161,6 @@ export default function OpenFindingsPage() {
           
           /* Print only specific department if selected */
           .print-dept-wrapper[data-dept-id] { display: table-row; }
-          ${printConfig.dept !== 'all' ? `.print-dept-wrapper:not([data-dept-id="${printConfig.dept}"]) { display: none !important; }` : ''}
-          ${!printConfig.showPriority ? '.print-priority { display: none !important; }' : ''}
-          ${!printConfig.showResponsible ? '.print-responsible { display: none !important; }' : ''}
-          ${!printConfig.showDeadline ? '.print-deadline { display: none !important; }' : ''}
         }
         .print-header { display: none; }
       `}} />
@@ -192,47 +176,10 @@ export default function OpenFindingsPage() {
           </h1>
         </div>
         <div style={{ display: 'flex', gap: '8px', position: 'relative' }}>
-          <button className="btn btn-primary" onClick={() => setShowPrintOptions(!showPrintOptions)}>
-            <PrinterIcon className="w-4 h-4" />
-            طباعة Checklist
+          <button className="btn btn-primary" onClick={handlePrint}>
+            <DownloadIcon className="w-4 h-4 ml-2" />
+            تنزيل الـ Checklist
           </button>
-          
-          {showPrintOptions && (
-            <div style={{ position: 'absolute', top: '110%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', boxShadow: 'var(--shadow-md)', zIndex: 10, width: '280px' }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 12px 0' }}>خيارات الطباعة</h3>
-              
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', fontSize: 12, marginBottom: '4px' }}>القسم:</label>
-                <select className="form-input" style={{ width: '100%', padding: '4px 8px', fontSize: 13 }} value={printConfig.dept} onChange={e => setPrintConfig({...printConfig, dept: e.target.value})}>
-                  <option value="all">كل الأقسام</option>
-                  {Object.keys(groupedFindings).map(dName => {
-                    const deptId = groupedFindings[dName][0]?.department_id
-                    return <option key={deptId} value={deptId}>{dName}</option>
-                  })}
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 13, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={printConfig.showPriority} onChange={e => setPrintConfig({...printConfig, showPriority: e.target.checked})} />
-                  إظهار الأولوية
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 13, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={printConfig.showResponsible} onChange={e => setPrintConfig({...printConfig, showResponsible: e.target.checked})} />
-                  إظهار المسؤول
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 13, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={printConfig.showDeadline} onChange={e => setPrintConfig({...printConfig, showDeadline: e.target.checked})} />
-                  إظهار تاريخ الاستحقاق
-                </label>
-              </div>
-              
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                <button className="btn btn-ghost btn-sm" onClick={() => setShowPrintOptions(false)}>إلغاء</button>
-                <button className="btn btn-primary btn-sm" onClick={handlePrint}>طباعة الآن</button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -240,18 +187,40 @@ export default function OpenFindingsPage() {
       <div className="card no-print" style={{ marginBottom: '24px', padding: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--text-secondary)' }}>
           <FilterIcon className="w-5 h-5" />
-          <h3 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>تصفية السلبيات</h3>
+          <h3 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>اختر الأقسام المطلوبة في التقرير</h3>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: 12, marginBottom: '6px', color: 'var(--text-muted)' }}>القسم</label>
-            <select className="form-input" value={selectedDept} onChange={e => setSelectedDept(e.target.value)}>
-              <option value="all">كل الأقسام</option>
-              {departments.map(d => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
-          </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+          {departments.map(d => (
+            <label key={d.id} style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              cursor: 'pointer', 
+              background: 'var(--bg-secondary)', 
+              padding: '6px 12px', 
+              borderRadius: '20px', 
+              border: selectedDepts.has(d.id) ? '2px solid var(--primary)' : '2px solid transparent',
+              transition: 'all 0.2s ease'
+            }}>
+              <input 
+                type="checkbox" 
+                checked={selectedDepts.has(d.id)}
+                onChange={(e) => {
+                  const newSet = new Set(selectedDepts)
+                  if (e.target.checked) newSet.add(d.id)
+                  else newSet.delete(d.id)
+                  setSelectedDepts(newSet)
+                }}
+                style={{ display: 'none' }}
+              />
+              <span style={{ 
+                fontSize: 13, 
+                fontWeight: selectedDepts.has(d.id) ? 700 : 500, 
+                color: selectedDepts.has(d.id) ? 'var(--primary)' : 'var(--text-main)',
+                transition: 'all 0.2s ease'
+              }}>{d.name}</span>
+            </label>
+          ))}
         </div>
       </div>
 
