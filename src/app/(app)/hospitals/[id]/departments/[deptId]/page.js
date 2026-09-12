@@ -707,9 +707,11 @@ export default function DepartmentPage() {
                     </td>
                     <td style={{ padding: '8px 10px', verticalAlign: 'top', textAlign: 'center' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-                        <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
-                          {STATUS_CONFIG[finding.status]?.label}
-                        </span>
+                        {finding.status !== 'recurring' && (
+                          <span style={{ display: 'inline-block', whiteSpace: 'nowrap', fontSize: 11.5, color: STATUS_CONFIG[finding.status]?.color, fontWeight: 700, padding: '3px 8px', background: 'var(--bg-primary)', borderRadius: 100, border: '1px solid var(--border)' }}>
+                            {STATUS_CONFIG[finding.status]?.label}
+                          </span>
+                        )}
                         {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
                           <span className={`badge ${PRIORITY_CONFIG[finding.priority].class}`} style={{ fontSize: 10.5, padding: '2px 7px' }}>
                             {PRIORITY_CONFIG[finding.priority].label}
@@ -867,22 +869,24 @@ export default function DepartmentPage() {
                   {/* 3. METADATA ROW: [الحالة] [الخطورة] [🔁 متكررة ×N عند الحاجة] in one compact row */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
                     {/* Status */}
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        fontSize: 10.5,
-                        fontWeight: 700,
-                        padding: '2px 6px',
-                        background: 'var(--bg-primary)',
-                        borderRadius: 100,
-                        border: '1px solid var(--border)',
-                        color: STATUS_CONFIG[finding.status]?.color,
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {STATUS_CONFIG[finding.status]?.label}
-                    </span>
+                    {finding.status !== 'recurring' && (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          padding: '2px 6px',
+                          background: 'var(--bg-primary)',
+                          borderRadius: 100,
+                          border: '1px solid var(--border)',
+                          color: STATUS_CONFIG[finding.status]?.color,
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {STATUS_CONFIG[finding.status]?.label}
+                      </span>
+                    )}
 
                     {/* Priority */}
                     {finding.status !== 'recurring' && finding.priority && PRIORITY_CONFIG[finding.priority] && (
