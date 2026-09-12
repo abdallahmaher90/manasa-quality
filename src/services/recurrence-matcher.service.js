@@ -140,6 +140,10 @@ export class RecurrenceMatcherService {
         return this._buildResult('HIGH_CONFIDENCE', bestCandidate.id, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
       }
 
+      if (bestValidation.decision === 'REQUIRES_GEMINI') {
+        return this._buildResult('REQUIRES_GEMINI', null, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
+      }
+
       if (bestValidation.decision === 'UNCERTAIN') {
         return this._buildResult('UNCERTAIN', null, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
       }
@@ -171,21 +175,17 @@ export class RecurrenceMatcherService {
       return {
         decision: 'UNCERTAIN',
         reasonLog: 'Semantic extraction failed for one or both findings. AI_UNAVAILABLE',
-        decisionLog: 'Extraction Failed'
+        decisionLog: 'Extraction Failed',
+        score: 0.5,
+        jaccard: candidate.similarity || 0.5
       }
     }
 
-    // Call the external AI Adjudication Gate
-    const aiResult = await adjudicateFindingMatch(newSig, candSig)
-    
-    let score = 0.5
-    if (aiResult.decision === 'SAME_ISSUE') score = 0.95
-    if (aiResult.decision === 'DIFFERENT_ISSUE') score = 0.1
-
+    // Instead of calling AI inline, we defer to the Semantic Queue Worker
     return {
-      decision: aiResult.decision,
-      score,
-      reasonLog: aiResult.reason,
+      decision: 'REQUIRES_GEMINI',
+      score: 0.5,
+      reasonLog: 'Deferred to Semantic Adjudication Queue',
       jaccard: candidate.similarity || 0.5
     }
   }

@@ -175,8 +175,9 @@ export async function POST(request) {
           let recurrenceGroupId = recResult.recurrenceGroupId
           let reviewStatus = recResult.reviewStatus
 
-          if (!recurrenceGroupId) {
+          if (!recurrenceGroupId && recResult.decision !== 'REQUIRES_GEMINI') {
             // Distinct or Uncertain: create new independent group
+            // (Skipped if REQUIRES_GEMINI, as Gemini will decide whether to create or link)
             const normKey = normalizeRecurrenceKey(originalText)
             const { data: newGrp } = await supabase
               .from('recurrence_groups')
@@ -199,7 +200,7 @@ export async function POST(request) {
           }
 
           // Save finding with both canonical_finding_id and recurrence_group_id
-          await supabase.from('report_findings').insert({
+          const { data: insertedFinding, error: insertError } = await supabase.from('report_findings').insert({
             report_id: report.id,
             hospital_id: hospitalId,
             department_id: deptId,
@@ -214,7 +215,15 @@ export async function POST(request) {
             deadline: finding.deadline,
             priority: finding.priority || 'medium',
             status: 'open'
-          })
+          }).select('id').single()
+
+          if (!insertError && insertedFinding && recResult.decision === 'REQUIRES_GEMINI') {
+            await supabase.from('semantic_adjudication_queue').insert({
+              report_finding_id: insertedFinding.id,
+              candidate_group_id: recResult.candidateGroupId || null,
+              status: 'pending'
+            })
+          }
         }
       }
 
