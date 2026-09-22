@@ -296,13 +296,16 @@ export default function HospitalPage() {
           </div>
         </div>
         <div className="flex gap-sm no-print">
+          <Link href={`/hospitals/${id}/visit-report`} className="btn btn-secondary btn-sm" style={{ padding: '6px 12px', fontSize: 12 }}>
+            📝 تقرير مرور
+          </Link>
           <button
             id="print-hospital-report"
             className="btn btn-ghost btn-sm"
             onClick={handlePrint}
             style={{ padding: '6px 12px', fontSize: 12 }}
           >
-            🖨️ طباعة التقرير
+            🖨️ طباعة إحصائيات
           </button>
           <Link href="/upload" className="btn btn-primary btn-sm" style={{ padding: '6px 12px', fontSize: 12 }}>
             📤 تقرير جديد
