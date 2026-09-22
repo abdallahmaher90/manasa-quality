@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon } from '@/components/Icons'
-import { computeHospitalStats } from '@/lib/statsHelper'
+import { computeHospitalStats, fetchAllHospitalFindings } from '@/lib/statsHelper'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -41,8 +41,8 @@ export default function Dashboard() {
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).in('status', ['open', 'recurring']),
           supabase.from('reports').select('id', { count: 'exact', head: true }),
           supabase.from('hospitals').select('id', { count: 'exact', head: true }),
-          supabase.from('v_report_findings').select('id, hospital_id, status, review_status, recurrence_group_id')
         ]),
+        fetchAllHospitalFindings(),
         fetch('/api/analytics/recurring', {
           headers: {
             'Authorization': session ? `Bearer ${session.access_token}` : ''
@@ -87,8 +87,8 @@ export default function Dashboard() {
       setRecurringByDept(sorted)
 
       // Process hospitals to get finding counts
-      if (hospitalsListRes.data && dbResults[6]?.data) {
-        const processed = computeHospitalStats(hospitalsListRes.data, dbResults[6].data)
+      if (hospitalsListRes.data && dbResults[1]) {
+        const processed = computeHospitalStats(hospitalsListRes.data, dbResults[1])
           .map(h => ({
             ...h,
             findingCount: h.open,

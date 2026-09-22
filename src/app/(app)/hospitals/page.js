@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { computeHospitalStats } from '@/lib/statsHelper'
+import { computeHospitalStats, fetchAllHospitalFindings } from '@/lib/statsHelper'
 
 const DEPT_ICONS = {
   'الداخلي': '🏥', 'الباطنة': '🏥', 'العناية': '🫀', 'طوارئ': '🚨',
@@ -29,13 +29,13 @@ export default function HospitalsPage() {
   }, [])
 
   const fetchHospitals = async () => {
-    const [hospRes, findingsRes] = await Promise.all([
+    const [hospRes, allFindings] = await Promise.all([
       supabase.from('hospitals').select('id, name, governorate, last_sat_evaluation').order('name'),
-      supabase.from('v_report_findings').select('id, hospital_id, status, review_status, recurrence_group_id')
+      fetchAllHospitalFindings()
     ])
 
-    if (hospRes.data && findingsRes.data) {
-      const processed = computeHospitalStats(hospRes.data, findingsRes.data)
+    if (hospRes.data && allFindings) {
+      const processed = computeHospitalStats(hospRes.data, allFindings)
       setHospitals(processed)
     }
     setLoading(false)

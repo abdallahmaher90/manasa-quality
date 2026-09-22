@@ -1,3 +1,35 @@
+import { supabase } from '@/lib/supabase'
+
+export async function fetchAllHospitalFindings() {
+  let allFindings = []
+  let from = 0
+  const limit = 1000
+  let hasMore = true
+
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from('v_report_findings')
+      .select('id, hospital_id, status, review_status, recurrence_group_id')
+      .range(from, from + limit - 1)
+
+    if (error) {
+      console.error('Error fetching findings:', error)
+      break
+    }
+
+    if (data && data.length > 0) {
+      allFindings = [...allFindings, ...data]
+      from += limit
+    }
+
+    if (!data || data.length < limit) {
+      hasMore = false
+    }
+  }
+
+  return allFindings
+}
+
 export function computeHospitalStats(hospitals, allFindings) {
   return hospitals.map(h => {
     const hFindings = allFindings.filter(f => f.hospital_id === h.id)
@@ -24,7 +56,7 @@ export function computeHospitalStats(hospitals, allFindings) {
     
     // Recurring findings count (number of unique recurring groups among the active open/recurring findings)
     const hospGroups = new Set()
-    hFindings.forEach(f => {
+    openFindingsList.forEach(f => {
       const grpKey = f.recurrence_group_id || f.id
       if (recurringGroupIds.has(grpKey)) {
           hospGroups.add(grpKey)

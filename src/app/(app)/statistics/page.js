@@ -6,7 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
 } from 'recharts'
-import { computeHospitalStats } from '@/lib/statsHelper'
+import { computeHospitalStats, fetchAllHospitalFindings } from '@/lib/statsHelper'
 
 export default function StatisticsPage() {
   const [loading, setLoading] = useState(true)
@@ -31,8 +31,7 @@ export default function StatisticsPage() {
         .select('*', { count: 'exact', head: true })
 
       // Fetch all findings for analysis
-      const { data: findings } = await supabase
-        .from('v_report_findings')
+      const findings = await fetchAllHospitalFindings()
       // Fetch all hospitals to compute accurate stats
       const { data: hospitals } = await supabase
         .from('hospitals')
