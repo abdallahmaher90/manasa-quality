@@ -121,7 +121,7 @@ export const generateVisitReport = async ({ hospitalName, resolvedFindings, unre
             bidirectional: true,
             children: [
               new TextRun({
-                text: \`تقرير مرور - \${hospitalName}\`,
+                text: `تقرير مرور - ${hospitalName}`,
                 bold: true,
                 size: 40,
                 font: 'Arial',
@@ -137,14 +137,14 @@ export const generateVisitReport = async ({ hospitalName, resolvedFindings, unre
             bidirectional: true,
             children: [
               new TextRun({
-                text: \`التاريخ: \${today}\`,
+                text: `التاريخ: ${today}`,
                 size: 28,
                 font: 'Arial',
                 rightToLeft: true,
               }),
               new TextRun({ break: 1 }),
               new TextRun({
-                text: \`الأقسام التي تم المرور عليها: \${deptsString}\`,
+                text: `الأقسام التي تم المرور عليها: ${deptsString}`,
                 size: 28,
                 font: 'Arial',
                 rightToLeft: true,
@@ -196,5 +196,5 @@ export const generateVisitReport = async ({ hospitalName, resolvedFindings, unre
 
   // Generate buffer and save
   const blob = await Packer.toBlob(doc)
-  saveAs(blob, \`تقرير_مرور_\${hospitalName.replace(/\\s+/g, '_')}_\${new Date().getTime()}.docx\`)
+  saveAs(blob, `تقرير_مرور_${hospitalName.replace(/\s+/g, '_')}_${new Date().getTime()}.docx`)
 }
