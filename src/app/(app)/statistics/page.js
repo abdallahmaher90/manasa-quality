@@ -15,6 +15,8 @@ export default function StatisticsPage() {
     totalFindings: 0,
     openFindings: 0,
     recurringFindings: 0,
+    pendingFindings: 0,
+    resolvedFindings: 0,
     hospitalsData: [],
     statusData: []
   })
@@ -74,6 +76,7 @@ export default function StatisticsPage() {
         openFindings: openCount,
         recurringFindings: recurringCount,
         pendingFindings: pendingCount,
+        resolvedFindings: resolvedCount,
         hospitalsData,
         statusData
       })
@@ -133,6 +136,12 @@ export default function StatisticsPage() {
           <div style={{ fontSize: '3rem', marginBottom: '10px' }}>⏳</div>
           <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>سلبيات قيد المراجعة</h3>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f59e0b' }}>{stats.pendingFindings}</div>
+        </div>
+
+        <div className="stat-card glass-card" style={{ padding: '20px', borderRadius: '15px', textAlign: 'center', borderBottom: '4px solid #2196f3' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '10px' }}>✅</div>
+          <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>سلبيات تم تلافيها</h3>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#2196f3' }}>{stats.resolvedFindings}</div>
         </div>
 
       </div>
