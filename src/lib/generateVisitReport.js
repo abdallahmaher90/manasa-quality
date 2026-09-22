@@ -57,7 +57,7 @@ const createFindingsTable = (findings, includeDept = true) => {
   ]
 
   findings.forEach((f, idx) => {
-    const text = f.canonical_text || f.original_text || f.text || ''
+    const text = f.original_text || f.canonical_text || f.text || ''
     const dept = f.departments?.name || f.department_name || 'عام'
     
     rows.push(

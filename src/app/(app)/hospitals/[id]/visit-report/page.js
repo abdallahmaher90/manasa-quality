@@ -221,7 +221,7 @@ export default function VisitReportPage() {
                 {resolvedFindings.map(finding => (
                   <div key={finding.id} style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '8px', borderLeft: '4px solid var(--success)' }}>
                     <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>{finding.departments?.name}</div>
-                    <div style={{ fontSize: 14 }}>{finding.canonical_text || finding.original_text}</div>
+                    <div style={{ fontSize: 14 }}>{finding.original_text || finding.canonical_text}</div>
                   </div>
                 ))}
               </div>
@@ -268,7 +268,7 @@ export default function VisitReportPage() {
                           {finding.departments?.name} | <span style={{ color: finding.priority === 'high' ? 'var(--danger)' : 'inherit'}}>{finding.priority === 'high' ? 'عالية الأهمية' : 'عادية'}</span>
                         </div>
                         <div style={{ fontSize: 14, color: isSelected ? 'var(--text-main)' : 'var(--text-secondary)' }}>
-                          {finding.canonical_text || finding.original_text}
+                          {finding.original_text || finding.canonical_text}
                         </div>
                       </div>
                     </div>
