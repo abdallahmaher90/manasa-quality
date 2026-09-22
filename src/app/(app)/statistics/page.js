@@ -6,6 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
 } from 'recharts'
+import { computeHospitalStats } from '@/lib/statsHelper'
 
 export default function StatisticsPage() {
   const [loading, setLoading] = useState(true)
@@ -32,42 +33,33 @@ export default function StatisticsPage() {
       // Fetch all findings for analysis
       const { data: findings } = await supabase
         .from('v_report_findings')
-        .select(`
-          id, status, repeat_count,
-          hospitals (name)
-        `)
+      // Fetch all hospitals to compute accurate stats
+      const { data: hospitals } = await supabase
+        .from('hospitals')
+        .select('id, name, governorate')
 
-      if (!findings) throw new Error('لا توجد بيانات')
+      if (!findings || !hospitals) throw new Error('لا توجد بيانات')
 
       // Basic stats
       let totalFindings = findings.length
+      
+      const processedHospitals = computeHospitalStats(hospitals, findings)
+      
       let openCount = 0
       let recurringCount = 0
       let pendingCount = 0
       let resolvedCount = 0
-      
-      const hospitalCounts = {}
 
-      findings.forEach(f => {
-        if (f.status === 'open') openCount++
-        else if (f.status === 'recurring') recurringCount++
-        else if (f.status === 'resolved_by_hospital' || f.status === 'pending_review') pendingCount++
-        else if (f.status === 'resolved_confirmed') resolvedCount++
-        else resolvedCount++ // fallback
-
-        // Count by hospital
-        const hName = f.hospitals?.name || 'غير محدد'
-        if (!hospitalCounts[hName]) {
-          hospitalCounts[hName] = { name: hName, open: 0, recurring: 0, pending: 0, resolved: 0 }
-        }
-        if (f.status === 'open') hospitalCounts[hName].open++
-        else if (f.status === 'recurring') hospitalCounts[hName].recurring++
-        else if (f.status === 'resolved_by_hospital' || f.status === 'pending_review') hospitalCounts[hName].pending++
-        else hospitalCounts[hName].resolved++
+      processedHospitals.forEach(h => {
+        openCount += h.open
+        recurringCount += h.recurring
+        pendingCount += h.pendingConfirm
+        resolvedCount += h.resolved
       })
 
-      const hospitalsData = Object.values(hospitalCounts)
-        .sort((a, b) => (b.open + b.recurring + b.pending) - (a.open + a.recurring + a.pending))
+      const hospitalsData = processedHospitals
+        .sort((a, b) => (b.open + b.recurring + b.pendingConfirm) - (a.open + a.recurring + a.pendingConfirm))
+        .map(h => ({ name: h.name, open: h.open, recurring: h.recurring, pending: h.pendingConfirm, resolved: h.resolved }))
         .slice(0, 10) // Top 10
 
       const statusData = [

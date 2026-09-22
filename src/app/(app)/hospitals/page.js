@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { computeHospitalStats } from '@/lib/statsHelper'
 
 const DEPT_ICONS = {
   'الداخلي': '🏥', 'الباطنة': '🏥', 'العناية': '🫀', 'طوارئ': '🚨',
@@ -28,22 +29,13 @@ export default function HospitalsPage() {
   }, [])
 
   const fetchHospitals = async () => {
-    const { data } = await supabase
-      .from('hospitals')
-      .select(`
-        id, name, governorate, last_sat_evaluation,
-        findings!findings_hospital_id_fkey(id, status, repeat_count)
-      `)
-      .order('name')
+    const [hospRes, findingsRes] = await Promise.all([
+      supabase.from('hospitals').select('id, name, governorate, last_sat_evaluation').order('name'),
+      supabase.from('v_report_findings').select('id, hospital_id, status, review_status, recurrence_group_id')
+    ])
 
-    if (data) {
-      const processed = data.map(h => {
-        const open = h.findings?.filter(f => f.status === 'open').length || 0
-        const recurring = h.findings?.filter(f => f.status === 'recurring').length || 0
-        const resolved = h.findings?.filter(f => f.status === 'resolved_confirmed').length || 0
-        const pendingConfirm = h.findings?.filter(f => f.status === 'resolved_by_hospital').length || 0
-        return { ...h, open, recurring, resolved, pendingConfirm, total: open + recurring }
-      })
+    if (hospRes.data && findingsRes.data) {
+      const processed = computeHospitalStats(hospRes.data, findingsRes.data)
       setHospitals(processed)
     }
     setLoading(false)

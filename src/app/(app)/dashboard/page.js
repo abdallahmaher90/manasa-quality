@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon } from '@/components/Icons'
+import { computeHospitalStats } from '@/lib/statsHelper'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -32,17 +33,15 @@ export default function Dashboard() {
       const [dbResults, recurringApiRes] = await Promise.all([
         Promise.all([
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'resolved_by_hospital'),
-          supabase.from('hospitals').select(`
-            id, name, governorate,
-            findings(count)
-          `).order('name'),
+          supabase.from('hospitals').select('id, name, governorate').order('name'),
           supabase.from('reports')
             .select('id, inspection_date, inspector_name, hospitals(name)')
             .order('inspection_date', { ascending: false })
             .limit(5),
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).in('status', ['open', 'recurring']),
           supabase.from('reports').select('id', { count: 'exact', head: true }),
-          supabase.from('hospitals').select('id', { count: 'exact', head: true })
+          supabase.from('hospitals').select('id', { count: 'exact', head: true }),
+          supabase.from('v_report_findings').select('id, hospital_id, status, review_status, recurrence_group_id')
         ]),
         fetch('/api/analytics/recurring', {
           headers: {
@@ -88,11 +87,11 @@ export default function Dashboard() {
       setRecurringByDept(sorted)
 
       // Process hospitals to get finding counts
-      if (hospitalsListRes.data) {
-        const processed = hospitalsListRes.data
+      if (hospitalsListRes.data && dbResults[6]?.data) {
+        const processed = computeHospitalStats(hospitalsListRes.data, dbResults[6].data)
           .map(h => ({
             ...h,
-            findingCount: h.findings?.[0]?.count || 0,
+            findingCount: h.open,
           }))
           .sort((a, b) => b.findingCount - a.findingCount)
           .slice(0, 5)
