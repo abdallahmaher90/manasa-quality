@@ -82,7 +82,7 @@ function getNewGenAI() {
 }
 
 // Production-safe stable model (Availability, Low Latency, JSON support)
-const MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-flash-latest']
+const MODELS = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest']
 
 // Text Normalization for AI matching
 export function normalizeArabicText(text) {
@@ -131,12 +131,15 @@ const fastFailFetch = async (url, options) => {
 
 // Circuit Breaker State
 let consecutiveFailures = 0
-const MAX_FAILURES = 5
+const MAX_FAILURES = 20
 let circuitBreakerOpenUntil = 0
 
 async function generateWithFallback(prompt, generationConfig = null) {
   if (Date.now() < circuitBreakerOpenUntil) {
     throw new Error('CIRCUIT_BREAKER_OPEN')
+  } else if (circuitBreakerOpenUntil > 0) {
+    circuitBreakerOpenUntil = 0
+    consecutiveFailures = 0
   }
 
   let lastError = null
