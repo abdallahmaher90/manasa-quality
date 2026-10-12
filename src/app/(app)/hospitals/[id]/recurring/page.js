@@ -76,9 +76,9 @@ export default function RecurringFindingsPage() {
             return {
               id: g.id,
               count: g.eligibleCount,
-              latestText: latestFinding.original_text,
+              latestText: latestFinding.recurrence_group_title || latestFinding.original_text,
               firstSeen: firstFinding.first_seen_date,
-              lastSeen: latestFinding.first_seen_date,
+              lastSeen: latestFinding.last_seen_date || latestFinding.first_seen_date,
               departments: depts,
               findings: sortedFindings // Keep all for details if needed
             }
