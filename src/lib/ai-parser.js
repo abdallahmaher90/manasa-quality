@@ -201,7 +201,7 @@ async function callGroq(prompt, generationConfig = null) {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert in Egyptian healthcare quality inspection. Do not overthink. Output the complete, full JSON directly and immediately, ensuring every department and finding from the report is included without omission.'
+            content: 'You are an expert in Egyptian healthcare quality inspection. Strictly adhere to the exact department names as written in the report. Never invent, split, or categorize findings into conceptual quality standards. Output the complete, full JSON directly and immediately.'
           },
           { role: 'user', content: prompt }
         ],
@@ -464,10 +464,11 @@ ${cleanText}
 - مستشفي بيلا المركزي
 - مستشفى حميات دسوق
 
-2. اسم القسم (name) يجب أن يكون القسم الرئيسي فقط (مثل: "عناية القلب"، "القسم الداخلي"، "عام").
-   - **هام جداً:** إذا كان التقرير يحتوي على أقسام فرعية أو غرف داخل قسم رئيسي (مثل: "عناية القلب - الكراش كار" أو "الداخلي / الملفات")، **لا تقم بإنشائها كأقسام منفصلة أبدًا**.
-   - بدلاً من ذلك، اجعل اسم القسم هو القسم الرئيسي فقط، وقم بكتابة اسم الغرفة أو الجزء الفرعي بين قوسين في بداية نص السلبية.
-   - مثال: القسم "عناية القلب"، ونص السلبية: "[الكراش كار] جهاز الصدمات لا يعمل".
+2. **الالتزام الحرفي التام بأقسام التقرير فقط (ممنوع منعاً باتاً اختراع أو تصنيف أقسام من عندك):**
+   - اسم القسم (name) يجب أن يُؤخذ نصاً وحرفياً كما هو مكتوب كعنوان قسم في التقرير فقط (مثل: "قسم الداخلي"، "قسم المعمل"، "قسم العناية المركزة"، "قسم الاستقبال"، "قسم العناية المتوسطة"، إلخ).
+   - **تحذير حاسم وصارم:** إياك أن تصنّف السلبيات أو تقسمها حسب موضوع المخالفة أو معايير الجودة (ممنوع قطعي أن تخترع أقساماً من رأسك مثل: "تعريف هوية المرضى"، "مكافحة العدوى"، "إدارة المواد الكيميائية والخطرة"، "السلامة والصحة المهنية"، "الملفات الطبية"، "عام").
+   - كل سلبية تتبع حصراً القسم الذي كُتبت تحته في التقرير نصاً؛ فإذا كُتبت سلبية تخص الأدوية أو النفايات أو السلامة تحت عنوان "قسم الداخلي"، فإن قسمها يبقى "قسم الداخلي" دون أي تغيير أو نقل.
+   - لا تدمج أقساماً مستقلة وردت في التقرير، ولا تخترع أي قسم غير موجود حرفياً في التقرير. التزم تماماً بهيكل التقرير الأصلي.
 
 3. **تجاهل الإيجابيات واستخراج السلبيات الحقيقية فقط (قاعدة جوهرية حاسمة):**
    - إذا احتوى التقرير على قسم للإيجابيات أو ما تم تلافيه من المرورات السابقة (مثل: "تم عمل...", "معتمد", "يعمل", "مطابق"):
@@ -523,6 +524,53 @@ ${cleanText}
     const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     const rawParsed = JSON.parse(cleaned)
     
+    // Robust normalization before Zod validation
+    if (rawParsed && Array.isArray(rawParsed.departments)) {
+      const normalizedDepts = []
+      let lastDept = null
+
+      for (const item of rawParsed.departments) {
+        if (typeof item === 'string') {
+          // Model placed department name as a standalone string
+          lastDept = { name: item.trim(), findings: [] }
+          normalizedDepts.push(lastDept)
+        } else if (item && typeof item === 'object') {
+          const deptName = item.name || item.department_name || item.department || (lastDept ? lastDept.name : 'عام')
+          let targetDept = normalizedDepts.find(d => d.name === deptName)
+          if (!targetDept) {
+            targetDept = { name: deptName, findings: [] }
+            normalizedDepts.push(targetDept)
+          }
+
+          const rawFindings = Array.isArray(item.findings) ? item.findings : []
+          for (const f of rawFindings) {
+            if (typeof f === 'string') {
+              targetDept.findings.push({
+                original_text: f,
+                canonical_text: f,
+                corrective_action: null,
+                responsible: null,
+                deadline: null,
+                priority: 'high'
+              })
+            } else if (f && typeof f === 'object') {
+              const orig = f.original_text || f.text || f.finding || f.defect || ''
+              targetDept.findings.push({
+                original_text: orig,
+                canonical_text: f.canonical_text || orig,
+                corrective_action: f.corrective_action || f.action || null,
+                responsible: f.responsible || null,
+                deadline: f.deadline || null,
+                priority: ['high', 'medium', 'low'].includes(f.priority) ? f.priority : 'high'
+              })
+            }
+          }
+          lastDept = targetDept
+        }
+      }
+      rawParsed.departments = normalizedDepts.filter(d => d.findings.length > 0)
+    }
+
     // Validate with Zod
     const validated = ReportZodSchema.parse(rawParsed)
 
@@ -532,7 +580,8 @@ ${cleanText}
     
     return validated
   } catch (e) {
-    console.error("Zod Validation or Parse Error:", e)
+    console.error("Zod Validation or Parse Error:", e.message)
+    console.error("Response text sample:", responseText?.slice(0, 800))
     throw new Error(`فشل في تحليل التقرير (خطأ في هيكل البيانات): ${e.message}`)
   }
 }
