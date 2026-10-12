@@ -42,7 +42,7 @@ export async function POST(request) {
     const userRole = profile?.role || ''
     const userHospitalId = profile?.hospital_id || ''
 
-    const { parsedData, rawText, fileName, fileUrl, fileHash } = await request.json()
+    const { parsedData, hospitalId: explicitHospitalId, rawText, fileName, fileUrl, fileHash } = await request.json()
     
     if (parsedData) {
       // Ensure multi-day dates or formatted text are converted to a single YYYY-MM-DD date
@@ -50,38 +50,39 @@ export async function POST(request) {
     }
 
     // 1. Find or create hospital
-    let hospitalId
-    const targetNorm = normalizeArabicName(parsedData.hospital_name)
-    
-    // Fetch all hospitals to do a smart match
-    const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
-    
-    let existingHospital = null
-    if (allHospitals) {
-      existingHospital = allHospitals.find(h => {
-        const dbNorm = normalizeArabicName(h.name)
-        return dbNorm === targetNorm
-      })
-    }
-
-    if (existingHospital) {
-      hospitalId = existingHospital.id
-    } else {
-      // Only directorate admin can create a new hospital implicitly
-      if (userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
-         return Response.json({ error: 'لا تملك صلاحية إضافة مستشفى جديد' }, { status: 403 })
-      }
-      const { data: newHospital, error: hospErr } = await supabase
-        .from('hospitals')
-        .insert({
-          name: parsedData.hospital_name,
-          governorate: parsedData.governorate,
+    let hospitalId = explicitHospitalId || null
+    if (!hospitalId) {
+      const targetNorm = normalizeArabicName(parsedData.hospital_name)
+      
+      // Fetch all hospitals to do a smart match
+      const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
+      
+      let existingHospital = null
+      if (allHospitals) {
+        existingHospital = allHospitals.find(h => {
+          const dbNorm = normalizeArabicName(h.name)
+          return dbNorm === targetNorm
         })
-        .select('id')
-        .single()
+      }
 
-      if (hospErr) throw new Error('فشل في إنشاء المستشفى: ' + hospErr.message)
-      hospitalId = newHospital.id
+      if (existingHospital) {
+        hospitalId = existingHospital.id
+      } else {
+        // Only directorate admin can create a new hospital implicitly
+        if (userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
+           return Response.json({ error: 'لا تملك صلاحية إضافة مستشفى جديد' }, { status: 403 })
+        }
+        const { data: newHospital, error: hospErr } = await supabase
+          .from('hospitals')
+          .insert({
+            name: parsedData.hospital_name,
+            governorate: parsedData.governorate,
+          })
+          .select('id')
+          .single()
+        if (hospErr) throw hospErr
+        hospitalId = newHospital.id
+      }
     }
 
     // Permission check for saving to this hospital

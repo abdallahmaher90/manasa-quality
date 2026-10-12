@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
@@ -51,6 +51,15 @@ export default function UploadPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
+  const [hospitalsList, setHospitalsList] = useState([])
+
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      const { data } = await supabase.from('hospitals').select('id, name, governorate').order('name')
+      if (data) setHospitalsList(data)
+    }
+    fetchHospitals()
+  }, [])
 
   // Phase 3 Step 1: Department Modal (replace window.prompt)
   const [deptModal, setDeptModal] = useState(null) // { mode: 'add' | 'move', fromDIdx, fIdx, title, defaultValue, targetDept }
@@ -192,7 +201,12 @@ export default function UploadPage() {
       if (data.error) throw new Error(data.error)
 
       setParsedData(data.result)
-      setParsedHospitalId(data.hospitalId)
+      let resolvedHospId = data.hospitalId
+      if (!resolvedHospId && hospitalsList.length > 0 && data.result?.hospital_name) {
+        const found = hospitalsList.find(h => h.name.trim() === data.result.hospital_name.trim())
+        if (found) resolvedHospId = found.id
+      }
+      setParsedHospitalId(resolvedHospId)
       setCollapsedDepts({})
       setProgress(100)
       setStep(2)
@@ -239,6 +253,7 @@ export default function UploadPage() {
         },
         body: JSON.stringify({
           parsedData,
+          hospitalId: parsedHospitalId,
           rawText,
           fileName: fileObj ? fileObj.name : null,
           fileUrl,
@@ -649,8 +664,47 @@ export default function UploadPage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'var(--space-md)' }}>
               <div>
-                <div className="text-muted text-sm">المنشأة</div>
-                <div style={{ fontWeight: 700, fontSize: 16 }}>{parsedData.hospital_name || '-'}</div>
+                <label className="text-muted text-sm" style={{ display: 'block', marginBottom: 4 }}>
+                  المنشأة {parsedHospitalId && <span style={{ fontSize: 11, color: 'var(--accent-light)' }}>✓ معتمد</span>}
+                </label>
+                <select
+                  value={parsedHospitalId || ''}
+                  onChange={(e) => {
+                    const selectedId = e.target.value
+                    const selectedHosp = hospitalsList.find(h => h.id === selectedId)
+                    setParsedHospitalId(selectedId)
+                    if (selectedHosp) {
+                      setParsedData(prev => ({
+                        ...prev,
+                        hospital_name: selectedHosp.name,
+                        governorate: selectedHosp.governorate || prev.governorate
+                      }))
+                      showToast(`تم تعيين المنشأة: ${selectedHosp.name}`, 'info')
+                    }
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: 14,
+                    fontWeight: '700',
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    borderRadius: 'var(--radius-sm)',
+                    color: '#0f172a',
+                    fontFamily: 'inherit',
+                    width: '100%',
+                    minWidth: 200,
+                    maxWidth: 240,
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="" disabled>-- اختر المنشأة --</option>
+                  {hospitalsList.map(h => (
+                    <option key={h.id} value={h.id}>
+                      {h.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <div className="text-muted text-sm">المحافظة</div>
