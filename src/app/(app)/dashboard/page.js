@@ -30,7 +30,7 @@ export default function Dashboard() {
       const { data: { session } } = await supabase.auth.getSession()
 
       // Fetch stats from DB and recurring endpoint in parallel
-      const [dbResults, recurringApiRes] = await Promise.all([
+      const [dbResults, allHospitalFindings, recurringApiRes] = await Promise.all([
         Promise.all([
           supabase.from('v_report_findings').select('id', { count: 'exact', head: true }).eq('status', 'resolved_by_hospital'),
           supabase.from('hospitals').select('id, name, governorate').order('name'),
@@ -47,25 +47,48 @@ export default function Dashboard() {
           headers: {
             'Authorization': session ? `Bearer ${session.access_token}` : ''
           }
+        }).catch(err => {
+          console.error('Error fetching recurring analytics:', err)
+          return null
         })
       ])
 
       const [pendingRes, hospitalsListRes, reportsRes, totalOpenRes, totalReportsRes, totalHospitalsRes] = dbResults
       
       let recurringData = { recurringInSameHospital: [] }
-      if (recurringApiRes.ok) {
-        const json = await recurringApiRes.json()
-        if (json.success) recurringData = json.data
+      if (recurringApiRes && recurringApiRes.ok) {
+        try {
+          const json = await recurringApiRes.json()
+          if (json.success && json.data) recurringData = json.data
+        } catch (e) {
+          console.error('Failed to parse recurring response:', e)
+        }
       }
       
-      const recurringGroups = recurringData.recurringInSameHospital
+      const recurringGroups = recurringData?.recurringInSameHospital || []
+
+      // Process hospitals to get finding counts
+      let processedHospitals = []
+      let fallbackRecurringCount = 0
+      if (hospitalsListRes?.data && Array.isArray(allHospitalFindings)) {
+        const computed = computeHospitalStats(hospitalsListRes.data, allHospitalFindings)
+        fallbackRecurringCount = computed.reduce((sum, h) => sum + (h.recurring || 0), 0)
+        processedHospitals = computed
+          .map(h => ({
+            ...h,
+            findingCount: h.open,
+          }))
+          .sort((a, b) => b.findingCount - a.findingCount)
+          .slice(0, 5)
+        setTopHospitals(processedHospitals)
+      }
 
       setStats({
-        pendingConfirmation: pendingRes.count || 0,
-        totalOpen: totalOpenRes.count || 0,
-        totalRecurring: recurringGroups.length,
-        totalReports: totalReportsRes.count || 0,
-        totalHospitals: totalHospitalsRes.count || 0,
+        pendingConfirmation: pendingRes?.count || 0,
+        totalOpen: totalOpenRes?.count || 0,
+        totalRecurring: recurringGroups.length > 0 ? recurringGroups.length : fallbackRecurringCount,
+        totalReports: totalReportsRes?.count || 0,
+        totalHospitals: totalHospitalsRes?.count || 0,
       })
 
       // Group recurring issues by department (flatten allDepartments from groups)
@@ -76,7 +99,7 @@ export default function Dashboard() {
                       : [{ name: 'أقسام أخرى' }]
         
         depts.forEach(dept => {
-          const deptName = dept.name || 'أقسام أخرى'
+          const deptName = typeof dept === 'string' ? dept : (dept?.name || 'أقسام أخرى')
           if (!grouped[deptName]) grouped[deptName] = []
           grouped[deptName].push(group)
         })
@@ -86,19 +109,7 @@ export default function Dashboard() {
       const sorted = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length)
       setRecurringByDept(sorted)
 
-      // Process hospitals to get finding counts
-      if (hospitalsListRes.data && dbResults[1]) {
-        const processed = computeHospitalStats(hospitalsListRes.data, dbResults[1])
-          .map(h => ({
-            ...h,
-            findingCount: h.open,
-          }))
-          .sort((a, b) => b.findingCount - a.findingCount)
-          .slice(0, 5)
-        setTopHospitals(processed)
-      }
-
-      if (reportsRes.data) {
+      if (reportsRes?.data) {
         setRecentReports(reportsRes.data)
       }
     } catch (err) {
