@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { generateReportDocxBlob } from '@/lib/docx-generator'
@@ -425,27 +425,27 @@ export default function ReportAssistantPage() {
               </button>
             </div>
 
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'right', direction: 'rtl', border: '1px solid var(--border)' }}>
+            <table style={{ width: '100%', minWidth: '920px', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: 13.5, textAlign: 'right', direction: 'rtl', border: '1px solid #cbd5e1', background: '#ffffff' }}>
               <thead>
-                <tr style={{ background: 'var(--bg-secondary)', borderBottom: '2px solid var(--border)', fontWeight: 800, textAlign: 'center' }}>
-                  <th style={{ padding: '10px 6px', width: '5%', border: '1px solid var(--border)' }}>م</th>
-                  <th style={{ padding: '10px 8px', width: '33%', border: '1px solid var(--border)', textAlign: 'right' }}>بيان عدم التطابق (السلبيات)</th>
-                  <th style={{ padding: '10px 8px', width: '32%', border: '1px solid var(--border)', textAlign: 'right' }}>الاجراء التصحيحي المقترح</th>
-                  <th style={{ padding: '10px 8px', width: '18%', border: '1px solid var(--border)' }}>المسئول عنة</th>
-                  <th style={{ padding: '10px 8px', width: '12%', border: '1px solid var(--border)' }}>مدة التنفيذ</th>
+                <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #94a3b8', fontWeight: 800, textAlign: 'center', color: '#1e293b' }}>
+                  <th style={{ padding: '12px 6px', width: '45px', border: '1px solid #cbd5e1' }}>م</th>
+                  <th style={{ padding: '12px 10px', width: '36%', border: '1px solid #cbd5e1', textAlign: 'right' }}>بيان عدم التطابق (السلبيات)</th>
+                  <th style={{ padding: '12px 10px', width: '35%', border: '1px solid #cbd5e1', textAlign: 'right' }}>الاجراء التصحيحي المقترح</th>
+                  <th style={{ padding: '12px 8px', width: '15%', border: '1px solid #cbd5e1' }}>المسئول عنة</th>
+                  <th style={{ padding: '12px 8px', width: '14%', border: '1px solid #cbd5e1' }}>مدة التنفيذ</th>
                 </tr>
               </thead>
               <tbody>
                 {(() => {
                   let serial = 1
                   return reportData.departments?.map((dept, dIdx) => (
-                    <tbody key={dIdx}>
+                    <Fragment key={dIdx}>
                       {/* Department Row */}
-                      <tr style={{ background: '#e2e8f0', border: '1px solid #cbd5e1' }}>
-                        <td colSpan={5} style={{ padding: '8px 12px', fontWeight: 800, fontSize: 14, color: '#1e293b' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                              <span>🏨</span>
+                      <tr style={{ background: '#e2e8f0', borderTop: '2px solid #94a3b8', borderBottom: '2px solid #94a3b8' }}>
+                        <td colSpan={5} style={{ padding: '10px 14px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                              <span style={{ fontSize: 18 }}>🏨</span>
                               <input
                                 type="text"
                                 value={dept.name}
@@ -454,9 +454,20 @@ export default function ReportAssistantPage() {
                                   updated.departments[dIdx].name = e.target.value
                                   setReportData(updated)
                                 }}
-                                style={{ background: 'transparent', border: 'none', fontWeight: 800, fontSize: 14, color: '#0f172a', outline: 'none', minWidth: 200 }}
+                                placeholder="اسم القسم..."
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  borderBottom: '1.5px dashed #64748b',
+                                  fontWeight: 800,
+                                  fontSize: 15,
+                                  color: '#0f172a',
+                                  outline: 'none',
+                                  padding: '2px 6px',
+                                  minWidth: 220
+                                }}
                               />
-                              <span style={{ fontSize: 11, background: '#cbd5e1', padding: '2px 8px', borderRadius: 100 }}>
+                              <span style={{ fontSize: 12, background: '#cbd5e1', color: '#334155', padding: '3px 10px', borderRadius: 100, fontWeight: 700, whiteSpace: 'nowrap' }}>
                                 {dept.findings?.length || 0} سلبية
                               </span>
                             </div>
@@ -464,9 +475,23 @@ export default function ReportAssistantPage() {
                             <button
                               type="button"
                               onClick={() => addFinding(dIdx)}
-                              style={{ background: '#ffffff', border: '1px solid #94a3b8', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer', fontWeight: 700 }}
+                              style={{
+                                background: '#ffffff',
+                                border: '1.5px solid #0284c7',
+                                color: '#0284c7',
+                                borderRadius: 6,
+                                padding: '5px 12px',
+                                fontSize: 12.5,
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                whiteSpace: 'nowrap',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4
+                              }}
                             >
-                              ➕ سلبية في هذا القسم
+                              <span>➕</span>
+                              <span>سلبية في هذا القسم</span>
                             </button>
                           </div>
                         </td>
@@ -474,58 +499,120 @@ export default function ReportAssistantPage() {
 
                       {/* Findings Rows */}
                       {dept.findings?.map((f, fIdx) => (
-                        <tr key={fIdx} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <tr key={fIdx} style={{ borderBottom: '1px solid #e2e8f0', background: fIdx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
                           {/* م */}
-                          <td style={{ padding: '8px 6px', textAlign: 'center', fontWeight: 700, color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                          <td style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0', verticalAlign: 'top', paddingTop: 14 }}>
                             {serial++}
                           </td>
 
                           {/* بيان عدم التطابق */}
-                          <td style={{ padding: '8px 10px', border: '1px solid var(--border)' }}>
+                          <td style={{ padding: '8px', border: '1px solid #e2e8f0', verticalAlign: 'top' }}>
                             <textarea
-                              rows={2}
+                              rows={3}
                               value={f.defect}
                               onChange={(e) => updateFinding(dIdx, fIdx, 'defect', e.target.value)}
-                              style={{ width: '100%', fontSize: 13, border: '1px solid transparent', background: 'transparent', resize: 'vertical', fontFamily: 'inherit', outline: 'none' }}
-                              placeholder="بيان عدم التطابق..."
+                              style={{
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                fontSize: 13,
+                                lineHeight: '1.5',
+                                border: '1px solid #cbd5e1',
+                                borderRadius: 6,
+                                padding: '6px 8px',
+                                background: '#ffffff',
+                                resize: 'vertical',
+                                fontFamily: 'inherit',
+                                outline: 'none',
+                                color: '#1e293b'
+                              }}
+                              placeholder="بيان عدم التطابق (السلبيات)..."
                             />
                           </td>
 
                           {/* الاجراء التصحيحي */}
-                          <td style={{ padding: '8px 10px', border: '1px solid var(--border)', background: '#f8fafc' }}>
+                          <td style={{ padding: '8px', border: '1px solid #e2e8f0', verticalAlign: 'top' }}>
                             <textarea
-                              rows={2}
+                              rows={3}
                               value={f.corrective_action}
                               onChange={(e) => updateFinding(dIdx, fIdx, 'corrective_action', e.target.value)}
-                              style={{ width: '100%', fontSize: 13, border: '1px solid transparent', background: 'transparent', resize: 'vertical', fontFamily: 'inherit', outline: 'none', color: '#047857', fontWeight: 600 }}
-                              placeholder="الإجراء التصحيحي..."
+                              style={{
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                fontSize: 13,
+                                lineHeight: '1.5',
+                                border: '1px solid #a7f3d0',
+                                borderRadius: 6,
+                                padding: '6px 8px',
+                                background: '#f0fdf4',
+                                resize: 'vertical',
+                                fontFamily: 'inherit',
+                                outline: 'none',
+                                color: '#065f46',
+                                fontWeight: 600
+                              }}
+                              placeholder="الإجراء التصحيحي المقترح..."
                             />
                           </td>
 
                           {/* المسئول عنه */}
-                          <td style={{ padding: '8px 6px', textAlign: 'center', border: '1px solid var(--border)' }}>
+                          <td style={{ padding: '8px 6px', textAlign: 'center', border: '1px solid #e2e8f0', verticalAlign: 'top', paddingTop: 12 }}>
                             <input
                               type="text"
                               value={f.responsible}
                               onChange={(e) => updateFinding(dIdx, fIdx, 'responsible', e.target.value)}
-                              style={{ width: '100%', fontSize: 12.5, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 4, padding: '4px', background: '#ffffff', fontWeight: 600 }}
+                              style={{
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                fontSize: 12.5,
+                                textAlign: 'center',
+                                border: '1px solid #cbd5e1',
+                                borderRadius: 6,
+                                padding: '6px 4px',
+                                background: '#ffffff',
+                                fontWeight: 600,
+                                color: '#1e293b'
+                              }}
+                              placeholder="المسؤول..."
                             />
                           </td>
 
                           {/* مدة التنفيذ وحذف */}
-                          <td style={{ padding: '8px 6px', textAlign: 'center', border: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                          <td style={{ padding: '8px 6px', textAlign: 'center', border: '1px solid #e2e8f0', verticalAlign: 'top', paddingTop: 12 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                               <input
                                 type="text"
                                 value={f.deadline}
                                 onChange={(e) => updateFinding(dIdx, fIdx, 'deadline', e.target.value)}
-                                style={{ width: 60, fontSize: 12, textAlign: 'center', border: '1px solid #cbd5e1', borderRadius: 4, padding: '4px', background: '#ffffff', fontWeight: 700 }}
+                                style={{
+                                  width: '100%',
+                                  maxWidth: 75,
+                                  boxSizing: 'border-box',
+                                  fontSize: 12,
+                                  textAlign: 'center',
+                                  border: '1px solid #cbd5e1',
+                                  borderRadius: 6,
+                                  padding: '6px 4px',
+                                  background: '#ffffff',
+                                  fontWeight: 700,
+                                  color: '#0f172a'
+                                }}
+                                placeholder="المدة..."
                               />
                               <button
                                 type="button"
                                 onClick={() => deleteFinding(dIdx, fIdx)}
-                                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--danger-light)', fontSize: 14 }}
-                                title="حذف السلبية"
+                                style={{
+                                  border: 'none',
+                                  background: '#fee2e2',
+                                  color: '#b91c1c',
+                                  borderRadius: 4,
+                                  padding: '4px 6px',
+                                  cursor: 'pointer',
+                                  fontSize: 12,
+                                  fontWeight: 800,
+                                  lineHeight: 1
+                                }}
+                                title="حذف هذه السلبية"
                               >
                                 ✕
                               </button>
@@ -533,7 +620,7 @@ export default function ReportAssistantPage() {
                           </td>
                         </tr>
                       ))}
-                    </tbody>
+                    </Fragment>
                   ))
                 })()}
               </tbody>
