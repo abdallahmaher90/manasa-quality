@@ -188,7 +188,6 @@ async function callGroq(prompt, generationConfig = null) {
 
   const candidateModels = [
     configuredModel || 'openai/gpt-oss-120b',
-    'qwen/qwen3.8-27b',
     'openai/gpt-oss-20b'
   ]
 
@@ -202,15 +201,18 @@ async function callGroq(prompt, generationConfig = null) {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert in healthcare quality inspection and patient safety. Output strictly valid JSON without markdown wrapping when requested.'
+            content: 'You are an expert in Egyptian healthcare quality inspection. Do not overthink. Output the complete, full JSON directly and immediately, ensuring every department and finding from the report is included without omission.'
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.1
+        temperature: 0.1,
+        max_tokens: 4500
       }
 
       if (isJson) {
         body.response_format = { type: 'json_object' }
+        body.reasoning_format = 'hidden'
+        body.reasoning_effort = 'low'
       }
 
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -230,7 +232,11 @@ async function callGroq(prompt, generationConfig = null) {
       }
 
       const data = await res.json()
-      const content = data.choices?.[0]?.message?.content || ''
+      const choice = data.choices?.[0]
+      if (choice) {
+        console.log(`[Groq Info]: model=${model}, finish_reason=${choice.finish_reason}, prompt_tokens=${data.usage?.prompt_tokens}, completion_tokens=${data.usage?.completion_tokens}, reasoning_tokens=${data.usage?.completion_tokens_details?.reasoning_tokens}`)
+      }
+      const content = choice?.message?.content || ''
       if (content) {
         return {
           response: {
@@ -421,6 +427,13 @@ ${JSON.stringify(sigB, null, 2)}
  * using Gemini AI. Handles Arabic text and various report formats.
  */
 export async function parseReport(text) {
+  let cleanText = text || ''
+
+  // 1. استبعاد قسم الإيجابيات والتلافيات السابقة إذا كان موجوداً لحماية التحليل من اعتبارها سلبيات
+  const positivesMatch = cleanText.match(/(?:الإيجابيات|الايجابيات|ما\s*تم\s*تلافيه|ماتم\s*تلافيه|النقاط\s*الإيجابية|النقاط\s*الايجابية)[\s\S]*?(?=(?:مدة\s*التنفيذ|بيان\s*عدم\s*التطابق|أوجه\s*القصور|اوجه\s*القصور|جدول\s*السلبيات|جدول\s*عدم\s*التطابق|السلبيات\s*:))/i)
+  if (positivesMatch) {
+    cleanText = cleanText.replace(positivesMatch[0], '\n\n[ملاحظة: تم استبعاد قسم الإيجابيات والتلافيات السابقة]\n\n')
+  }
 
   const prompt = `
 أنت نظام ذكاء اصطناعي متخصص في تحليل تقارير مرور سلامة المرضى في المستشفيات المصرية.
@@ -428,7 +441,7 @@ export async function parseReport(text) {
 قم بتحليل التقرير التالي واستخرج منه البيانات المطلوبة بدقة عالية.
 
 **التقرير:**
-${text}
+${cleanText}
 
 **قواعد مهمة:**
 1. اسم المستشفى (hospital_name) يجب أن يكون مطابقاً حرفياً لواحد من هذه القائمة فقط (لا تخترع اسماً ولا تستخدم اسماً غير موجود في القائمة، اقرأ التقرير واختر الأقرب من هذه القائمة):
@@ -456,14 +469,21 @@ ${text}
    - بدلاً من ذلك، اجعل اسم القسم هو القسم الرئيسي فقط، وقم بكتابة اسم الغرفة أو الجزء الفرعي بين قوسين في بداية نص السلبية.
    - مثال: القسم "عناية القلب"، ونص السلبية: "[الكراش كار] جهاز الصدمات لا يعمل".
 
-3. نص السلبية المعياري (canonical_text) يجب أن يكون واضحاً ومباشراً بدون حشو.
-4. الإجراء التصحيحي (corrective_action) يجب أن يكون خطوة عملية يمكن تنفيذها.
-5. الأولوية (priority) يجب أن تكون "high" أو "medium" أو "low" فقط.
-6. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null).
-7. التاريخ (inspection_date): حوّله لصيغة YYYY-MM-DD دائماً.
+3. **تجاهل الإيجابيات واستخراج السلبيات الحقيقية فقط (قاعدة جوهرية حاسمة):**
+   - إذا احتوى التقرير على قسم للإيجابيات أو ما تم تلافيه من المرورات السابقة (مثل: "تم عمل...", "معتمد", "يعمل", "مطابق"):
+     **ممنوع منعاً باتاً استخراج أي بند من الإيجابيات كـ finding!** لا تعتبر هذه النقاط سلبيات أبداً.
+   - السلبيات (findings) تُستخرج حصراً من جدول "بيان عدم التطابق" أو "أوجه القصور".
+   - السلبية دائماً تعبر عن عيب، نقص، تقصير، أو مخالفة (مثل: "لا يوجد...", "غير معتمد", "شطب بالملف", "غير مدرب", "بدون تاريخ إصدار", "غير مؤمنة").
+   - **استخراج كافة الأقسام والسلبيات بدون استثناء:** يجب تضمين كل قسم وارد في جدول السلبيات بالتقرير (مثل: العناية المركزة، العناية المتوسطة، الداخلي، المعمل، العمليات، الاستقبال، الطوارئ، الحضانات، الصيدلية... وكافة الأقسام المذكورة). ممنوع الاكتفاء بقسم أو قسمين، بل يجب مسح كافة الجداول واستخراج كل السلبيات حتى الوصول لأسفل التقرير والتوقيعات.
+
+4. نص السلبية المعياري (canonical_text) يجب أن يكون واضحاً ومباشراً بدون حشو.
+5. الإجراء التصحيحي (corrective_action) يجب أن يكون خطوة عملية يمكن تنفيذها من واقع التقرير.
+6. الأولوية (priority) يجب أن تكون "high" أو "medium" أو "low" فقط.
+7. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null).
+8. التاريخ (inspection_date): حوّله لصيغة YYYY-MM-DD دائماً.
    - إذا كان المرور تم على مدار يومين أو أكثر، يجب اعتباره تقريراً واحداً في يوم عادي، واستخراج تاريخ اليوم الأخير من المرور.
 
-8. يجب أن يكون الرد JSON فقط مطابقاً تماماً لهذا الهيكل وبدون أي نص خارجي:
+9. يجب أن يكون الرد JSON فقط مطابقاً تماماً لهذا الهيكل وبدون أي نص خارجي:
 {
   "hospital_name": "اسم المستشفى من القائمة",
   "governorate": "المحافظة",
