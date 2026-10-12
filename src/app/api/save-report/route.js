@@ -18,6 +18,8 @@ function normalizeArabicName(name) {
 }
 
 export async function POST(request) {
+  let report = null
+  let supabase = null
   try {
     const authHeader = request.headers.get('authorization')
     if (!authHeader) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -29,7 +31,7 @@ export async function POST(request) {
       return Response.json({ error: 'غير مصرح لك للقيام بهذه العملية' }, { status: 401 })
     }
 
-    const supabase = createServiceClient()
+    supabase = createServiceClient()
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -89,8 +91,42 @@ export async function POST(request) {
       }
     }
 
-    // 2. Save the report to archive
-    const { data: report, error: reportErr } = await supabase
+    // 2. Prevent duplicate reports for the same hospital & date
+    if (hospitalId && parsedData.inspection_date) {
+      const { data: existingReports } = await supabase
+        .from('reports')
+        .select('id')
+        .eq('hospital_id', hospitalId)
+        .eq('inspection_date', parsedData.inspection_date)
+
+      if (existingReports && existingReports.length > 0) {
+        let hasReportWithFindings = false
+        for (const er of existingReports) {
+          const { count } = await supabase
+            .from('findings')
+            .select('id', { count: 'exact', head: true })
+            .eq('report_id', er.id)
+          if (count > 0) {
+            hasReportWithFindings = true
+            break
+          }
+        }
+
+        if (hasReportWithFindings) {
+          return Response.json({
+            error: `تم العثور على تقرير محفوظ مسبقاً لهذا المستشفى في نفس التاريخ (${parsedData.inspection_date}). يرجى التحقق من الأرشيف.`
+          }, { status: 409 })
+        } else {
+          // If existing reports are empty shells from previous failed timeout attempts, clean them up
+          for (const er of existingReports) {
+            await supabase.from('reports').delete().eq('id', er.id)
+          }
+        }
+      }
+    }
+
+    // 3. Save the report to archive
+    const { data: insertedReport, error: reportErr } = await supabase
       .from('reports')
       .insert({
         hospital_id: hospitalId,
@@ -108,6 +144,7 @@ export async function POST(request) {
       .single()
 
     if (reportErr) throw new Error('فشل في حفظ التقرير: ' + reportErr.message)
+    report = insertedReport
 
     // 3. Initialize matching services once for the whole report
     const matcherService = new VectorMatchingService(supabase)
@@ -297,6 +334,21 @@ export async function POST(request) {
     return Response.json({ success: true, hospitalId, reportId: report.id })
   } catch (error) {
     console.error('Save report error:', error)
+    // Rollback / cleanup newly created empty report if save failed mid-way
+    if (report?.id && supabase) {
+      try {
+        const { count } = await supabase
+          .from('findings')
+          .select('id', { count: 'exact', head: true })
+          .eq('report_id', report.id)
+        if (count === 0) {
+          console.warn(`[Save Report Rollback]: Deleted orphaned report shell ${report.id}`)
+          await supabase.from('reports').delete().eq('id', report.id)
+        }
+      } catch (rollbackErr) {
+        console.error('Failed to rollback empty report:', rollbackErr)
+      }
+    }
     return Response.json({ error: error.message }, { status: 500 })
   }
 }
