@@ -96,9 +96,12 @@ export function normalizeArabicText(text) {
     .trim()
 }
 
+let embeddingDisabledUntil = 0
+
 // Generate Embeddings using the new SDK
 export async function getEmbedding(text) {
   if (!text) return null
+  if (Date.now() < embeddingDisabledUntil) return null
   
   const modelName = process.env.EMBEDDING_MODEL || 'gemini-embedding-2'
   const dims = parseInt(process.env.EMBEDDING_DIMENSIONS || '768', 10)
@@ -116,6 +119,9 @@ export async function getEmbedding(text) {
     
     return response.embeddings[0].values
   } catch (error) {
+    if (error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('API_KEY')) {
+      embeddingDisabledUntil = Date.now() + 300000 // 5 minutes penalty
+    }
     console.error('Embedding generation failed:', error.message)
     return null
   }
@@ -219,14 +225,8 @@ async function generateWithFallback(prompt, generationConfig = null) {
       } catch (e) {
         lastError = e
         if (e.message?.includes('429') || e.status === 429 || e.message?.includes('quota') || e.message?.includes('FAST_FAIL_429')) {
-          consecutiveFailures++
-          if (consecutiveFailures >= MAX_FAILURES) {
-             circuitBreakerOpenUntil = Date.now() + 60000 // 1 minute penalty
-             throw new Error('CIRCUIT_BREAKER_OPEN')
-          }
-          // Quota exceeded, retry with backoff
-          await new Promise(r => setTimeout(r, 2000 * attempt + Math.random() * 1000))
-          continue
+          circuitBreakerOpenUntil = Date.now() + 300000 // 5 minute penalty immediately
+          throw new Error('QUOTA_EXHAUSTED_429')
         }
         if (e.message?.includes('503') || e.message?.includes('FAST_FAIL_503')) {
           consecutiveFailures++

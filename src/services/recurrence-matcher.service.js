@@ -55,7 +55,15 @@ export class RecurrenceMatcherService {
     }
 
     // 1. EXTRACT ISSUE SIGNATURE
-    let signature = await extractSemanticIssueSignature(originalText)
+    let signature = null
+    if (!this._aiExtractionFailed) {
+      try {
+        signature = await extractSemanticIssueSignature(originalText)
+        if (!signature) this._aiExtractionFailed = true
+      } catch (e) {
+        this._aiExtractionFailed = true
+      }
+    }
     if (!signature) {
       signature = this._heuristicExtract(originalText)
     }

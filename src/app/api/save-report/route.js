@@ -274,12 +274,19 @@ export async function POST(request) {
         const protocol = host.includes('localhost') ? 'http' : 'https'
         const reportUrl = `${protocol}://${host}/archive`
 
-        for (const profile of hospitalProfiles) {
-          const { data: { user } } = await supabase.auth.admin.getUserById(profile.id)
-          if (user?.email) {
-            await sendNewReportEmail(user.email, hospitalName, parsedData.inspection_date, reportUrl)
+        // Send emails asynchronously in background so saving never delays or times out
+        Promise.resolve().then(async () => {
+          try {
+            for (const profile of hospitalProfiles) {
+              const { data: { user } } = await supabase.auth.admin.getUserById(profile.id)
+              if (user?.email) {
+                await sendNewReportEmail(user.email, hospitalName, parsedData.inspection_date, reportUrl)
+              }
+            }
+          } catch (e) {
+            console.error('Async email error:', e)
           }
-        }
+        })
       }
     } catch (notifError) {
       console.error('Failed to create notification/email:', notifError)

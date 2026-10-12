@@ -28,10 +28,14 @@ export class VectorMatchingService {
 
     // 2. Generate Embedding
     let embedding = null
-    try {
-      embedding = await getEmbedding(normalizedText)
-    } catch(e) { 
-      console.warn('Embedding failed', e) 
+    if (!this._embeddingFailed) {
+      try {
+        embedding = await getEmbedding(normalizedText)
+        if (!embedding) this._embeddingFailed = true
+      } catch(e) { 
+        this._embeddingFailed = true
+        console.warn('Embedding failed, disabling embedding for this run:', e.message) 
+      }
     }
 
     if (embedding) {
