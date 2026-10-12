@@ -131,10 +131,68 @@ const fastFailFetch = async (url, options) => {
 
 // Circuit Breaker State
 let consecutiveFailures = 0
-const MAX_FAILURES = 20
+const MAX_FAILURES = 5
 let circuitBreakerOpenUntil = 0
 
+async function callGroq(prompt, generationConfig = null) {
+  const apiKey = process.env.GROQ_API_KEY
+  if (!apiKey) return null
+
+  const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
+  const isJson = generationConfig?.responseMimeType === 'application/json' || Boolean(generationConfig?.responseSchema)
+
+  const body = {
+    model,
+    messages: [
+      {
+        role: 'system',
+        content: 'You are an expert in healthcare quality inspection and patient safety. Output strictly valid JSON without markdown wrapping when requested.'
+      },
+      { role: 'user', content: prompt }
+    ],
+    temperature: 0.1
+  }
+
+  if (isJson) {
+    body.response_format = { type: 'json_object' }
+  }
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    console.warn(`Groq API returned HTTP ${res.status}:`, errText)
+    throw new Error(`GROQ_ERROR_${res.status}`)
+  }
+
+  const data = await res.json()
+  const content = data.choices?.[0]?.message?.content || ''
+  return {
+    response: {
+      text: () => content
+    }
+  }
+}
+
 async function generateWithFallback(prompt, generationConfig = null) {
+  // 1. Primary engine: Groq (Ultra-fast, high rate limits)
+  if (process.env.GROQ_API_KEY) {
+    try {
+      const groqResult = await callGroq(prompt, generationConfig)
+      if (groqResult) return groqResult
+    } catch (groqErr) {
+      console.warn('Groq call failed, attempting fallback to Gemini:', groqErr.message)
+    }
+  }
+
+  // 2. Secondary engine: Gemini
   if (Date.now() < circuitBreakerOpenUntil) {
     throw new Error('CIRCUIT_BREAKER_OPEN')
   } else if (circuitBreakerOpenUntil > 0) {
@@ -341,6 +399,33 @@ ${text}
 6. إذا لم تتوفر معلومة معينة في التقرير، اتركها فارغة (null).
 7. التاريخ (inspection_date): حوّله لصيغة YYYY-MM-DD دائماً.
    - إذا كان المرور تم على مدار يومين أو أكثر، يجب اعتباره تقريراً واحداً في يوم عادي، واستخراج تاريخ اليوم الأخير من المرور.
+
+8. يجب أن يكون الرد JSON فقط مطابقاً تماماً لهذا الهيكل وبدون أي نص خارجي:
+{
+  "hospital_name": "اسم المستشفى من القائمة",
+  "governorate": "المحافظة",
+  "inspector_name": "اسم المفتش أو null",
+  "inspection_date": "YYYY-MM-DD",
+  "signatory_1_name": "اسم الموقع 1 أو null",
+  "signatory_1_title": "صفة الموقع 1 أو null",
+  "signatory_2_name": "اسم الموقع 2 أو null",
+  "signatory_2_title": "صفة الموقع 2 أو null",
+  "departments": [
+    {
+      "name": "اسم القسم الرئيسي",
+      "findings": [
+        {
+          "original_text": "نص السلبية الأصلي",
+          "canonical_text": "نص السلبية المعياري",
+          "corrective_action": "الإجراء التصحيحي أو null",
+          "responsible": "المسؤول أو null",
+          "deadline": "المهلة أو null",
+          "priority": "high أو medium أو low"
+        }
+      ]
+    }
+  ]
+}
 `
 
   const generationConfig = {
@@ -352,7 +437,8 @@ ${text}
   const responseText = result.response.text()
 
   try {
-    const rawParsed = JSON.parse(responseText)
+    const cleaned = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    const rawParsed = JSON.parse(cleaned)
     
     // Validate with Zod
     const validated = ReportZodSchema.parse(rawParsed)

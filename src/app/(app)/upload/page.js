@@ -176,6 +176,17 @@ export default function UploadPage() {
       })
 
       setProgress(70)
+      if (!res.ok) {
+        let errDetail = `خطأ في الخادم (${res.status})`
+        try {
+          const errData = await res.json()
+          if (errData.error) errDetail = errData.error
+        } catch {
+          const rawErr = await res.text().catch(() => '')
+          if (rawErr) errDetail = rawErr.slice(0, 150)
+        }
+        throw new Error(errDetail)
+      }
       const data = await res.json()
 
       if (data.error) throw new Error(data.error)
@@ -235,6 +246,21 @@ export default function UploadPage() {
         }),
       })
 
+      if (!res.ok) {
+        let errDetail = `خطأ في الخادم (${res.status})`
+        try {
+          const errData = await res.json()
+          if (errData.error) errDetail = errData.error
+        } catch {
+          const rawErr = await res.text().catch(() => '')
+          if (res.status === 504 || rawErr.includes('An error occurred')) {
+            errDetail = 'استغرقت عملية الحفظ وقتاً طويلاً على الخادم (Timeout). يرجى إعادة المحاولة.'
+          } else if (rawErr) {
+            errDetail = rawErr.slice(0, 150)
+          }
+        }
+        throw new Error(errDetail)
+      }
       const data = await res.json()
       if (data.error) throw new Error(data.error)
 

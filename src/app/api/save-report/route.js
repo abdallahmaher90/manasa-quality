@@ -4,6 +4,9 @@ import { RecurrenceMatcherService, normalizeRecurrenceKey } from '@/services/rec
 import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
+export const dynamic = 'force-dynamic'
+export const maxDuration = 60
+
 function normalizeArabicName(name) {
   if (!name) return ''
   return name
@@ -163,15 +166,34 @@ export async function POST(request) {
           const originalText = finding.original_text
           
           // Layer 3: Broad Canonical Classification (Independent)
-          const matchResult = await matcherService.processFinding(originalText, category)
-          const canonicalId = matchResult.canonicalId
-          
-          if (canonicalId) {
-            await matcherService.logMatch(matchResult.matchLog, originalText)
+          let matchResult = null
+          let canonicalId = null
+          try {
+            matchResult = await matcherService.processFinding(originalText, category)
+            canonicalId = matchResult?.canonicalId
+            if (canonicalId && matchResult?.matchLog) {
+              await matcherService.logMatch(matchResult.matchLog, originalText)
+            }
+          } catch (e) {
+            console.warn('Vector match warning for finding:', e.message)
           }
 
           // Layer 2: Exact Recurrence Matching (Unified Engine)
-          const recResult = await recurrenceMatcher.matchFinding(originalText, dept.name || 'عام')
+          let recResult = null
+          try {
+            recResult = await recurrenceMatcher.matchFinding(originalText, dept.name || 'عام')
+          } catch (e) {
+            console.warn('Recurrence match warning for finding:', e.message)
+            recResult = {
+              decision: 'DISTINCT',
+              recurrenceGroupId: null,
+              reviewStatus: 'pending_review',
+              matchingPolicyVersion: 'FALLBACK_HEURISTIC',
+              entity: 'سلبية عامة',
+              defect: 'مخالفة',
+              reason: 'Local fallback due to matching error: ' + e.message
+            }
+          }
           let recurrenceGroupId = recResult.recurrenceGroupId
           let reviewStatus = recResult.reviewStatus
 
