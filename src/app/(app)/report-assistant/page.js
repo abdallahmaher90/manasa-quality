@@ -5,46 +5,6 @@ import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { generateReportDocxBlob } from '@/lib/docx-generator'
 
-const SAMPLE_TEXT = `مرور مستشفى كفر الشيخ العام 
-يوم الاحد الموافق ١٢ اكتوبر ٢٠٢٦ 
-قسم الأنف والاذن 
-لا يوجد تطبيق معايير الوقايه من السقوط عند بعض المرضى 
-الثلاجه بالقسم غير مصنفه وغير معرفه 
-لا يوجد قائمه محتويات دولاب المستلزمات الطبيه 
-بعض المرضى بدون اسورة تعريف 
-نموذج التوافق الدوائي غير مفعل 
-الوصفه الطبيه غير مكتمله 
-نموذج التاريخ المرضي غير مكتمل 
-
-قسم العظام 
-بعض الكانيولات بدون تعريف أو بيانات تركيب 
-بعض المرضى bed ridden بدون مراتب هوائيه 
-المحاليل غير معرفه ببيانات المريض 
-بعض المرضى بدون اسورة تعريف نموذج التوافق الدوائي غير مفعل 
-الوصفه الدوائيه غير مكتمله 
-نموذج progress notes غير مكتمل
-لا يوجد التشخيص النهائي على الملف الطبي 
-نموذج plan of care غير مفعل 
-لا يوجد اماكن حفظ الادويه الخاصة بالمرضى 
-
-العنايه الباطنه المركزه ب 
-يوجد علاجات طرف المرضى 
-مرضي العنايه بدون اسورة تعريف 
-يوجد انسولين مفتوح بدون بيانات 
-لا يوجد قائمه بمحتويات الثلاجه 
-مخزن المستلزمات غير مصنف وغير معرف 
-يوجد علبه بها ادويه ومحاليل وامبولات وأقراص بدون تعريف لكل مريض ولا فصل 
-نموذج plan of care غير موجود 
-نموذج التسليم والتسلم غير مكتمل 
-نموذج متعدد التخصصات غير موجود 
-نموذج vte غير موجود 
-بعض الحالات عرضه الجلطات لم يتم إعادة تقييم للعرضه للجلطات
-لا يوجد قائمه الاختصارات المسموحه والممنوعه 
-لا يوجد مرور الصيدلى الإكلينيكية يومى 
-الوصفه الدوائيه غير مكتمله البيانات 
-القاءم بالمرور 
-م.امل صبحى فتحى 
-م. نسمه عبد النبي محمد`
 
 export default function ReportAssistantPage() {
   const { showToast } = useToast()
@@ -234,32 +194,15 @@ export default function ReportAssistantPage() {
       {/* Step 1: Input Box */}
       {!reportData && (
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ marginBottom: 12 }}>
             <label className="form-label" style={{ fontWeight: 700, fontSize: 15, margin: 0 }}>
               📝 الصق نص أو مسودة التقرير هنا:
             </label>
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => setRawText(SAMPLE_TEXT)}
-              style={{ fontSize: 12, border: '1px dashed var(--border)', color: 'var(--primary)', fontWeight: 700 }}
-            >
-              📋 تجربة بنص تجريبي (مثال كفر الشيخ العام)
-            </button>
           </div>
 
           <textarea
             className="form-textarea"
-            placeholder="مثال:
-مرور مستشفى كفر الشيخ العام
-يوم الأحد الموافق 12 أكتوبر 2026
-قسم الأنف والأذن
-لا يوجد تطبيق معايير الوقاية من السقوط
-الثلاجة بالقسم غير معرفة...
-
-القائم بالمرور:
-م. أمل صبحي
-م. نسمة عبد النبي"
+            placeholder="الصق نص أو مسودة التقرير هنا..."
             rows={14}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
