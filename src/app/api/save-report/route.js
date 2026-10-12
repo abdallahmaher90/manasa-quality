@@ -109,7 +109,12 @@ export async function POST(request) {
 
     if (reportErr) throw new Error('فشل في حفظ التقرير: ' + reportErr.message)
 
-    // 3. Process each department and its findings
+    // 3. Initialize matching services once for the whole report
+    const matcherService = new VectorMatchingService(supabase)
+    const recurrenceMatcher = new RecurrenceMatcherService(supabase)
+    await recurrenceMatcher.initializeGroupCache()
+
+    // Process each department and its findings
     for (const dept of parsedData.departments || []) {
       // Find or create department (smart match)
       let deptId
@@ -159,9 +164,6 @@ export async function POST(request) {
         }
         const uniqueFindings = Array.from(uniqueFindingsMap.values())
 
-        const matcherService = new VectorMatchingService(supabase)
-        const recurrenceMatcher = new RecurrenceMatcherService(supabase)
-
         for (const finding of uniqueFindings) {
           const originalText = finding.original_text
           
@@ -178,10 +180,10 @@ export async function POST(request) {
             console.warn('Vector match warning for finding:', e.message)
           }
 
-          // Layer 2: Exact Recurrence Matching (Unified Engine)
+          // Layer 2: Exact Recurrence Matching (Unified Engine in Fast Mode)
           let recResult = null
           try {
-            recResult = await recurrenceMatcher.matchFinding(originalText, dept.name || 'عام')
+            recResult = await recurrenceMatcher.matchFinding(originalText, dept.name || 'عام', { fastMode: true })
           } catch (e) {
             console.warn('Recurrence match warning for finding:', e.message)
             recResult = {

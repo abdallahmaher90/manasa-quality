@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai'
 import { getCategory } from './utils.js'
 import { z } from 'zod'
 import { sanitizeInspectionDate } from './utils.js'
+import { createServiceClient } from './supabase.js'
 
 export { sanitizeInspectionDate }
 
@@ -140,67 +141,129 @@ let consecutiveFailures = 0
 const MAX_FAILURES = 5
 let circuitBreakerOpenUntil = 0
 
-async function callGroq(prompt, generationConfig = null) {
-  const apiKey = process.env.GROQ_API_KEY
-  if (!apiKey) return null
+let cachedGroqApiKey = null
+let cachedGroqModel = null
 
-  const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
-  const isJson = generationConfig?.responseMimeType === 'application/json' || Boolean(generationConfig?.responseSchema)
-
-  const body = {
-    model,
-    messages: [
-      {
-        role: 'system',
-        content: 'You are an expert in healthcare quality inspection and patient safety. Output strictly valid JSON without markdown wrapping when requested.'
-      },
-      { role: 'user', content: prompt }
-    ],
-    temperature: 0.1
-  }
-
-  if (isJson) {
-    body.response_format = { type: 'json_object' }
-  }
-
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  })
-
-  if (!res.ok) {
-    const errText = await res.text()
-    console.warn(`Groq API returned HTTP ${res.status}:`, errText)
-    throw new Error(`GROQ_ERROR_${res.status}`)
-  }
-
-  const data = await res.json()
-  const content = data.choices?.[0]?.message?.content || ''
-  return {
-    response: {
-      text: () => content
+async function getGroqCredentials() {
+  if (process.env.GROQ_API_KEY) {
+    return {
+      apiKey: process.env.GROQ_API_KEY,
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b'
     }
   }
+
+  if (cachedGroqApiKey) {
+    return {
+      apiKey: cachedGroqApiKey,
+      model: cachedGroqModel || 'openai/gpt-oss-120b'
+    }
+  }
+
+  try {
+    const supabase = createServiceClient()
+    const { data } = await supabase
+      .from('settings')
+      .select('key, value')
+      .in('key', ['GROQ_API_KEY', 'GROQ_MODEL'])
+
+    if (data && data.length > 0) {
+      const keyRow = data.find(r => r.key === 'GROQ_API_KEY')
+      const modelRow = data.find(r => r.key === 'GROQ_MODEL')
+      if (keyRow?.value) {
+        cachedGroqApiKey = keyRow.value
+        cachedGroqModel = modelRow?.value || 'openai/gpt-oss-120b'
+        return { apiKey: cachedGroqApiKey, model: cachedGroqModel }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load Groq credentials from Supabase:', e.message)
+  }
+
+  return { apiKey: null, model: null }
+}
+
+async function callGroq(prompt, generationConfig = null) {
+  const { apiKey, model: configuredModel } = await getGroqCredentials()
+  if (!apiKey) return null
+
+  const candidateModels = [
+    configuredModel || 'openai/gpt-oss-120b',
+    'qwen/qwen3.8-27b',
+    'openai/gpt-oss-20b'
+  ]
+
+  const isJson = generationConfig?.responseMimeType === 'application/json' || Boolean(generationConfig?.responseSchema)
+
+  let lastError = null
+  for (const model of candidateModels) {
+    try {
+      const body = {
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert in healthcare quality inspection and patient safety. Output strictly valid JSON without markdown wrapping when requested.'
+          },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.1
+      }
+
+      if (isJson) {
+        body.response_format = { type: 'json_object' }
+      }
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (!res.ok) {
+        const errText = await res.text()
+        console.warn(`Groq model ${model} returned HTTP ${res.status}:`, errText)
+        lastError = new Error(`GROQ_ERROR_${res.status}: ${errText}`)
+        continue
+      }
+
+      const data = await res.json()
+      const content = data.choices?.[0]?.message?.content || ''
+      if (content) {
+        return {
+          response: {
+            text: () => content
+          }
+        }
+      }
+    } catch (err) {
+      lastError = err
+      console.warn(`Groq attempt with model ${model} failed:`, err.message)
+    }
+  }
+
+  if (lastError) throw lastError
+  return null
 }
 
 async function generateWithFallback(prompt, generationConfig = null) {
-  // 1. Primary engine: Groq (Ultra-fast, high rate limits)
-  if (process.env.GROQ_API_KEY) {
+  // 1. Primary engine: Groq (Ultra-fast, high rate limits, env or Supabase settings)
+  const groqCreds = await getGroqCredentials()
+  if (groqCreds.apiKey) {
     try {
       const groqResult = await callGroq(prompt, generationConfig)
       if (groqResult) return groqResult
     } catch (groqErr) {
-      console.warn('Groq call failed, attempting fallback to Gemini:', groqErr.message)
+      console.error('Groq call failed:', groqErr.message)
+      throw new Error(`خطأ في خدمة Groq AI: ${groqErr.message}`)
     }
   }
 
   // 2. Secondary engine: Gemini
   if (Date.now() < circuitBreakerOpenUntil) {
-    throw new Error('CIRCUIT_BREAKER_OPEN')
+    throw new Error('انتهت الكوتا اليومية للذكاء الاصطناعي (Gemini Quota 429). يرجى التأكد من تفعيل Groq.')
   } else if (circuitBreakerOpenUntil > 0) {
     circuitBreakerOpenUntil = 0
     consecutiveFailures = 0

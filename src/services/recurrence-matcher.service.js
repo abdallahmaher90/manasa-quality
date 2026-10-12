@@ -45,7 +45,7 @@ export class RecurrenceMatcherService {
     }
   }
 
-  async matchFinding(originalText, domain = 'عام') {
+  async matchFinding(originalText, domain = 'عام', options = {}) {
     // 0. Prefetch all groups once if not cached
     await this.initializeGroupCache()
 
@@ -55,8 +55,9 @@ export class RecurrenceMatcherService {
     }
 
     // 1. EXTRACT ISSUE SIGNATURE
+    // In fastMode (e.g. during synchronous report saving), use the instant heuristic extractor (0ms).
     let signature = null
-    if (!this._aiExtractionFailed) {
+    if (!options.fastMode && !this._aiExtractionFailed) {
       try {
         signature = await extractSemanticIssueSignature(originalText)
         if (!signature) this._aiExtractionFailed = true
