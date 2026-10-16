@@ -287,7 +287,7 @@ export async function POST(request) {
             status: 'open'
           }).select('id').single()
 
-          if (!insertError && insertedFinding && recResult.decision === 'REQUIRES_GEMINI') {
+          if (!insertError && insertedFinding && (recResult.decision === 'REQUIRES_GEMINI' || recResult.decision === 'UNCERTAIN')) {
             await supabase.from('semantic_adjudication_queue').insert({
               report_finding_id: insertedFinding.id,
               candidate_group_id: recResult.candidateGroupId || null,

@@ -146,7 +146,7 @@ export class RecurrenceMatcherService {
       }
 
       if (bestValidation.decision === 'SAME_ISSUE' || bestValidation.decision === 'HIGH_CONFIDENCE') {
-        return this._buildResult('HIGH_CONFIDENCE', bestCandidate.id, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'pending_review', signature, bestCandidate.semantic_signature)
+        return this._buildResult('HIGH_CONFIDENCE', bestCandidate.id, bestCandidate.id, bestValidation.score, bestValidation.jaccard, bestValidation.reasonLog, bestCandidate.title, signature.entity, signature.defect, domain, 'approved', signature, bestCandidate.semantic_signature)
       }
 
       if (bestValidation.decision === 'REQUIRES_GEMINI') {
