@@ -137,3 +137,144 @@ export function sanitizeInspectionDate(input) {
   // Fallback to today's date
   return new Date().toISOString().split('T')[0]
 }
+
+/**
+ * Resolves hospital department variations into clean, canonical department names.
+ * Ensures consistent groupings across reports and prevents fragmentation.
+ */
+export function getCanonicalDepartment(name) {
+  if (!name || typeof name !== 'string') return 'عموم المستشفى'
+  let clean = name.trim()
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\(\)\/\-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  // 1. تذاكر / استقبال
+  if (clean.includes('تذاكر العيادات') || clean.includes('تذكره العيادات') || clean.includes('تذكره عيادات')) {
+    return 'تذاكر العيادات'
+  }
+  if (clean.includes('تذكره الاستقبال') || clean.includes('تذاكر الاستقبال')) {
+    return 'تذاكر الاستقبال'
+  }
+
+  // 2. الصيدلية ومشتقاتها (صيدلية الطوارئ، الاستقبال، النفقة، المجاني، الاقتصادي، الداخلي)
+  if ((clean.includes('صيدل') || clean.includes('صيدليه')) && !clean.includes('عنايه') && !clean.includes('دم')) {
+    return 'الصيدلية'
+  }
+
+  // 3. الجراحة العامة
+  if (clean.includes('جراح') && !clean.includes('اطفال') && !clean.includes('جهاز هضمي') && !clean.includes('تدخلات') && !clean.includes('نسا') && !clean.includes('نساء') && !clean.includes('عمليات')) {
+    return 'قسم الجراحة'
+  }
+
+  // 4. الباطنة (قسم الباطنة، قسم الباطنه)
+  if (clean.includes('باطن') && !clean.includes('رعاي')) {
+    return 'قسم الباطنة'
+  }
+
+  // 5. الطوارئ والاستقبال
+  if (['طوارئ', 'الطوارئ', 'طواريء', 'الطواريء', 'طوارىء', 'الاستقبال', 'الاستقبال والطوارئ', 'قسم الطوارئ', 'قسم الاستقبال'].includes(clean)) {
+    return 'الطوارئ والاستقبال'
+  }
+
+  // 6. العناية المركزة (العناية المركزة، قسم العناية ب، الرعاية المركزة)
+  if ((clean.includes('عناي') || clean.includes('رعاي')) && !clean.includes('اطفال') && !clean.includes('قلب') && !clean.includes('قسطره') && !clean.includes('مخ') && !clean.includes('هضمي') && !clean.includes('متوسطه') && (clean.includes('مركزه') || clean.includes('عنايه ب') || clean === 'العنايه' || clean === 'عنايه' || clean === 'قسم الرعايه المركزه')) {
+    return 'العناية المركزة'
+  }
+
+  // 7. المعمل والتحاليل
+  if ((clean.includes('معمل') || clean.includes('مختبر')) && !clean.includes('متوطن')) {
+    return 'المعمل'
+  }
+
+  // 8. الأشعة والسونار
+  if (clean.includes('اشع') || clean === 'السونار' || clean.includes('سونار') || clean === 'غرفه الاشعه' || clean === 'قسم الاشعه') {
+    return 'الأشعة'
+  }
+
+  // 9. التعقيم
+  if (clean.includes('تعقيم')) {
+    return 'التعقيم'
+  }
+
+  // 10. العمليات
+  if (clean.includes('عمليات')) {
+    return 'العمليات'
+  }
+
+  // 11. الحضانات
+  if (clean.includes('حضان') && !clean.includes('داخلي')) {
+    return 'الحضانات'
+  }
+  if (clean === 'قسم الاطفال' || clean === 'عنايه الاطفال' || clean === 'اطفال') {
+    return 'قسم الأطفال'
+  }
+
+  // 12. الكلى والغسيل الكلوي
+  if (clean.includes('كلي') || clean.includes('كلى') || clean.includes('كلو')) {
+    if (clean.includes('سنديون')) return 'وحدة غسيل الكلى بسنديون'
+    if (clean.includes('زعفران')) return 'وحدة كلى الزعفران'
+    return 'وحدة الغسيل الكلوي'
+  }
+
+  // 13. الأسنان
+  if (clean.includes('اسنان')) {
+    return 'عيادة الأسنان'
+  }
+
+  // 14. تنظيم الأسرة
+  if (clean.includes('تنظيم الاسر')) {
+    return 'تنظيم الأسرة'
+  }
+
+  // 15. الإدارة وشؤون المستشفى
+  if (clean === 'اداره' || clean === 'الاداره' || clean === 'اداره المستشفي' || clean === 'اداره المستشفى' || clean.includes('الشؤون الاداريه')) {
+    return 'إدارة المستشفى'
+  }
+
+  // 16. عموم المستشفى / عام
+  if (clean === 'عام' || clean === 'عموم المستشفي' || clean === 'عموم المستشفى' || clean === 'القسم') {
+    return 'عموم المستشفى'
+  }
+
+  // 17. السلامة والصحة المهنية
+  if (clean.includes('سلامه وصحه') || clean.includes('صحه وسلامه') || clean.includes('حمايه مدنيه')) {
+    return 'السلامة والصحة المهنية'
+  }
+
+  // 18. المغسلة
+  if (clean.includes('مغسل')) {
+    return 'المغسلة'
+  }
+
+  // 19. المطبخ
+  if (clean.includes('مطبخ')) {
+    return 'المطبخ'
+  }
+
+  // 20. القسم الداخلي
+  if (clean.includes('داخلي') && !clean.includes('احاله')) {
+    return 'القسم الداخلي'
+  }
+
+  // 21. السكتة الدماغية
+  if (clean.includes('سكته دماغيه')) {
+    return 'وحدة السكتة الدماغية'
+  }
+
+  // 22. الجهاز الهضمي
+  if (clean.includes('جهاز هضمي')) {
+    return 'الجهاز الهضمي'
+  }
+
+  // 23. الأرشيف وحفظ الملفات
+  if (clean.includes('ارشيف') || clean.includes('حفظ ملفات')) {
+    return 'الأرشيف'
+  }
+
+  return name.trim()
+}
+

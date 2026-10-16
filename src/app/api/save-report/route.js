@@ -1,7 +1,7 @@
 import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 import { VectorMatchingService } from '@/services/vector-matching.service'
 import { RecurrenceMatcherService, normalizeRecurrenceKey } from '@/services/recurrence-matcher.service'
-import { getCategory, sanitizeInspectionDate } from '@/lib/utils'
+import { getCategory, sanitizeInspectionDate, getCanonicalDepartment } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
@@ -154,9 +154,9 @@ export async function POST(request) {
 
     // Process each department and its findings
     for (const dept of parsedData.departments || []) {
-      // Find or create department (smart match)
+      // Find or create department (canonical smart match)
+      const canonicalName = getCanonicalDepartment(dept.name)
       let deptId
-      const targetDeptNorm = normalizeArabicName(dept.name)
       
       const { data: allDepts } = await supabase
         .from('departments')
@@ -165,10 +165,18 @@ export async function POST(request) {
         
       let existingDept = null
       if (allDepts) {
+        // 1. Look for canonical match
         existingDept = allDepts.find(d => {
-          const dbNorm = normalizeArabicName(d.name)
-          return dbNorm.includes(targetDeptNorm) || targetDeptNorm.includes(dbNorm) || dbNorm === targetDeptNorm
+          return d.name === canonicalName || getCanonicalDepartment(d.name) === canonicalName
         })
+        // 2. Fallback to substring matching if needed
+        if (!existingDept) {
+          const targetDeptNorm = normalizeArabicName(dept.name)
+          existingDept = allDepts.find(d => {
+            const dbNorm = normalizeArabicName(d.name)
+            return dbNorm.includes(targetDeptNorm) || targetDeptNorm.includes(dbNorm) || dbNorm === targetDeptNorm
+          })
+        }
       }
 
       if (existingDept) {
@@ -178,7 +186,7 @@ export async function POST(request) {
           .from('departments')
           .insert({
             hospital_id: hospitalId,
-            name: dept.name,
+            name: canonicalName,
           })
           .select('id')
           .single()
