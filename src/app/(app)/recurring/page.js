@@ -18,6 +18,7 @@ export default function RecurringPage() {
   const [resolutionNotes, setResolutionNotes] = useState({})
   
   const [activeTab, setActiveTab] = useState('common') // 'common' | 'recurring'
+  const [viewMode, setViewMode] = useState('table') // 'table' | 'cards'
 
   useEffect(() => {
     fetchFindings()
@@ -299,19 +300,58 @@ export default function RecurringPage() {
           </button>
         </div>
 
-        <div style={{ position: 'relative', minWidth: 260 }}>
-          <input
-            type="text"
-            className="input"
-            placeholder="🔍 بحث باسم السلبية أو المستشفى..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ padding: '6px 12px', fontSize: 13, width: '100%', borderRadius: 8 }}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', minWidth: 240 }}>
+            <input
+              type="text"
+              className="input"
+              placeholder="🔍 بحث باسم السلبية أو المستشفى..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ padding: '6px 12px', fontSize: 13, width: '100%', borderRadius: 8 }}
+            />
+          </div>
+
+          <div style={{ display: 'inline-flex', background: 'var(--bg-primary)', padding: 3, borderRadius: 8, border: '1px solid var(--border)' }}>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              style={{
+                padding: '5px 12px',
+                fontSize: 12.5,
+                fontWeight: 700,
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                background: viewMode === 'table' ? 'var(--primary)' : 'transparent',
+                color: viewMode === 'table' ? '#ffffff' : 'var(--text-secondary)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              📊 جدول
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('cards')}
+              style={{
+                padding: '5px 12px',
+                fontSize: 12.5,
+                fontWeight: 700,
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                background: viewMode === 'cards' ? 'var(--primary)' : 'transparent',
+                color: viewMode === 'cards' ? '#ffffff' : 'var(--text-secondary)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              🗂️ بطاقات
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Content: Recurring Findings */}
+      {/* Main Content: Recurring / Common Findings */}
       {filteredFindings.length === 0 ? (
         <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>✅</div>
@@ -322,6 +362,142 @@ export default function RecurringPage() {
               ? 'لا توجد سلبيات تم تلافيها بالكامل بعد.'
               : 'لم يتم العثور على سلبيات مطابقة للبحث.'}
           </div>
+        </div>
+      ) : viewMode === 'table' ? (
+        <div className="card" style={{ padding: 0, overflowX: 'auto', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+          <table style={{ width: '100%', minWidth: 850, borderCollapse: 'collapse', direction: 'rtl', fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: 'var(--bg-secondary)', borderBottom: '2px solid var(--border)', textAlign: 'right', fontWeight: 800 }}>
+                <th style={{ padding: '12px 10px', width: 45, textAlign: 'center', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}>م</th>
+                <th style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}>بيان السلبية (المشكلة)</th>
+                <th style={{ padding: '12px 12px', width: 140, textAlign: 'center', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}>نطاق الانتشار</th>
+                <th style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}>موقف المستشفيات (اضغط للتفاصيل)</th>
+                <th style={{ padding: '12px 12px', width: 150, textAlign: 'center', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}>الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFindings.map((f, idx) => {
+                const isResolved = f.isFullyResolved
+                const isActive = f.activeCount > 0
+
+                return (
+                  <tr
+                    key={idx}
+                    style={{
+                      borderBottom: '1px solid var(--border)',
+                      background: idx % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-secondary)',
+                      transition: 'background 0.15s'
+                    }}
+                  >
+                    {/* Serial Number */}
+                    <td style={{ padding: '12px 8px', textAlign: 'center', fontWeight: 700, color: 'var(--text-muted)', verticalAlign: 'middle' }}>
+                      {idx + 1}
+                    </td>
+
+                    {/* Title & Departments */}
+                    <td style={{ padding: '12px 14px', verticalAlign: 'middle' }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                        {f.title}
+                      </div>
+                      {f.allDepartments?.length > 0 && (
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                          🏷️ الأقسام: {f.allDepartments.join('، ')}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Scope / Distribution */}
+                    <td style={{ padding: '12px', textAlign: 'center', verticalAlign: 'middle' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          padding: '4px 10px',
+                          borderRadius: 6,
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border)',
+                          color: 'var(--text-primary)',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        🏥 {f.totalHospitals} مستشفيات
+                        <span style={{ display: 'block', fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
+                          ({f.totalOccurrences || f.totalHospitals} رصد)
+                        </span>
+                      </span>
+                    </td>
+
+                    {/* Hospitals Breakdown Chips */}
+                    <td style={{ padding: '10px 14px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {f.hospitalsList.map((h) => {
+                          const hResolved = h.issueStatus === 'resolved'
+                          const hPending = h.issueStatus === 'pending'
+
+                          const chipStyle = hResolved
+                            ? { bg: '#dcfce7', border: '#86efac', text: '#15803d', icon: '✅' }
+                            : hPending
+                            ? { bg: '#fef3c7', border: '#fde047', text: '#b45309', icon: '🟡' }
+                            : { bg: '#fee2e2', border: '#fca5a5', text: '#b91c1c', icon: '🔴' }
+
+                          return (
+                            <div
+                              key={h.id}
+                              onClick={() => setSelectedModalData({ hospital: h, findingText: f.title, canonicalText: f.canonicalClassification })}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                padding: '4px 10px',
+                                borderRadius: 100,
+                                fontSize: 11.5,
+                                fontWeight: 600,
+                                background: chipStyle.bg,
+                                border: `1px solid ${chipStyle.border}`,
+                                color: chipStyle.text,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease'
+                              }}
+                              title="اضغط لعرض تفاصيل المرور ونصوص الملاحظة الأصلية في هذا المستشفى"
+                            >
+                              <span>{chipStyle.icon}</span>
+                              <span>{h.name}</span>
+                              {h.repeatCount > 1 && (
+                                <span style={{ opacity: 0.8, fontSize: 9.5, background: 'rgba(0,0,0,0.06)', padding: '1px 5px', borderRadius: 4 }}>
+                                  🔁 ×{h.repeatCount}
+                                </span>
+                              )}
+                              {hResolved && h.resolvedDate && (
+                                <span style={{ fontSize: 9.5, opacity: 0.85 }}>({h.resolvedDate})</span>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </td>
+
+                    {/* Overall Status */}
+                    <td style={{ padding: '12px', textAlign: 'center', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                      {isResolved ? (
+                        <span className="badge badge-success" style={{ fontSize: 11, padding: '4px 10px', fontWeight: 700 }}>
+                          ✅ تم التلافي بالكامل
+                        </span>
+                      ) : isActive ? (
+                        <span className="badge badge-danger" style={{ fontSize: 11, padding: '4px 10px', fontWeight: 700 }}>
+                          🔴 {f.activeCount} نشطة
+                        </span>
+                      ) : (
+                        <span className="badge badge-warning" style={{ fontSize: 11, padding: '4px 10px', fontWeight: 700 }}>
+                          🟡 أبلغت بالتلافي
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
