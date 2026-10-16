@@ -188,8 +188,9 @@ async function callGroq(prompt, generationConfig = null) {
 
   const candidateModels = [
     configuredModel || 'openai/gpt-oss-120b',
+    'qwen/qwen3.8-27b',
     'openai/gpt-oss-20b'
-  ]
+  ].filter(Boolean)
 
   const isJson = generationConfig?.responseMimeType === 'application/json' || Boolean(generationConfig?.responseSchema)
 

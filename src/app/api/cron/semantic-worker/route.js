@@ -3,24 +3,28 @@ import { adjudicateFindingMatch, extractSemanticIssueSignature } from '@/lib/ai-
 import { normalizeRecurrenceKey } from '@/services/recurrence-matcher.service'
 import { RECURRENCE_MATCHING_POLICY_VERSION } from '@/services/recurrence-matcher.service'
 
-const BATCH_SIZE = 5
+const DEFAULT_BATCH_SIZE = 25
 
-export async function GET(request) {
-  // 1. Verify CRON Secret if configured
+async function handleWorker(request) {
+  // 1. Verify CRON Secret if configured and present
   const authHeader = request.headers.get('authorization')
   if (
     process.env.CRON_SECRET &&
+    authHeader &&
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
   ) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const { searchParams } = new URL(request.url)
+  const batchSize = Math.min(parseInt(searchParams.get('limit') || DEFAULT_BATCH_SIZE, 10), 100)
 
   const supabase = createServiceClient()
 
   try {
     // 2. Claim pending items
     const { data: queueItems, error: claimError } = await supabase.rpc('claim_semantic_queue_items', {
-      batch_limit: BATCH_SIZE
+      batch_limit: batchSize
     })
 
     if (claimError) {
@@ -29,7 +33,13 @@ export async function GET(request) {
     }
 
     if (!queueItems || queueItems.length === 0) {
-      return Response.json({ status: 'idle', count: 0 })
+      // Check remaining in queue
+      const { count: pendingCount } = await supabase
+        .from('semantic_adjudication_queue')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending')
+
+      return Response.json({ status: 'idle', count: 0, remainingPending: pendingCount || 0 })
     }
 
     let processed = 0
@@ -46,41 +56,95 @@ export async function GET(request) {
         // Fetch original finding text
         const { data: finding } = await supabase
           .from('report_findings')
-          .select('original_text, department_id, departments(name)')
+          .select('id, original_text, department_id, departments(name)')
           .eq('id', item.report_finding_id)
           .single()
 
-        if (!finding) throw new Error('Finding not found')
+        if (!finding) {
+          // Finding deleted, remove from queue
+          await supabase.from('semantic_adjudication_queue').delete().eq('id', item.id)
+          processed++
+          continue
+        }
+
+        const domain = finding.departments?.name || 'عام'
+        const normKey = normalizeRecurrenceKey(finding.original_text)
+
+        // Case 1: If no candidate group id is specified, treat as DISTINCT new issue
+        if (!item.candidate_group_id) {
+          const sig = await extractSemanticIssueSignature(finding.original_text)
+          await supabase.rpc('apply_semantic_decision', {
+            p_queue_id: item.id,
+            p_decision: 'DISTINCT',
+            p_confidence: 'HIGH',
+            p_reason: 'No candidate group provided; established as distinct issue.',
+            p_model: 'groq/openai/gpt-oss-120b',
+            p_policy_version: RECURRENCE_MATCHING_POLICY_VERSION,
+            p_new_group_title: normKey,
+            p_new_group_norm_key: normKey,
+            p_new_group_entity: sig?.entity || normKey,
+            p_new_group_defect: sig?.defect || 'غير محدد',
+            p_new_group_domain: domain
+          })
+          processed++
+          continue
+        }
 
         // Fetch candidate group title and signature
         const { data: group } = await supabase
           .from('recurrence_groups')
-          .select('title, semantic_signature')
+          .select('id, title, semantic_signature')
           .eq('id', item.candidate_group_id)
-          .single()
+          .maybeSingle()
 
-        if (!group) throw new Error('Candidate group not found')
+        // Case 2: Candidate group deleted or not found -> treat as DISTINCT new issue
+        if (!group) {
+          const sig = await extractSemanticIssueSignature(finding.original_text)
+          await supabase.rpc('apply_semantic_decision', {
+            p_queue_id: item.id,
+            p_decision: 'DISTINCT',
+            p_confidence: 'HIGH',
+            p_reason: 'Candidate group no longer exists; created new distinct group.',
+            p_model: 'groq/openai/gpt-oss-120b',
+            p_policy_version: RECURRENCE_MATCHING_POLICY_VERSION,
+            p_new_group_title: normKey,
+            p_new_group_norm_key: normKey,
+            p_new_group_entity: sig?.entity || normKey,
+            p_new_group_defect: sig?.defect || 'غير محدد',
+            p_new_group_domain: domain
+          })
+          processed++
+          continue
+        }
 
-        // Evaluate using Gemini
+        // Case 3: Both finding and group exist -> perform semantic extraction & adjudication via Groq
         const newSig = await extractSemanticIssueSignature(finding.original_text)
-        const candSig = group.semantic_signature // fallback can be added if missing
-        
+        let candSig = group.semantic_signature
+        if (!candSig && group.title) {
+          candSig = await extractSemanticIssueSignature(group.title)
+        }
+
         if (!newSig || !candSig) {
-          throw new Error('Failed to extract signatures')
+          throw new Error('Failed to extract signatures for finding or candidate group')
         }
 
         const aiResult = await adjudicateFindingMatch(newSig, candSig)
-        
-        const domain = finding.departments?.name || 'عام'
-        const normKey = normalizeRecurrenceKey(finding.original_text)
+
+        // Standardize decision for SQL RPC (which expects 'SAME_ISSUE', 'DISTINCT', or 'UNCERTAIN')
+        let sqlDecision = 'UNCERTAIN'
+        if (aiResult.decision === 'SAME_ISSUE') {
+          sqlDecision = 'SAME_ISSUE'
+        } else if (aiResult.decision === 'DIFFERENT_ISSUE' || aiResult.decision === 'DISTINCT') {
+          sqlDecision = 'DISTINCT'
+        }
 
         // Safely apply decision via RPC transaction
         const { error: applyError } = await supabase.rpc('apply_semantic_decision', {
           p_queue_id: item.id,
-          p_decision: aiResult.decision,
+          p_decision: sqlDecision,
           p_confidence: aiResult.confidence || 'HIGH',
           p_reason: aiResult.reason,
-          p_model: 'gemini-3.6-flash',
+          p_model: 'groq/openai/gpt-oss-120b',
           p_policy_version: RECURRENCE_MATCHING_POLICY_VERSION,
           p_new_group_title: normKey,
           p_new_group_norm_key: normKey,
@@ -90,32 +154,22 @@ export async function GET(request) {
         })
 
         if (applyError) {
-           console.error(`Error applying decision for item ${item.id}:`, applyError)
-           throw applyError
+          console.error(`Error applying decision for item ${item.id}:`, applyError)
+          throw applyError
         }
 
         processed++
       } catch (err) {
         console.error(`Error processing queue item ${item.id}:`, err)
-        
-        // Handle Gemini Rate Limit (429)
+
+        // Handle Rate Limit (Groq or Gemini)
         if (err.status === 429 || (err.message && err.message.includes('429'))) {
           rateLimited = true
           unprocessedItems.push(item.id)
-          
-          let waitSecs = 3600 // default 1 hour for daily quota
-          const retryMatch = err.message.match(/retry in ([\d\.]+)s/)
-          if (retryMatch && retryMatch[1]) {
-            waitSecs = Math.ceil(parseFloat(retryMatch[1]))
-            // if wait is huge (daily limit), just set to tomorrow
-            if (waitSecs < 60) {
-               // Even if it says 58s, if we hit the daily quota it repeats. 
-               // Best to back off for a good amount of time, e.g., 15 mins.
-               waitSecs = 900 
-            }
-          }
 
-          // Release the lock for this item with backoff
+          // Short backoff for Groq (20 seconds) instead of 1 hour
+          const waitSecs = 20
+
           await supabase
             .from('semantic_adjudication_queue')
             .update({
@@ -125,38 +179,56 @@ export async function GET(request) {
               last_error: 'Rate Limit (429)'
             })
             .eq('id', item.id)
-            
         } else {
-          // Normal error (e.g. extraction failed)
+          // Normal error -> mark failed with 2 min retry
           await supabase
             .from('semantic_adjudication_queue')
             .update({
               status: 'failed',
               locked_at: null,
               last_error: err.message,
-              next_attempt_at: new Date(Date.now() + 300 * 1000).toISOString() // retry in 5 mins
+              next_attempt_at: new Date(Date.now() + 120 * 1000).toISOString()
             })
             .eq('id', item.id)
         }
       }
     }
 
-    // Release remaining unprocessed items if we got rate limited
+    // Release remaining unprocessed items if rate limited
     if (unprocessedItems.length > 0 && rateLimited) {
-       await supabase
-         .from('semantic_adjudication_queue')
-         .update({
-           status: 'pending',
-           locked_at: null,
-           next_attempt_at: new Date(Date.now() + 3600 * 1000).toISOString() // Wait an hour globally
-         })
-         .in('id', unprocessedItems)
+      await supabase
+        .from('semantic_adjudication_queue')
+        .update({
+          status: 'pending',
+          locked_at: null,
+          next_attempt_at: new Date(Date.now() + 30 * 1000).toISOString()
+        })
+        .in('id', unprocessedItems)
     }
 
-    return Response.json({ status: 'success', processed, rateLimited })
+    // Count remaining
+    const { count: remainingCount } = await supabase
+      .from('semantic_adjudication_queue')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending')
+
+    return Response.json({
+      status: 'success',
+      processed,
+      rateLimited,
+      remainingPending: remainingCount || 0
+    })
 
   } catch (error) {
     console.error('Fatal error in semantic worker:', error)
     return Response.json({ error: 'Internal worker error' }, { status: 500 })
   }
+}
+
+export async function GET(request) {
+  return handleWorker(request)
+}
+
+export async function POST(request) {
+  return handleWorker(request)
 }
