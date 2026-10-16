@@ -17,7 +17,7 @@ export default function RecurringPage() {
   const [resolvingId, setResolvingId] = useState(null)
   const [resolutionNotes, setResolutionNotes] = useState({})
   
-  const [activeTab, setActiveTab] = useState('recurring') // 'recurring' | 'common'
+  const [activeTab, setActiveTab] = useState('common') // 'common' | 'recurring'
 
   useEffect(() => {
     fetchFindings()
@@ -203,26 +203,6 @@ export default function RecurringPage() {
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 16, borderBottom: '2px solid var(--border)' }}>
         <button
-          onClick={() => setActiveTab('recurring')}
-          style={{
-            padding: '12px 24px',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'recurring' ? '3px solid var(--primary)' : '3px solid transparent',
-            color: activeTab === 'recurring' ? 'var(--primary)' : 'var(--text-secondary)',
-            fontWeight: activeTab === 'recurring' ? 800 : 600,
-            fontSize: 16,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            marginBottom: -2,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}
-        >
-          🏥 السلبيات المتكررة ({recurringData.recurringInSameHospital.length})
-        </button>
-        <button
           onClick={() => setActiveTab('common')}
           style={{
             padding: '12px 24px',
@@ -241,6 +221,26 @@ export default function RecurringPage() {
           }}
         >
           🌍 السلبيات الشائعة ({recurringData.commonAcrossHospitals.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('recurring')}
+          style={{
+            padding: '12px 24px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'recurring' ? '3px solid var(--primary)' : '3px solid transparent',
+            color: activeTab === 'recurring' ? 'var(--primary)' : 'var(--text-secondary)',
+            fontWeight: activeTab === 'recurring' ? 800 : 600,
+            fontSize: 16,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            marginBottom: -2,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          🏥 السلبيات المتكررة ({recurringData.recurringInSameHospital.length})
         </button>
       </div>
 
