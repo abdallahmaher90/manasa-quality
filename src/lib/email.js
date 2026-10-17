@@ -18,7 +18,7 @@ export async function sendNewReportEmail(toEmail, hospitalName, date, reportUrl)
     <div dir="rtl" style="font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 30px; text-align: center;">
       <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
         <div style="background-color: #0f172a; padding: 20px; color: white;">
-          <h2 style="margin: 0; font-size: 24px;">منصة الجودة الطبية</h2>
+          <h2 style="margin: 0; font-size: 24px;">منصة الجودة</h2>
         </div>
         
         <div style="padding: 30px; color: #333; line-height: 1.6;">
