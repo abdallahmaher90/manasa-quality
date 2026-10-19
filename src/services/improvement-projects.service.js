@@ -258,7 +258,7 @@ export class ImprovementProjectsService {
       }
     ]
 
-    // Cluster eligible findings into clinical bundles
+    // Cluster eligible findings into clinical bundles with strict departmental affinity
     const clinicalBundles = bundleDefinitions.map(b => {
       const matched = eligibleFindings.filter(f => {
         const text = (f.original_text || '').toLowerCase()
@@ -266,7 +266,19 @@ export class ImprovementProjectsService {
         if (focusDepartment && !dept.includes(focusDepartment.toLowerCase()) && !b.dept.toLowerCase().includes(focusDepartment.toLowerCase())) {
           return false
         }
-        return b.keywords.some(kw => text.includes(kw) || dept.includes(kw))
+
+        // Prevent cross-domain leakage
+        if (b.id === 'medication_safety_reconciliation' && (text.includes('كواشف') || dept.includes('معمل'))) {
+          return false
+        }
+        if (b.id === 'lab_biosafety_critical_results' && (dept.includes('صيدلية') || text.includes('كراش'))) {
+          return false
+        }
+
+        // Match department directly or keywords
+        const deptDirect = dept && b.dept.toLowerCase().includes(dept)
+        const keywordDirect = b.keywords.some(kw => text.includes(kw))
+        return deptDirect || keywordDirect
       })
 
       const recurringCount = matched.filter(f => f.repeat_count >= 2 || f.status === 'recurring').length
@@ -322,6 +334,12 @@ ${findingsSummary}`
 
 3. مؤشرات النتيجة الحقيقية (Clinical Outcome KPIs):
    - يجب أن يقيس مؤشر النتيجة (Outcome KPI) أثراً سريرياً أو تشغيلياً جوهرياً (مثل خفض معدل العدوى المكتسبة، خفض زمن بدء علاج الإنعاش إلى أقل من 5 دقائق، تصفير أخطاء التوافق الدوائي، رفع اكتمال الفرز السريري لـ 95%).
+
+4. المصطلحات الطبية المعتمدة (Mandatory Terminology):
+   - استخدم حصراً مصطلح «التوافق الدوائي» لترجمة Medication Reconciliation (يُمنع استخدام "إعادة التوفيق").
+   - استخدم مصطلح «القفازات الطبية / الواقيات الشخصية» لترجمة PPE/Gloves (يُمنع استخدام كلمة "الغلافات").
+   - استخدم مصطلح «خلال 30 دقيقة من وصول الحالة لقسم الطوارئ» بدلاً من "من الفتح".
+   - تجنب تكرار نفس السلبيات بحذافيرها بين أكثر من مشروع.
 
 أخرج النتيجة بصيغة JSON فقط.`
 
