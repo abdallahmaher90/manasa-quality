@@ -197,21 +197,62 @@ export class ImprovementProjectsService {
     }
 
     // 4. Extract and rank candidate problems using GAHAR Prioritization & Single-Problem Focus
-    // Filter out trivial one-step physical maintenance or procurement fixes (Just-Do-It tasks)
-    const isTrivialTask = (text) => {
+    // Filter out trivial one-step physical maintenance, routine clerical audits, and simple supervisory PPE compliance
+    const isNonQipTask = (text) => {
       const lower = (text || '').toLowerCase()
-      const trivialTerms = [
-        'جرس استدعاء', 'جرس التمريض', 'لا يوجد ترمومتر غرفة', 'ترمومتر غرفة',
-        'لمبة مكسورة', 'البوابة مكسورة', 'كالون مكسور', 'تسريب صنبور',
-        'كرسي مكسور', 'مفتاح كهرباء', 'دهان الحائط', 'تربيزة مكسورة',
-        'بلاط مكسر', 'أرضيات بدون بلاط', 'بوسترات غسل', 'بوسترات race',
-        'كارت فحص لطفاية', 'شطب وكشط ف السجل', 'غير مرقمة', 'حشائش وأكياس زبالة',
-        'بلاعة كبيرة', 'بلاعة مفتوحة', 'الصيدليه غير منظمة', 'توقيع الاطباء في بعض النماذج احادي', 'لا يوجد شفاط'
+      
+      // 1. Routine physical maintenance, housekeeping, furniture, procurement
+      const maintenanceTerms = [
+        'جرس استدعاء', 'جرس التمريض', 'ترمومتر', 'لمبة', 'بوابة', 'كالون', 'صنبور', 'سباكة',
+        'كرسي', 'مفتاح كهرباء', 'دهان', 'تربيزة', 'بلاط', 'أرضيات', 'حشائش', 'بلاعة',
+        'شفاط', 'مضخه', 'دولاب', 'أرفف', 'توفير كراسي', 'توفير غرفه ارشيف', 'توفير مستلزمات غسيل',
+        'حوض مطابق', 'حقيبة انسكابات', 'سجل cpr'
       ]
-      return trivialTerms.some(term => lower.includes(term))
+      if (maintenanceTerms.some(term => lower.includes(term))) return true
+
+      // 2. Posters, stickers, labels, warning signs (Just-Do-It printing/placement)
+      const posterTerms = [
+        'بوستر', 'بوسترات', 'race', 'pass', 'كارت فحص', 'كروت التعريف', 'طفايه الحريق', 'ماسة المواد', 'ماسة كيميائية'
+      ]
+      if (posterTerms.some(term => lower.includes(term))) return true
+
+      // 3. Isolated supervisory PPE reminders / individual worker habit (solved by head nurse supervision/in-service training)
+      const supervisoryPpeTerms = [
+        'دون قفازات', 'بدون قفازات', 'ارتداء قفازات', 'كمامة', 'مريلة', 'جاون', 'نقل المرضي بمرافقه التمريض', 'الابرون معلق'
+      ]
+      if (supervisoryPpeTerms.some(term => lower.includes(term))) return true
+
+      // 4. Routine clerical single-field signatures, numbering, stamps, scratch-outs
+      const clericalTerms = [
+        'توقيع الاطباء في بعض النماذج احادي', 'توقيع الصيدلى على الادويه في بعض الملفات',
+        'شطب وكشط', 'غير مرقمة', 'اعتماد دفتر', 'سجل المشورة', 'كتابه عليه التوقيع'
+      ]
+      if (clericalTerms.some(term => lower.includes(term))) return true
+
+      return false
     }
 
-    const eligibleFindings = findings.filter(f => !isTrivialTask(f.original_text))
+    // Measure high-impact systemic clinical weight
+    const getSystemicClinicalWeight = (text) => {
+      const lower = (text || '').toLowerCase()
+      let weight = 0
+      
+      // Core GAHAR & WHO Clinical / Patient Safety Pathways
+      if (lower.includes('توافق دوائي')) weight += 15
+      if (lower.includes('جلطات') || lower.includes('vte')) weight += 15
+      if (lower.includes('نتائج حرجة') || lower.includes('النتائج الحرجه')) weight += 15
+      if (lower.includes('عاليه الخطوره') || lower.includes('عالية الخطورة') || lower.includes('أدوية عالية')) weight += 12
+      if (lower.includes('غرفه العزل') || lower.includes('غرفة العزل') || lower.includes('العزل')) weight += 12
+      if (lower.includes('care plan') || lower.includes('خطة الرعاية') || lower.includes('خطة العلاج')) weight += 12
+      if (lower.includes('جرعات') && lower.includes('أشعة')) weight += 10
+      if (lower.includes('أوتوكلاف') || lower.includes('تعقيم المزارع')) weight += 10
+      if (lower.includes('تقييم السقوط')) weight += 8
+      if (lower.includes('الوصفه الدوائيه') || lower.includes('الوصفة الدوائية')) weight += 8
+
+      return weight
+    }
+
+    const eligibleFindings = findings.filter(f => !isNonQipTask(f.original_text))
 
     // Filter by department if requested
     let targetFindings = eligibleFindings
@@ -220,17 +261,19 @@ export class ImprovementProjectsService {
       targetFindings = eligibleFindings.filter(f => matchDept(f.departments?.name))
     }
 
-    // Rank individual candidate problems: prioritize High Risk + Recurring
+    // Rank individual candidate problems: prioritize Systemic Clinical Weight + High Risk + Recurring
     const rankedCandidates = targetFindings.map(f => {
       const isRecurring = f.repeat_count >= 2 || f.status === 'recurring'
       const isHigh = f.priority === 'high'
-      const score = (isRecurring ? 5 : 0) + (isHigh ? 4 : 1)
+      const systemicWeight = getSystemicClinicalWeight(f.original_text)
+      const score = (isRecurring ? 5 : 0) + (isHigh ? 4 : 1) + systemicWeight
       return {
         id: f.id,
         dept: f.departments?.name || 'عام',
         text: f.original_text,
         priority: f.priority || 'medium',
         repeat_count: f.repeat_count || 1,
+        systemicWeight,
         score
       }
     }).sort((a, b) => b.score - a.score)
@@ -246,11 +289,12 @@ export class ImprovementProjectsService {
       }
     }
 
-    // Prepare prioritized candidate problems text (Top 12 distinct issues)
-    const candidateProblemsText = uniqueCandidates.slice(0, 12).map((c, idx) => {
+    // Prepare prioritized candidate problems text (Top 10 distinct systemic issues)
+    const candidateProblemsText = uniqueCandidates.slice(0, 10).map((c, idx) => {
       const rep = c.repeat_count >= 2 ? ` [متكررة ${c.repeat_count} مرات]` : ''
-      const prio = c.priority === 'high' ? ' [أولوية قصوى / خطورة عالية]' : ''
-      return `${idx + 1}. [${c.dept}]${rep}${prio}: "${c.text}"`
+      const prio = c.priority === 'high' ? ' [أولوية قصوى]' : ''
+      const sys = c.systemicWeight > 0 ? ' [مسار إكلينيكي عالي الأثر]' : ''
+      return `${idx + 1}. [${c.dept}]${rep}${prio}${sys}: "${c.text}"`
     }).join('\n')
 
     const inspectionDates = reports?.map(r => r.inspection_date).filter(Boolean).slice(0, 5).join(' و ') || 'زيارات متعددة'
@@ -260,28 +304,34 @@ export class ImprovementProjectsService {
 
     // AI Prompt - Strictly enforcing Single Problem per QIP & GAHAR Prioritization
     const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات ومراجع معتمد (GAHAR Senior Quality Surveyor & Fellow of IHI).
-مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة استراتيجية (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة مؤسسية كبرى (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
 
-قواعد صارمة لاختيار وتصميم مشاريع التحسين (Strict Single-Problem Quality Rules):
-1. قاعدة المشكلة المحورية الواحدة الحصرية (Strict Single Core Problem Focus) - إلزامي وبشكل قاطع:
-   - كل مشروع تحسين يجب أن يركز 100% وبشكل حصري ومستقل على مشكلة كبرى واحدة محددة فقط من قائمة المشاكل المرشحة (مشروع مستقل تماماً لكل مشكلة منفردة).
-   - يُمنع منعاً باتاً دمج أو جمع عدة مشاكل مختلفة في مشروع واحد، وبلا حزم عشوائية تجمع مشاكل غير مترابطة.
+قواعد صارمة لاختيار وتصميم مشاريع التحسين المؤسسية (Strict QIP Selection Rules):
+1. قاعدة المشكلة المحورية الواحدة الحصرية (Strict Single Core Problem Focus):
+   - كل مشروع تحسين يجب أن يركز 100% وبشكل حصري ومستقل على قضية إكلينيكية كبرى واحدة محددة فقط من قائمة المشاكل المرشحة.
+   - يُمنع منعاً باتاً دمج أو جمع عدة مشاكل مختلفة في مشروع واحد.
    - حقل (linked_findings_summary) يجب أن يحتوي حصراً على مصفوفة بها نص المشكلة الواحدة المحددة المستهدفة فقط (عنصر واحد فقط بالمصفوفة).
 
-2. التمييز الحاسم بين "مشروع التحسين QIP" وبين "مهام الصيانة والإصلاح الفوري Just-Do-It":
-   - لا يجوز أبداً فتح مشروع تحسين لمهمة صيانة روتينية أو شراء أداة مفردة (مثل إصلاح جرس، تركيب كالون، دهان، أو تعليق لافتة).
-   - المشكلة المختارة يجب أن تمثل خللاً سريرياً أو تشغيلياً معقداً يتطلب تحليلاً للأسباب الجذرية (Root Cause Analysis)، وتغييراً في ممارسات وسلوك الفرق الطبية والتمريضية، وتطبيق سياسات ومؤشرات ومتابعة على مدار 8-12 أسبوعاً.
+2. التمييز الحاسم بين "مشروع التحسين المؤسسي QIP" وبين "المهام الإشرافية والتدريب البسيط Just-Do-It / CAPA":
+   - ممنوع منعاً باتاً فتح مشروع تحسين لملاحظة إشرافية بسيطة أو سلوك فردي يُحل بتوجيه إشرافي مباشر أو تدريب سريع (مثل: ممرضة لا ترتدي قفازات، طبيب لم يوقع، أو شراء أداة، أو إصلاح جرس/دهان، أو لصق ورقة). هذه إجراءات تصحيحية يومية روتينية وليست مشاريع تحسين!
+   - مشروع التحسين المؤسسي (QIP) مخصص حصرياً للمشاكل السريرية والتشغيلية النظامية المعقدة (Systemic Multidisciplinary Clinical Pathways) التي تؤثر مباشرة على معدلات الوفيات، والمضاعفات، وسلامة المرضى، وتتطلب إعادة هندسة مسار عمل كامل يشترك فيه عدة تخصصات (أطباء، تمريض، صيادلة، معامل، جودة) على مدار 8-12 أسبوعاً، مثل:
+     * بروتوكول تقييم ومنع الجلطات الوريدية (VTE Prophylaxis & Risk Assessment).
+     * منظومة التوافق الدوائي الشامل (Medication Reconciliation) لمنع التعارضات الدوائية القاتلة.
+     * منظومة وقوائم النتائج الحرجة وسرعة الإبلاغ المغلق (Critical Value Notification System).
+     * حوكمة ومأمونية الأدوية عالية الخطورة والمتشابهة (High-Alert Medications & LASA Safety).
+     * مسارات وضوابط غرف العزل الطبي للأمراض المعدية ومنع التفشي الوبائي.
+     * الخطة العلاجية والتوثيق الطبي متعدد التخصصات بالعناية المركزة (ICU Multidisciplinary Care Plan).
 
 3. معايير الأولوية الخمسة المعتمدة دولياً للاختيار (GAHAR Prioritization Matrix):
-   - High Risk: عالية الخطورة على حياة المرضى ومسببة للأحداث الجسيمة (مثل أمان الدواء، التعقيم والمزارع، الإنعاش، بنك الدم).
-   - High Volume: عالية الحجم والتكرار وتؤثر على شريحة واسعة من المرضى يومياً (مثل استكمال العلامات الحيوية بالطوارئ، التوافق الدوائي).
-   - Problem-Prone: مسار معقد عرضة للتباين والخطأ البشري (مثل التوافق الدوائي، أدوية HAM/LASA).
-   - Strategic & GAHAR Mandate: توافق مباشر مع الأهداف الوطنية لسلامة المرضى (NPSGs).
+   - High Risk: عالية الخطورة ومسببة للمضاعفات أو الوفاة (مثل الجلطات الوريدية، أمان الدواء، النتائج الحرجة).
+   - High Volume: عالية الحجم والتكرار وتؤثر على قطاع واسع من المنومين.
+   - Problem-Prone & Process Complexity: مسار عمل معقد يشترك فيه أطراف متعددة وعرضة للتباين والخطأ.
+   - Strategic Alignment: توافق مباشر مع معايير GAHAR وأهداف سلامة المرضى الدولية.
 
 4. المصطلحات الطبية المعتمدة:
-   - استخدم حصراً مصطلح «التوافق الدوائي» لترجمة Medication Reconciliation (يُمنع استخدام "إعادة التوفيق").
-   - استخدم مصطلح «القفازات الطبية / الواقيات الشخصية» لترجمة PPE/Gloves (يُمنع استخدام "الغلافات").
-   - استخدم مصطلح «خلال 30 دقيقة من وصول الحالة لقسم الطوارئ».
+   - استخدم حصراً مصطلح «التوافق الدوائي» لترجمة Medication Reconciliation.
+   - استخدم مصطلح «تقييم ومنع الجلطات الوريدية (VTE)».
+   - استخدم مصطلح «الإبلاغ الفوري المغلق عن النتائج الحرجة (Critical Results Reporting)».
 
 أخرج النتيجة بصيغة JSON فقط.`
 
