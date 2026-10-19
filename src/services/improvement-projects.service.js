@@ -196,10 +196,23 @@ export class ImprovementProjectsService {
       throw new Error('لا توجد سلبيات مسجلة لهذا المستشفى لإجراء تحليل مشاريع التحسين عليها.')
     }
 
-    // 4. Extract and rank individual candidate problems (Prioritize Recurring & High-Impact)
-    const recurringFindings = findings.filter(f => f.repeat_count >= 2 || f.status === 'recurring')
-    const highPriorityFindings = findings.filter(f => f.priority === 'high' && !recurringFindings.some(rf => rf.id === f.id))
-    const otherFindings = findings.filter(f => !recurringFindings.some(rf => rf.id === f.id) && !highPriorityFindings.some(hf => hf.id === f.id))
+    // 4. Extract and rank candidate problems using GAHAR Prioritization Criteria
+    // Filter out trivial one-step physical maintenance or procurement fixes (Just-Do-It tasks)
+    const isTrivialTask = (text) => {
+      const lower = (text || '').toLowerCase()
+      const trivialTerms = [
+        'جرس استدعاء', 'جرس التمريض لا يعمل', 'لا يوجد ترمومتر غرفة',
+        'لمبة مكسورة', 'البوابة مكسورة', 'كالون مكسور', 'تسريب صنبور',
+        'كرسي مكسور', 'مفتاح كهرباء', 'دهان الحائط', 'تربيزة مكسورة'
+      ]
+      return trivialTerms.some(term => lower.includes(term))
+    }
+
+    const eligibleFindings = findings.filter(f => !isTrivialTask(f.original_text))
+
+    const recurringFindings = eligibleFindings.filter(f => f.repeat_count >= 2 || f.status === 'recurring')
+    const highPriorityFindings = eligibleFindings.filter(f => f.priority === 'high' && !recurringFindings.some(rf => rf.id === f.id))
+    const otherFindings = eligibleFindings.filter(f => !recurringFindings.some(rf => rf.id === f.id) && !highPriorityFindings.some(hf => hf.id === f.id))
 
     // Filter by department if requested
     let targetRecurring = recurringFindings
@@ -219,7 +232,7 @@ export class ImprovementProjectsService {
     // Add recurring problems first
     targetRecurring.forEach(f => {
       candidateList.push({
-        type: 'سلبية متكررة (ضعف امتثال مستمر)',
+        type: 'سلبية متكررة معقدة (ضعف امتثال مستمر في مسار إكلينيكي)',
         dept: f.departments?.name || 'عام',
         text: f.original_text,
         repeats: f.repeat_count || 2,
@@ -230,7 +243,7 @@ export class ImprovementProjectsService {
     // Add high-priority critical failures
     targetHigh.slice(0, 15).forEach(f => {
       candidateList.push({
-        type: 'سلبية حرجة عالية الخطورة (Safety Risk)',
+        type: 'سلبية حرجة عالية الخطورة السريرية (High Clinical Risk)',
         dept: f.departments?.name || 'عام',
         text: f.original_text,
         repeats: 1,
@@ -238,11 +251,11 @@ export class ImprovementProjectsService {
       })
     })
 
-    // Add other notable findings if pool is small
+    // Add other notable clinical findings if pool is small
     if (candidateList.length < 5) {
       targetOther.slice(0, 5).forEach(f => {
         candidateList.push({
-          type: 'ملاحظة تشغيلية',
+          type: 'ملاحظة سريرية تنظيمية',
           dept: f.departments?.name || 'عام',
           text: f.original_text,
           repeats: 1,
@@ -260,17 +273,23 @@ export class ImprovementProjectsService {
       return `${idx + 1}. [${c.dept}] (${c.type}): "${c.text}"`
     }).join('\n')
 
-    // AI Prompt - Strictly enforcing Single-Core-Issue Focus
-    const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات (Fellow of IHI, GAHAR Quality Surveyor).
-مهمتك إعداد مشاريع تحسين جودة (Quality Improvement Projects - QIPs) نموذجية مبنية على الأداء الفعلي والدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+    // AI Prompt - Strictly enforcing GAHAR QIP Selection & Prioritization Methodology
+    const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات ومراجع معتمد (GAHAR Senior Quality Surveyor & Fellow of IHI).
+مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة استراتيجية (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
 
-قاعدة ذهبية صارمة في إدارة الجودة (The Single-Problem Focus Principle):
-- كل مشروع تحسين يجب أن يركز تماماً وبشكل حصري على "مشكلة كبرى واحدة محددة" أو "سلبية متكررة حرجة واحدة" (Single Core Problem).
-- يُمنع منعاً باتاً دمج سلبيات مختلفة أو غير متجانسة في مشروع واحد لمجرد أنها وقعت في نفس القسم (مثال خاطئ: مشروع يجمع بين ارتداء القفازات وتوقيع الطبيب وتوثيق التذاكر - هذا تشتيت عشوائي وفشل منهجي).
-- مثال صحيح: "مشروع تطبيق وتفعيل سياسة التوافق الدوائي (Medication Reconciliation) لمنع الأخطاء الدوائية عند الدخول والخروج" - يركز حصرياً على مشكلة التوافق الدوائي.
-- مثال صحيح: "مشروع منع ومكافحة استخدام الاختصارات الطبية الخطرة والممنوعة (Dangerous Abbreviations) في أقسام الرعاية المركزة".
-- مثال صحيح: "مشروع مأمونية نقل وتسليم العينات المخبرية وسلسلة العهدة (Specimen Transport & Chain of Custody) بالمعمل".
-- عنوان المشروع والهدف الذكي (SMART Goal) ومؤشرات الأداء (KPIs) وخطة التدخلات (Interventions) يجب أن تكون مخصصة 100% لعلاج الأسباب الجذرية لهذه المشكلة الواحدة دون تشتيت.
+قواعد صارمة لاختيار مشروع التحسين (QIP Selection & Eligibility Rules):
+1. التمييز الحاسم بين "مشروع التحسين QIP" وبين "مهام الصيانة والإصلاح الفوري Just-Do-It / Quick Fix":
+   - لا يجوز أبداً فتح مشروع تحسين لمهمة صيانة روتينية أو شراء جهاز مفرد (مثل إصلاح جرس تمريض، تركيب كالون، شراء ترمومتر وتعليقه، دهان حائط). هذه مهام صيانة فورية وليست مشاريع جودة.
+   - مشروع التحسين يجب أن يستهدف "مساراً إكلينيكياً أو تشغيلياً معقداً" (Complex Clinical Process) يتطلب تحليلاً للأسباب الجذرية (Root Cause Analysis)، وتغييراً في سلوك وممارسات الفرق الطبية والتمريضية، وتطبيق حزم تدابير علاجية وتدريب وسياسات ومتابعة مؤشرات على مدار أسابيع.
+
+2. معايير الأولوية الخمسة المعتمدة دولياً للاختيار (GAHAR Prioritization Matrix):
+   - High Risk: عالية الخطورة على حياة المرضى ومسببة للأحداث الجسيمة (مثل أمان الدواء، التعقيم، الإنعاش، بنك الدم).
+   - High Volume: عالية الحجم والتكرار وتؤثر على شريحة واسعة من المرضى يومياً (مثل فرز الطوارئ، التوثيق الطبي).
+   - Problem-Prone: مسار معقد عرضة للتباين والخطأ البشري (مثل التوافق الدوائي، التسليم والتسلم Handover).
+   - Strategic & GAHAR Mandate: توافق مباشر مع الأهداف الوطنية لسلامة المرضى (NPSGs).
+
+3. تركيز المشكلة الواحدة (Single Core Problem Focus):
+   - كل مشروع تحسين يجب أن يركز 100% وبشكل حصري على مشكلة كبرى واحدة محددة الأبعاد (ممنوع خلط سلبيات متعددة في مشروع واحد).
 أخرج النتيجة بصيغة JSON فقط.`
 
     const userPrompt = `بيانات أداء المستشفى:
@@ -278,43 +297,57 @@ export class ImprovementProjectsService {
 - عدد تقارير المرور الأخيرة: ${reports?.length || 0} (بتواريخ: ${inspectionDates})
 - إجمالي السلبيات المرصودة: ${totalFindingsCount}
 - السلبيات المفتوحة قيد الإجراء: ${openFindingsCount}
-- السلبيات المتكررة: ${recurringCount}
+- السلبيات المتكررة المؤهلة: ${recurringCount}
 ${focusDepartment ? `- القسم المطلوب التركيز عليه: ${focusDepartment}` : ''}
 
-قائمة المشاكل والسلبيات الحرجة والمتكررة المرشحة للتحسين:
+قائمة المشاكل والسلبيات السريرية والتنظيمية المرشحة لمصفوفة الأولويات:
 ${candidateProblemsText}
 
 المطلوب:
-اختر من القائمة أعلاه أهم ${count} مشاكل محورية مختلفة (أولوية للسلبيات المتكررة ثم عالية الخطورة)، وصِغ لكل مشكلة منفصلة "مشروع تحسين جودة مستقل ومكتمل الأركان" (QIP).
+طبّق مصفوفة الأولويات المعتمدة لاختيار أهم ${count} مشاكل كبرى حقيقية تستحق فتح مشروع تحسين جودة كامل (استبعد أي مهام صيانة أو تصليح فوري)، وصِغ لكل مشكلة "ميثاق مشروع تحسين جودة متكامل ومبني على الدليل العلمي".
 
-متطلبات كل مشروع (مشكلة واحدة فقط لكل مشروع):
-1. عنوان المشروع (Title): اسم واضح ومحدد يعكس المشكلة المعالجة والحل المستهدف.
-2. بيان المشكلة (Problem Statement): يركز فقط على هذه المشكلة المحددة، تكرارها في تقارير المرور، خطورتها الإكلينيكية، وأرقام خط الأساس (Baseline).
-3. الهدف الذكي (SMART Goal): هدف كمي محدد وزمني لاستئصال هذه المشكلة ورفع الامتثال إلى 95% أو تصفير تكرارها.
-4. المرجع العلمي (Evidence): معيار GAHAR المباشر وتوصية WHO ذات الصلة بهذه المشكلة.
-5. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة يخصان هذه المشكلة الواحدة فقط.
-6. خطة التدخلات (FOCUS-PDCA): 3-5 خطوات تنفيذية لمعالجة الأسباب الجذرية للمشكلة.
-7. السلبيات المرتبطة (linked_findings_summary): تذكر نص السلبية الواحدة المحددة المستهدفة فقط.
+متطلبات كل مشروع:
+1. عنوان المشروع (Title): اسم واضح ومحدد يعكس المشكلة والحل المستهدف بدقة.
+2. مبررات الاختيار وتقييم مصفوفة الأولويات (Prioritization Matrix Scoring):
+   - درجة الخطورة السريرية (patient_safety_risk) من 1 إلى 5
+   - حجم وتكرار المشكلة (volume_frequency) من 1 إلى 5
+   - تعقيد المسار والحاجة لتغيير سلوكي (process_complexity) من 1 إلى 5
+   - التوافق الاستراتيجي مع معايير GAHAR (strategic_alignment) من 1 إلى 5
+   - مبرر الأهلية (eligibility_justification): شرح موجز لماذا تستحق هذه القضية فتح مشروع تحسين كامل.
+3. بيان المشكلة (Problem Statement): يركز حصرياً على هذه القضية، مسبباتها، وتكرارها، وخطورتها، وخط الأساس (Baseline).
+4. الهدف الذكي (SMART Goal): محدد كمياً وزمنياً لمعالجة المشكلة ورفع الامتثال إلى 95% أو تصفير تكرارها.
+5. المرجع العلمي (Evidence Reference): معيار GAHAR المباشر المعني وتوصية WHO ذات الصلة.
+6. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة مخصصان لهذه المشكلة الواحدة.
+7. خطة التدخلات (FOCUS-PDCA): خطوات لمعالجة الأسباب الجذرية للمشكلة.
+8. السلبيات المرتبطة (linked_findings_summary): تذكر نص السلبية الواحدة المحددة المستهدفة فقط.
 
 الصيغة المطلوبة (JSON فقط):
 {
   "projects": [
     {
-      "title": "عنوان محدد لمشروع يعالج مشكلة واحدة فقط",
+      "title": "عنوان محدد لمشروع يعالج قضية سريرية/تشغيلية محورية",
       "department_name": "القسم المعني",
       "category": "سلامة المرضى / إدارة واستخدام الدواء / مكافحة العدوى والتعقيم / الرعاية الحرجة والطوارئ / الملف الطبي والتوثيق / إدارة السلامة والمرافق (FMS)",
       "priority": "high",
-      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي الخاص بها بالأرقام والمخاطر",
-      "baseline_metrics": "الأرقام والنسب المرجعية الحالية لهذه المشكلة قبل التحسين",
+      "prioritization_matrix": {
+        "patient_safety_risk": 5,
+        "volume_frequency": 4,
+        "process_complexity": 5,
+        "strategic_alignment": 5,
+        "total_score": 19,
+        "eligibility_justification": "مسار إكلينيكي عالي الخطورة يتطلب تحليلاً للأسباب وتغييراً في الممارسات التدريبية والسياسات ويتبع معايير الاعتماد الوطنية."
+      },
+      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي بالأرقام والمخاطر",
+      "baseline_metrics": "أرقام ونسب خط الأساس قبل التحسين",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
       "evidence_reference": "الدليل الإرشادي ومعيار GAHAR المعني بالمشكلة",
       "target_duration_weeks": 12,
       "kpis": [
-        { "name": "مؤشر العملية للالتزام بالخطوات", "type": "process", "baseline": "0%", "target": "95%", "frequency": "شهري" },
-        { "name": "مؤشر النتيجة (Outcome)", "type": "outcome", "baseline": "تكرار السلبية مرتين", "target": "صفر", "frequency": "شهري" }
+        { "name": "مؤشر العملية للالتزام بالبروتوكول", "type": "process", "baseline": "20%", "target": "95%", "frequency": "شهري" },
+        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "حوادث متكررة", "target": "صفر", "frequency": "شهري" }
       ],
       "interventions": [
-        { "step": "خطوة التدخل الإجرائي لعلاج السبب الجذري", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "خطوة التدخل الإجرائي لمعالجة السبب الجذري", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
       ],
       "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
       "team_members": ["عضو 1", "عضو 2", "عضو 3"],
@@ -380,7 +413,8 @@ ${candidateProblemsText}
         team_members: p.team_members || [],
         estimated_duration_weeks: p.target_duration_weeks || 12,
         linked_findings_summary: p.linked_findings_summary || [],
-        directorate_notes: 'مشروع مقترح مبني على تحليل تقارير المرور والسلبيات ومؤشرات الأداء الفعلية للمستشفى.'
+        prioritization_matrix: p.prioritization_matrix || null,
+        directorate_notes: 'مشروع مقترح مبني على تحليل تقارير المرور وتطبيق مصفوفة أولويات GAHAR.'
       }
 
       const saved = await this.saveProject(projectRecord)

@@ -41,6 +41,7 @@ export default function ImprovementProjectsPage() {
   const [selectedProject, setSelectedProject] = useState(null)
   const [isCharterModalOpen, setIsCharterModalOpen] = useState(false)
   const [statusUpdating, setStatusUpdating] = useState(false)
+  const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false)
 
   // Manual Project Modal state
   const [isManualModalOpen, setIsManualModalOpen] = useState(false)
@@ -395,6 +396,14 @@ export default function ImprovementProjectsPage() {
           </div>
 
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={() => setIsCriteriaModalOpen(true)}
+              className="btn btn-outline"
+              style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.15)', padding: '10px 14px', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>📐</span>
+              معايير ومصفوفة اختيار المشاريع
+            </button>
             <button
               onClick={() => {
                 setGenerateHospitalId(selectedHospitalId || hospitals[0]?.id || '')
@@ -1084,6 +1093,42 @@ export default function ImprovementProjectsPage() {
                 </h3>
               </div>
 
+              {/* Prioritization Matrix & Selection Rationale (if available) */}
+              {selectedProject.prioritization_matrix && (
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--primary-dark)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>⚖️</span> تقييم مصفوفة أولويات الاختيار (GAHAR Prioritization Matrix):
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 8, marginBottom: 8 }}>
+                    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>الخطورة السريرية (Safety)</div>
+                      <div style={{ fontWeight: 800, color: 'var(--danger-dark)', fontSize: 14 }}>{selectedProject.prioritization_matrix.patient_safety_risk} / 5</div>
+                    </div>
+                    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>حجم وتكرار المشكلة (Volume)</div>
+                      <div style={{ fontWeight: 800, color: 'var(--warning-dark)', fontSize: 14 }}>{selectedProject.prioritization_matrix.volume_frequency} / 5</div>
+                    </div>
+                    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>تعقيد المسار (Complexity)</div>
+                      <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: 14 }}>{selectedProject.prioritization_matrix.process_complexity} / 5</div>
+                    </div>
+                    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>التوافق الاستراتيجي (GAHAR)</div>
+                      <div style={{ fontWeight: 800, color: 'var(--success-dark)', fontSize: 14 }}>{selectedProject.prioritization_matrix.strategic_alignment} / 5</div>
+                    </div>
+                    <div style={{ background: 'var(--primary-glow)', border: '1px solid var(--primary-light)', borderRadius: 6, padding: '6px 10px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 11, color: 'var(--primary-dark)', fontWeight: 700 }}>المجموع الإجمالي</div>
+                      <div style={{ fontWeight: 900, color: 'var(--primary-dark)', fontSize: 15 }}>{selectedProject.prioritization_matrix.total_score || (selectedProject.prioritization_matrix.patient_safety_risk + selectedProject.prioritization_matrix.volume_frequency + selectedProject.prioritization_matrix.process_complexity + selectedProject.prioritization_matrix.strategic_alignment)} / 20</div>
+                    </div>
+                  </div>
+                  {selectedProject.prioritization_matrix.eligibility_justification && (
+                    <div style={{ fontSize: 11.5, color: 'var(--text-secondary)', lineHeight: 1.5, borderTop: '1px dashed #cbd5e1', paddingTop: 6 }}>
+                      <strong>مبرر استحقاق المشروع:</strong> {selectedProject.prioritization_matrix.eligibility_justification}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* 1. Problem Statement & Baseline */}
               <div>
                 <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
@@ -1401,6 +1446,168 @@ export default function ImprovementProjectsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 8. QIP Selection Criteria & Prioritization Matrix Modal (GAHAR / IHI) */}
+      {isCriteriaModalOpen && (
+        <div 
+          className="qip-charter-modal no-print"
+          onClick={() => setIsCriteriaModalOpen(false)}
+        >
+          <div 
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              maxWidth: 850,
+              width: '100%',
+              padding: 28,
+              boxShadow: 'var(--shadow-lg)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20,
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border)', paddingBottom: 12 }}>
+              <div>
+                <div className="badge badge-primary" style={{ fontWeight: 800, marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <span>📐</span> المنهجية العلمية والاعتماد الوطني
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 900, margin: 0, color: 'var(--text-primary)' }}>
+                  معايير اختيار مشاريع التحسين ومصفوفة الأولويات (GAHAR & FOCUS-PDCA)
+                </h3>
+              </div>
+              <button onClick={() => setIsCriteriaModalOpen(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px 8px' }}>
+                ✕
+              </button>
+            </div>
+
+            {/* 1. Comparison Box: Just-Do-It vs QIP */}
+            <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 8, padding: 16 }}>
+              <h4 style={{ fontSize: 14, fontWeight: 900, color: 'var(--primary-dark)', margin: '0 0 10px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>⚖️</span> أولاً: التمييز الحاسم بين (الإجراء الفوري Just-Do-It) وبين (مشروع التحسين QIP)
+              </h4>
+              <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
+                من أكبر الأخطاء الشائعة في المستشفيات فتح مشروع تحسين جودة لمهمة صيانة روتينية أو شراء جهاز مفرد. مراجعو الاعتماد (GAHAR / JCI) يرفضون هذه المشاريع فوراً؛ لأن مشاريع التحسين مخصصة فقط لـ <strong>العمليات المعقدة متعددة التخصصات</strong>.
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12, fontSize: 12 }}>
+                <div style={{ background: '#fff', border: '1px solid #fecaca', borderRadius: 8, padding: 12 }}>
+                  <div style={{ fontWeight: 800, color: '#b91c1c', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span>❌</span> لا يصلح كمشروع تحسين (إجراء فوري Just-Do-It / CAPA):
+                  </div>
+                  <ul style={{ paddingRight: 18, margin: 0, lineHeight: 1.6, color: '#334155' }}>
+                    <li>إصلاح جرس استدعاء تمريض مكسور (أمر صيانة كهرباء).</li>
+                    <li>شراء ترمومتر وتعليقه على حائط الغرفة (أمر توريد وشراء).</li>
+                    <li>تثبيت كالون أو إصلاح باب أو زجاج مكسور.</li>
+                    <li>طباعة قائمة ورقية وتعليقها على دولاب.</li>
+                    <li>توفير أدوات نظافة أو سلة مهملات مفردة.</li>
+                  </ul>
+                  <div style={{ fontSize: 11, color: '#64748b', marginTop: 8, fontStyle: 'italic' }}>
+                    💡 الإجراء الصحيح: يُحل فوراً بأمر صيانة أو أمر تكليف إداري (Corrective Action) دون فتح ميثاق تحسين لـ 12 أسبوعاً.
+                  </div>
+                </div>
+
+                <div style={{ background: '#fff', border: '1px solid #bbf7d0', borderRadius: 8, padding: 12 }}>
+                  <div style={{ fontWeight: 800, color: '#166534', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span>✅</span> مؤهل بجدارة كمشروع تحسين جودة (Real QIP):
+                  </div>
+                  <ul style={{ paddingRight: 18, margin: 0, lineHeight: 1.6, color: '#334155' }}>
+                    <li>تفعيل التوافق الدوائي عند الدخول والخروج لمنع الأخطاء القاتلة.</li>
+                    <li>حوكمة جاهزية عربات الطوارئ وسرعة الإنعاش القلبي الرئوي.</li>
+                    <li>منظومة حوكمة الأدوية عالية الخطورة (HAM) والأدوية المتشابهة (LASA).</li>
+                    <li>التعقيم الإلزامي للمزارع البكتيرية بالأوتوكلاف لمنع تفشي الوبائيات.</li>
+                    <li>رفع اكتمال الفرز السريري وتوثيق العلامات الحيوية بتذاكر الطوارئ.</li>
+                  </ul>
+                  <div style={{ fontSize: 11, color: '#166534', marginTop: 8, fontWeight: 700 }}>
+                    🎯 الخصائص: يتطلب تغيير سلوك، تدريب فرق، تحليل أسباب جذرية، ومتابعة مؤشرات مستمرة.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. The 5 Core Selection Criteria */}
+            <div>
+              <h4 style={{ fontSize: 14, fontWeight: 900, color: 'var(--text-primary)', margin: '0 0 10px 0' }}>
+                ثانياً: معايير الأولوية الخمسة لاختيار مشروع التحسين (GAHAR Prioritization Criteria)
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, fontSize: 12 }}>
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 800, color: 'var(--danger-dark)', marginBottom: 4 }}>1. عالية الخطورة (High Risk):</div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    قضايا تمس حياة المريض وسلامته مباشرة وقد تسبب وفيات أو أحداثاً جسيمة (Sentinel Events) مثل الأدوية الحرجة، والتعقيم، وبنك الدم.
+                  </div>
+                </div>
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 800, color: 'var(--warning-dark)', marginBottom: 4 }}>2. عالية التكرار والحجم (High Volume):</div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    عمليات تمس شريحة واسعة جداً من المرضى يومياً (مثل فرز الطوارئ، السجلات الطبية، تدني استكمال الوصفات الدوائية).
+                  </div>
+                </div>
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: 4 }}>3. معقدة وعرضة للخطأ (Problem-Prone):</div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    مسارات سريرية تتداخل فيها تخصصات متعددة وتعاني من تباين في التطبيق (مثل التسليم والتسلم السريري Handover، وسلسلة التبريد).
+                  </div>
+                </div>
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <div style={{ fontWeight: 800, color: 'var(--success-dark)', marginBottom: 4 }}>4. متطلب اعتماد ملزم (GAHAR / NPSG):</div>
+                  <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    معايير أمان وطنية غير قابلة للتفاوض (Non-Negotiable) مفروضة في معايير الاعتماد الوطنية وحلول سلامة المرضى لمنظمة الصحة العالمية.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. FOCUS-PDCA 9-Step Roadmap */}
+            <div>
+              <h4 style={{ fontSize: 14, fontWeight: 900, color: 'var(--text-primary)', margin: '0 0 10px 0' }}>
+                ثالثاً: خارطة طريق خطوات التحسين التسع (منهجية FOCUS-PDCA)
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 8, fontSize: 11.5 }}>
+                <div style={{ background: '#eff6ff', padding: 10, borderRadius: 6, border: '1px solid #bfdbfe' }}>
+                  <strong>1. Find (اكتشاف العملية):</strong> اختيار المشكلة المحورية من تقارير المرور باستخدام مصفوفة الأولويات.
+                </div>
+                <div style={{ background: '#eff6ff', padding: 10, borderRadius: 6, border: '1px solid #bfdbfe' }}>
+                  <strong>2. Organize (تشكيل الفريق):</strong> تكليف فريق عمل متعدد التخصصات بقيادة مسؤول إكلينيكي واضح.
+                </div>
+                <div style={{ background: '#eff6ff', padding: 10, borderRadius: 6, border: '1px solid #bfdbfe' }}>
+                  <strong>3. Clarify (توضيح المسار):</strong> رسم تدفق العملية الحالي (Flowchart) لتحديد نقاط الخلل والقصور.
+                </div>
+                <div style={{ background: '#eff6ff', padding: 10, borderRadius: 6, border: '1px solid #bfdbfe' }}>
+                  <strong>4. Understand (الأسباب الجذرية):</strong> تطبيق أدوات الجودة (عظمة السمكة Fishbone أو 5 Whys).
+                </div>
+                <div style={{ background: '#eff6ff', padding: 10, borderRadius: 6, border: '1px solid #bfdbfe' }}>
+                  <strong>5. Select (اختيار التدخلات):</strong> صياغة حزم التدابير المبنية على الدليل العلمي ومعايير GAHAR.
+                </div>
+                <div style={{ background: '#f0fdf4', padding: 10, borderRadius: 6, border: '1px solid #bbf7d0' }}>
+                  <strong>6. Plan (التخطيط والهدف الذكي):</strong> وضع خطة العمل الزمنية والهدف الذكي ومؤشرات القياس (KPIs).
+                </div>
+                <div style={{ background: '#f0fdf4', padding: 10, borderRadius: 6, border: '1px solid #bbf7d0' }}>
+                  <strong>7. Do (التطبيق التجريبي):</strong> تنفيذ التدخلات وتدريب الكوادر على نطاق محدود كاختبار للحل.
+                </div>
+                <div style={{ background: '#fefce8', padding: 10, borderRadius: 6, border: '1px solid #fef08a' }}>
+                  <strong>8. Check (القياس والمقارنة):</strong> قياس مؤشرات العملية والنتيجة ومقارنتها بخط الأساس (Baseline).
+                </div>
+                <div style={{ background: '#faf5ff', padding: 10, borderRadius: 6, border: '1px solid #e9d5ff' }}>
+                  <strong>9. Act (المأسسة والتعميم):</strong> تعميم الإجراءات الناجحة كسياسة دائمة مستدامة بالمستشفى.
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+              <button onClick={() => setIsCriteriaModalOpen(false)} className="btn btn-primary" style={{ padding: '8px 24px', fontWeight: 800 }}>
+                فهمت المعايير ومطابقتها
+              </button>
+            </div>
+
           </div>
         </div>
       )}
