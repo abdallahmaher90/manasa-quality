@@ -196,100 +196,133 @@ export class ImprovementProjectsService {
       throw new Error('لا توجد سلبيات مسجلة لهذا المستشفى لإجراء تحليل مشاريع التحسين عليها.')
     }
 
-    // 4. Extract and rank candidate problems using GAHAR Prioritization Criteria
+    // 4. Extract and rank candidate problems using GAHAR Prioritization & Care Bundling Engine
     // Filter out trivial one-step physical maintenance or procurement fixes (Just-Do-It tasks)
     const isTrivialTask = (text) => {
       const lower = (text || '').toLowerCase()
       const trivialTerms = [
-        'جرس استدعاء', 'جرس التمريض لا يعمل', 'لا يوجد ترمومتر غرفة',
+        'جرس استدعاء', 'جرس التمريض', 'لا يوجد ترمومتر غرفة', 'ترمومتر غرفة',
         'لمبة مكسورة', 'البوابة مكسورة', 'كالون مكسور', 'تسريب صنبور',
-        'كرسي مكسور', 'مفتاح كهرباء', 'دهان الحائط', 'تربيزة مكسورة'
+        'كرسي مكسور', 'مفتاح كهرباء', 'دهان الحائط', 'تربيزة مكسورة',
+        'بلاط مكسر', 'أرضيات بدون بلاط', 'بوسترات غسل', 'بوسترات race',
+        'كارت فحص لطفاية', 'شطب وكشط ف السجل', 'غير مرقمة', 'حشائش وأكياس زبالة'
       ]
       return trivialTerms.some(term => lower.includes(term))
     }
 
     const eligibleFindings = findings.filter(f => !isTrivialTask(f.original_text))
 
-    const recurringFindings = eligibleFindings.filter(f => f.repeat_count >= 2 || f.status === 'recurring')
-    const highPriorityFindings = eligibleFindings.filter(f => f.priority === 'high' && !recurringFindings.some(rf => rf.id === f.id))
-    const otherFindings = eligibleFindings.filter(f => !recurringFindings.some(rf => rf.id === f.id) && !highPriorityFindings.some(hf => hf.id === f.id))
+    // Define 6 Master Clinical Care Bundles for systematic grouping
+    const bundleDefinitions = [
+      {
+        id: 'emergency_triage_resuscitation',
+        domain: 'مسار فرز الطوارئ والتقييم السريري والإنعاش القلبي الرئوي (Emergency Triage & Resuscitation Bundle)',
+        category: 'الرعاية الحرجة والطوارئ',
+        dept: 'قسم الطوارئ والاستقبال',
+        keywords: ['فرز', 'استقبال', 'علامات حيوية', 'تذكرة', 'كراش', 'إنعاش', 'طوارئ', 'جلافز', 'وصفة', 'أدوية الطوارئ']
+      },
+      {
+        id: 'medication_safety_reconciliation',
+        domain: 'منظومة السلامة الدوائية الشاملة والتوافق الدوائي وحوكمة الأدوية الحرجة (Medication Safety, Reconciliation & HAM/LASA Bundle)',
+        category: 'إدارة واستخدام الدواء',
+        dept: 'قسم الصيدلية',
+        keywords: ['توافق دوائي', 'أدوية', 'صيدلية', 'كراش', 'متشابهة', 'عالية الخطورة', 'ثلاجة', 'تبريد', 'lasa', 'ham', 'أمبولات', 'تخزين']
+      },
+      {
+        id: 'infection_control_isolation',
+        domain: 'حوكمة غرف العزل الطبي وتطبيق حزمة مكافحة العدوى والوقاية من التفشي الوبائي (Clinical Isolation & Outbreak Prevention Bundle)',
+        category: 'مكافحة العدوى والتعقيم',
+        dept: 'مكافحة العدوى والعزل الطبي',
+        keywords: ['عزل', 'مرافقين', 'غسيل أيدي', 'وقايات شخصية', 'جلافز', 'تطهير', 'نفايات', 'بلاعة', 'عدوى', 'أوتوكلاف', 'مزارع']
+      },
+      {
+        id: 'lab_biosafety_critical_results',
+        domain: 'الأمان الحيوي وإدارة العينات والنتائج الحرجة وكواشف المعمل (Laboratory Biosafety & Critical Results Bundle)',
+        category: 'سلامة المرضى',
+        dept: 'المعمل وبنك الدم',
+        keywords: ['معمل', 'عينات', 'كواشف', 'نتائج حرجة', 'ماسة', 'مواد خطرة', 'مزارع بكتيرية', 'ثلاجة المعمل']
+      },
+      {
+        id: 'facility_oxygen_safety',
+        domain: 'سلامة شبكة وأسطوانات الأكسجين الطبي وإدارة المخاطر البيئية والنفايات (Medical Oxygen Safety & Environmental Risk Bundle)',
+        category: 'إدارة السلامة والمرافق (FMS)',
+        dept: 'إدارة السلامة والمرافق (FMS)',
+        keywords: ['أكسجين', 'أسطوانات', 'شبكة الغازات', 'غرفة النفايات', 'حريق', 'غازات طبية']
+      },
+      {
+        id: 'clinical_documentation_handover',
+        domain: 'حوكمة التوثيق السريري واكتمال الملف الطبي والتسليم والتسلم (Clinical Documentation & Handover Governance Bundle)',
+        category: 'الملف الطبي والتوثيق',
+        dept: 'الإدارة الطبية والسجلات',
+        keywords: ['ملف طبي', 'توثيق', 'تذاكر', 'تسليم وتسلم', 'handover', 'اختصارات', 'تعريف المريض']
+      }
+    ]
 
-    // Filter by department if requested
-    let targetRecurring = recurringFindings
-    let targetHigh = highPriorityFindings
-    let targetOther = otherFindings
-
-    if (focusDepartment) {
-      const matchDept = (d) => (d || '').toLowerCase().includes(focusDepartment.toLowerCase())
-      targetRecurring = recurringFindings.filter(f => matchDept(f.departments?.name))
-      targetHigh = highPriorityFindings.filter(f => matchDept(f.departments?.name))
-      targetOther = otherFindings.filter(f => matchDept(f.departments?.name))
-    }
-
-    // Prepare prioritized candidate problems list
-    const candidateList = []
-    
-    // Add recurring problems first
-    targetRecurring.forEach(f => {
-      candidateList.push({
-        type: 'سلبية متكررة معقدة (ضعف امتثال مستمر في مسار إكلينيكي)',
-        dept: f.departments?.name || 'عام',
-        text: f.original_text,
-        repeats: f.repeat_count || 2,
-        priority: 'high'
+    // Cluster eligible findings into clinical bundles
+    const clinicalBundles = bundleDefinitions.map(b => {
+      const matched = eligibleFindings.filter(f => {
+        const text = (f.original_text || '').toLowerCase()
+        const dept = (f.departments?.name || '').toLowerCase()
+        if (focusDepartment && !dept.includes(focusDepartment.toLowerCase()) && !b.dept.toLowerCase().includes(focusDepartment.toLowerCase())) {
+          return false
+        }
+        return b.keywords.some(kw => text.includes(kw) || dept.includes(kw))
       })
-    })
 
-    // Add high-priority critical failures
-    targetHigh.slice(0, 15).forEach(f => {
-      candidateList.push({
-        type: 'سلبية حرجة عالية الخطورة السريرية (High Clinical Risk)',
-        dept: f.departments?.name || 'عام',
-        text: f.original_text,
-        repeats: 1,
-        priority: 'high'
-      })
-    })
+      const recurringCount = matched.filter(f => f.repeat_count >= 2 || f.status === 'recurring').length
+      const highCount = matched.filter(f => f.priority === 'high').length
+      const priorityScore = (recurringCount * 3) + (highCount * 2) + matched.length
 
-    // Add other notable clinical findings if pool is small
-    if (candidateList.length < 5) {
-      targetOther.slice(0, 5).forEach(f => {
-        candidateList.push({
-          type: 'ملاحظة سريرية تنظيمية',
-          dept: f.departments?.name || 'عام',
-          text: f.original_text,
-          repeats: 1,
-          priority: f.priority || 'medium'
-        })
-      })
-    }
+      return {
+        ...b,
+        findings: matched,
+        findingsCount: matched.length,
+        recurringCount,
+        highCount,
+        priorityScore
+      }
+    }).filter(b => b.findingsCount > 0)
+      .sort((a, b) => b.priorityScore - a.priorityScore)
+
+    // Build the formatted bundles description for the AI prompt
+    const candidateBundlesText = clinicalBundles.slice(0, 6).map((b, idx) => {
+      const findingsSummary = b.findings.slice(0, 8).map(f => {
+        const rep = (f.repeat_count >= 2 || f.status === 'recurring') ? ' [متكررة]' : ''
+        const prio = f.priority === 'high' ? ' [حرجة]' : ''
+        return `     • (${f.departments?.name || b.dept})${rep}${prio}: "${f.original_text}"`
+      }).join('\n')
+
+      return `${idx + 1}. [حزمة إكلينيكية / مسار معقد]: ${b.domain}
+   - القسم المعني: ${b.dept}
+   - التصنيف: ${b.category}
+   - إجمالي السلبيات المرصودة في هذا المسار: ${b.findingsCount} (منها ${b.highCount} حرجة و ${b.recurringCount} متكررة)
+   - السلبيات المرصودة التي تمثل الخلل النظامي في هذا المسار:
+${findingsSummary}`
+    }).join('\n\n')
 
     const inspectionDates = reports?.map(r => r.inspection_date).filter(Boolean).slice(0, 5).join(' و ') || 'زيارات متعددة'
     const totalFindingsCount = findings.length
     const openFindingsCount = findings.filter(f => ['open', 'recurring'].includes(f.status)).length
-    const recurringCount = recurringFindings.length
+    const recurringCount = findings.filter(f => f.repeat_count >= 2 || f.status === 'recurring').length
 
-    const candidateProblemsText = candidateList.map((c, idx) => {
-      return `${idx + 1}. [${c.dept}] (${c.type}): "${c.text}"`
-    }).join('\n')
-
-    // AI Prompt - Strictly enforcing GAHAR QIP Selection & Prioritization Methodology
+    // AI Prompt - Strictly enforcing GAHAR QIP Selection & Care Bundling Methodology
     const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات ومراجع معتمد (GAHAR Senior Quality Surveyor & Fellow of IHI).
-مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة استراتيجية (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة استراتيجية (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA، مع تطبيق حزم التدابير الإكلينيكية (Clinical Care Bundles).
 
-قواعد صارمة لاختيار مشروع التحسين (QIP Selection & Eligibility Rules):
-1. التمييز الحاسم بين "مشروع التحسين QIP" وبين "مهام الصيانة والإصلاح الفوري Just-Do-It / Quick Fix":
-   - لا يجوز أبداً فتح مشروع تحسين لمهمة صيانة روتينية أو شراء جهاز مفرد (مثل إصلاح جرس تمريض، تركيب كالون، شراء ترمومتر وتعليقه، دهان حائط). هذه مهام صيانة فورية وليست مشاريع جودة.
-   - مشروع التحسين يجب أن يستهدف "مساراً إكلينيكياً أو تشغيلياً معقداً" (Complex Clinical Process) يتطلب تحليلاً للأسباب الجذرية (Root Cause Analysis)، وتغييراً في سلوك وممارسات الفرق الطبية والتمريضية، وتطبيق حزم تدابير علاجية وتدريب وسياسات ومتابعة مؤشرات على مدار أسابيع.
+قواعد صارمة لاختيار وتصميم مشاريع التحسين (Strict Quality Rules):
+1. قاعدة حزم التدابير الإكلينيكية الشاملة (Care Bundling Principle) - إلزامي:
+   - يُمنع منعاً باتاً صياغة مشروع تحسين على ملاحظة تفتيشية جزئية أو سلوك فردي منفصل (مثل: ارتداء قفازات فقط، أو كروت تعريف الكراش فقط، أو تعليق لافتة، أو ترقيم دفاتر).
+   - كل مشروع يجب أن يصاغ كـ «حزمة تدابير إكلينيكية متكاملة (Care Bundle)» أو «مسار سريري/تشغيلي استراتيجي» يعالج المنظومة ككل، ويدمج كافة الملاحظات المترابطة المرصودة في هذا المسار تحت مظلة واحدة في حقل (linked_findings_summary).
+   - أمثلة إلزامية:
+     * بدلاً من "مشروع ارتداء القفازات": يصاغ «مشروع حزمة أمان ومأمونية مسار الفرز السريري والتقييم الأولي واكتمال العلامات الحيوية بالطوارئ (Emergency Clinical Triage Bundle)»، ليعالج معاً غياب الواقيات الشخصية، وإهمال توثيق العلامات الحيوية، ونقص بيانات الوصفة الطبية.
+     * بدلاً من "مشروع كروت الكراش": يصاغ «مشروع الحوكمة الشاملة لجاهزية عربات الطوارئ وسرعة الإنعاش القلبي الرئوي (Resuscitation Readiness Bundle)»، ليعالج القوائم ومحاضر الفتح وتحديث الأدوية والتنسيق مع الصيدلية.
 
-2. معايير الأولوية الخمسة المعتمدة دولياً للاختيار (GAHAR Prioritization Matrix):
-   - High Risk: عالية الخطورة على حياة المرضى ومسببة للأحداث الجسيمة (مثل أمان الدواء، التعقيم، الإنعاش، بنك الدم).
-   - High Volume: عالية الحجم والتكرار وتؤثر على شريحة واسعة من المرضى يومياً (مثل فرز الطوارئ، التوثيق الطبي).
-   - Problem-Prone: مسار معقد عرضة للتباين والخطأ البشري (مثل التوافق الدوائي، التسليم والتسلم Handover).
-   - Strategic & GAHAR Mandate: توافق مباشر مع الأهداف الوطنية لسلامة المرضى (NPSGs).
+2. عتبة الأثر السريري العالي (High Clinical Impact Threshold):
+   - يجب أن تستهدف المشاريع القضايا الحيوية التي تمنع الوفيات والأحداث الجسيمة (Sentinel Events) والعدوى المتقاطعة والأخطاء الدوائية الحرجة وفق معايير GAHAR وأهداف سلامة المرضى الدولية (IPSGs).
 
-3. تركيز المشكلة الواحدة (Single Core Problem Focus):
-   - كل مشروع تحسين يجب أن يركز 100% وبشكل حصري على مشكلة كبرى واحدة محددة الأبعاد (ممنوع خلط سلبيات متعددة في مشروع واحد).
+3. مؤشرات النتيجة الحقيقية (Clinical Outcome KPIs):
+   - يجب أن يقيس مؤشر النتيجة (Outcome KPI) أثراً سريرياً أو تشغيلياً جوهرياً (مثل خفض معدل العدوى المكتسبة، خفض زمن بدء علاج الإنعاش إلى أقل من 5 دقائق، تصفير أخطاء التوافق الدوائي، رفع اكتمال الفرز السريري لـ 95%).
+
 أخرج النتيجة بصيغة JSON فقط.`
 
     const userPrompt = `بيانات أداء المستشفى:
@@ -300,32 +333,32 @@ export class ImprovementProjectsService {
 - السلبيات المتكررة المؤهلة: ${recurringCount}
 ${focusDepartment ? `- القسم المطلوب التركيز عليه: ${focusDepartment}` : ''}
 
-قائمة المشاكل والسلبيات السريرية والتنظيمية المرشحة لمصفوفة الأولويات:
-${candidateProblemsText}
+قائمة حزم المسارات الإكلينيكية والتشغيلية الكبرى المرشحة لمصفوفة الأولويات:
+${candidateBundlesText}
 
 المطلوب:
-طبّق مصفوفة الأولويات المعتمدة لاختيار أهم ${count} مشاكل كبرى حقيقية تستحق فتح مشروع تحسين جودة كامل (استبعد أي مهام صيانة أو تصليح فوري)، وصِغ لكل مشكلة "ميثاق مشروع تحسين جودة متكامل ومبني على الدليل العلمي".
+طبّق مصفوفة الأولويات المعتمدة لاختيار بالضبط عدد (${count}) حزم إكلينيكية/تشغيلية كبرى مختلفة من القائمة أعلاه (يجب أن يحتوي حقل "projects" على مصفوفة بها بالضبط ${count} عناصر لمشاريع مختلفة)، وصِغ لكل حزمة "ميثاق مشروع تحسين جودة متكامل ومبني على الدليل العلمي وحزم التدابير (Care Bundles)".
 
 متطلبات كل مشروع:
-1. عنوان المشروع (Title): اسم واضح ومحدد يعكس المشكلة والحل المستهدف بدقة.
+1. عنوان المشروع (Title): اسم عربي رصين ومعبر لحزمة التدابير أو المسار الاستراتيجي المعالج (مع إمكانية ذكر المصطلح الإنجليزي بين قوسين).
 2. مبررات الاختيار وتقييم مصفوفة الأولويات (Prioritization Matrix Scoring):
    - درجة الخطورة السريرية (patient_safety_risk) من 1 إلى 5
    - حجم وتكرار المشكلة (volume_frequency) من 1 إلى 5
    - تعقيد المسار والحاجة لتغيير سلوكي (process_complexity) من 1 إلى 5
    - التوافق الاستراتيجي مع معايير GAHAR (strategic_alignment) من 1 إلى 5
-   - مبرر الأهلية (eligibility_justification): شرح موجز لماذا تستحق هذه القضية فتح مشروع تحسين كامل.
-3. بيان المشكلة (Problem Statement): يركز حصرياً على هذه القضية، مسبباتها، وتكرارها، وخطورتها، وخط الأساس (Baseline).
-4. الهدف الذكي (SMART Goal): محدد كمياً وزمنياً لمعالجة المشكلة ورفع الامتثال إلى 95% أو تصفير تكرارها.
+   - مبرر الأهلية (eligibility_justification): شرح موجز لماذا يستحق هذا المسار فتح مشروع تحسين كامل.
+3. بيان المشكلة (Problem Statement): يشرح الخلل النظامي في هذا المسار والسلبيات المرتبطة به ومخاطره وخط الأساس.
+4. الهدف الذكي (SMART Goal): محدد كمياً وزمنياً لمعالجة حزمة التدابير ورفع الامتثال إلى 95% أو خفض المخاطر.
 5. المرجع العلمي (Evidence Reference): معيار GAHAR المباشر المعني وتوصية WHO ذات الصلة.
-6. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة مخصصان لهذه المشكلة الواحدة.
-7. خطة التدخلات (FOCUS-PDCA): خطوات لمعالجة الأسباب الجذرية للمشكلة.
-8. السلبيات المرتبطة (linked_findings_summary): تذكر نص السلبية الواحدة المحددة المستهدفة فقط.
+6. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة إكلينيكي حقيقي مخصصان لهذه الحزمة.
+7. خطة التدخلات (FOCUS-PDCA): خطوات لمعالجة الأسباب الجذرية للمسار (تدريب، سياسات، نماذج، تدقيق).
+8. السلبيات المرتبطة (linked_findings_summary): قائمة نصوص السلبيات المرصودة المترابطة التي تعالجها هذه الحزمة.
 
-الصيغة المطلوبة (JSON فقط):
+الصيغة المطلوبة (JSON فقط - مصفوفة projects تحتوي على ${count} مشروع):
 {
   "projects": [
     {
-      "title": "عنوان محدد لمشروع يعالج قضية سريرية/تشغيلية محورية",
+      "title": "عنوان حزمة التدابير أو المسار الإكلينيكي الشامل",
       "department_name": "القسم المعني",
       "category": "سلامة المرضى / إدارة واستخدام الدواء / مكافحة العدوى والتعقيم / الرعاية الحرجة والطوارئ / الملف الطبي والتوثيق / إدارة السلامة والمرافق (FMS)",
       "priority": "high",
@@ -335,23 +368,23 @@ ${candidateProblemsText}
         "process_complexity": 5,
         "strategic_alignment": 5,
         "total_score": 19,
-        "eligibility_justification": "مسار إكلينيكي عالي الخطورة يتطلب تحليلاً للأسباب وتغييراً في الممارسات التدريبية والسياسات ويتبع معايير الاعتماد الوطنية."
+        "eligibility_justification": "مسار إكلينيكي معقد عالي الخطورة يتطلب حزمة تدابير وتغييراً سلوكياً وتدريباً مستمراً."
       },
-      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي بالأرقام والمخاطر",
+      "problem_statement": "بيان المشكلة وتحليل الخلل في المسار وربطه بالسلبيات المرصودة",
       "baseline_metrics": "أرقام ونسب خط الأساس قبل التحسين",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
       "evidence_reference": "الدليل الإرشادي ومعيار GAHAR المعني بالمشكلة",
       "target_duration_weeks": 12,
       "kpis": [
-        { "name": "مؤشر العملية للالتزام بالبروتوكول", "type": "process", "baseline": "20%", "target": "95%", "frequency": "شهري" },
-        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "حوادث متكررة", "target": "صفر", "frequency": "شهري" }
+        { "name": "مؤشر العملية للالتزام بحزمة التدابير", "type": "process", "baseline": "20%", "target": "95%", "frequency": "شهري" },
+        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "معدل الحوادث أو العدوى الحالي", "target": "الهدف المنشود", "frequency": "شهري" }
       ],
       "interventions": [
-        { "step": "خطوة التدخل الإجرائي لمعالجة السبب الجذري", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "خطوة التدخل الإجرائي لعلاج السبب الجذري", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
       ],
       "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
       "team_members": ["عضو 1", "عضو 2", "عضو 3"],
-      "linked_findings_summary": ["نص المشكلة أو السلبية الواحدة المحددة"]
+      "linked_findings_summary": ["نص السلبية 1", "نص السلبية 2"]
     }
   ]
 }`
@@ -370,7 +403,8 @@ ${candidateProblemsText}
           { role: 'user', content: userPrompt }
         ],
         response_format: { type: 'json_object' },
-        temperature: 0.15
+        temperature: 0.15,
+        max_tokens: 6000
       })
     })
 
@@ -380,7 +414,8 @@ ${candidateProblemsText}
     }
 
     const aiResponse = await res.json()
-    const content = aiResponse.choices?.[0]?.message?.content || '{}'
+    const choice = aiResponse.choices?.[0]
+    const content = choice?.message?.content || '{}'
     const parsed = JSON.parse(content)
     const generatedList = parsed.projects || []
 
@@ -397,24 +432,24 @@ ${candidateProblemsText}
       const projectRecord = {
         hospital_id: hospital.id,
         hospital_name: hospital.name,
-        title: p.title,
-        department_name: p.department_name,
+        title: p.title || 'مشروع تحسين جودة سريري',
+        department_name: p.department_name || 'عام',
         category: p.category || 'سلامة المرضى',
         priority: p.priority || 'high',
         status: 'draft',
-        problem_statement: p.problem_statement,
-        baseline_metrics: p.baseline_metrics,
-        smart_goal: p.smart_goal,
-        evidence_reference: p.evidence_reference,
+        problem_statement: p.problem_statement || p.problem || 'بيان المشكلة قيد القياس والتدقيق',
+        baseline_metrics: p.baseline_metrics || p.baseline || 'خط الأساس قيد القياس والتحليل',
+        smart_goal: p.smart_goal || p.goal || 'رفع نسبة الامتثال لحزمة التدابير الإكلينيكية إلى 95% خلال 12 أسبوعاً',
+        evidence_reference: p.evidence_reference || p.evidence || 'معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)',
         target_completion_date: targetDate.toISOString().split('T')[0],
         kpis: p.kpis || [],
         interventions: p.interventions || [],
         project_lead: p.project_lead || hospital.quality_head_name || 'فريق الجودة بالمستشفى',
         team_members: p.team_members || [],
         estimated_duration_weeks: p.target_duration_weeks || 12,
-        linked_findings_summary: p.linked_findings_summary || [],
+        linked_findings_summary: p.linked_findings_summary || p.linked_findings || [],
         prioritization_matrix: p.prioritization_matrix || null,
-        directorate_notes: 'مشروع مقترح مبني على تحليل تقارير المرور وتطبيق مصفوفة أولويات GAHAR.'
+        directorate_notes: 'مشروع مقترح مبني على تحليل تقارير المرور وتطبيق مصفوفة أولويات GAHAR وحزم التدابير السريرية (Care Bundles).'
       }
 
       const saved = await this.saveProject(projectRecord)
