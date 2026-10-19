@@ -16,6 +16,7 @@ const pageTitles = {
   '/archive': 'أرشيف التقارير',
   '/cross-report': 'تقرير مقارن',
   '/statistics': 'الإحصائيات',
+  '/improvement-projects': 'مشاريع التحسين (QIPs)',
 }
 
 export default function AppLayout({ children }) {

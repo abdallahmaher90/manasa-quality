@@ -11,7 +11,8 @@ import {
   CheckIcon, 
   XMarkIcon, 
   ArrowPathIcon,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
+  ChartIcon
 } from '@/components/Icons'
 
 export default function ImprovementProjectsPage() {
@@ -26,6 +27,7 @@ export default function ImprovementProjectsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [viewMode, setViewMode] = useState('cards') // 'cards' | 'table'
 
   // Modals state
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
@@ -273,6 +275,22 @@ export default function ImprovementProjectsPage() {
     }
   }
 
+  // Status counts for filter tabs
+  const statusCounts = useMemo(() => {
+    const counts = {
+      all: projects.length,
+      draft: 0,
+      approved: 0,
+      in_progress: 0,
+      completed: 0,
+      suspended: 0
+    }
+    projects.forEach(p => {
+      if (counts[p.status] !== undefined) counts[p.status]++
+    })
+    return counts
+  }, [projects])
+
   // Computed & Filtered Projects
   const filteredProjects = useMemo(() => {
     return projects.filter(p => {
@@ -293,49 +311,48 @@ export default function ImprovementProjectsPage() {
   // Stats calculation
   const stats = useMemo(() => {
     const total = projects.length
-    const approved = projects.filter(p => ['approved', 'in_progress'].includes(p.status)).length
+    const inProgress = projects.filter(p => ['approved', 'in_progress'].includes(p.status)).length
     const completed = projects.filter(p => p.status === 'completed').length
     const high = projects.filter(p => p.priority === 'high').length
-    return { total, approved, completed, high }
+    return { total, inProgress, completed, high }
   }, [projects])
 
   // Status Labels and Badges
   const getStatusBadge = (status) => {
     switch (status) {
       case 'completed':
-        return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">مكتمل ومحقق للمستهدف ✓</span>
+        return <span className="badge badge-success" style={{ fontWeight: 800, padding: '4px 10px' }}>✅ مكتمل ومحقق للمستهدف</span>
       case 'in_progress':
-        return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300">قيد التنفيذ بالمستشفى ⏳</span>
+        return <span className="badge badge-primary" style={{ fontWeight: 800, padding: '4px 10px' }}>⏳ قيد التنفيذ بالمستشفى</span>
       case 'approved':
-        return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">معتمد من المديرية 📋</span>
+        return <span className="badge" style={{ background: '#ede9fe', color: '#6d28d9', fontWeight: 800, padding: '4px 10px', border: '1px solid #ddd6fe' }}>📋 معتمد من المديرية</span>
       case 'suspended':
-        return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">معلق</span>
+        return <span className="badge badge-neutral" style={{ fontWeight: 700, padding: '4px 10px' }}>معلق</span>
       default:
-        return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">مقترح بالذكاء الاصطناعي (مسودة)</span>
+        return <span className="badge badge-warning" style={{ fontWeight: 800, padding: '4px 10px' }}>💡 مقترح بالذكاء الاصطناعي</span>
     }
   }
 
   const getPriorityBadge = (priority) => {
     switch (priority) {
       case 'high':
-        return <span className="px-2 py-0.5 rounded text-xs font-semibold bg-rose-100 text-rose-700 border border-rose-200">أولوية قصوى ⚡</span>
+        return <span className="badge badge-danger" style={{ fontSize: 11, fontWeight: 800 }}>⚡ أولوية قصوى</span>
       case 'medium':
-        return <span className="px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">أولوية متوسطة</span>
+        return <span className="badge badge-warning" style={{ fontSize: 11, fontWeight: 700 }}>أولوية متوسطة</span>
       default:
-        return <span className="px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700">أولوية عادية</span>
+        return <span className="badge badge-neutral" style={{ fontSize: 11 }}>أولوية عادية</span>
     }
   }
 
-  // Print Project Charter
   const handlePrintCharter = () => {
     window.print()
   }
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-10 h-10 border-4 border-teal-600 border-t-transparent rounded-full animate-spin" />
-        <span className="text-slate-600 font-medium">جاري تحميل مشاريع التحسين...</span>
+      <div className="loading-state">
+        <div className="loading-spinner" />
+        <span>جاري تحميل مشاريع التحسين ومؤشرات الأداء...</span>
       </div>
     )
   }
@@ -343,15 +360,15 @@ export default function ImprovementProjectsPage() {
   // Directorate Access Guard
   if (!['directorate_admin', 'directorate_member'].includes(userRole)) {
     return (
-      <div className="max-w-xl mx-auto my-16 p-8 bg-white rounded-2xl shadow-sm border border-slate-200 text-center">
-        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <ExclamationCircleIcon className="w-8 h-8" />
-        </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">قسم مخصص لأعضاء المديرية فقط</h2>
-        <p className="text-slate-600 text-sm mb-6">
+      <div className="card" style={{ maxWidth: 540, margin: '60px auto', padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+        <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+          قسم مخصص لأعضاء المديرية فقط
+        </h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
           قسم مشاريع التحسين ومقترحات الأداء متاح حصرياً لأعضاء فريق إدارة الجودة بالمديرية لمراجعة واعتماد مشاريع المستشفيات.
         </p>
-        <Link href="/dashboard" className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-teal-700 text-white font-medium hover:bg-teal-800 transition">
+        <Link href="/dashboard" className="btn btn-primary" style={{ padding: '8px 24px' }}>
           العودة للرئيسية
         </Link>
       </div>
@@ -359,34 +376,34 @@ export default function ImprovementProjectsPage() {
   }
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* 1. Header Banner */}
-      <div className="bg-gradient-to-r from-teal-800 via-teal-700 to-cyan-800 text-white rounded-2xl p-6 lg:p-8 shadow-md relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-teal-100 text-xs font-semibold">
-              <SparklesIcon className="w-4 h-4 text-amber-300" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', paddingBottom: 40 }}>
+      
+      {/* 1. Header Executive Banner */}
+      <div className="qip-header-banner" style={{ marginBottom: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ maxWidth: 750 }}>
+            <div className="qip-badge-header">
+              <SparklesIcon style={{ width: 15, height: 15, color: '#fde047' }} />
               منظومة مشاريع التحسين المستمر (QIPs) • خاص بأعضاء المديرية
             </div>
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
-              مشاريع التحسين المبنية على الأداء والدليل
+            <h1 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 8px 0', lineHeight: 1.3 }}>
+              مشاريع التحسين المبنية على الأداء والدليل العلمي
             </h1>
-            <p className="text-teal-100/90 text-sm max-w-2xl leading-relaxed">
-              تحليل شامل لكافة تقارير المرور والسلبيات المتكررة ومؤشرات الأداء، وتوليد مقترحات مشاريع تحسين سريرية وتشغيلية تتبع منهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+            <p style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.92)', margin: 0, lineHeight: 1.6 }}>
+              فحص وتحليل شامل لتقارير المرور والسلبيات المتكررة ومؤشرات الأداء لكل مستشفى، وتوليد مقترحات مشاريع تحسين سريرية وتشغيلية تتبع منهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               onClick={() => {
                 setGenerateHospitalId(selectedHospitalId || hospitals[0]?.id || '')
                 setIsGenerateModalOpen(true)
               }}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold shadow-lg shadow-amber-500/20 transition transform active:scale-95"
+              className="btn btn-warning"
+              style={{ fontWeight: 800, padding: '10px 18px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}
             >
-              <SparklesIcon className="w-5 h-5 text-slate-900" />
+              <SparklesIcon style={{ width: 17, height: 17 }} />
               توليد مشاريع بالذكاء الاصطناعي
             </button>
             <button
@@ -394,44 +411,55 @@ export default function ImprovementProjectsPage() {
                 setManualForm(prev => ({ ...prev, hospital_id: selectedHospitalId || hospitals[0]?.id || '' }))
                 setIsManualModalOpen(true)
               }}
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold backdrop-blur-sm transition"
+              className="btn btn-outline"
+              style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.12)', padding: '10px 16px', fontSize: 13 }}
             >
-              ➕ مشروع جديد
+              ➕ مشروع جديد (يدوي)
             </button>
-          </div>
-        </div>
-
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/15 text-center">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-            <div className="text-2xl font-black text-white">{stats.total}</div>
-            <div className="text-xs text-teal-100 mt-1">إجمالي المشاريع</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-            <div className="text-2xl font-black text-purple-200">{stats.approved}</div>
-            <div className="text-xs text-teal-100 mt-1">معتمدة / قيد التنفيذ</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-            <div className="text-2xl font-black text-emerald-300">{stats.completed}</div>
-            <div className="text-xs text-teal-100 mt-1">مكتملة ومحققة</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-            <div className="text-2xl font-black text-rose-300">{stats.high}</div>
-            <div className="text-xs text-teal-100 mt-1">أولوية قصوى</div>
           </div>
         </div>
       </div>
 
-      {/* 2. Controls & Filters */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* 2. Platform Standard KPI Stat Cards */}
+      <div className="stats-grid" style={{ marginBottom: 0 }}>
+        <div className="stat-card primary">
+          <div className="stat-icon">💡</div>
+          <div className="stat-value">{stats.total}</div>
+          <div className="stat-label">إجمالي مشاريع التحسين</div>
+        </div>
+        <div className="stat-card warning">
+          <div className="stat-icon">⏳</div>
+          <div className="stat-value">{stats.inProgress}</div>
+          <div className="stat-label">معتمدة / قيد التنفيذ بالمستشفيات</div>
+        </div>
+        <div className="stat-card success">
+          <div className="stat-icon">✅</div>
+          <div className="stat-value">{stats.completed}</div>
+          <div className="stat-label">مكتملة ومحققة للمستهدف</div>
+        </div>
+        <div className="stat-card danger">
+          <div className="stat-icon">⚡</div>
+          <div className="stat-value">{stats.high}</div>
+          <div className="stat-label">مشاريع أولوية قصوى</div>
+        </div>
+      </div>
+
+      {/* 3. Controls & Filters Toolbar */}
+      <div className="card" style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        
+        {/* Top Filter Controls Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, alignItems: 'flex-end' }}>
+          
           {/* Hospital Selector */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">المستشفى المستهدف:</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>
+              المستشفى المستهدف:
+            </label>
             <select
               value={selectedHospitalId}
               onChange={(e) => handleHospitalFilterChange(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 transition"
+              className="form-select"
+              style={{ padding: '8px 12px', fontSize: 13 }}
             >
               <option value="">كافة المستشفيات ({hospitals.length})</option>
               {hospitals.map(h => (
@@ -440,59 +468,137 @@ export default function ImprovementProjectsPage() {
             </select>
           </div>
 
-          {/* Status Filter */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">حالة المشروع:</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 transition"
-            >
-              <option value="all">كافة الحالات</option>
-              <option value="draft">مقترح ذكاء اصطناعي (مسودة)</option>
-              <option value="approved">معتمد من المديرية</option>
-              <option value="in_progress">قيد التنفيذ بالمستشفى</option>
-              <option value="completed">مكتمل ومحقق للمستهدف</option>
-              <option value="suspended">معلق</option>
-            </select>
-          </div>
-
           {/* Priority Filter */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">مستوى الأولوية:</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>
+              مستوى الأولوية:
+            </label>
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 transition"
+              className="form-select"
+              style={{ padding: '8px 12px', fontSize: 13 }}
             >
               <option value="all">كافة الأولويات</option>
-              <option value="high">أولوية قصوى</option>
-              <option value="medium">أولوية متوسطة</option>
-              <option value="low">أولوية عادية</option>
+              <option value="high">أولوية قصوى (High)</option>
+              <option value="medium">أولوية متوسطة (Medium)</option>
+              <option value="low">أولوية عادية (Standard)</option>
             </select>
           </div>
 
-          {/* Search */}
+          {/* Search Box */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">بحث سريع في المشاريع:</label>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>
+              بحث سريع:
+            </label>
             <input
               type="text"
               placeholder="ابحث بالعنوان، القسم، أو المشكلة..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 transition"
+              className="form-input"
+              style={{ padding: '8px 12px', fontSize: 13 }}
             />
+          </div>
+
+          {/* View Mode Toggle */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'inline-flex', background: 'var(--bg-primary)', padding: 3, borderRadius: 8, border: '1px solid var(--border)' }}>
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  background: viewMode === 'cards' ? 'var(--primary)' : 'transparent',
+                  color: viewMode === 'cards' ? '#ffffff' : 'var(--text-secondary)',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                🗂️ بطاقات
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  background: viewMode === 'table' ? 'var(--primary)' : 'transparent',
+                  color: viewMode === 'table' ? '#ffffff' : 'var(--text-secondary)',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                📊 جدول
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Status Filter Tabs / Pills */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 10, borderTop: '1px solid var(--border)' }}>
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`btn btn-sm ${statusFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+          >
+            كافة المشاريع ({statusCounts.all})
+          </button>
+          <button
+            onClick={() => setStatusFilter('draft')}
+            className={`btn btn-sm ${statusFilter === 'draft' ? 'btn-warning' : 'btn-ghost'}`}
+            style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+          >
+            💡 مقترحات ذكاء اصطناعي ({statusCounts.draft})
+          </button>
+          <button
+            onClick={() => setStatusFilter('approved')}
+            className={`btn btn-sm ${statusFilter === 'approved' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+          >
+            📋 معتمدة من المديرية ({statusCounts.approved})
+          </button>
+          <button
+            onClick={() => setStatusFilter('in_progress')}
+            className={`btn btn-sm ${statusFilter === 'in_progress' ? 'btn-accent' : 'btn-ghost'}`}
+            style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+          >
+            ⏳ قيد التنفيذ ({statusCounts.in_progress})
+          </button>
+          <button
+            onClick={() => setStatusFilter('completed')}
+            className={`btn btn-sm ${statusFilter === 'completed' ? 'btn-success' : 'btn-ghost'}`}
+            style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+          >
+            ✅ مكتملة ومحققة ({statusCounts.completed})
+          </button>
+          {statusCounts.suspended > 0 && (
+            <button
+              onClick={() => setStatusFilter('suspended')}
+              className={`btn btn-sm ${statusFilter === 'suspended' ? 'btn-ghost' : 'btn-ghost'}`}
+              style={{ borderRadius: 20, fontSize: 12, fontWeight: 700 }}
+            >
+              معلقة ({statusCounts.suspended})
+            </button>
+          )}
+        </div>
+
         {selectedHospitalId && (
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-600">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-muted)' }}>
             <span>
-              عرض مشاريع: <strong>{hospitals.find(h => h.id === selectedHospitalId)?.name}</strong> ({filteredProjects.length} مشروع)
+              عرض مشاريع: <strong>{hospitals.find(h => h.id === selectedHospitalId)?.name}</strong> ({filteredProjects.length} مشروع مطابقة)
             </span>
             <button
               onClick={() => handleHospitalFilterChange('')}
-              className="text-teal-700 hover:underline font-semibold"
+              className="btn btn-ghost btn-sm"
+              style={{ padding: '2px 8px', fontSize: 12, color: 'var(--primary)', fontWeight: 700 }}
             >
               عرض كافة المستشفيات
             </button>
@@ -500,14 +606,14 @@ export default function ImprovementProjectsPage() {
         )}
       </div>
 
-      {/* 3. Projects Grid */}
+      {/* 4. Projects Content (Cards Mode or Table Mode) */}
       {filteredProjects.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center max-w-2xl mx-auto space-y-4">
-          <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto">
-            <SparklesIcon className="w-8 h-8" />
-          </div>
-          <h3 className="text-lg font-bold text-slate-800">لا توجد مشاريع تحسين مطابقة</h3>
-          <p className="text-slate-500 text-sm">
+        <div className="card" style={{ padding: 48, textAlign: 'center', border: '1px dashed var(--border)' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>✨</div>
+          <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+            لا توجد مشاريع تحسين مطابقة للمحددات
+          </h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: 13, maxWidth: 500, margin: '0 auto 20px auto', lineHeight: 1.6 }}>
             {selectedHospitalId 
               ? 'لم يتم إنشاء أو توليد مشاريع تحسين لهذا المستشفى بعد. اضغط على الزر أدناه لتوليد مشاريع بالذكاء الاصطناعي استناداً لتقارير المرور والسلبيات المرصودة.' 
               : 'قم باختيار مستشفى واضغط على توليد مشاريع بالذكاء الاصطناعي لفحص السلبيات واقتراح خطط التحسين.'}
@@ -517,29 +623,28 @@ export default function ImprovementProjectsPage() {
               setGenerateHospitalId(selectedHospitalId || hospitals[0]?.id || '')
               setIsGenerateModalOpen(true)
             }}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm shadow transition"
+            className="btn btn-primary"
+            style={{ padding: '8px 20px', fontWeight: 700, margin: '0 auto', display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
-            <SparklesIcon className="w-4 h-4" />
+            <SparklesIcon style={{ width: 16, height: 16 }} />
             توليد مقترحات مشاريع لهذا المستشفى
           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      ) : viewMode === 'cards' ? (
+        <div className="qip-grid">
           {filteredProjects.map((project) => (
-            <div 
-              key={project.id}
-              className="bg-white rounded-2xl border border-slate-200 hover:border-teal-400/80 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden group"
-            >
-              {/* Card Header */}
-              <div className="p-5 space-y-3.5 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-teal-50 text-teal-800 text-xs font-bold border border-teal-100">
-                      <HospitalIcon className="w-3.5 h-3.5" />
+            <div key={project.id} className="qip-card">
+              
+              {/* Card Body */}
+              <div className="qip-card-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', fontSize: 11, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <HospitalIcon style={{ width: 13, height: 13 }} />
                       {project.hospital_name}
                     </span>
                     {project.department_name && (
-                      <span className="px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-700 font-medium truncate max-w-[120px]">
+                      <span className="badge badge-neutral" style={{ fontSize: 11 }}>
                         {project.department_name}
                       </span>
                     )}
@@ -548,7 +653,7 @@ export default function ImprovementProjectsPage() {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-bold text-slate-800 text-base leading-snug group-hover:text-teal-700 transition">
+                <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', margin: 0, lineHeight: 1.4 }}>
                   {project.title}
                 </h3>
 
@@ -559,27 +664,27 @@ export default function ImprovementProjectsPage() {
 
                 {/* SMART Goal Snippet */}
                 {project.smart_goal && (
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-700 space-y-1">
-                    <div className="font-bold text-teal-800 flex items-center gap-1">
+                  <div style={{ background: 'var(--bg-primary)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 12 }}>
+                    <div style={{ fontWeight: 800, color: 'var(--primary-dark)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                       🎯 الهدف الذكي (SMART Goal):
                     </div>
-                    <p className="line-clamp-2 text-slate-600 leading-relaxed">
+                    <div style={{ color: 'var(--text-primary)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {project.smart_goal}
-                    </p>
+                    </div>
                   </div>
                 )}
 
-                {/* Evidence & Metrics Snippet */}
-                <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
+                {/* Evidence & Findings Counter */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text-muted)' }}>
                   {project.evidence_reference && (
-                    <div className="flex items-start gap-1.5 text-slate-600">
-                      <span className="font-bold text-slate-700 whitespace-nowrap">المرجع:</span>
-                      <span className="truncate">{project.evidence_reference}</span>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 4 }}>
+                      <span style={{ fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>المرجع:</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{project.evidence_reference}</span>
                     </div>
                   )}
 
                   {project.linked_findings_summary && project.linked_findings_summary.length > 0 && (
-                    <div className="text-slate-500 flex items-center gap-1 font-medium">
+                    <div style={{ fontWeight: 700, color: 'var(--primary)' }}>
                       📋 يعالج <strong>{project.linked_findings_summary.length}</strong> سلبيات مرصودة من تقارير المرور
                     </div>
                   )}
@@ -587,24 +692,26 @@ export default function ImprovementProjectsPage() {
               </div>
 
               {/* Card Footer Actions */}
-              <div className="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between gap-2">
+              <div className="qip-card-footer">
                 <button
                   onClick={() => {
                     setSelectedProject(project)
                     setIsCharterModalOpen(true)
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-900 transition"
+                  className="btn btn-outline btn-sm"
+                  style={{ fontSize: 12, fontWeight: 800, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6 }}
                 >
-                  <ClipboardIcon className="w-4 h-4" />
-                  عرض ميثاق المشروع
+                  <ClipboardIcon style={{ width: 14, height: 14 }} />
+                  عرض الميثاق
                 </button>
 
-                <div className="flex items-center gap-1">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   {project.status === 'draft' && (
                     <button
                       onClick={() => handleUpdateStatus(project.id, 'approved')}
                       title="اعتماد المشروع من المديرية"
-                      className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition"
+                      className="btn btn-primary btn-sm"
+                      style={{ padding: '5px 10px', fontSize: 11, fontWeight: 700 }}
                     >
                       اعتماد
                     </button>
@@ -613,7 +720,8 @@ export default function ImprovementProjectsPage() {
                     <button
                       onClick={() => handleUpdateStatus(project.id, 'in_progress')}
                       title="بدء تنفيذ المشروع بالمستشفى"
-                      className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
+                      className="btn btn-accent btn-sm"
+                      style={{ padding: '5px 10px', fontSize: 11, fontWeight: 700 }}
                     >
                       بدء التنفيذ
                     </button>
@@ -622,7 +730,8 @@ export default function ImprovementProjectsPage() {
                     <button
                       onClick={() => handleUpdateStatus(project.id, 'completed')}
                       title="تحديد كمكتمل ومحقق للمستهدف"
-                      className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition"
+                      className="btn btn-success btn-sm"
+                      style={{ padding: '5px 10px', fontSize: 11, fontWeight: 700 }}
                     >
                       إتمام
                     </button>
@@ -630,58 +739,190 @@ export default function ImprovementProjectsPage() {
                   <button
                     onClick={() => handleDeleteProject(project.id)}
                     title="حذف المشروع"
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                    className="btn btn-ghost btn-sm"
+                    style={{ padding: '5px 8px', color: 'var(--danger)' }}
                   >
-                    <XMarkIcon className="w-4 h-4" />
+                    <XMarkIcon style={{ width: 14, height: 14 }} />
                   </button>
                 </div>
               </div>
+
             </div>
           ))}
         </div>
+      ) : (
+        /* Table View */
+        <div className="table-wrapper card" style={{ padding: 0 }}>
+          <table>
+            <thead>
+              <tr>
+                <th>المستشفى</th>
+                <th>القسم المعني</th>
+                <th>عنوان المشروع والهدف الذكي</th>
+                <th>الأولوية</th>
+                <th>الحالة</th>
+                <th>مؤشرات الأداء</th>
+                <th style={{ textAlign: 'center' }}>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProjects.map((project) => (
+                <tr key={project.id}>
+                  <td style={{ fontWeight: 700 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <HospitalIcon style={{ width: 14, height: 14, color: 'var(--primary)' }} />
+                      <span>{project.hospital_name}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="badge badge-neutral" style={{ fontSize: 11 }}>
+                      {project.department_name || 'عام'}
+                    </span>
+                  </td>
+                  <td style={{ maxWidth: 320 }}>
+                    <div style={{ fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>
+                      {project.title}
+                    </div>
+                    {project.smart_goal && (
+                      <div style={{ fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        🎯 {project.smart_goal}
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    {getPriorityBadge(project.priority)}
+                  </td>
+                  <td>
+                    {getStatusBadge(project.status)}
+                  </td>
+                  <td style={{ fontSize: 11.5 }}>
+                    {Array.isArray(project.kpis) && project.kpis.length > 0 ? (
+                      <div>
+                        <strong>{project.kpis.length}</strong> مؤشرات قياس
+                        <div style={{ color: 'var(--text-muted)' }}>
+                          {project.kpis[0]?.name?.slice(0, 25)}...
+                        </div>
+                      </div>
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)' }}>-</span>
+                    )}
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <button
+                        onClick={() => {
+                          setSelectedProject(project)
+                          setIsCharterModalOpen(true)
+                        }}
+                        className="btn btn-outline btn-sm"
+                        style={{ padding: '4px 10px', fontSize: 11 }}
+                      >
+                        الميثاق
+                      </button>
+                      {project.status === 'draft' && (
+                        <button
+                          onClick={() => handleUpdateStatus(project.id, 'approved')}
+                          className="btn btn-primary btn-sm"
+                          style={{ padding: '4px 8px', fontSize: 11 }}
+                        >
+                          اعتماد
+                        </button>
+                      )}
+                      {project.status === 'approved' && (
+                        <button
+                          onClick={() => handleUpdateStatus(project.id, 'in_progress')}
+                          className="btn btn-accent btn-sm"
+                          style={{ padding: '4px 8px', fontSize: 11 }}
+                        >
+                          بدء
+                        </button>
+                      )}
+                      {project.status === 'in_progress' && (
+                        <button
+                          onClick={() => handleUpdateStatus(project.id, 'completed')}
+                          className="btn btn-success btn-sm"
+                          style={{ padding: '4px 8px', fontSize: 11 }}
+                        >
+                          إتمام
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteProject(project.id)}
+                        className="btn btn-ghost btn-sm"
+                        style={{ padding: '4px 6px', color: 'var(--danger)' }}
+                      >
+                        <XMarkIcon style={{ width: 14, height: 14 }} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* 4. AI Generation Modal */}
+      {/* 5. AI Generation Modal */}
       {isGenerateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 lg:p-8 shadow-2xl border border-slate-100 space-y-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                  <SparklesIcon className="w-4 h-4 text-amber-600" />
+        <div 
+          className="qip-charter-modal no-print"
+          onClick={() => !isGenerating && setIsGenerateModalOpen(false)}
+        >
+          <div 
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              maxWidth: 540,
+              width: '100%',
+              padding: 24,
+              boxShadow: 'var(--shadow-lg)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div className="badge badge-warning" style={{ fontWeight: 800, marginBottom: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <SparklesIcon style={{ width: 14, height: 14 }} />
                   تحليل استراتيجي بالذكاء الاصطناعي
                 </div>
-                <h3 className="text-xl font-bold text-slate-800">
+                <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                   توليد مشاريع تحسين جودة للمستشفى
                 </h3>
               </div>
               <button 
                 onClick={() => !isGenerating && setIsGenerateModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="btn btn-ghost btn-sm"
+                style={{ padding: '4px 8px' }}
               >
-                <XMarkIcon className="w-6 h-6" />
+                ✕
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              سيقوم المحرك الذكي بقراءة كافة تقارير المرور والسلبيات المرصودة في قاعدة البيانات لهذا المستشفى، وتحليل تركز السلبيات المتكررة وضعف الامتثال، وصياغة مقترحات مشاريع تحسين متكاملة وفق معايير الاعتماد GAHAR.
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
+              سيقوم المحرك الذكي بفحص كافة تقارير المرور والسلبيات المرصودة لهذا المستشفى، وتحليل تركز السلبيات المتكررة وضعف الامتثال، وصياغة مقترحات مشاريع تحسين متوافقة مع معايير GAHAR الوطنية.
             </p>
 
             {generateError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-medium">
+              <div className="alert alert-danger" style={{ padding: '8px 12px', fontSize: 12 }}>
                 ⚠️ {generateError}
               </div>
             )}
 
-            <form onSubmit={handleGenerate} className="space-y-4">
-              {/* Select Hospital */}
+            <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">اختر المستشفى المراد تحليله: *</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                  اختر المستشفى المراد تحليله: *
+                </label>
                 <select
                   disabled={isGenerating}
                   value={generateHospitalId}
                   onChange={(e) => setGenerateHospitalId(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  className="form-select"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   required
                 >
                   <option value="">-- اختر مستشفى --</option>
@@ -691,27 +932,31 @@ export default function ImprovementProjectsPage() {
                 </select>
               </div>
 
-              {/* Focus Department (Optional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">التركيز على قسم معين (اختياري):</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                  التركيز على قسم معين (اختياري):
+                </label>
                 <input
                   type="text"
                   disabled={isGenerating}
                   placeholder="مثال: الصيدلية، المعمل، الطوارئ، العمليات... (أو اتركه فارغاً لشامل المستشفى)"
                   value={generateFocusDept}
                   onChange={(e) => setGenerateFocusDept(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  className="form-input"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                 />
               </div>
 
-              {/* Number of Projects */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">عدد المشاريع المقترحة:</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
+                  عدد المشاريع المقترحة:
+                </label>
                 <select
                   disabled={isGenerating}
                   value={generateCount}
                   onChange={(e) => setGenerateCount(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  className="form-select"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                 >
                   <option value={2}>2 مشاريع تحسين أساسية</option>
                   <option value={3}>3 مشاريع تحسين متوازنة (موصى به)</option>
@@ -720,28 +965,30 @@ export default function ImprovementProjectsPage() {
                 </select>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                 <button
                   type="button"
                   disabled={isGenerating}
                   onClick={() => setIsGenerateModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition"
+                  className="btn btn-ghost"
+                  style={{ padding: '8px 16px' }}
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={isGenerating || !generateHospitalId}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 disabled:opacity-50 text-white font-bold text-sm shadow transition"
+                  className="btn btn-primary"
+                  style={{ padding: '8px 20px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}
                 >
                   {isGenerating ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="loading-spinner" style={{ width: 14, height: 14 }} />
                       جاري فحص تقارير المرور والتحليل...
                     </>
                   ) : (
                     <>
-                      <SparklesIcon className="w-4 h-4" />
+                      <SparklesIcon style={{ width: 16, height: 16 }} />
                       بدء التحليل والتوليد
                     </>
                   )}
@@ -752,27 +999,35 @@ export default function ImprovementProjectsPage() {
         </div>
       )}
 
-      {/* 5. Project Full Charter Modal (Executive Quality View) */}
+      {/* 6. Project Full Charter Modal (Official Executive Quality View) */}
       {isCharterModalOpen && selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-fade-in print:p-0 print:bg-white">
-          <div className="bg-white rounded-3xl max-w-4xl w-full p-6 lg:p-10 shadow-2xl border border-slate-200 my-8 space-y-6 print:m-0 print:border-none print:shadow-none">
+        <div 
+          className="qip-charter-modal"
+          onClick={() => setIsCharterModalOpen(false)}
+        >
+          <div 
+            className="qip-charter-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             
             {/* Header actions (Hidden on print) */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 print:hidden">
-              <div className="flex items-center gap-3">
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button
                   onClick={handlePrintCharter}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition"
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}
                 >
                   🖨️ طباعة ميثاق المشروع
                 </button>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-slate-500 font-semibold">تغيير الحالة:</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 700 }}>الحالة:</span>
                   <select
                     disabled={statusUpdating}
                     value={selectedProject.status}
                     onChange={(e) => handleUpdateStatus(selectedProject.id, e.target.value)}
-                    className="text-xs font-bold border border-slate-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
+                    className="form-select"
+                    style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', width: 'auto' }}
                   >
                     <option value="draft">مسودة مقترحة</option>
                     <option value="approved">معتمد من المديرية</option>
@@ -784,59 +1039,60 @@ export default function ImprovementProjectsPage() {
               </div>
               <button 
                 onClick={() => setIsCharterModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
+                className="btn btn-ghost btn-sm"
+                style={{ padding: '4px 10px', fontSize: 14 }}
               >
-                <XMarkIcon className="w-6 h-6" />
+                ✕ إغلاق
               </button>
             </div>
 
             {/* Official Project Charter Document */}
-            <div className="space-y-6 printable-charter text-slate-800">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, color: 'var(--text-primary)', lineHeight: 1.6 }}>
               
               {/* Official Header */}
-              <div className="border-b-2 border-slate-800 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="text-xs font-bold text-teal-800 tracking-wide uppercase">
+              <div style={{ borderBottom: '2px solid #0f172a', paddingBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', letterSpacing: 0.5 }}>
                     مديرية الشئون الصحية بكفر الشيخ • إدارة الجودة وتوكيد الأداء
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900">
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', margin: '6px 0 2px 0' }}>
                     ميثاق مشروع تحسين جودة الرعاية الصحية (QIP)
                   </h2>
-                  <div className="text-sm font-semibold text-slate-600">
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-muted)' }}>
                     Quality Improvement Project Charter
                   </div>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-right text-xs space-y-1 min-w-[200px]">
+                <div style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, fontSize: 12, minWidth: 220 }}>
                   <div><strong>المستشفى:</strong> {selectedProject.hospital_name}</div>
-                  <div><strong>القسم المستهدف:</strong> {selectedProject.department_name || 'عام'}</div>
+                  <div><strong>القسم المعني:</strong> {selectedProject.department_name || 'عام'}</div>
                   <div><strong>تاريخ الاعتماد:</strong> {new Date(selectedProject.created_at).toLocaleDateString('ar-EG')}</div>
                   <div><strong>الموعد المستهدف:</strong> {selectedProject.target_completion_date || 'خلال 90 يوماً'}</div>
                 </div>
               </div>
 
               {/* Title & Category Banner */}
-              <div className="bg-teal-50 border border-teal-200 rounded-2xl p-5 space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold px-2.5 py-1 rounded bg-teal-800 text-white">
+              <div style={{ background: 'var(--primary-glow)', border: '1px solid var(--primary-light)', borderRadius: 10, padding: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span className="badge badge-primary" style={{ fontWeight: 800 }}>
                     {selectedProject.category || 'سلامة المرضى'}
                   </span>
                   {getPriorityBadge(selectedProject.priority)}
                 </div>
-                <h3 className="text-xl font-black text-teal-950">
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: 'var(--primary-dark)', margin: 0 }}>
                   {selectedProject.title}
                 </h3>
               </div>
 
               {/* 1. Problem Statement & Baseline */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+              <div>
+                <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                   ١. مبررات المشروع وبيان المشكلة وتحليل الأداء الفعلي (Problem Statement & Baseline Performance):
                 </h4>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2 leading-relaxed">
-                  <p>{selectedProject.problem_statement}</p>
+                <div style={{ background: 'var(--bg-primary)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', fontSize: 13, lineHeight: 1.6 }}>
+                  <p style={{ margin: '0 0 8px 0' }}>{selectedProject.problem_statement}</p>
                   {selectedProject.baseline_metrics && (
-                    <div className="p-2.5 bg-white rounded-lg border border-slate-200 font-medium text-slate-800">
+                    <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--border)', fontWeight: 700, color: 'var(--primary-dark)', fontSize: 12 }}>
                       📊 <strong>أرقام الأداء الأساسية (Baseline):</strong> {selectedProject.baseline_metrics}
                     </div>
                   )}
@@ -844,54 +1100,54 @@ export default function ImprovementProjectsPage() {
               </div>
 
               {/* 2. Evidence-Based Standards & References */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+              <div>
+                <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                   ٢. المرجع العلمي والدليل الإرشادي ومعايير الاعتماد (Evidence-Based Reference & Accreditation Standards):
                 </h4>
-                <div className="p-3.5 bg-blue-50/60 rounded-xl border border-blue-200 text-xs text-blue-900 font-semibold leading-relaxed">
+                <div style={{ background: '#f0f9ff', padding: 12, borderRadius: 8, border: '1px solid #bae6fd', fontSize: 12, color: '#0369a1', fontWeight: 700 }}>
                   🏛️ {selectedProject.evidence_reference || 'معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR) ودليل سلامة المرضى لمنظمة الصحة العالمية (WHO).'}
                 </div>
               </div>
 
               {/* 3. SMART Goal */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+              <div>
+                <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                   ٣. الهدف الذكي القابل للقياس وموعد الإنجاز (SMART Objective & Target):
                 </h4>
-                <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-xs font-bold text-emerald-950 leading-relaxed">
+                <div style={{ background: '#f0fdf4', padding: 14, borderRadius: 8, border: '1px solid #bbf7d0', fontSize: 13, fontWeight: 800, color: '#166534' }}>
                   🎯 {selectedProject.smart_goal}
                 </div>
               </div>
 
               {/* 4. KPIs Table */}
               {selectedProject.kpis && selectedProject.kpis.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                     ٤. مؤشرات قياس نجاح المشروع (Project Key Performance Indicators - KPIs):
                   </h4>
-                  <div className="overflow-x-auto rounded-xl border border-slate-200">
-                    <table className="w-full text-right text-xs">
-                      <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
                         <tr>
-                          <th className="p-3">اسم المؤشر</th>
-                          <th className="p-3">نوع المؤشر</th>
-                          <th className="p-3">القيمة الحالية (Baseline)</th>
-                          <th className="p-3">المستهدف (Target)</th>
-                          <th className="p-3">دورية القياس</th>
+                          <th>اسم المؤشر</th>
+                          <th>نوع المؤشر</th>
+                          <th>القيمة الحالية (Baseline)</th>
+                          <th>المستهدف (Target)</th>
+                          <th>دورية القياس</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody>
                         {selectedProject.kpis.map((kpi, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/80">
-                            <td className="p-3 font-semibold text-slate-800">{kpi.name}</td>
-                            <td className="p-3 text-slate-600">
-                              <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${kpi.type === 'outcome' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                          <tr key={idx}>
+                            <td style={{ fontWeight: 700 }}>{kpi.name}</td>
+                            <td>
+                              <span className={`badge ${kpi.type === 'outcome' ? 'badge-primary' : 'badge-neutral'}`} style={{ fontSize: 11 }}>
                                 {kpi.type === 'outcome' ? 'مؤشر نتيجة' : 'مؤشر عملية'}
                               </span>
                             </td>
-                            <td className="p-3 font-bold text-rose-700">{kpi.baseline || '-'}</td>
-                            <td className="p-3 font-bold text-emerald-700">{kpi.target || '-'}</td>
-                            <td className="p-3 text-slate-500">{kpi.frequency || 'شهري'}</td>
+                            <td style={{ fontWeight: 800, color: 'var(--danger-dark)' }}>{kpi.baseline || '-'}</td>
+                            <td style={{ fontWeight: 800, color: 'var(--success-dark)' }}>{kpi.target || '-'}</td>
+                            <td style={{ color: 'var(--text-muted)' }}>{kpi.frequency || 'شهري'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -902,27 +1158,27 @@ export default function ImprovementProjectsPage() {
 
               {/* 5. FOCUS-PDCA Action Plan */}
               {selectedProject.interventions && selectedProject.interventions.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                     ٥. خطة العمل والتدخلات الإجرائية (Action Plan / FOCUS-PDCA Interventions):
                   </h4>
-                  <div className="overflow-x-auto rounded-xl border border-slate-200">
-                    <table className="w-full text-right text-xs">
-                      <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
                         <tr>
-                          <th className="p-3 w-12">#</th>
-                          <th className="p-3">الخطوة الإجرائية / التدخل</th>
-                          <th className="p-3">المسؤول عن التنفيذ</th>
-                          <th className="p-3">المدى الزمني</th>
+                          <th style={{ width: 40 }}>#</th>
+                          <th>الخطوة الإجرائية / التدخل</th>
+                          <th>المسؤول عن التنفيذ</th>
+                          <th>المدى الزمني</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody>
                         {selectedProject.interventions.map((step, idx) => (
-                          <tr key={idx} className="hover:bg-slate-50/80">
-                            <td className="p-3 font-bold text-slate-500">{idx + 1}</td>
-                            <td className="p-3 font-medium text-slate-800">{step.step}</td>
-                            <td className="p-3 text-teal-800 font-bold">{step.responsible || 'فريق الجودة'}</td>
-                            <td className="p-3 text-slate-600 whitespace-nowrap">{step.duration || '-'}</td>
+                          <tr key={idx}>
+                            <td style={{ fontWeight: 700, color: 'var(--text-muted)' }}>{idx + 1}</td>
+                            <td style={{ fontWeight: 600 }}>{step.step}</td>
+                            <td style={{ fontWeight: 800, color: 'var(--primary-dark)' }}>{step.responsible || 'فريق الجودة'}</td>
+                            <td style={{ color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{step.duration || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -933,14 +1189,14 @@ export default function ImprovementProjectsPage() {
 
               {/* 6. Linked Findings from Inspection Reports */}
               {selectedProject.linked_findings_summary && selectedProject.linked_findings_summary.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-sm font-black text-slate-900 border-r-4 border-teal-700 pr-2">
+                <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
                     ٦. السلبيات المرصودة في تقارير المرور التي يستهدفها المشروع:
                   </h4>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                  <div style={{ background: 'var(--bg-primary)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', fontSize: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {selectedProject.linked_findings_summary.map((finding, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-slate-700">
-                        <span className="text-teal-600 font-bold">•</span>
+                      <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                        <span style={{ color: 'var(--primary)', fontWeight: 800 }}>•</span>
                         <span>{finding}</span>
                       </div>
                     ))}
@@ -949,14 +1205,14 @@ export default function ImprovementProjectsPage() {
               )}
 
               {/* 7. Leadership & Team */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-200 text-xs">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-700 block mb-1">قائد المشروع المقترح:</span>
-                  <span className="text-slate-900 font-semibold">{selectedProject.project_lead || 'رئيس قسم الجودة بالمستشفى'}</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 12 }}>
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: 2 }}>قائد المشروع بالمستشفى:</strong>
+                  <span style={{ color: 'var(--primary-dark)', fontWeight: 800 }}>{selectedProject.project_lead || 'رئيس قسم الجودة بالمستشفى'}</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-700 block mb-1">أعضاء فريق التحسين:</span>
-                  <span className="text-slate-800 font-medium">
+                <div style={{ background: 'var(--bg-primary)', padding: 12, borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <strong style={{ display: 'block', color: 'var(--text-primary)', marginBottom: 2 }}>أعضاء فريق التحسين:</strong>
+                  <span style={{ color: 'var(--text-primary)' }}>
                     {Array.isArray(selectedProject.team_members) && selectedProject.team_members.length > 0
                       ? selectedProject.team_members.join('، ')
                       : 'مشرفو التمريض، رؤساء الأقسام المعنية، منسق الجودة'}
@@ -965,18 +1221,18 @@ export default function ImprovementProjectsPage() {
               </div>
 
               {/* 8. Directorate Endorsement & Signatures */}
-              <div className="pt-8 border-t-2 border-slate-800 flex items-center justify-between text-center text-xs">
+              <div style={{ marginTop: 24, paddingTop: 20, borderTop: '2px solid #0f172a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'center', fontSize: 12 }}>
                 <div>
-                  <div className="font-bold text-slate-900 mb-8">مسؤول مشاريع التحسين بالمديرية</div>
-                  <div className="text-slate-500">التوقيع: ............................</div>
+                  <div style={{ fontWeight: 800, marginBottom: 36 }}>مسؤول مشاريع التحسين بالمديرية</div>
+                  <div style={{ color: 'var(--text-muted)' }}>التوقيع: ............................</div>
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 mb-8">مدير إدارة الجودة بالمديرية</div>
-                  <div className="text-slate-500">التوقيع: ............................</div>
+                  <div style={{ fontWeight: 800, marginBottom: 36 }}>مدير إدارة الجودة بالمديرية</div>
+                  <div style={{ color: 'var(--text-muted)' }}>التوقيع: ............................</div>
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900 mb-8">وكيل الوزارة / مدير المديرية</div>
-                  <div className="text-slate-500">الاعتماد: ............................</div>
+                  <div style={{ fontWeight: 800, marginBottom: 36 }}>وكيل الوزارة / مدير المديرية</div>
+                  <div style={{ color: 'var(--text-muted)' }}>الاعتماد: ............................</div>
                 </div>
               </div>
 
@@ -985,24 +1241,46 @@ export default function ImprovementProjectsPage() {
         </div>
       )}
 
-      {/* 6. Manual Project Creation Modal */}
+      {/* 7. Manual Project Creation Modal */}
       {isManualModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 lg:p-8 shadow-2xl border border-slate-100 my-8 space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="text-xl font-bold text-slate-800">إضافة مشروع تحسين جودة جديد (يدوياً)</h3>
-              <button onClick={() => setIsManualModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1">
-                <XMarkIcon className="w-6 h-6" />
+        <div 
+          className="qip-charter-modal no-print"
+          onClick={() => setIsManualModalOpen(false)}
+        >
+          <div 
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              maxWidth: 580,
+              width: '100%',
+              padding: 24,
+              boxShadow: 'var(--shadow-lg)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                إضافة مشروع تحسين جودة جديد (يدوياً)
+              </h3>
+              <button onClick={() => setIsManualModalOpen(false)} className="btn btn-ghost btn-sm" style={{ padding: '4px 8px' }}>
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleManualSubmit} className="space-y-4">
+            <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">المستشفى: *</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>المستشفى: *</label>
                 <select
                   value={manualForm.hospital_id}
                   onChange={(e) => setManualForm(prev => ({ ...prev, hospital_id: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                  className="form-select"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   required
                 >
                   <option value="">-- اختر مستشفى --</option>
@@ -1013,34 +1291,37 @@ export default function ImprovementProjectsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">عنوان المشروع: *</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>عنوان المشروع: *</label>
                 <input
                   type="text"
                   placeholder="مثال: مشروع تطبيق معايير السلامة الدوائية وفصل الأدوية الخطرة"
                   value={manualForm.title}
                   onChange={(e) => setManualForm(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                  className="form-input"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">القسم المعني:</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>القسم المعني:</label>
                   <input
                     type="text"
                     placeholder="مثال: الصيدلية والعناية"
                     value={manualForm.department_name}
                     onChange={(e) => setManualForm(prev => ({ ...prev, department_name: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                    className="form-input"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">المجال / الفئة:</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>المجال / الفئة:</label>
                   <select
                     value={manualForm.category}
                     onChange={(e) => setManualForm(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                    className="form-select"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   >
                     <option value="سلامة المرضى">سلامة المرضى</option>
                     <option value="إدارة الدواء">إدارة واستخدام الدواء</option>
@@ -1053,34 +1334,37 @@ export default function ImprovementProjectsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">بيان المشكلة ومبررات المشروع:</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>بيان المشكلة ومبررات المشروع:</label>
                 <textarea
                   rows={2}
                   placeholder="وصف المشكلة والأداء الفعلي ونسب السلبيات المرصودة..."
                   value={manualForm.problem_statement}
                   onChange={(e) => setManualForm(prev => ({ ...prev, problem_statement: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                  className="form-textarea"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">الهدف الذكي القابل للقياس (SMART Goal):</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>الهدف الذكي (SMART Goal):</label>
                 <input
                   type="text"
                   placeholder="مثال: رفع نسبة الامتثال إلى 95% خلال 90 يوماً وتصفير السلبيات المتكررة"
                   value={manualForm.smart_goal}
                   onChange={(e) => setManualForm(prev => ({ ...prev, smart_goal: e.target.value }))}
-                  className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                  className="form-input"
+                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">الأولوية:</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>الأولوية:</label>
                   <select
                     value={manualForm.priority}
                     onChange={(e) => setManualForm(prev => ({ ...prev, priority: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                    className="form-select"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   >
                     <option value="high">أولوية قصوى</option>
                     <option value="medium">أولوية متوسطة</option>
@@ -1088,27 +1372,30 @@ export default function ImprovementProjectsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">تاريخ الإنجاز المستهدف:</label>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>تاريخ الإنجاز المستهدف:</label>
                   <input
                     type="date"
                     value={manualForm.target_completion_date}
                     onChange={(e) => setManualForm(prev => ({ ...prev, target_completion_date: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-slate-50 focus:bg-white"
+                    className="form-input"
+                    style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
                 <button
                   type="button"
                   onClick={() => setIsManualModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50"
+                  className="btn btn-ghost"
+                  style={{ padding: '8px 16px' }}
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm shadow"
+                  className="btn btn-primary"
+                  style={{ padding: '8px 24px', fontWeight: 800 }}
                 >
                   حفظ المشروع
                 </button>
