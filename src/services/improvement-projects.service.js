@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase'
+import { createServiceClient } from '../lib/supabase.js'
 import crypto from 'crypto'
 
 let hasTableCache = null
@@ -196,40 +196,81 @@ export class ImprovementProjectsService {
       throw new Error('لا توجد سلبيات مسجلة لهذا المستشفى لإجراء تحليل مشاريع التحسين عليها.')
     }
 
-    // 4. Group Findings by Department
-    const deptStats = {}
-    findings.forEach(f => {
-      const dName = f.departments?.name || 'عموم المستشفى'
-      if (!deptStats[dName]) {
-        deptStats[dName] = { total: 0, open: 0, recurring: 0, high: 0, samples: [] }
-      }
-      deptStats[dName].total++
-      if (['open', 'recurring'].includes(f.status)) deptStats[dName].open++
-      if (f.repeat_count >= 2 || f.status === 'recurring') deptStats[dName].recurring++
-      if (f.priority === 'high') deptStats[dName].high++
-      if (deptStats[dName].samples.length < 8) deptStats[dName].samples.push(f.original_text)
+    // 4. Extract and rank individual candidate problems (Prioritize Recurring & High-Impact)
+    const recurringFindings = findings.filter(f => f.repeat_count >= 2 || f.status === 'recurring')
+    const highPriorityFindings = findings.filter(f => f.priority === 'high' && !recurringFindings.some(rf => rf.id === f.id))
+    const otherFindings = findings.filter(f => !recurringFindings.some(rf => rf.id === f.id) && !highPriorityFindings.some(hf => hf.id === f.id))
+
+    // Filter by department if requested
+    let targetRecurring = recurringFindings
+    let targetHigh = highPriorityFindings
+    let targetOther = otherFindings
+
+    if (focusDepartment) {
+      const matchDept = (d) => (d || '').toLowerCase().includes(focusDepartment.toLowerCase())
+      targetRecurring = recurringFindings.filter(f => matchDept(f.departments?.name))
+      targetHigh = highPriorityFindings.filter(f => matchDept(f.departments?.name))
+      targetOther = otherFindings.filter(f => matchDept(f.departments?.name))
+    }
+
+    // Prepare prioritized candidate problems list
+    const candidateList = []
+    
+    // Add recurring problems first
+    targetRecurring.forEach(f => {
+      candidateList.push({
+        type: 'سلبية متكررة (ضعف امتثال مستمر)',
+        dept: f.departments?.name || 'عام',
+        text: f.original_text,
+        repeats: f.repeat_count || 2,
+        priority: 'high'
+      })
     })
 
-    const topDepts = Object.entries(deptStats)
-      .sort((a, b) => (b[1].recurring * 3 + b[1].open * 2 + b[1].high * 2) - (a[1].recurring * 3 + a[1].open * 2 + a[1].high * 2))
-      .slice(0, 8)
+    // Add high-priority critical failures
+    targetHigh.slice(0, 15).forEach(f => {
+      candidateList.push({
+        type: 'سلبية حرجة عالية الخطورة (Safety Risk)',
+        dept: f.departments?.name || 'عام',
+        text: f.original_text,
+        repeats: 1,
+        priority: 'high'
+      })
+    })
 
-    // Format findings summary for AI
+    // Add other notable findings if pool is small
+    if (candidateList.length < 5) {
+      targetOther.slice(0, 5).forEach(f => {
+        candidateList.push({
+          type: 'ملاحظة تشغيلية',
+          dept: f.departments?.name || 'عام',
+          text: f.original_text,
+          repeats: 1,
+          priority: f.priority || 'medium'
+        })
+      })
+    }
+
     const inspectionDates = reports?.map(r => r.inspection_date).filter(Boolean).slice(0, 5).join(' و ') || 'زيارات متعددة'
     const totalFindingsCount = findings.length
     const openFindingsCount = findings.filter(f => ['open', 'recurring'].includes(f.status)).length
-    const recurringCount = findings.filter(f => f.repeat_count >= 2 || f.status === 'recurring').length
+    const recurringCount = recurringFindings.length
 
-    let deptSummaryText = topDepts.map(([name, s]) => {
-      return `* قسم [${name}]: إجمالي السلبيات ${s.total} (المفتوحة: ${s.open}، المتكررة: ${s.recurring}، عالية الأولوية: ${s.high})
-  أبرز السلبيات المرصودة في التقارير:
-  - ${s.samples.slice(0, 4).join('\n  - ')}`
-    }).join('\n\n')
+    const candidateProblemsText = candidateList.map((c, idx) => {
+      return `${idx + 1}. [${c.dept}] (${c.type}): "${c.text}"`
+    }).join('\n')
 
-    // AI Prompt
-    const systemPrompt = `أنت خبير واستشاري أول في إدارة وتوكيد جودة الرعاية الصحية واعتماد المستشفيات (Fellow of IHI, GAHAR & CBAHI Quality Surveyor).
-مهمتك إعداد مشاريع تحسين جودة (Quality Improvement Projects - QIPs) واقعية، مبنية على الدليل العلمي ومبنية على تحليل الأداء الفعلي المستخرج من تقارير المرور الرسمية.
-يجب أن ترتكز المشاريع على معايير الجودة والاعتماد المصرية (GAHAR) وحلول منظمة الصحة العالمية لسلامة المرضى (WHO Patient Safety Solutions) ومنهجية FOCUS-PDCA.
+    // AI Prompt - Strictly enforcing Single-Core-Issue Focus
+    const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات (Fellow of IHI, GAHAR Quality Surveyor).
+مهمتك إعداد مشاريع تحسين جودة (Quality Improvement Projects - QIPs) نموذجية مبنية على الأداء الفعلي والدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+
+قاعدة ذهبية صارمة في إدارة الجودة (The Single-Problem Focus Principle):
+- كل مشروع تحسين يجب أن يركز تماماً وبشكل حصري على "مشكلة كبرى واحدة محددة" أو "سلبية متكررة حرجة واحدة" (Single Core Problem).
+- يُمنع منعاً باتاً دمج سلبيات مختلفة أو غير متجانسة في مشروع واحد لمجرد أنها وقعت في نفس القسم (مثال خاطئ: مشروع يجمع بين ارتداء القفازات وتوقيع الطبيب وتوثيق التذاكر - هذا تشتيت عشوائي وفشل منهجي).
+- مثال صحيح: "مشروع تطبيق وتفعيل سياسة التوافق الدوائي (Medication Reconciliation) لمنع الأخطاء الدوائية عند الدخول والخروج" - يركز حصرياً على مشكلة التوافق الدوائي.
+- مثال صحيح: "مشروع منع ومكافحة استخدام الاختصارات الطبية الخطرة والممنوعة (Dangerous Abbreviations) في أقسام الرعاية المركزة".
+- مثال صحيح: "مشروع مأمونية نقل وتسليم العينات المخبرية وسلسلة العهدة (Specimen Transport & Chain of Custody) بالمعمل".
+- عنوان المشروع والهدف الذكي (SMART Goal) ومؤشرات الأداء (KPIs) وخطة التدخلات (Interventions) يجب أن تكون مخصصة 100% لعلاج الأسباب الجذرية لهذه المشكلة الواحدة دون تشتيت.
 أخرج النتيجة بصيغة JSON فقط.`
 
     const userPrompt = `بيانات أداء المستشفى:
@@ -237,46 +278,47 @@ export class ImprovementProjectsService {
 - عدد تقارير المرور الأخيرة: ${reports?.length || 0} (بتواريخ: ${inspectionDates})
 - إجمالي السلبيات المرصودة: ${totalFindingsCount}
 - السلبيات المفتوحة قيد الإجراء: ${openFindingsCount}
-- السلبيات المتكررة (ضعف الامتثال): ${recurringCount}
-${focusDepartment ? `- القسم المطلوب التركيز عليه بصفة خاصة: ${focusDepartment}` : ''}
+- السلبيات المتكررة: ${recurringCount}
+${focusDepartment ? `- القسم المطلوب التركيز عليه: ${focusDepartment}` : ''}
 
-تحليل تركز السلبيات في الأقسام والعيوب التشغيلية:
-${deptSummaryText}
+قائمة المشاكل والسلبيات الحرجة والمتكررة المرشحة للتحسين:
+${candidateProblemsText}
 
 المطلوب:
-صياغة عدد ${count} مشاريع تحسين جودة رئيسية استراتيجية (QIPs) تعالج أكثر المشاكل الجذرية إلحاحاً بالمستشفى.
+اختر من القائمة أعلاه أهم ${count} مشاكل محورية مختلفة (أولوية للسلبيات المتكررة ثم عالية الخطورة)، وصِغ لكل مشكلة منفصلة "مشروع تحسين جودة مستقل ومكتمل الأركان" (QIP).
 
-شروط كل مشروع:
-1. أن يستند تماماً إلى السلبيات الفعلية المذكورة أعلاه.
-2. صياغة مبررات المشروع وبيان المشكلة (Problem Statement) متضمناً أرقام الأداء الحالية (Baseline).
-3. وضع هدف ذكي قابل للقياس ومحدد زمنياً (SMART Goal).
-4. تحديد المرجع العلمي ومعايير الاعتماد المعنية (GAHAR Standard / WHO).
-5. وضع مؤشرات أداء (KPIs) لقياس نجاح المشروع (مؤشر عملية ومؤشر نتيجة).
-6. وضع خطة تدخلات إجرائية (FOCUS-PDCA Interventions) بخطوات تنفيذية ومسؤول ومدى زمني.
+متطلبات كل مشروع (مشكلة واحدة فقط لكل مشروع):
+1. عنوان المشروع (Title): اسم واضح ومحدد يعكس المشكلة المعالجة والحل المستهدف.
+2. بيان المشكلة (Problem Statement): يركز فقط على هذه المشكلة المحددة، تكرارها في تقارير المرور، خطورتها الإكلينيكية، وأرقام خط الأساس (Baseline).
+3. الهدف الذكي (SMART Goal): هدف كمي محدد وزمني لاستئصال هذه المشكلة ورفع الامتثال إلى 95% أو تصفير تكرارها.
+4. المرجع العلمي (Evidence): معيار GAHAR المباشر وتوصية WHO ذات الصلة بهذه المشكلة.
+5. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة يخصان هذه المشكلة الواحدة فقط.
+6. خطة التدخلات (FOCUS-PDCA): 3-5 خطوات تنفيذية لمعالجة الأسباب الجذرية للمشكلة.
+7. السلبيات المرتبطة (linked_findings_summary): تذكر نص السلبية الواحدة المحددة المستهدفة فقط.
 
 الصيغة المطلوبة (JSON فقط):
 {
   "projects": [
     {
-      "title": "عنوان مشروع التحسين (واضح ودقيق)",
-      "department_name": "القسم أو الأقسام المعنية",
-      "category": "سلامة المرضى / إدارة الدواء / مكافحة العدوى / الرعاية الحرجة / السلامة وإدارة المرافق",
+      "title": "عنوان محدد لمشروع يعالج مشكلة واحدة فقط",
+      "department_name": "القسم المعني",
+      "category": "سلامة المرضى / إدارة واستخدام الدواء / مكافحة العدوى والتعقيم / الرعاية الحرجة والطوارئ / الملف الطبي والتوثيق / إدارة السلامة والمرافق (FMS)",
       "priority": "high",
-      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي بالأرقام",
-      "baseline_metrics": "الأرقام والنسب المرجعية الحالية قبل التحسين",
+      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي الخاص بها بالأرقام والمخاطر",
+      "baseline_metrics": "الأرقام والنسب المرجعية الحالية لهذه المشكلة قبل التحسين",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
-      "evidence_reference": "الدليل الإرشادي ومعيار GAHAR المعني",
+      "evidence_reference": "الدليل الإرشادي ومعيار GAHAR المعني بالمشكلة",
       "target_duration_weeks": 12,
       "kpis": [
-        { "name": "اسم المؤشر", "type": "process", "baseline": "35%", "target": "95%", "frequency": "شهري" },
-        { "name": "مؤشر النتيجة", "type": "outcome", "baseline": "3 حوادث/شهر", "target": "صفر", "frequency": "شهري" }
+        { "name": "مؤشر العملية للالتزام بالخطوات", "type": "process", "baseline": "0%", "target": "95%", "frequency": "شهري" },
+        { "name": "مؤشر النتيجة (Outcome)", "type": "outcome", "baseline": "تكرار السلبية مرتين", "target": "صفر", "frequency": "شهري" }
       ],
       "interventions": [
-        { "step": "خطوة التدخل الإجرائي", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "خطوة التدخل الإجرائي لعلاج السبب الجذري", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
       ],
       "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
       "team_members": ["عضو 1", "عضو 2", "عضو 3"],
-      "linked_findings_summary": ["نص السلبية 1", "نص السلبية 2"]
+      "linked_findings_summary": ["نص المشكلة أو السلبية الواحدة المحددة"]
     }
   ]
 }`
