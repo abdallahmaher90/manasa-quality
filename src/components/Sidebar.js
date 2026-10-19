@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon } from '@/components/Icons'
+import { HomeIcon, HospitalIcon, ClipboardIcon, ArchiveIcon, ChartIcon, UploadIcon, UsersIcon, SettingsIcon, ExclamationCircleIcon, SparklesIcon } from '@/components/Icons'
 
 const navItems = [
   {
@@ -23,9 +23,10 @@ const navItems = [
     ]
   },
   {
-    section: 'التحليلات',
+    section: 'التحليلات ومشاريع الجودة',
     roles: ['directorate_admin', 'directorate_member'],
     items: [
+      { href: '/improvement-projects', icon: <SparklesIcon className="w-5 h-5" />, label: 'مشاريع التحسين (QIPs)' },
       { href: '/cross-report', icon: <ClipboardIcon className="w-5 h-5" />, label: 'تقرير مقارن بالأقسام' },
       { href: '/statistics', icon: <ChartIcon className="w-5 h-5" />, label: 'الإحصائيات' },
     ]

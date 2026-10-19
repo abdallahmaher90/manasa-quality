@@ -296,6 +296,15 @@ export default function HospitalPage() {
           </div>
         </div>
         <div className="flex gap-sm no-print">
+          {(userRole === 'directorate_admin' || userRole === 'directorate_member') && (
+            <Link 
+              href={`/improvement-projects?hospitalId=${id}`} 
+              className="btn btn-sm" 
+              style={{ padding: '6px 12px', fontSize: 12, backgroundColor: '#0f766e', color: 'white' }}
+            >
+              ✨ مشاريع التحسين
+            </Link>
+          )}
           <Link href={`/hospitals/${id}/visit-report`} className="btn btn-secondary btn-sm" style={{ padding: '6px 12px', fontSize: 12 }}>
             📝 تقرير مرور
           </Link>
