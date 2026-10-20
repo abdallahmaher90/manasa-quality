@@ -1,4 +1,6 @@
 import { createServiceClient } from '../lib/supabase.js'
+import { fetchGoogleSheetData } from '../lib/google-sheets.js'
+import { findMatchingSheetHospital } from '../lib/hospital-matcher.js'
 import crypto from 'crypto'
 
 let hasTableCache = null
@@ -58,7 +60,7 @@ export class ImprovementProjectsService {
     return projects.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   }
 
-  // 2. Get single project
+  // 2. Get Single Project
   async getProjectById(id) {
     const hasTable = await checkHasTable(this.supabase)
     if (hasTable) {
@@ -71,21 +73,24 @@ export class ImprovementProjectsService {
       return data
     }
 
-    const { data: row, error } = await this.supabase
+    const { data, error } = await this.supabase
       .from('settings')
-      .select('*')
+      .select('value')
       .eq('key', `improvement_project:${id}`)
-      .maybeSingle()
+      .single()
 
-    if (error) throw error
-    if (!row) return null
-    return JSON.parse(row.value)
+    if (error || !data) return null
+    try {
+      return JSON.parse(data.value)
+    } catch (e) {
+      return null
+    }
   }
 
-  // 3. Save / Insert Project
+  // 3. Save Project
   async saveProject(projectData) {
-    const id = projectData.id || crypto.randomUUID()
     const now = new Date().toISOString()
+    const id = projectData.id || crypto.randomUUID()
     const project = {
       ...projectData,
       id,
@@ -164,11 +169,105 @@ export class ImprovementProjectsService {
     return true
   }
 
-  // 6. AI Generation: Analyze hospital performance and generate evidence-based projects
-  async generateProjectsForHospital(hospitalId, options = {}) {
-    const { count = 3, focusDepartment = null } = options
+  // 6. Fetch Real Hospital KPIs from Google Sheet
+  async fetchHospitalKpisFromSheet(hospitalName) {
+    try {
+      const { data: settingData } = await this.supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'google_sheet_url')
+        .single()
 
-    // 1. Fetch Hospital
+      if (!settingData?.value) return { matchedName: null, kpis: [] }
+
+      const allSheetRows = await fetchGoogleSheetData(settingData.value)
+      if (!allSheetRows || allSheetRows.length === 0) return { matchedName: null, kpis: [] }
+
+      const sheetHospitals = [...new Set(allSheetRows.map(r => r.Hospital).filter(Boolean))]
+      const matchedName = findMatchingSheetHospital(hospitalName, sheetHospitals)
+      if (!matchedName) return { matchedName: null, kpis: [] }
+
+      // Filter rows for this hospital
+      const hospitalRows = allSheetRows.filter(r => r.Hospital === matchedName)
+
+      // Group by indicator and keep the latest record (highest year, highest month)
+      const latestMap = new Map()
+      for (const r of hospitalRows) {
+        if (!r.Indicator) continue
+        const indName = String(r.Indicator).trim()
+        const existing = latestMap.get(indName)
+        if (!existing) {
+          latestMap.set(indName, r)
+        } else {
+          const rYear = Number(r.Year) || 0
+          const rMonth = Number(r.Month) || 0
+          const exYear = Number(existing.Year) || 0
+          const exMonth = Number(existing.Month) || 0
+          if (rYear > exYear || (rYear === exYear && rMonth > exMonth)) {
+            latestMap.set(indName, r)
+          }
+        }
+      }
+
+      const deduplicated = Array.from(latestMap.values())
+      return { matchedName, kpis: deduplicated }
+    } catch (err) {
+      console.error('Error fetching hospital KPIs from Google Sheet:', err)
+      return { matchedName: null, kpis: [] }
+    }
+  }
+
+  // 7. Clinical Domain Classification & Synthesis
+  classifyDomain(text) {
+    const lower = (text || '').toLowerCase()
+
+    if (
+      lower.includes('دواء') || lower.includes('دوائي') || lower.includes('صيدلية') || lower.includes('صيدلي') ||
+      lower.includes('وصفات') || lower.includes('وصفة') || lower.includes('ترياق') || lower.includes('حقن آمن') ||
+      lower.includes('كراش') || lower.includes('عالية الخطورة') || lower.includes('عاليه الخطوره') ||
+      lower.includes('lasa') || lower.includes('تفاعلات دوائية')
+    ) {
+      return 'MEDICATION_MANAGEMENT'
+    }
+
+    if (
+      lower.includes('عدوى') || lower.includes('عزل') || lower.includes('تعقيم') || lower.includes('أوتوكلاف') ||
+      lower.includes('واقيات شخصية') || lower.includes('نفايات') || lower.includes('تطهير') || lower.includes('كوفيد') ||
+      lower.includes('ميكروبيولوجي') || lower.includes('vap') || lower.includes('cauti') || lower.includes('clabsi') ||
+      lower.includes('ssi') || lower.includes('فيروس b')
+    ) {
+      return 'INFECTION_PREVENTION'
+    }
+
+    if (
+      lower.includes('عناية') || lower.includes('طوارئ') || lower.includes('استقبال') || lower.includes('فرز') ||
+      lower.includes('نتائج حرجة') || lower.includes('vte') || lower.includes('جلطات') || lower.includes('إنعاش') ||
+      lower.includes('cpr') || lower.includes('تدهور') || lower.includes('قساطر') || lower.includes('علامات حيوية')
+    ) {
+      return 'CRITICAL_EMERGENCY_CARE'
+    }
+
+    if (
+      lower.includes('سقوط') || lower.includes('قرح الفراش') || lower.includes('تعريف المريض') || lower.includes('أوامر شفهية') ||
+      lower.includes('شكاوى') || lower.includes('حقوق المرضى') || lower.includes('رضا المرضى') || lower.includes('أحداث عارضة')
+    ) {
+      return 'PATIENT_SAFETY_GOVERNANCE'
+    }
+
+    if (
+      lower.includes('ملف طبي') || lower.includes('ملف') || lower.includes('تذكرة') || lower.includes('نموذج') ||
+      lower.includes('توافق دوائي') || lower.includes('care plan') || lower.includes('خطة رعاية') || lower.includes('اختصارات')
+    ) {
+      return 'MEDICAL_RECORDS'
+    }
+
+    return 'FACILITY_BIOMEDICAL_SAFETY'
+  }
+
+  // 8. Analyze Hospital Crisis (Cross-Synthesis of Findings & Google Sheet KPIs)
+  // This extracts: «أكبر مشكلة تعاني منها المستشفى»
+  async analyzeHospitalCrisis(hospitalId) {
+    // 1. Hospital Details
     const { data: hospital, error: hospErr } = await this.supabase
       .from('hospitals')
       .select('*')
@@ -177,270 +276,274 @@ export class ImprovementProjectsService {
 
     if (hospErr || !hospital) throw new Error('المستشفى غير موجود')
 
-    // 2. Fetch Reports
-    const { data: reports } = await this.supabase
-      .from('reports')
-      .select('id, inspection_date, inspector_name, file_name')
-      .eq('hospital_id', hospitalId)
-      .order('inspection_date', { ascending: false })
-      .limit(10)
-
-    // 3. Fetch Findings
-    let findingsQuery = this.supabase
+    // 2. Fetch Findings
+    const { data: findings } = await this.supabase
       .from('v_report_findings')
       .select('id, department_id, original_text, priority, status, repeat_count, departments(name)')
       .eq('hospital_id', hospitalId)
 
-    const { data: findings } = await findingsQuery
-    if (!findings || findings.length === 0) {
-      throw new Error('لا توجد سلبيات مسجلة لهذا المستشفى لإجراء تحليل مشاريع التحسين عليها.')
-    }
-
-    // 4. Extract and rank candidate problems using GAHAR Prioritization & Single-Problem Focus
-    // Filter out trivial one-step physical maintenance, routine clerical audits, and simple supervisory PPE compliance
+    // Filter out trivial maintenance/handyman tasks
     const isNonQipTask = (text) => {
       const lower = (text || '').toLowerCase()
-      
-      // 1. Routine physical maintenance, housekeeping, furniture, procurement
-      const maintenanceTerms = [
+      const trivial = [
         'جرس استدعاء', 'جرس التمريض', 'ترمومتر', 'لمبة', 'بوابة', 'كالون', 'صنبور', 'سباكة',
         'كرسي', 'مفتاح كهرباء', 'دهان', 'تربيزة', 'بلاط', 'أرضيات', 'حشائش', 'بلاعة',
         'شفاط', 'مضخه', 'دولاب', 'أرفف', 'توفير كراسي', 'توفير غرفه ارشيف', 'توفير مستلزمات غسيل',
-        'حوض مطابق', 'حقيبة انسكابات', 'سجل cpr'
-      ]
-      if (maintenanceTerms.some(term => lower.includes(term))) return true
-
-      // 2. Posters, stickers, labels, warning signs (Just-Do-It printing/placement)
-      const posterTerms = [
-        'بوستر', 'بوسترات', 'race', 'pass', 'كارت فحص', 'كروت التعريف', 'طفايه الحريق', 'ماسة المواد', 'ماسة كيميائية'
-      ]
-      if (posterTerms.some(term => lower.includes(term))) return true
-
-      // 3. Isolated supervisory PPE reminders / individual worker habit (solved by head nurse supervision/in-service training)
-      const supervisoryPpeTerms = [
-        'دون قفازات', 'بدون قفازات', 'ارتداء قفازات', 'كمامة', 'مريلة', 'جاون', 'نقل المرضي بمرافقه التمريض', 'الابرون معلق'
-      ]
-      if (supervisoryPpeTerms.some(term => lower.includes(term))) return true
-
-      // 4. Routine clerical single-field signatures, numbering, stamps, scratch-outs
-      const clericalTerms = [
+        'بوستر', 'بوسترات', 'race', 'pass', 'كارت فحص', 'كروت التعريف', 'طفايه الحريق',
+        'دون قفازات', 'بدون قفازات', 'ارتداء قفازات', 'كمامة', 'مريلة', 'جاون',
         'توقيع الاطباء في بعض النماذج احادي', 'توقيع الصيدلى على الادويه في بعض الملفات',
         'شطب وكشط', 'غير مرقمة', 'اعتماد دفتر', 'سجل المشورة', 'كتابه عليه التوقيع'
       ]
-      if (clericalTerms.some(term => lower.includes(term))) return true
-
-      return false
+      return trivial.some(t => lower.includes(t))
     }
 
-    // Measure high-impact systemic clinical weight
-    const getSystemicClinicalWeight = (text) => {
-      const lower = (text || '').toLowerCase()
-      let weight = 0
-      
-      // Core GAHAR & WHO Clinical / Patient Safety Pathways
-      if (lower.includes('توافق دوائي')) weight += 15
-      if (lower.includes('جلطات') || lower.includes('vte')) weight += 15
-      if (lower.includes('نتائج حرجة') || lower.includes('النتائج الحرجه')) weight += 15
-      if (lower.includes('عاليه الخطوره') || lower.includes('عالية الخطورة') || lower.includes('أدوية عالية')) weight += 12
-      if (lower.includes('غرفه العزل') || lower.includes('غرفة العزل') || lower.includes('العزل')) weight += 12
-      if (lower.includes('care plan') || lower.includes('خطة الرعاية') || lower.includes('خطة العلاج')) weight += 12
-      if (lower.includes('جرعات') && lower.includes('أشعة')) weight += 10
-      if (lower.includes('أوتوكلاف') || lower.includes('تعقيم المزارع')) weight += 10
-      if (lower.includes('تقييم السقوط')) weight += 8
-      if (lower.includes('الوصفه الدوائيه') || lower.includes('الوصفة الدوائية')) weight += 8
+    const eligibleFindings = (findings || []).filter(f => !isNonQipTask(f.original_text))
 
-      return weight
+    // 3. Fetch Google Sheet KPIs
+    const { matchedName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
+
+    // Domain definitions
+    const domainMeta = {
+      MEDICATION_MANAGEMENT: {
+        id: 'MEDICATION_MANAGEMENT',
+        name: 'إدارة ومأمونية الدواء والصيدلة السريرية (Medication Safety & Pharmacy)',
+        clinicalRiskFactor: 1.3
+      },
+      CRITICAL_EMERGENCY_CARE: {
+        id: 'CRITICAL_EMERGENCY_CARE',
+        name: 'الرعاية الحرجة وفرز الطوارئ والإنقاذ (Critical Care & Emergency Triage)',
+        clinicalRiskFactor: 1.4
+      },
+      INFECTION_PREVENTION: {
+        id: 'INFECTION_PREVENTION',
+        name: 'مكافحة العدوى والتعقيم والعزل الطبي (Infection Prevention & Isolation)',
+        clinicalRiskFactor: 1.3
+      },
+      PATIENT_SAFETY_GOVERNANCE: {
+        id: 'PATIENT_SAFETY_GOVERNANCE',
+        name: 'الأهداف الوطنية لسلامة المرضى (National Patient Safety Goals - NPSGs)',
+        clinicalRiskFactor: 1.2
+      },
+      MEDICAL_RECORDS: {
+        id: 'MEDICAL_RECORDS',
+        name: 'اكتمال الملف الطبي والتوثيق السريري والتوافق (Clinical Documentation & Med-Rec)',
+        clinicalRiskFactor: 1.1
+      },
+      FACILITY_BIOMEDICAL_SAFETY: {
+        id: 'FACILITY_BIOMEDICAL_SAFETY',
+        name: 'السلامة والصحة المهنية والأجهزة الطبية (Biomedical Equipment & FMS)',
+        clinicalRiskFactor: 1.0
+      }
     }
 
-    const eligibleFindings = findings.filter(f => !isNonQipTask(f.original_text))
-
-    // Filter by department if requested
-    let targetFindings = eligibleFindings
-    if (focusDepartment) {
-      const matchDept = (d) => (d || '').toLowerCase().includes(focusDepartment.toLowerCase())
-      targetFindings = eligibleFindings.filter(f => matchDept(f.departments?.name))
+    const domainBuckets = {}
+    for (const [key, meta] of Object.entries(domainMeta)) {
+      domainBuckets[key] = {
+        ...meta,
+        findings: [],
+        kpis: [],
+        criticalKpiCount: 0,
+        riskKpiCount: 0,
+        recurringFindingCount: 0,
+        highPriorityFindingCount: 0,
+        totalScore: 0
+      }
     }
 
-    // Rank individual candidate problems: prioritize Systemic Clinical Weight + High Risk + Recurring
-    const rankedCandidates = targetFindings.map(f => {
-      const isRecurring = f.repeat_count >= 2 || f.status === 'recurring'
+    // Place KPIs into domains
+    sheetKpis.forEach(k => {
+      const domainKey = this.classifyDomain(k.Indicator)
+      const target = domainBuckets[domainKey] || domainBuckets.PATIENT_SAFETY_GOVERNANCE
+      target.kpis.push(k)
+
+      const isCritical = k.Alert_Level === 'Critical'
+      const isRisk = k.Status === 'Risk' || k.Alert_Level === 'Alert'
+      if (isCritical) {
+        target.criticalKpiCount++
+        target.totalScore += 20
+      } else if (isRisk) {
+        target.riskKpiCount++
+        target.totalScore += 10
+      }
+    })
+
+    // Place Findings into domains
+    eligibleFindings.forEach(f => {
+      const domainKey = this.classifyDomain(`${f.original_text} ${f.departments?.name || ''}`)
+      const target = domainBuckets[domainKey] || domainBuckets.PATIENT_SAFETY_GOVERNANCE
+      target.findings.push(f)
+
+      const isRec = (f.repeat_count || 1) >= 2 || f.status === 'recurring'
       const isHigh = f.priority === 'high'
-      const systemicWeight = getSystemicClinicalWeight(f.original_text)
-      const score = (isRecurring ? 5 : 0) + (isHigh ? 4 : 1) + systemicWeight
-      return {
-        id: f.id,
-        dept: f.departments?.name || 'عام',
-        text: f.original_text,
-        priority: f.priority || 'medium',
-        repeat_count: f.repeat_count || 1,
-        systemicWeight,
-        score
-      }
-    }).sort((a, b) => b.score - a.score)
 
-    // Deduplicate very similar text to ensure distinct issues
-    const seenTexts = new Set()
-    const uniqueCandidates = []
-    for (const c of rankedCandidates) {
-      const normalized = c.text.trim().toLowerCase()
-      if (!seenTexts.has(normalized)) {
-        seenTexts.add(normalized)
-        uniqueCandidates.push(c)
-      }
+      if (isRec) target.recurringFindingCount++
+      if (isHigh) target.highPriorityFindingCount++
+
+      target.totalScore += (isRec ? 8 : 3) + (isHigh ? 6 : 2)
+    })
+
+    // Apply clinical multiplier
+    for (const d of Object.values(domainBuckets)) {
+      d.totalScore = Math.round(d.totalScore * d.clinicalRiskFactor)
     }
 
-    // Map candidate problem to its deep systemic clinical diagnosis and failure mode
-    const getSystemicClinicalContext = (text) => {
-      const lower = (text || '').toLowerCase()
-      if (lower.includes('نتائج حرجة') || lower.includes('النتائج الحرجه')) {
-        return 'المسار السريري: منظومة الإبلاغ الفوري المغلق عن النتائج التشخيصية الحرجة (IPSG 2 / GAHAR). المشكلة المستعصية ليست ورقة أو قائمة بل انقطاع حلقة التواصل وتأخر التدخل الطبي المنقذ للحياة لأكثر من 60-90 دقيقة مما يسبب تدهوراً حاداً ووفاة لمرضى السكتات الدماغية والنزيف والصدمة الإنتانية.'
-      }
-      if (lower.includes('توافق دوائي')) {
-        return 'المسار السريري: منظومة التوافق الدوائي الشامل عند التنويم والانتقال (Medication Reconciliation). المشكلة المستعصية ليست ملء استمارة بل ضياع التاريخ الدوائي المنزلي، وتعارض الأدوية المزمنة مع أدوية الحميات، والازدواجية العلاجية، وتسمم الأعضاء الحيوية، وغياب الربط بين الصيدلة السريرية وأطباء الدخول.'
-      }
-      if (lower.includes('جلطات') || lower.includes('vte')) {
-        return 'المسار السريري: بروتوكول تقييم ومنع الجلطات الوريدية والانسداد الرئوي القاتل (DVT / PE Prophylaxis). المشكلة المستعصية هي حدوث وفيات مفاجئة وتدهور بانسداد الشريان الرئوي بسبب إغفال التقييم الديناميكي للمخاطر وعدم ربطه بأمر الصرف الفعلي لمضادات التجلط الوقائية (Under-prophylaxis).'
-      }
-      if (lower.includes('عاليه الخطوره') || lower.includes('عالية الخطورة') || lower.includes('أدوية عالية')) {
-        return 'المسار السريري: حوكمة ومأمونية صرف وإعطاء الأدوية عالية الخطورة (High-Alert Medications & LASA Safety). المشكلة المستعصية هي ارتفاع معدل التسمم الدوائي والجرعات القاتلة نتيجة التخزين المتداخل والتشابه الصوتي والشكل وغياب التحقق المزدوج المستقل.'
-      }
-      if (lower.includes('غرفه العزل') || lower.includes('غرفة العزل') || lower.includes('العزل')) {
-        return 'المسار السريري: إحكام حواجز العزل الطبي الوقائي لمستشفى الحميات ومنع تفشي الميكروبات المقاومة للأدوية (MDROs). المشكلة المستعصية هي اختراق مسارات العزل وتكدس المرافقين واشتراك غرف الأدوية مما يهدد بتفشيات وبائية خطيرة وانتقال العدوى للمجتمع.'
-      }
-      if (lower.includes('علامات حيوية') || lower.includes('تذكرة الاستقبال')) {
-        return 'المسار السريري: تطبيق منظومة الفرز الطبي الإلزامي (Emergency Triage) ومراقبة العلامات الحيوية. المشكلة المستعصية هي تأخر التعرف على المرضى المتدهورين في طوارئ الحميات وضياع الساعات الذهبية لحدوث الوفاة بصالات الانتظار (Failure to Rescue).'
-      }
-      if (lower.includes('care plan') || lower.includes('خطة الرعاية') || lower.includes('خطة العلاج')) {
-        return 'المسار السريري: الخطة العلاجية متعددة التخصصات بالعناية المركزة (ICU Multidisciplinary Care Plan) وتوحيد أهداف الفطام وتقليل الوفيات.'
-      }
-      return null
+    // Sort domains descending by total score
+    const sortedDomains = Object.values(domainBuckets).sort((a, b) => b.totalScore - a.totalScore)
+    const primaryCrisis = sortedDomains[0]
+
+    // Formulate the Crisis Diagnosis Summary
+    const criticalKpisSummary = primaryCrisis.kpis
+      .filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk')
+      .map(k => `• ${k.Indicator}: القيمة الفعلية المسجلة ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
+      .slice(0, 5)
+
+    const topFindingsSummary = primaryCrisis.findings
+      .sort((a, b) => (b.repeat_count || 1) - (a.repeat_count || 1))
+      .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (تكرر ${f.repeat_count || 1} مرات)`)
+      .slice(0, 5)
+
+    return {
+      hospital: {
+        id: hospital.id,
+        name: hospital.name,
+        code: hospital.code,
+        matchedSheetName
+      },
+      stats: {
+        totalFindings: findings?.length || 0,
+        eligibleFindings: eligibleFindings.length,
+        totalSheetKpis: sheetKpis.length,
+        criticalSheetKpis: sheetKpis.filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk').length
+      },
+      primary_crisis: {
+        domain_id: primaryCrisis.id,
+        domain_name: primaryCrisis.name,
+        crisis_score: primaryCrisis.totalScore,
+        critical_kpis_count: primaryCrisis.criticalKpiCount,
+        recurring_findings_count: primaryCrisis.recurringFindingCount,
+        critical_kpis_evidence: criticalKpisSummary,
+        correlating_findings_evidence: topFindingsSummary
+      },
+      all_domains_ranked: sortedDomains.map(d => ({
+        domain_id: d.id,
+        domain_name: d.name,
+        score: d.totalScore,
+        findings_count: d.findings.length,
+        kpis_count: d.kpis.length,
+        critical_kpis_count: d.criticalKpiCount,
+        recurring_findings_count: d.recurringFindingCount
+      }))
     }
+  }
 
-    // Prepare prioritized candidate problems text enriched with deep systemic context
-    const candidateProblemsText = uniqueCandidates.slice(0, 10).map((c, idx) => {
-      const rep = c.repeat_count >= 2 ? ` [متكررة ${c.repeat_count} مرات - مشكلة مزمنة مستعصية]` : ''
-      const prio = c.priority === 'high' ? ' [أولوية قصوى]' : ''
-      const sysContext = getSystemicClinicalContext(c.text)
-      const contextStr = sysContext ? `\n   - البعد والخلل الإكلينيكي العميق: ${sysContext}` : ''
-      return `${idx + 1}. [${c.dept}]${rep}${prio}: "${c.text}"${contextStr}`
-    }).join('\n\n')
+  // 9. AI Generation: Propose Evidence-Based QIPs Grounded in the Primary Crisis
+  async generateProjectsForHospital(hospitalId, options = {}) {
+    const { count = 3, focusDepartment = null } = options
 
-    const inspectionDates = reports?.map(r => r.inspection_date).filter(Boolean).slice(0, 5).join(' و ') || 'زيارات متعددة'
-    const totalFindingsCount = findings.length
-    const openFindingsCount = findings.filter(f => ['open', 'recurring'].includes(f.status)).length
-    const recurringCount = findings.filter(f => f.repeat_count >= 2 || f.status === 'recurring').length
+    // Step A: Perform full integrated crisis analysis (Findings + Google Sheet KPIs)
+    const crisisAnalysis = await this.analyzeHospitalCrisis(hospitalId)
+    const primaryCrisis = crisisAnalysis.primary_crisis
+    const hospital = crisisAnalysis.hospital
 
-    // AI Prompt - Strictly enforcing Single Problem per QIP & GAHAR Prioritization & Deep Root Cause Engine
+    // Step B: Prepare verified evidence text
+    const kpiEvidenceText = primaryCrisis.critical_kpis_evidence.length > 0
+      ? primaryCrisis.critical_kpis_evidence.join('\n')
+      : 'لا توجد مؤشرات حرجة مسجلة في شيت جوجل لهذا المسار.'
+
+    const findingsEvidenceText = primaryCrisis.correlating_findings_evidence.length > 0
+      ? primaryCrisis.correlating_findings_evidence.join('\n')
+      : 'لا توجد سلبيات متكررة مسجلة بالمرور لهذا المسار.'
+
+    // AI Prompt - Strictly Evidence-Based on Real Google Sheet KPIs & Field Findings
     const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات ومراجع معتمد (GAHAR Senior Quality Surveyor & Fellow of IHI).
-مهمتك تقييم واختيار وتصميم مشاريع تحسين جودة مؤسسية كبرى (Quality Improvement Projects - QIPs) مبنية على الدليل العلمي ومنهجية FOCUS-PDCA ومعايير GAHAR الوطنية.
+مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي (Quality Improvement Project - QIP) لمعالجة «أكبر أزمة نظامية تعاني منها المستشفى» والتي تم استخراجها عبر التقاطع المباشر بين تقارير المرور الميدانية وشيت مؤشرات الأداء الرسمي بالمديرية.
 
-قواعد صارمة لاختيار وتصميم مشاريع التحسين المؤسسية (Strict QIP Selection Rules):
-1. معيار "المشكلة المستعصية صعبة الحل" (Hard-to-Solve / High-Complexity Criterion) - إلزامي وبشكل قطعي:
-   - نحن نقوم بمشروع تحسين جودة فقط لحل "مشكلة معقدة صعبة ومستعصية" لا يمكن حلها بالإجراءات الإشرافية الروتينية أو التوجيهات السريعة.
-   - ممنوع منعاً باتاً اختيار أو صياغة مشاكل بسيطة أو سهلة الحل (مثل: استكمال توقيع، ترقيم سجل، تعليق لافتة، شراء مستلزم، ارتداء قفازات، أو مجرد تدريب عادي).
-   - إذا كانت المشكلة يمكن تعديلها بتدريب ساعة للتمريض أو تعميم إداري، فهي مرفوضة تماماً ويُمنع فتح مشروع تحسين عليها!
+قواعد الهندسة السريرية لمشاريع التحسين (Strict Clinical Architecture Rules):
+1. قاعدة المشكلة الكبرى الأولى الحصرية (Single Core Primary Crisis Focus):
+   - يجب أن يركز المشروع 100% وبشكل حصري على معالجة «الأزمة الكبرى المستخرجة للمستشفى»: (${primaryCrisis.domain_name}).
+   - يُمنع منعاً باتاً دمج مشاكل غير مرتبطة، ويُمنع فتح مشاريع على مهام إشرافية روتينية تُحل بالتدريب السريع أو التوقيع الورقي.
 
-2. قاعدة "جبل الجليد" والبحث العميق في الجذور (Iceberg Deep Root Cause Principle):
-   - السلبيات المرصودة في تقارير المرور ما هي إلا "أعراض سطحية" (Symptoms):
-     * لا تجعل المشروع يتمحور حول "الورقة الناقصة أو القائمة غير المعتمدة"! هذا تسطيح مرفوض.
-     * بل غُص في الجذور العميقة للخلل السريري والتشغيلي (The Systemic Clinical Breakdown):
-       - (قائمة النتائج الحرجة غير معتمدة) ⬅ المشكلة الحقيقية: انقطاع مسار الإبلاغ المغلق وتأخر إنقاذ مرضى السكتات الدماغية والنزيف والصدمة لأكثر من ساعة مما يسبب تدهوراً حاداً ووفاة.
-       - (لا يتم تطبيق توافق دوائي) ⬅ المشكلة الحقيقية: حدوث أخطاء وتفاعلات دوائية قاتلة وازدواجية علاجية وتسمم كلوي/كبدي عند الانتقال بين الطوارئ والأقسام الداخلية نتيجة فقدان التاريخ الدوائي المنزلي.
-       - (الالتزام بنموذج VTE) ⬅ المشكلة الحقيقية: حدوث وفيات مفاجئة بانسداد الشريان الرئوي (PE) وجلطات وريدية عميقة لمرضى التنويم بسبب إغفال التقييم وعدم صرف مضادات التجلط الوقائية (Under-prophylaxis).
-       - (مرافقين في غرف العزل) ⬅ المشكلة الحقيقية: انهيار منظومة العزل بمستشفى الحميات وتفشي الميكروبات الشرسة المقاومة للمضادات (MDROs) وتهديد الصحة العامة.
-       - (تذكرة بلا علامات حيوية) ⬅ المشكلة الحقيقية: تأخر فرز وإنعاش الحالات الحرجة المتدهورة بطوارئ الحميات وضياع الساعات الذهبية وحدوث وفيات بصالات الانتظار.
+2. قاعدة المصداقية التامة وربط خط الأساس (Baseline) بالأرقام الحقيقية من شيت جوجل:
+   - يُمنع منعاً باتاً اختلاق أو تخمين أي أرقام وفيات أو نسب عشوائية!
+   - خط الأساس (Baseline Metrics) يجب أن يستند حصراً إلى:
+     * الأرقام الرسمية الحقيقية المذكورة في قائمة مؤشرات شيت جوجل المرفقة أدناه (مثال: أخطاء الوصفات = 19% حسب شيت المديرية).
+     * إذا كان المؤشر غير مقاس بالأرقام في الشيت، يُكتب نصاً: "قيد التدقيق والقياس المرجعي في مرحلة التحليل الأولى للمشروع".
+     * المستهدف (Target): يُحدد المعيار الوطني المعتمد (مثلاً: امتثال ≥ 95%، أو خفض الأخطاء إلى <2%).
 
-3. إلزامية تحليل الجذور ولماذا فشل التدريب (Mandatory Deep Root Cause & Why Training Fails):
-   - يجب تضمين حقل (why_hard_to_solve) يشرح بتفصيل عميق لماذا هذه المشكلة مستعصية وصعبة الحل، ولماذا التدريب العادي غير كافٍ إطلاقاً لحلها (تضارب أدوار، غياب الربط، ضغط حالات، عدم وجود بوابات إيقاف Poka-Yoke).
-   - يجب تضمين حقل (root_cause_analysis) يحلل أسباب الخلل في مسار العمل السريري (Process Failure).
+3. معيار المشكلة المستعصية صعبة الحل (Hard-to-Solve Criteria):
+   - يجب توضيح (why_hard_to_solve) ولماذا فشل التدريب الروتيني في حلها، وما هي التعقيدات التنظيمية والسريرية.
+   - تحليل الأسباب الجذرية (root_cause_analysis) للخلل في مسار العمل (Process Breakdown).
 
 4. التدخلات التنفيذية الهندسية الصارمة (Systemic Engineering Interventions):
-   - يُمنع منعاً باتاً كتابة تدخلات شكلية مثل: (عقد اجتماع، تدريب الكوادر أسبوع، توقيع ورقة، التفتيش والمرور).
-   - التدخلات يجب أن تتضمن خطوات إعادة هندسة المسار (Process Re-engineering):
-     1. إعادة تصميم المسار الإكلينيكي وتحديد نقاط التسليم والتسلم بدقة (Clinical Workflow Redesign).
-     2. وضع بوابات تحقق وإيقاف إجبارية مانعة للخطأ (Poka-Yoke / Hard Stops): مثل ربط صرف الدواء بالتحقق الصيدلي، أو إطلاق كود تنبيه فوري.
-     3. بروتوكول تصعيد فوري للقيادة (Escalation Protocol) عند تجاوز الوقت القياسي المسموح.
-     4. نظام مراجعة سريرية وتدقيق مغلق دوري (Closed-Loop Clinical Auditing & Morbidity Reviews).
-
-5. قاعدة المشكلة الواحدة الحصرية (Strict Single Core Problem Focus):
-   - مشروع مستقل تماماً لكل قضية كبرى محورية، بلا حزم ولا خلط لمشاكل غير مرتبطة.
-   - حقل (linked_findings_summary) يحتوي حصراً على مصفوفة بها نص المشكلة الواحدة المحددة فقط.
-
-6. قاعدة المصداقية وحظر اختلاق أرقام الوفيات والحوادث (Strict Ban on Hallucinated Numbers & Zero-Fabrication Rule):
-   - يُمنع منعاً باتاً اختلاق أو تخمين أي أرقام وفيات (مثل: "3 حالات وفيات انسداد رئوي") أو نسب عشوائية لم تُذكر في تقارير المرور! تقارير المرور ترصد سلبيات نوعية وأوجه قصور.
-   - لا يجوز للذكاء الاصطناعي أن ينسب وفيات أو حوادث غير حقيقية للمستشفى!
-   - في خانة القيمة الحالية (baseline) للمؤشرات:
-     * مؤشر العملية: يُكتب "قيد القياس والتدقيق الأولي (مرحلة جمع البيانات)" أو "غير مفعل / رُصد بالمرور".
-     * مؤشر النتيجة: يُكتب "قيد الرصد والتدقيق المرجعي للمضاعفات".
-     * المستهدف (Target): يُكتب المعيار العلمي المطلوب (مثل: "امتثال ≥ 95%"، "صفر حالات إغفال أو وفيات ناتجة عن عدم الوقاية").
-   - في بيان المشكلة (Problem Statement): استند إلى الواقع المرصود في تقارير المرور ومخاطر الخلل المحتملة علمياً، دون ادعاء حدوث وفيات محددة لم ترد في التقرير.
+   - ممنوع كتابة خطوات شكلية عامة (مثل: عقد اجتماع، تدريب أسبوع، اعتماد ورقة، التفتيش).
+   - التدخلات يجب أن تكون: إعادة تصميم المسار السريري (Workflow Redesign)، وبوابات فحص وإيقاف إجبارية مانعة للخطأ (Poka-Yoke Hard-Stops)، وبروتوكول تصعيد فوري للقيادة عند التأخير، وتدقيق سريري مغلق أسبوعي.
 
 أخرج النتيجة بصيغة JSON فقط.`
 
-    const userPrompt = `بيانات أداء المستشفى:
-- اسم المستشفى: ${hospital.name}
-- عدد تقارير المرور الأخيرة: ${reports?.length || 0} (بتواريخ: ${inspectionDates})
-- إجمالي السلبيات المرصودة: ${totalFindingsCount}
-- السلبيات المفتوحة قيد الإجراء: ${openFindingsCount}
-- السلبيات المتكررة المؤهلة: ${recurringCount}
-${focusDepartment ? `- القسم المطلوب التركيز عليه: ${focusDepartment}` : ''}
+    const userPrompt = `بيانات الأزمة السريرية الكبرى المستخرجة للمستشفى:
+- اسم المستشفى: ${hospital.name} (مطابق لشيت جوجل: ${hospital.matchedSheetName || 'غير مسجل'})
+- إجمالي السلبيات المرصودة بالمرور: ${crisisAnalysis.stats.totalFindings}
+- إجمالي مؤشرات الأداء المفحوصة بشيت جوجل: ${crisisAnalysis.stats.totalSheetKpis} (منها ${crisisAnalysis.stats.criticalSheetKpis} مؤشر في حالة خطر/حرج)
 
-قائمة المشاكل والسلبيات السريرية والتشغيلية الكبرى المرشحة بعد التحليل العميق:
-${candidateProblemsText}
+أكبر مشكلة تعاني منها المستشفى (The Primary Systemic Crisis):
+- المحور السريري: ${primaryCrisis.domain_name}
+- درجة تركز الأزمة: ${primaryCrisis.crisis_score} نقطة
+
+أدلة الأداء الرسمية من شيت مؤشرات جوجل (Real Google Sheet KPIs Evidence):
+${kpiEvidenceText}
+
+أدلة تقارير المرور والسلبيات الميدانية المتكررة (Inspection Findings Evidence):
+${findingsEvidenceText}
 
 المطلوب:
-اختر من القائمة أعلاه بالضبط عدد (${count}) مشاكل كبرى محورية معقدة مستعصية صعبة الحل (Hard-to-Solve Problems)، وصِغ لكل مشكلة منفصلة "ميثاق مشروع تحسين جودة سريري وتشغيلي عميق ومكتمل الأركان" (QIP).
+صِغ بالضبط عدد (${count}) مقترحات مشاريع تحسين مؤسسية جادة لمعالجة هذه الأزمة الكبرى (مشروع مستقل لمعالجة كل جانب محوري في هذه الأزمة).
 
-متطلبات كل مشروع (مشكلة واحدة معقدة مستعصية لكل مشروع):
-1. عنوان المشروع (Title): اسم رصين يعكس المسار السريري العميق والحل المستهدف بدقة.
-2. لماذا هذه المشكلة مستعصية وصعبة الحل؟ (why_hard_to_solve): شرح تحليلي عميق يوضح لماذا لا يحل التدريب العادي المشكلة، وما هي التعقيدات السريرية والسلوكية والتنظيمية التي تجعلها صعبة الحل.
-3. تحليل الأسباب الجذرية (root_cause_analysis): تحليل الأسباب العميقة (مسار العمل، غياب الربط، ثغرات التوثيق، العوامل البشرية).
-4. مبررات الاختيار وتقييم مصفوفة الأولويات (Prioritization Matrix Scoring):
-   - درجة الخطورة السريرية (patient_safety_risk) من 1 إلى 5
-   - حجم وتكرار المشكلة (volume_frequency) من 1 إلى 5
-   - تعقيد المسار والحاجة لتغيير سلوكي (process_complexity) من 1 إلى 5
-   - التوافق الاستراتيجي مع معايير GAHAR (strategic_alignment) من 1 إلى 5
-   - مبرر الأهلية (eligibility_justification): شرح لماذا تستحق هذه المشكلة المستعصية فتح مشروع تحسين مؤسسي كامل.
-5. بيان المشكلة (Problem Statement): يركز على الخلل في مسار الإنقاذ ومخاطر الوفاة والمضاعفات استناداً للرصد الفعلي بالتقارير دون اختلاق أرقام وفيات غير مسجلة.
-6. الهدف الذكي (SMART Goal): كمي وزمني لمنع المضاعفات ورفع الامتثال إلى 95%.
-7. المرجع العلمي (Evidence Reference): معايير GAHAR المباشرة وتوصيات WHO ذات الصلة.
-8. مؤشرات الأداء (KPIs): مؤشر عملية ومؤشر نتيجة سريري حقيقي مخصصان لهذه القضية (مع الالتزام بعدم اختلاق وفيات بالـ baseline وكتابة "قيد القياس الأولي").
-9. خطة التدخلات (FOCUS-PDCA Interventions): خطوات إعادة هندسة المسار وبوابات الفحص الإجبارية (Poka-Yoke) والتصعيد القيادي (ممنوع التدريب السطحي المجرد).
-10. السلبيات المرتبطة (linked_findings_summary): مصفوفة بها نص المشكلة الواحدة المحددة فقط (عنصر واحد فقط بالمصفوفة).
+متطلبات كل مشروع:
+1. عنوان المشروع (Title): اسم رصين يعكس المسار والحل المستهدف.
+2. لماذا هذه المشكلة مستعصية وصعبة الحل؟ (why_hard_to_solve): شرح يوضح لماذا لا يحل التدريب العادي المشكلة وما هي عوائق المسار.
+3. تحليل الأسباب الجذرية (root_cause_analysis): تحليل الأسباب العميقة للخلل في مسار العمل.
+4. مبررات الاختيار وتقييم مصفوفة الأولويات (prioritization_matrix): درجات 1-5 لمخاطر سلامة المرضى، الحجم، التعقيد، التوافق الاستراتيجي مع GAHAR.
+5. بيان المشكلة (problem_statement): يربط السلبيات الميدانية بأرقام مؤشرات شيت جوجل دون اختلاق وفيات غير موثقة.
+6. خط الأساس الحقيقي (baseline_metrics): مستند إلى أرقام شيت جوجل الرسمية المذكورة أعلاه.
+7. الهدف الذكي (smart_goal): هدف كمي وزمني دقيق.
+8. المرجع العلمي (evidence_reference): معايير GAHAR وتوصيات WHO المعنية.
+9. مؤشرات الأداء (kpis): مؤشر عملية ومؤشر نتيجة (مع استخدام خط الأساس الحقيقي من شيت جوجل).
+10. خطة التدخلات (interventions): خطوات إعادة هندسة المسار وبوابات Poka-Yoke والتصعيد القيادي.
+11. السلبيات المرتبطة (linked_findings_summary): نصوص السلبيات المرصودة المتطابقة.
 
-الصيغة المطلوبة (JSON فقط - مصفوفة projects تحتوي على ${count} مشروع مستقل):
+الصيغة المطلوبة (JSON فقط - مصفوفة projects تحتوي على ${count} مشروع):
 {
   "projects": [
     {
-      "title": "عنوان محدد لمشروع يعالج مشكلة سريرية مستعصية معقدة",
+      "title": "عنوان مشروع يعالج جانباً محورياً من الأزمة الكبرى للمستشفى",
       "department_name": "القسم المعني",
       "category": "سلامة المرضى / إدارة واستخدام الدواء / مكافحة العدوى والتعقيم / الرعاية الحرجة والطوارئ / الملف الطبي والتوثيق / إدارة السلامة والمرافق (FMS)",
       "priority": "high",
-      "why_hard_to_solve": "شرح عميق يوضح لماذا هذه المشكلة معقدة ومستعصية وتتطلب إعادة هندسة مسار ولا يمكن حلها بمجرد تدريب روتيني",
-      "root_cause_analysis": "تحليل الأسباب الجذرية النظامية للخلل في مسار العمل السريري والتنسيق البيني",
+      "why_hard_to_solve": "شرح لماذا هذه المشكلة مستعصية ولا تُحل بالتدريب البسيط",
+      "root_cause_analysis": "تحليل الأسباب الجذرية النظامية للخلل في مسار العمل",
       "prioritization_matrix": {
         "patient_safety_risk": 5,
         "volume_frequency": 4,
         "process_complexity": 5,
         "strategic_alignment": 5,
         "total_score": 19,
-        "eligibility_justification": "مسار إكلينيكي معقد عالي الخطورة يتطلب إعادة هندسة مسار العمل وبوابات فحص إلزامية."
+        "eligibility_justification": "أكبر أزمة سريرية تعاني منها المستشفى مثبتة بالأدلة الرقمية لشيت مؤشرات المديرية وتقارير المرور."
       },
-      "problem_statement": "بيان المشكلة وتحليل الأداء الفعلي الخاص بها استناداً للسلبيات المرصودة دون اختلاق وفيات",
-      "baseline_metrics": "قيد القياس والتدقيق المرجعي في مرحلة التحليل الأولى للمشروع",
+      "problem_statement": "بيان المشكلة مستنداً لأرقام شيت جوجل وسلبيات المرور",
+      "baseline_metrics": "أرقام خط الأساس الحقيقية المستخرجة من شيت مؤشرات جوجل الرسمي",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
-      "evidence_reference": "الدليل الإرشادي ومعيار GAHAR المعني بالمشكلة",
+      "evidence_reference": "معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)",
       "target_duration_weeks": 12,
       "kpis": [
-        { "name": "مؤشر العملية للالتزام بالمسار", "type": "process", "baseline": "قيد القياس والتدقيق الأولي (مرحلة جمع البيانات)", "target": "95%", "frequency": "شهري" },
-        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "قيد الرصد والتدقيق المرجعي للمضاعفات", "target": "صفر مضاعفات ناتجة عن الإغفال", "frequency": "شهري" }
+        { "name": "مؤشر العملية للالتزام بالمسار", "type": "process", "baseline": "الرقم الحقيقي من شيت جوجل أو قيد التدقيق الأولي", "target": "95%", "frequency": "شهري" },
+        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "الرقم الحقيقي من شيت جوجل أو قيد الرصد المرجعي", "target": "المعيار المنشود", "frequency": "شهري" }
       ],
       "interventions": [
-        { "step": "إعادة هندسة المسار / وضع بوابة فحص إلزامية مانعة للخطأ Poka-Yoke / بروتوكول تصعيد", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "إعادة هندسة المسار / وضع بوابة فحص إلزامية Poka-Yoke / بروتوكول تصعيد", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
       ],
       "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
       "team_members": ["عضو 1", "عضو 2", "عضو 3"],
-      "linked_findings_summary": ["نص المشكلة الواحدة المحددة فقط"]
+      "linked_findings_summary": ["نص السلبية المرصودة ذات الصلة"]
     }
   ]
 }`
@@ -494,7 +597,7 @@ ${candidateProblemsText}
         priority: p.priority || 'high',
         status: 'draft',
         problem_statement: p.problem_statement || p.problem || 'بيان المشكلة قيد القياس والتدقيق',
-        baseline_metrics: p.baseline_metrics || p.baseline || 'خط الأساس قيد القياس والتحليل',
+        baseline_metrics: p.baseline_metrics || p.baseline || 'مستند إلى شيت مؤشرات الأداء الرسمي بالمديرية',
         smart_goal: p.smart_goal || p.goal || 'رفع نسبة الامتثال لحزمة التدابير الإكلينيكية إلى 95% خلال 12 أسبوعاً',
         evidence_reference: p.evidence_reference || p.evidence || 'معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)',
         target_completion_date: targetDate.toISOString().split('T')[0],
@@ -507,7 +610,7 @@ ${candidateProblemsText}
         prioritization_matrix: p.prioritization_matrix || null,
         why_hard_to_solve: p.why_hard_to_solve || '',
         root_cause_analysis: p.root_cause_analysis || '',
-        directorate_notes: 'مشروع تحسين جودة مؤسسي عميق يركز على مشكلة مستعصية صعبة الحل، ومبني على تحليل الأسباب الجذرية وإعادة هندسة المسار ومعايير GAHAR.'
+        directorate_notes: `مشروع تحسين جودة مؤسسي مستند إلى تحليل الأزمة الكبرى للمستشفى: (${primaryCrisis.domain_name}) والربط بين تقارير المرور وشيت مؤشرات المديرية.`
       }
 
       const saved = await this.saveProject(projectRecord)
