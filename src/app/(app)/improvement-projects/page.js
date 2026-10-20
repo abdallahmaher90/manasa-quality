@@ -671,6 +671,25 @@ export default function ImprovementProjectsPage() {
                   {getStatusBadge(project.status)}
                 </div>
 
+                {/* Forensic Triangulation Badge */}
+                {project.forensic_corroboration?.corroboration_level && (
+                  <div style={{
+                    background: project.forensic_corroboration.corroboration_level.includes('3') ? '#ecfdf5' : '#eff6ff',
+                    border: `1px solid ${project.forensic_corroboration.corroboration_level.includes('3') ? '#a7f3d0' : '#bfdbfe'}`,
+                    color: project.forensic_corroboration.corroboration_level.includes('3') ? '#047857' : '#1d4ed8',
+                    padding: '5px 10px',
+                    borderRadius: 6,
+                    fontSize: 11,
+                    fontWeight: 800,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}>
+                    <span>⚖️</span>
+                    <span>{project.forensic_corroboration.corroboration_level}</span>
+                  </div>
+                )}
+
                 {/* SMART Goal Snippet */}
                 {project.smart_goal && (
                   <div style={{ background: 'var(--bg-primary)', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 12 }}>
@@ -1126,6 +1145,46 @@ export default function ImprovementProjectsPage() {
                       <strong>مبرر استحقاق المشروع:</strong> {selectedProject.prioritization_matrix.eligibility_justification}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Forensic Triangulation Proof Section */}
+              {selectedProject.forensic_corroboration && (
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontWeight: 800, fontSize: 13, color: '#0f172a', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span>⚖️</span>
+                      <strong>التحقيق الجنائي الإكلينيكي ثلاثي الأركان (Triple Forensic Triangulation Proof):</strong>
+                    </div>
+                    <span style={{
+                      background: selectedProject.forensic_corroboration.corroboration_level?.includes('3') ? '#dcfce7' : '#dbeafe',
+                      color: selectedProject.forensic_corroboration.corroboration_level?.includes('3') ? '#15803d' : '#1e40af',
+                      border: `1px solid ${selectedProject.forensic_corroboration.corroboration_level?.includes('3') ? '#86efac' : '#93c5fd'}`,
+                      borderRadius: 12,
+                      padding: '2px 10px',
+                      fontSize: 11,
+                      fontWeight: 800
+                    }}>
+                      {selectedProject.forensic_corroboration.corroboration_level}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
+                    {selectedProject.forensic_corroboration.source_1_field_finding && (
+                      <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: 6, border: '1px solid #e2e8f0', lineHeight: 1.5 }}>
+                        <strong style={{ color: 'var(--primary-dark)' }}>🕵️ الشاهد الأول (المرور والتفتيش الميداني):</strong> {selectedProject.forensic_corroboration.source_1_field_finding}
+                      </div>
+                    )}
+                    {selectedProject.forensic_corroboration.source_2_sheet_kpi && (
+                      <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: 6, border: '1px solid #e2e8f0', lineHeight: 1.5 }}>
+                        <strong style={{ color: 'var(--danger-dark)' }}>📊 الشاهد الثاني (شيت مؤشرات جوجل الرقمي الرسمي):</strong> {selectedProject.forensic_corroboration.source_2_sheet_kpi}
+                      </div>
+                    )}
+                    {selectedProject.forensic_corroboration.source_3_staff_ovr && (
+                      <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: 6, border: '1px solid #e2e8f0', lineHeight: 1.5 }}>
+                        <strong style={{ color: '#b45309' }}>🚨 الشاهد الثالث (بلاغات الحوادث العارضة OVR المسجلة من الطاقم):</strong> {selectedProject.forensic_corroboration.source_3_staff_ovr}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
