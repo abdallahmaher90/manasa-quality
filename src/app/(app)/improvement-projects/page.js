@@ -1144,6 +1144,30 @@ export default function ImprovementProjectsPage() {
                 </div>
               </div>
 
+              {/* Why It Is Hard to Solve (Deep Non-Training Justification) */}
+              {selectedProject.why_hard_to_solve && (
+                <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontWeight: 800, fontSize: 13, color: '#be123c', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>⚡</span> لماذا هذه المشكلة مستعصية وصعبة الحل؟ ولماذا لا يُصلحها التدريب البسيط؟ (Why Training Alone Fails):
+                  </div>
+                  <div style={{ fontSize: 12.5, color: '#881337', lineHeight: 1.6 }}>
+                    {selectedProject.why_hard_to_solve}
+                  </div>
+                </div>
+              )}
+
+              {/* Root Cause Analysis (Deep Systemic Causes) */}
+              {selectedProject.root_cause_analysis && (
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 8, padding: 14 }}>
+                  <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--primary-dark)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>🔍</span> تحليل الأسباب الجذرية النظامية للخلل في مسار العمل (Deep Root Cause Analysis):
+                  </div>
+                  <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    {selectedProject.root_cause_analysis}
+                  </div>
+                </div>
+              )}
+
               {/* 2. Evidence-Based Standards & References */}
               <div>
                 <h4 style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', borderRight: '4px solid var(--primary)', paddingRight: 8, margin: '0 0 8px 0' }}>
