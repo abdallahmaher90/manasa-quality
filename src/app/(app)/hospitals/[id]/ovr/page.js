@@ -20,6 +20,7 @@ export default function HospitalOVRPage() {
   const router = useRouter()
   const [hospital, setHospital] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [userRole, setUserRole] = useState(null)
   const [records, setRecords] = useState([])
   const [selectedDomain, setSelectedDomain] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,10 +34,28 @@ export default function HospitalOVRPage() {
   const loadHospitalData = async () => {
     setLoading(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {}
+
+      // Check user role & strict hospital isolation
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: prof } = await supabase.from('profiles').select('role, hospital_id').eq('id', user.id).single()
+        if (prof) {
+          setUserRole(prof.role)
+          if (prof.role === 'hospital_member' && prof.hospital_id && prof.hospital_id !== id) {
+            // Strictly forbid opening other hospitals' OVR, redirect to user's assigned hospital!
+            router.replace(`/hospitals/${prof.hospital_id}/ovr`)
+            return
+          }
+        }
+      }
+
       const { data: hosp } = await supabase.from('hospitals').select('*').eq('id', id).single()
       setHospital(hosp)
 
-      const res = await fetch(`/api/ovr?hospitalId=${id}&limit=4000`)
+      const res = await fetch(`/api/ovr?hospitalId=${id}&limit=4000`, { headers: authHeaders })
       if (res.ok) {
         const data = await res.json()
         setRecords(data.records || [])
@@ -120,9 +139,11 @@ export default function HospitalOVRPage() {
           <Link href={`/hospitals/${id}`} className="btn btn-secondary btn-sm" style={{ padding: '6px 14px' }}>
             ← العودة للمستشفى
           </Link>
-          <Link href="/ovr" className="btn btn-ghost btn-sm" style={{ padding: '6px 14px' }}>
-            🌐 كل المستشفيات
-          </Link>
+          {userRole !== 'hospital_member' && (
+            <Link href="/ovr" className="btn btn-ghost btn-sm" style={{ padding: '6px 14px' }}>
+              🌐 كل المستشفيات
+            </Link>
+          )}
         </div>
       </div>
 

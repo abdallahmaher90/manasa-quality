@@ -34,29 +34,43 @@ export default function OVRPage() {
   const initData = async () => {
     setLoading(true)
     try {
-      // 1. Get current user
+      // 1. Get current user and session
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {}
+
       const { data: { user } } = await supabase.auth.getUser()
+      let currentProf = null
+      let currentHospId = 'all'
+
       if (user) {
         const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+        currentProf = prof
         setProfile(prof)
         if (prof?.role === 'hospital_member' && prof?.hospital_id) {
+          currentHospId = prof.hospital_id
           setSelectedHospitalId(prof.hospital_id)
         }
       }
 
       // 2. Fetch Hospitals
-      const { data: hospList } = await supabase.from('hospitals').select('id, name').order('name')
-      if (hospList) setHospitals(hospList)
+      if (currentProf?.role !== 'hospital_member') {
+        const { data: hospList } = await supabase.from('hospitals').select('id, name').order('name')
+        if (hospList) setHospitals(hospList)
+      } else if (currentProf?.hospital_id) {
+        const { data: myHosp } = await supabase.from('hospitals').select('id, name').eq('id', currentProf.hospital_id).single()
+        if (myHosp) setHospitals([myHosp])
+      }
 
-      // 3. Fetch OVR summary
-      const sumRes = await fetch('/api/ovr?mode=summary')
+      // 3. Fetch OVR summary with auth
+      const sumRes = await fetch('/api/ovr?mode=summary', { headers: authHeaders })
       if (sumRes.ok) {
         const sumData = await sumRes.json()
         setSummary(sumData)
       }
 
-      // 4. Fetch initial records
-      await fetchRecords('all', 'all', '')
+      // 4. Fetch initial records with auth
+      await fetchRecords(currentHospId, 'all', '', authHeaders)
     } catch (err) {
       console.error('Failed to init OVR page:', err)
     } finally {
@@ -64,15 +78,22 @@ export default function OVRPage() {
     }
   }
 
-  const fetchRecords = async (hospId, domainKey, search) => {
+  const fetchRecords = async (hospId, domainKey, search, headersOverride = null) => {
     try {
+      let headers = headersOverride
+      if (!headers) {
+        const { data: { session } } = await supabase.auth.getSession()
+        headers = session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}
+      }
+
       const params = new URLSearchParams()
-      if (hospId && hospId !== 'all') params.set('hospitalId', hospId)
+      const effectiveHospId = profile?.role === 'hospital_member' ? profile.hospital_id : hospId
+      if (effectiveHospId && effectiveHospId !== 'all') params.set('hospitalId', effectiveHospId)
       if (domainKey && domainKey !== 'all') params.set('domain', domainKey)
       if (search) params.set('search', search)
       params.set('limit', '4000') // Fetch all to filter locally fast
 
-      const res = await fetch(`/api/ovr?${params.toString()}`)
+      const res = await fetch(`/api/ovr?${params.toString()}`, { headers })
       if (res.ok) {
         const data = await res.json()
         setRecords(data.records || [])
@@ -85,6 +106,7 @@ export default function OVRPage() {
 
   // Handle hospital change
   const handleHospitalChange = (e) => {
+    if (profile?.role === 'hospital_member') return
     const newHospId = e.target.value
     setSelectedHospitalId(newHospId)
     fetchRecords(newHospId, selectedDomain, searchQuery)
@@ -121,6 +143,25 @@ export default function OVRPage() {
     } : { total: records.length, domains: {}, latest: '-' }
   }, [summary, selectedHospitalId, records])
 
+  // Dynamic top domain
+  const topDomainInfo = useMemo(() => {
+    if (!currentHospitalSummary?.domains) return { label: 'الأجهزة والمرافق', count: 0 }
+    let maxK = null
+    let maxC = -1
+    for (const [k, v] of Object.entries(currentHospitalSummary.domains)) {
+      const c = typeof v === 'object' ? (v.count || 0) : v
+      if (c > maxC) {
+        maxC = c
+        maxK = k
+      }
+    }
+    const match = DOMAIN_FILTERS.find(d => d.key === maxK)
+    return {
+      label: match ? match.label : 'عام',
+      count: maxC > 0 ? maxC : 0
+    }
+  }, [currentHospitalSummary])
+
   // Paginated records
   const totalPages = Math.ceil(records.length / pageSize)
   const paginatedRecords = useMemo(() => {
@@ -153,7 +194,10 @@ export default function OVRPage() {
               </h1>
             </div>
             <p style={{ margin: '6px 0 0 0', color: 'var(--text-muted)', fontSize: '13.5px' }}>
-              الرصد الشامل لكافة وقائع وأحداث الخطأ والاقتراب من الخطر (Near Misses) للمستشفيات الـ 18 منذ بداية العام
+              {isHospitalMember 
+                ? `سجل بلاغات الحوادث العارضة والاقتراب من الخطر (Near Misses) للمنشأة`
+                : 'الرصد الشامل لكافة وقائع وأحداث الخطأ والاقتراب من الخطر (Near Misses) للمستشفيات الـ 18 منذ بداية العام'
+              }
             </p>
           </div>
 
@@ -237,9 +281,9 @@ export default function OVRPage() {
           }}>
             <span style={{ fontSize: '24px' }}>⚙️</span>
             <div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>أعلى مجال تسجيلاً للأعطال</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>أعلى مجال تسجيلاً للبلاغات</div>
               <div style={{ fontSize: '15px', fontWeight: 800, color: '#d97706' }}>
-                الأجهزة والمرافق (910 بلاغ)
+                {topDomainInfo.label} ({topDomainInfo.count} بلاغ)
               </div>
             </div>
           </div>

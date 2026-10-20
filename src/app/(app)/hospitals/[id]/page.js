@@ -87,7 +87,9 @@ export default function HospitalPage() {
     }
 
     // Fetch OVR Count
-    fetch(`/api/ovr?hospitalId=${id}&limit=1`)
+    const { data: { session } } = await supabase.auth.getSession()
+    const authHeaders = session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}
+    fetch(`/api/ovr?hospitalId=${id}&limit=1`, { headers: authHeaders })
       .then(r => r.json())
       .then(d => { if (typeof d?.total === 'number') setOvrCount(d.total) })
       .catch(() => {})
