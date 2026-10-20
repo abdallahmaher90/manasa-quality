@@ -37,6 +37,7 @@ export default function HospitalPage() {
   const [criticalFindings, setCriticalFindings] = useState([])
   
   const [totalRecurringKPI, setTotalRecurringKPI] = useState(0)
+  const [ovrCount, setOvrCount] = useState(0)
 
   // Team Management State
   const [showEditTeamModal, setShowEditTeamModal] = useState(false)
@@ -84,6 +85,12 @@ export default function HospitalPage() {
       const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
       if (profile) setUserRole(profile.role)
     }
+
+    // Fetch OVR Count
+    fetch(`/api/ovr?hospitalId=${id}&limit=1`)
+      .then(r => r.json())
+      .then(d => { if (typeof d?.total === 'number') setOvrCount(d.total) })
+      .catch(() => {})
 
     if (deptRes.data && allFindingsRes.data) {
       const allFindings = allFindingsRes.data
@@ -305,6 +312,13 @@ export default function HospitalPage() {
               ✨ مشاريع التحسين
             </Link>
           )}
+          <Link 
+            href={`/hospitals/${id}/ovr`} 
+            className="btn btn-sm" 
+            style={{ padding: '6px 12px', fontSize: 12, backgroundColor: '#dc2626', color: 'white' }}
+          >
+            🚨 بلاغات الـ OVR {ovrCount > 0 ? `(${ovrCount})` : ''}
+          </Link>
           <Link href={`/hospitals/${id}/visit-report`} className="btn btn-secondary btn-sm" style={{ padding: '6px 12px', fontSize: 12 }}>
             📝 تقرير مرور
           </Link>
@@ -661,6 +675,10 @@ export default function HospitalPage() {
               : 0}%
           </div>
           <div className="stat-label">معدل الإنجاز</div>
+        </Link>
+        <Link href={`/hospitals/${id}/ovr`} className="stat-card danger kpi-clickable" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', cursor: 'pointer', borderRight: '4px solid #dc2626' }}>
+          <div className="stat-value" style={{ color: '#dc2626' }}>{ovrCount}</div>
+          <div className="stat-label">بلاغات OVR</div>
         </Link>
       </div>
 

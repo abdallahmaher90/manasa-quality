@@ -17,6 +17,7 @@ const pageTitles = {
   '/cross-report': 'تقرير مقارن',
   '/statistics': 'الإحصائيات',
   '/improvement-projects': 'مشاريع التحسين (QIPs)',
+  '/ovr': 'بلاغات الحوادث العارضة (OVR)',
 }
 
 export default function AppLayout({ children }) {
@@ -55,7 +56,7 @@ export default function AppLayout({ children }) {
     if (!profile) return
     if (profile.role === 'hospital_member') {
       const allowedPath = `/hospitals/${profile.hospital_id}`
-      if (!pathname.startsWith(allowedPath) && !pathname.startsWith('/archive')) {
+      if (!pathname.startsWith(allowedPath) && !pathname.startsWith('/archive') && !pathname.startsWith('/ovr')) {
         router.push(allowedPath)
       }
     }

@@ -1,6 +1,7 @@
 import { createServiceClient } from '../lib/supabase.js'
 import { fetchGoogleSheetData } from '../lib/google-sheets.js'
 import { findMatchingSheetHospital } from '../lib/hospital-matcher.js'
+import { ovrService } from './ovr.service.js'
 import crypto from 'crypto'
 
 let hasTableCache = null
@@ -300,7 +301,7 @@ export class ImprovementProjectsService {
     const eligibleFindings = (findings || []).filter(f => !isNonQipTask(f.original_text))
 
     // 3. Fetch Google Sheet KPIs
-    const { matchedName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
+    const { matchedName: matchedSheetName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
 
     // Domain definitions
     const domainMeta = {
@@ -342,10 +343,12 @@ export class ImprovementProjectsService {
         ...meta,
         findings: [],
         kpis: [],
+        ovrRecords: [],
         criticalKpiCount: 0,
         riskKpiCount: 0,
         recurringFindingCount: 0,
         highPriorityFindingCount: 0,
+        ovrCount: 0,
         totalScore: 0
       }
     }
@@ -382,8 +385,38 @@ export class ImprovementProjectsService {
       target.totalScore += (isRec ? 8 : 3) + (isHigh ? 6 : 2)
     })
 
-    // Apply clinical multiplier
+    // 4. Fetch Hospital OVR Incidents (The 3rd Forensic Pillar)
+    const ovrRecords = await ovrService.getHospitalOVR(hospitalId)
+    ovrRecords.forEach(ovr => {
+      let domainKey = 'PATIENT_SAFETY_GOVERNANCE'
+      if (ovr.domain_key === 'facility_equipment') domainKey = 'FACILITY_BIOMEDICAL_SAFETY'
+      else if (ovr.domain_key === 'medical_records') domainKey = 'MEDICAL_RECORDS'
+      else if (ovr.domain_key === 'infection_control') domainKey = 'INFECTION_PREVENTION'
+      else if (ovr.domain_key === 'medication_safety') domainKey = 'MEDICATION_MANAGEMENT'
+      else if (ovr.domain_key === 'critical_care') domainKey = 'CRITICAL_EMERGENCY_CARE'
+      else if (ovr.domain_key === 'patient_safety') domainKey = 'PATIENT_SAFETY_GOVERNANCE'
+      else domainKey = this.classifyDomain(`${ovr.subcategory} ${ovr.description}`)
+
+      const target = domainBuckets[domainKey] || domainBuckets.PATIENT_SAFETY_GOVERNANCE
+      target.ovrRecords.push(ovr)
+      target.ovrCount++
+      target.totalScore += 5
+    })
+
+    // Forensic Triangulation: If a domain has all 3 proofs (Findings + KPIs + OVR Incidents)
     for (const d of Object.values(domainBuckets)) {
+      const hasFindings = d.findings.length > 0
+      const hasKpiWarning = d.criticalKpiCount > 0 || d.riskKpiCount > 0
+      const hasOvr = d.ovrCount > 0
+
+      // Triple Forensic Corroboration bonus
+      if (hasFindings && hasKpiWarning && hasOvr) {
+        d.isTripleCorroborated = true
+        d.totalScore = Math.round(d.totalScore * 1.6)
+      } else if ((hasFindings && hasKpiWarning) || (hasFindings && hasOvr) || (hasKpiWarning && hasOvr)) {
+        d.totalScore = Math.round(d.totalScore * 1.3)
+      }
+
       d.totalScore = Math.round(d.totalScore * d.clinicalRiskFactor)
     }
 
@@ -402,6 +435,10 @@ export class ImprovementProjectsService {
       .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (تكرر ${f.repeat_count || 1} مرات)`)
       .slice(0, 5)
 
+    const topOvrSummary = (primaryCrisis.ovrRecords || [])
+      .slice(0, 5)
+      .map(o => `• [${o.date} - ${o.subcategory}]: ${o.description.length > 120 ? o.description.slice(0, 120) + '...' : o.description}`)
+
     return {
       hospital: {
         id: hospital.id,
@@ -413,7 +450,8 @@ export class ImprovementProjectsService {
         totalFindings: findings?.length || 0,
         eligibleFindings: eligibleFindings.length,
         totalSheetKpis: sheetKpis.length,
-        criticalSheetKpis: sheetKpis.filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk').length
+        criticalSheetKpis: sheetKpis.filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk').length,
+        totalOvrRecords: ovrRecords.length
       },
       primary_crisis: {
         domain_id: primaryCrisis.id,
@@ -421,8 +459,11 @@ export class ImprovementProjectsService {
         crisis_score: primaryCrisis.totalScore,
         critical_kpis_count: primaryCrisis.criticalKpiCount,
         recurring_findings_count: primaryCrisis.recurringFindingCount,
+        ovr_incidents_count: primaryCrisis.ovrCount,
+        is_triple_corroborated: !!primaryCrisis.isTripleCorroborated,
         critical_kpis_evidence: criticalKpisSummary,
-        correlating_findings_evidence: topFindingsSummary
+        correlating_findings_evidence: topFindingsSummary,
+        ovr_incidents_evidence: topOvrSummary
       },
       all_domains_ranked: sortedDomains.map(d => ({
         domain_id: d.id,
@@ -430,6 +471,7 @@ export class ImprovementProjectsService {
         score: d.totalScore,
         findings_count: d.findings.length,
         kpis_count: d.kpis.length,
+        ovr_count: d.ovrCount,
         critical_kpis_count: d.criticalKpiCount,
         recurring_findings_count: d.recurringFindingCount
       }))
@@ -454,9 +496,16 @@ export class ImprovementProjectsService {
       ? primaryCrisis.correlating_findings_evidence.join('\n')
       : 'لا توجد سلبيات متكررة مسجلة بالمرور لهذا المسار.'
 
-    // AI Prompt - Strictly Evidence-Based on Real Google Sheet KPIs & Field Findings
+    const ovrEvidenceText = primaryCrisis.ovr_incidents_evidence && primaryCrisis.ovr_incidents_evidence.length > 0
+      ? primaryCrisis.ovr_incidents_evidence.join('\n')
+      : 'لا توجد بلاغات أحداث عارضة (OVR) مسجلة لهذا المسار.'
+
+    // AI Prompt - Strictly Evidence-Based on Real Google Sheet KPIs & Field Findings & OVR Incidents
     const systemPrompt = `أنت استشاري أول وخبير توكيد جودة واعتماد مستشفيات ومراجع معتمد (GAHAR Senior Quality Surveyor & Fellow of IHI).
-مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي (Quality Improvement Project - QIP) لمعالجة «أكبر أزمة نظامية تعاني منها المستشفى» والتي تم استخراجها عبر التقاطع المباشر بين تقارير المرور الميدانية وشيت مؤشرات الأداء الرسمي بالمديرية.
+مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي (Quality Improvement Project - QIP) لمعالجة «أكبر أزمة نظامية تعاني منها المستشفى» والتي تم استخراجها كـ «مشتبه فيه رئيسي» عبر التحقيق الجنائي الإكلينيكي ثلاثي الأركان (Triple Forensic Triangulation):
+1. الشاهد الأول: السلبيات الميدانية لتقارير المرور التفتيشي.
+2. الشاهد الثاني: مؤشرات الأداء الحسابية الرسمية من شيت جوجل.
+3. الشاهد الثالث: بلاغات الحوادث العارضة (OVR) المسجلة فعلياً من طاقم المستشفى.
 
 قواعد الهندسة السريرية لمشاريع التحسين (Strict Clinical Architecture Rules):
 1. قاعدة المشكلة الكبرى الأولى الحصرية (Single Core Primary Crisis Focus):
@@ -494,6 +543,9 @@ ${kpiEvidenceText}
 
 أدلة تقارير المرور والسلبيات الميدانية المتكررة (Inspection Findings Evidence):
 ${findingsEvidenceText}
+
+أدلة بلاغات الحوادث العارضة والوقائع الفعلية (Staff OVR Incidents Evidence):
+${ovrEvidenceText}
 
 المطلوب:
 صِغ بالضبط عدد (${count}) مقترحات مشاريع تحسين مؤسسية جادة لمعالجة هذه الأزمة الكبرى (مشروع مستقل لمعالجة كل جانب محوري في هذه الأزمة).

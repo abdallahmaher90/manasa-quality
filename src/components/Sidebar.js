@@ -20,6 +20,7 @@ const navItems = [
       { href: '/report-assistant', icon: <ClipboardIcon className="w-5 h-5" />, label: 'مساعد كتابة التقارير (فني الإحصاء)', roles: ['directorate_admin', 'directorate_member'] },
       { href: '/upload', icon: <UploadIcon className="w-5 h-5" />, label: 'رفع تقرير جديد', roles: ['directorate_admin', 'directorate_member'] },
       { href: '/archive', icon: <ArchiveIcon className="w-5 h-5" />, label: 'أرشيف التقارير' },
+      { href: '/ovr', icon: <ExclamationCircleIcon className="w-5 h-5" />, label: 'بلاغات الحوادث العارضة (OVR)' },
     ]
   },
   {

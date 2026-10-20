@@ -1,0 +1,323 @@
+{
+  "total_records": 3532,
+  "date_min": "2026-01-01",
+  "date_max": "2026-10-20",
+  "hospitals_count": 18,
+  "by_hospital": {
+    "70e29487-f756-4cc6-8279-d4b35315a7ca": {
+      "hospital_id": "70e29487-f756-4cc6-8279-d4b35315a7ca",
+      "hospital_name": "مستشفى سيدي سالم المركزي",
+      "count": 81,
+      "latest_incident_date": "2026-10-11",
+      "domains": {
+        "facility_equipment": 60,
+        "critical_care": 3,
+        "infection_control": 1,
+        "clinical_operations": 10,
+        "patient_safety": 3,
+        "medical_records": 4
+      }
+    },
+    "32173e7d-7b00-4347-bbc8-3ad5527c2567": {
+      "hospital_id": "32173e7d-7b00-4347-bbc8-3ad5527c2567",
+      "hospital_name": "مستشفي فيصل سعود الفليج",
+      "count": 727,
+      "latest_incident_date": "2026-10-17",
+      "domains": {
+        "facility_equipment": 233,
+        "medication_safety": 24,
+        "clinical_operations": 276,
+        "critical_care": 163,
+        "patient_safety": 11,
+        "infection_control": 18,
+        "medical_records": 2
+      }
+    },
+    "fc2a6ff8-034e-4997-9805-6beda1759a06": {
+      "hospital_id": "fc2a6ff8-034e-4997-9805-6beda1759a06",
+      "hospital_name": "مستشفى جلدية وجذام كفرالشيخ",
+      "count": 348,
+      "latest_incident_date": "2026-10-15",
+      "domains": {
+        "facility_equipment": 16,
+        "medical_records": 112,
+        "clinical_operations": 58,
+        "infection_control": 141,
+        "medication_safety": 5,
+        "patient_safety": 16
+      }
+    },
+    "da69dd94-fc38-48c0-96f3-d8e025565b22": {
+      "hospital_id": "da69dd94-fc38-48c0-96f3-d8e025565b22",
+      "hospital_name": "مستشفى الرمد الرئيسي",
+      "count": 108,
+      "latest_incident_date": "2026-10-17",
+      "domains": {
+        "facility_equipment": 40,
+        "medical_records": 52,
+        "patient_safety": 4,
+        "clinical_operations": 11,
+        "critical_care": 1
+      }
+    },
+    "17bd7aef-66a3-49b7-837c-1f254f0b8cad": {
+      "hospital_id": "17bd7aef-66a3-49b7-837c-1f254f0b8cad",
+      "hospital_name": "مستشفى سيدى غازى",
+      "count": 133,
+      "latest_incident_date": "2026-10-13",
+      "domains": {
+        "medication_safety": 18,
+        "critical_care": 56,
+        "clinical_operations": 32,
+        "medical_records": 5,
+        "facility_equipment": 6,
+        "patient_safety": 13,
+        "infection_control": 3
+      }
+    },
+    "d257505e-92be-43a7-8971-06b83da4f02d": {
+      "hospital_id": "d257505e-92be-43a7-8971-06b83da4f02d",
+      "hospital_name": "مستشفي بيلا المركزي",
+      "count": 164,
+      "latest_incident_date": "2026-10-19",
+      "domains": {
+        "critical_care": 13,
+        "facility_equipment": 38,
+        "clinical_operations": 54,
+        "medical_records": 16,
+        "infection_control": 19,
+        "medication_safety": 6,
+        "patient_safety": 18
+      }
+    },
+    "3b1603e2-585a-49cb-9ab0-717e11798b2c": {
+      "hospital_id": "3b1603e2-585a-49cb-9ab0-717e11798b2c",
+      "hospital_name": "مستشفى حميات دسوق",
+      "count": 76,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "medical_records": 18,
+        "patient_safety": 7,
+        "critical_care": 7,
+        "facility_equipment": 18,
+        "clinical_operations": 17,
+        "medication_safety": 8,
+        "infection_control": 1
+      }
+    },
+    "e1552e09-40d6-4af9-bc80-53ee3f6e01fe": {
+      "hospital_id": "e1552e09-40d6-4af9-bc80-53ee3f6e01fe",
+      "hospital_name": "مستشفى حميات مطوبس",
+      "count": 81,
+      "latest_incident_date": "2026-10-12",
+      "domains": {
+        "patient_safety": 18,
+        "infection_control": 1,
+        "medication_safety": 19,
+        "clinical_operations": 35,
+        "facility_equipment": 4,
+        "critical_care": 4
+      }
+    },
+    "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0": {
+      "hospital_id": "8ffc9f5a-fb9a-4f6b-b0af-ad3ed2d669c0",
+      "hospital_name": "مستشفى كفر الشيخ العام",
+      "count": 222,
+      "latest_incident_date": "2026-10-03",
+      "domains": {
+        "clinical_operations": 22,
+        "facility_equipment": 24,
+        "patient_safety": 15,
+        "medical_records": 124,
+        "medication_safety": 21,
+        "critical_care": 6,
+        "infection_control": 10
+      }
+    },
+    "a97254e2-a9b9-41f6-a313-1e29f1c82379": {
+      "hospital_id": "a97254e2-a9b9-41f6-a313-1e29f1c82379",
+      "hospital_name": "مستشفى دسوق العام",
+      "count": 267,
+      "latest_incident_date": "2026-10-05",
+      "domains": {
+        "medical_records": 90,
+        "medication_safety": 13,
+        "facility_equipment": 85,
+        "infection_control": 28,
+        "patient_safety": 29,
+        "clinical_operations": 21,
+        "critical_care": 1
+      }
+    },
+    "2c66b0e7-7e9a-47b2-a896-dab13201543a": {
+      "hospital_id": "2c66b0e7-7e9a-47b2-a896-dab13201543a",
+      "hospital_name": "مستشفي الحامول المركزي",
+      "count": 127,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "facility_equipment": 30,
+        "patient_safety": 25,
+        "medication_safety": 11,
+        "infection_control": 6,
+        "clinical_operations": 40,
+        "critical_care": 13,
+        "medical_records": 2
+      }
+    },
+    "8306c6ed-d448-4ec5-ab99-1990df09f4eb": {
+      "hospital_id": "8306c6ed-d448-4ec5-ab99-1990df09f4eb",
+      "hospital_name": "مستشفى الرياض المركزي",
+      "count": 265,
+      "latest_incident_date": "2026-10-20",
+      "domains": {
+        "clinical_operations": 78,
+        "facility_equipment": 66,
+        "medication_safety": 24,
+        "infection_control": 40,
+        "critical_care": 25,
+        "medical_records": 24,
+        "patient_safety": 8
+      }
+    },
+    "d5d501f4-4e40-463f-accd-780080857644": {
+      "hospital_id": "d5d501f4-4e40-463f-accd-780080857644",
+      "hospital_name": "مستشفى برج البرلس المركزى",
+      "count": 101,
+      "latest_incident_date": "2026-09-28",
+      "domains": {
+        "patient_safety": 22,
+        "medication_safety": 15,
+        "medical_records": 17,
+        "facility_equipment": 19,
+        "clinical_operations": 18,
+        "infection_control": 7,
+        "critical_care": 3
+      }
+    },
+    "36157c87-d5b6-433b-a2bf-c8322308a100": {
+      "hospital_id": "36157c87-d5b6-433b-a2bf-c8322308a100",
+      "hospital_name": "مستشفى صدر كفرالشيخ",
+      "count": 149,
+      "latest_incident_date": "2026-10-17",
+      "domains": {
+        "facility_equipment": 54,
+        "patient_safety": 18,
+        "medical_records": 26,
+        "clinical_operations": 17,
+        "medication_safety": 20,
+        "infection_control": 11,
+        "critical_care": 3
+      }
+    },
+    "ee4dc1f4-1602-482e-a235-554dc72c4e67": {
+      "hospital_id": "ee4dc1f4-1602-482e-a235-554dc72c4e67",
+      "hospital_name": "مستشفى فوه المركزي",
+      "count": 235,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "clinical_operations": 24,
+        "medical_records": 80,
+        "infection_control": 41,
+        "patient_safety": 7,
+        "medication_safety": 22,
+        "facility_equipment": 58,
+        "critical_care": 3
+      }
+    },
+    "71ef0e31-e170-4806-9b0d-fe370acb479b": {
+      "hospital_id": "71ef0e31-e170-4806-9b0d-fe370acb479b",
+      "hospital_name": "مستشفى حميات كفر الشيخ",
+      "count": 255,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "medical_records": 117,
+        "patient_safety": 59,
+        "facility_equipment": 8,
+        "medication_safety": 12,
+        "infection_control": 14,
+        "clinical_operations": 43,
+        "critical_care": 2
+      }
+    },
+    "3183df43-a0e2-46ad-be8b-4c14a5b9aba7": {
+      "hospital_id": "3183df43-a0e2-46ad-be8b-4c14a5b9aba7",
+      "hospital_name": "مستشفى مطوبس المركزى",
+      "count": 133,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "medical_records": 7,
+        "facility_equipment": 40,
+        "patient_safety": 7,
+        "medication_safety": 2,
+        "clinical_operations": 5,
+        "critical_care": 67,
+        "infection_control": 5
+      }
+    },
+    "982945ef-7f38-4497-93d7-aeaade37cfaf": {
+      "hospital_id": "982945ef-7f38-4497-93d7-aeaade37cfaf",
+      "hospital_name": "مستشفى حميات بيلا",
+      "count": 60,
+      "latest_incident_date": "2026-10-18",
+      "domains": {
+        "patient_safety": 3,
+        "facility_equipment": 42,
+        "medication_safety": 4,
+        "clinical_operations": 2,
+        "medical_records": 6,
+        "infection_control": 3
+      }
+    }
+  },
+  "by_domain": {
+    "facility_equipment": {
+      "key": "facility_equipment",
+      "label": "سلامة وصيانة الأجهزة والمرافق",
+      "icon": "⚙️",
+      "color": "#d97706",
+      "count": 841
+    },
+    "medical_records": {
+      "key": "medical_records",
+      "label": "السجلات الطبية ونماذج التوثيق",
+      "icon": "📁",
+      "color": "#2563eb",
+      "count": 702
+    },
+    "infection_control": {
+      "key": "infection_control",
+      "label": "مكافحة العدوى والتعقيم والبيئة",
+      "icon": "🦠",
+      "color": "#059669",
+      "count": 349
+    },
+    "patient_safety": {
+      "key": "patient_safety",
+      "label": "سلامة وأمان المرضى",
+      "icon": "🛡️",
+      "color": "#dc2626",
+      "count": 283
+    },
+    "medication_safety": {
+      "key": "medication_safety",
+      "label": "سلامة وإدارة الأدوية",
+      "icon": "💊",
+      "color": "#7c3aed",
+      "count": 224
+    },
+    "critical_care": {
+      "key": "critical_care",
+      "label": "النتائج الحرجة والرعاية العاجلة",
+      "icon": "🚨",
+      "color": "#e11d48",
+      "count": 370
+    },
+    "clinical_operations": {
+      "key": "clinical_operations",
+      "label": "كفاءة العمل والالتزام بالبروتوكولات",
+      "icon": "📋",
+      "color": "#475569",
+      "count": 763
+    }
+  }
+}
