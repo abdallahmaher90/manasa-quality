@@ -4,6 +4,14 @@ import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
+// Server-side in-memory cache for recurring findings to avoid full DB scans on every page hit
+const analyticsCache = new Map()
+const CACHE_TTL_MS = 60 * 1000 // 60 seconds
+
+export function clearRecurringAnalyticsCache() {
+  analyticsCache.clear()
+}
+
 export async function GET(request) {
   try {
     let token = request.headers.get('authorization')?.replace('Bearer ', '')
@@ -16,6 +24,19 @@ export async function GET(request) {
     const supabaseAdmin = createServiceClient()
     const { data: profile } = await supabaseAdmin.from('profiles').select('role, hospital_id').eq('id', user.id).single()
     const isDirectorate = profile?.role === 'directorate_admin' || profile?.role === 'directorate_member'
+
+    // Check in-memory cache
+    const cacheKey = isDirectorate ? 'directorate' : `hosp_${profile?.hospital_id}`
+    const now = Date.now()
+    if (analyticsCache.has(cacheKey)) {
+      const cached = analyticsCache.get(cacheKey)
+      if (now - cached.timestamp < CACHE_TTL_MS) {
+        return NextResponse.json({
+          success: true,
+          data: cached.data
+        })
+      }
+    }
 
     // Fetch all findings with scoping
     let allFindings = []
@@ -211,14 +232,16 @@ export async function GET(request) {
     }
 
     finalRecurring.sort(sorter)
-    finalCommon.sort(sorter)
+    const payload = {
+      recurringInSameHospital: finalRecurring,
+      commonAcrossHospitals: finalCommon
+    }
+
+    analyticsCache.set(cacheKey, { timestamp: Date.now(), data: payload })
 
     return NextResponse.json({
       success: true,
-      data: {
-        recurringInSameHospital: finalRecurring,
-        commonAcrossHospitals: finalCommon
-      }
+      data: payload
     })
 
   } catch (error) {

@@ -1,6 +1,20 @@
 import { supabase } from '@/lib/supabase'
 
-export async function fetchAllHospitalFindings() {
+let cachedFindings = null
+let cacheTimestamp = 0
+const CACHE_TTL_MS = 2 * 60 * 1000 // 2 minutes
+
+export function invalidateHospitalFindingsCache() {
+  cachedFindings = null
+  cacheTimestamp = 0
+}
+
+export async function fetchAllHospitalFindings(forceRefresh = false) {
+  const now = Date.now()
+  if (!forceRefresh && cachedFindings && (now - cacheTimestamp < CACHE_TTL_MS)) {
+    return cachedFindings
+  }
+
   let allFindings = []
   let from = 0
   const limit = 1000
@@ -27,6 +41,8 @@ export async function fetchAllHospitalFindings() {
     }
   }
 
+  cachedFindings = allFindings
+  cacheTimestamp = now
   return allFindings
 }
 

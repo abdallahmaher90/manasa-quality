@@ -149,7 +149,10 @@ export default function HospitalPage() {
       if (reportsRes.data) setRecentReports(reportsRes.data)
       if (criticalFindingsRes.data) setCriticalFindings(criticalFindingsRes.data)
       
-      // Fetch KPI Data
+      // Stop page loading spinner immediately so the hospital UI is interactive
+      setLoading(false)
+
+      // Fetch KPI Data asynchronously in the background (uses cache if available)
       try {
         const { data: settingData } = await supabase.from('settings').select('value').eq('key', 'google_sheet_url').single()
         if (settingData?.value) {
@@ -159,8 +162,9 @@ export default function HospitalPage() {
       } catch (err) {
         console.error('Error fetching settings or KPIs', err)
       }
+    } else {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handlePrint = () => {
