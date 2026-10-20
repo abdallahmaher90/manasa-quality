@@ -347,222 +347,168 @@ export class ImprovementProjectsService {
       .select('id, department_id, original_text, priority, status, repeat_count, departments(name)')
       .eq('hospital_id', hospitalId)
 
-    // Filter out trivial maintenance, minor handyman, and routine administrative noise
-    const isNonQipTask = (text) => {
-      const lower = (text || '').toLowerCase()
-      const trivial = [
-        'جرس استدعاء', 'جرس التمريض', 'ترمومتر', 'لمبة', 'بوابة', 'كالون', 'صنبور', 'سباكة',
-        'كرسي', 'مفتاح كهرباء', 'دهان', 'تربيزة', 'بلاط', 'أرضيات', 'حشائش', 'بلاعة',
-        'شفاط', 'مضخه', 'دولاب', 'أرفف', 'توفير كراسي', 'توفير غرفه ارشيف', 'توفير مستلزمات غسيل',
-        'بوستر', 'بوسترات', 'race', 'pass', 'كارت فحص', 'كروت التعريف', 'طفايه الحريق',
-        'دون قفازات', 'بدون قفازات', 'ارتداء قفازات', 'كمامة', 'مريلة', 'جاون',
-        'توقيع الاطباء في بعض النماذج احادي', 'توقيع الصيدلى على الادويه في بعض الملفات',
+    // Enhanced Clinical Noise Filter: Ban and eliminate janitorial, minor housekeeping, petty supplies/kits, and routine administrative formalities
+    const isTrivialNoise = (text) => {
+      if (!text) return false
+      const lower = text.toLowerCase()
+      const noisePatterns = [
+        'جرس استدعاء', 'جرس التمريض', 'ترمومتر', 'لمبة', 'لمبه', 'بوابة', 'بوابه', 'كالون', 'صنبور', 'سباكة', 'سباكه',
+        'كرسي', 'مفتاح كهرباء', 'دهان', 'تربيزة', 'بلاط', 'أرضيات', 'ارضيات', 'حشائش', 'بلاعة', 'بلاعه',
+        'شفاط', 'مضخه', 'دولاب غير مطابق', 'أرفف غير مطابقة', 'ارفف غير مطابقه', 'ارفف غير مطابقة', 'توفير كراسي', 'توفير غرفه ارشيف', 'توفير مستلزمات غسيل',
+        'بوستر', 'بوسترات', 'race & pass', 'race &pass', 'race&pass', 'كارت فحص', 'كروت التعريف على الثلاجات', 'طفايه الحريق', 'طفاية الحريق', 'طفايات الحريق',
+        'دون قفازات', 'بدون قفازات', 'ارتداء قفازات', 'كمامة', 'كمامه', 'مريلة', 'مريله', 'جاون',
+        'توقيع الاطباء في بعض النماذج احادي', 'توقيع الصيدلى على الادويه في بعض الملفات', 'توقيع ثنائي للأطباء',
         'شطب وكشط', 'غير مرقمة', 'اعتماد دفتر', 'سجل المشورة', 'كتابه عليه التوقيع',
-        'سجل مكتوب يدوى', 'احواض غير معرفه', 'لا يوجد رقم خاص بمسؤل الشكاوي', 'المخزن غير منظم',
-        'نظافة', 'سلة مهملات', 'ملفات العاملين', 'توصيف وظيفي', 'توصيف وظيفى', 'شهادات تدريب',
-        'السياسات غير محدثه', 'السياسات غير معتمده', 'تحديث السياسات', 'لوحه المفاتيح',
-        'قائمه باسماء', 'قائمة بأسماء'
+        'سجل الارشيف', 'سجل مكتوب يدوى', 'سجل مكتوب يدوي', 'احواض غير معرفه', 'احواض غير معرفة',
+        'لا يوجد رقم خاص بمسؤل الشكاوي', 'المخزن غير منظم', 'الصيدلية غير منظمة', 'الصيدليه غير منظمه',
+        'غير نظيفة', 'غير نظيفه', 'سلة مهملات', 'سلات مهملات', 'سله مهملات', 'اكياس نفايات',
+        'ملفات العاملين', 'توصيف وظيفي', 'توصيف وظيفى', 'شهادات تدريب',
+        'السياسات غير محدثه', 'السياسات غير محدثة', 'السياسات غير معتمده', 'السياسات غير معتمدة', 'تحديث السياسات', 'لوحه المفاتيح',
+        'قائمه باسماء', 'قائمة بأسماء', 'qr code', 'شباتر', 'حقيبة الانسكاب', 'حقيبه الانسكاب', 'حقيبة انسكاب', 'حقيبه انسكاب',
+        'انسكابات', 'انسكاب', 'كيت انسكاب', 'ماسة المواد الكيميائية', 'ماسه المواد الكيميائيه',
+        'مقياس الكلور', 'غاسلة اعين', 'غاسله اعين', 'تلاجة الموتى', 'تلاجه الموتي', 'مفروشات النظيفه', 'المغسلة', 'المطبخ',
+        'وجبات بدون تعريف', 'كروت صيانه وتعريف على الثلاجات', 'كراتين على الارض', 'كاراتين على الارض',
+        'لوحه بالخدمات', 'لوحات حقوق وواجبات', 'لوحة حقوق وواجبات', 'حنفية بحوض', 'تسريب بالحنفية', 'تسريب ف الحنفية'
       ]
-      return trivial.some(t => lower.includes(t))
+      return noisePatterns.some(t => lower.includes(t))
     }
 
-    const eligibleFindings = (findings || []).filter(f => !isNonQipTask(f.original_text))
+    const eligibleFindings = (findings || []).filter(f => !isTrivialNoise(f.original_text))
 
     // 3. Fetch Google Sheet KPIs
     const { matchedName: matchedSheetName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
 
-    // Domain definitions with GAHAR clinical risk weights
-    const domainMeta = {
-      PATIENT_SAFETY_GOVERNANCE: {
-        id: 'PATIENT_SAFETY_GOVERNANCE',
-        name: 'الأهداف الوطنية لسلامة المرضى (National Patient Safety Goals - NPSGs)',
-        clinicalRiskFactor: 1.45
+    // 4. Fetch Hospital OVR Incidents (Filtered for Clinical Depth)
+    const rawOvrRecords = await ovrService.getHospitalOVR(hospitalId)
+    const eligibleOvrRecords = (rawOvrRecords || []).filter(o => !isTrivialNoise(o.description) && !isTrivialNoise(o.subcategory))
+
+    // 5. Deep Clinical Crisis Tracks (GAHAR / JCI Patient Safety & Clinical Governance)
+    const CLINICAL_CRISIS_TRACKS = [
+      {
+        id: 'VERBAL_ORDERS_HANDOVER',
+        name: 'الأوامر الشفهية والهاتفية والتسليم والتسلم الحرج (NPSG: Verbal Orders & Handover)',
+        category: 'سلامة المرضى (NPSG)',
+        clinicalWeight: 2.5,
+        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية') || (k.Indicator || '').includes('تسليم وتسلم'),
+        findingMatch: f => (f.original_text || '').includes('شفه') || (f.original_text || '').includes('هاتف') || (f.original_text || '').includes('تسليم وتسلم') || (f.original_text || '').includes('isbar'),
+        ovrMatch: o => (o.description || '').includes('isbar') || (o.description || '').includes('تسليم وتسلم') || (o.description || '').includes('شفه') || (o.subcategory || '').includes('handover') || (o.subcategory || '').includes('Compliance with handover')
       },
-      MEDICATION_MANAGEMENT: {
-        id: 'MEDICATION_MANAGEMENT',
-        name: 'إدارة ومأمونية الدواء والصيدلة السريرية (Medication Safety & Pharmacy)',
-        clinicalRiskFactor: 1.4
+      {
+        id: 'PATIENT_IDENTIFICATION',
+        name: 'التحقق من هوية المريض ومطابقة الأساور ونقل الدم (NPSG: Patient Identification)',
+        category: 'سلامة المرضى (NPSG)',
+        clinicalWeight: 2.5,
+        kpiMatch: k => (k.Indicator || '').includes('التعريف الصحيح للمريض') || (k.Indicator || '').includes('الأخطاء في عناصر الرعاية المرتبطة بالتعريف'),
+        findingMatch: f => (f.original_text || '').includes('تعريف المريض') || (f.original_text || '').includes('اسورة') || (f.original_text || '').includes('اسطورة') || (f.original_text || '').includes('اساور') || (f.original_text || '').includes('كانولا غير معرف'),
+        ovrMatch: o => (o.subcategory || '').includes('Patient identification') || (o.description || '').includes('اسطوره') || (o.description || '').includes('اسورة') || (o.description || '').includes('اساور') || (o.description || '').includes('تعريف المريض') || (o.description || '').includes('نقل الدم')
       },
-      CRITICAL_EMERGENCY_CARE: {
-        id: 'CRITICAL_EMERGENCY_CARE',
-        name: 'الرعاية الحرجة وفرز الطوارئ والإنقاذ (Critical Care & Emergency Triage)',
-        clinicalRiskFactor: 1.4
+      {
+        id: 'CLINICAL_DETERIORATION_ALARMS',
+        name: 'الاستجابة للتدهور السريري والإنذارات الحرجة وجاهزية الإنعاش (Rapid Response & Resuscitation)',
+        category: 'الرعاية الحرجة والطوارئ',
+        clinicalWeight: 2.4,
+        kpiMatch: k => (k.Indicator || '').includes('التدهور الإكلينيكي') || (k.Indicator || '').includes('الإنذارات الحرجة') || (k.Indicator || '').includes('وفيات العناية'),
+        findingMatch: f => (f.original_text || '').includes('تدهور') || (f.original_text || '').includes('الإنذارات') || (f.original_text || '').includes('الانذارات') || (f.original_text || '').includes('كود بلو') || (f.original_text || '').includes('cpr') || (f.original_text || '').includes('جهاز dc'),
+        ovrMatch: o => (o.description || '').includes('تنفس صناعي') || (o.description || '').includes('ريسفنت') || (o.description || '').includes('تدهور') || (o.description || '').includes('انعاش') || (o.description || '').includes('cpr')
       },
-      INFECTION_PREVENTION: {
-        id: 'INFECTION_PREVENTION',
-        name: 'مكافحة العدوى والتعقيم والعزل الطبي (Infection Prevention & Isolation)',
-        clinicalRiskFactor: 1.35
+      {
+        id: 'MEDICATION_SAFETY_LASA_HIGH_ALERT',
+        name: 'الأدوية عالية الخطورة والمتشابهة (LASA) وعربة الطوارئ والتوافق الدوائي (Medication Safety)',
+        category: 'إدارة واستخدام الدواء',
+        clinicalWeight: 2.4,
+        kpiMatch: k => (k.Indicator || '').includes('عالية الخطورة') || (k.Indicator || '').includes('المتشابهة في الشكل') || (k.Indicator || '').includes('النتائج الدوائية العكسية'),
+        findingMatch: f => (f.original_text || '').includes('عاليه الخطور') || (f.original_text || '').includes('عالية الخطور') || (f.original_text || '').includes('المتشابهه') || (f.original_text || '').includes('كراش') || (f.original_text || '').includes('التوافق الدوائي') || (f.original_text || '').includes('lasa'),
+        ovrMatch: o => (o.subcategory || '').includes('Medication') || (o.description || '').includes('كراش') || (o.description || '').includes('محاليل') || (o.description || '').includes('انسولين') || (o.description || '').includes('دوائ')
       },
-      MEDICAL_RECORDS: {
-        id: 'MEDICAL_RECORDS',
-        name: 'اكتمال الملف الطبي والتوثيق والملائمة السريرية (Clinical Documentation & Med-Rec)',
-        clinicalRiskFactor: 1.2
+      {
+        id: 'SURGICAL_SAFETY_TIME_OUT',
+        name: 'الأمان الجراحي والوقت المستقطع وتفادي جراحة المريض الخطأ (Surgical Safety & Time-Out)',
+        category: 'سلامة المرضى (NPSG)',
+        clinicalWeight: 2.3,
+        kpiMatch: k => (k.Indicator || '').includes('تحديد موضع الإجراء الجراحي') || (k.Indicator || '').includes('الجراحة التفقدية'),
+        findingMatch: f => (f.original_text || '').includes('الوقت المستقطع') || (f.original_text || '').includes('الإجراءات التداخلية') || (f.original_text || '').includes('موضع الجراح'),
+        ovrMatch: o => (o.description || '').includes('غسيل الأيدي الجراحي قبل العمليه') || (o.description || '').includes('تأجيل حاله عمليات') || (o.description || '').includes('الوقت المستقطع')
       },
-      FACILITY_BIOMEDICAL_SAFETY: {
-        id: 'FACILITY_BIOMEDICAL_SAFETY',
-        name: 'السلامة والصحة المهنية والأجهزة الطبية (Biomedical Equipment & FMS)',
-        clinicalRiskFactor: 1.15
+      {
+        id: 'CRITICAL_PANIC_VALUES',
+        name: 'الإبلاغ الفوري للنتائج التشخيصية الحرجة (Critical Panic Diagnostic Results Communication)',
+        category: 'الرعاية الحرجة والتشخيص',
+        clinicalWeight: 2.2,
+        kpiMatch: k => (k.Indicator || '').includes('النتائج الحرجة') || (k.Indicator || '').includes('المحولة من العيادات الى المعمل'),
+        findingMatch: f => (f.original_text || '').includes('النتائج الحرجه') || (f.original_text || '').includes('النتائج الحرجة') || (f.original_text || '').includes('tat'),
+        ovrMatch: o => (o.description || '').includes('مجلطة') || (o.description || '').includes('رفضها') || (o.description || '').includes('نتائج حرجة') || (o.description || '').includes('نتيجه حرجه')
+      },
+      {
+        id: 'DEVICE_ASSOCIATED_INFECTIONS',
+        name: 'حزم الوقاية من عدوى الأجهزة التداخلية (CLABSI, CAUTI, VAP Bundles)',
+        category: 'مكافحة العدوى والتعقيم',
+        clinicalWeight: 2.2,
+        kpiMatch: k => (k.Indicator || '').includes('الحقن الآمن') || (k.Indicator || '').includes('مكافحة العدوى'),
+        findingMatch: f => (f.original_text || '').includes('قسطرة') || (f.original_text || '').includes('قساطر') || (f.original_text || '').includes('تنفس صناعي'),
+        ovrMatch: o => (o.description || '').includes('القسطرة المركزية') || (o.description || '').includes('القسطرة البولية') || (o.description || '').includes('مجري الدم') || (o.subcategory || '').includes('Urinary') || (o.subcategory || '').includes('Bloodstream')
       }
-    }
+    ]
 
-    const domainBuckets = {}
-    for (const [key, meta] of Object.entries(domainMeta)) {
-      domainBuckets[key] = {
-        ...meta,
-        findings: [],
-        kpis: [],
-        ovrRecords: [],
-        criticalKpiCount: 0,
-        riskKpiCount: 0,
-        recurringFindingCount: 0,
-        highPriorityFindingCount: 0,
-        ovrCount: 0,
-        rawScore: 0
-      }
-    }
+    const scoredTracks = []
+    for (const track of CLINICAL_CRISIS_TRACKS) {
+      const kpis = sheetKpis.filter(track.kpiMatch)
+      const fList = eligibleFindings.filter(track.findingMatch)
+      const ovrs = eligibleOvrRecords.filter(track.ovrMatch)
 
-    // Place KPIs into domains
-    sheetKpis.forEach(k => {
-      const domainKey = this.classifyDomain(k.Indicator)
-      const target = domainBuckets[domainKey]
-      if (!target) return // Discard non-clinical admin items
-      target.kpis.push(k)
+      const hasKpi = kpis.length > 0
+      const hasFinding = fList.length > 0
+      const hasOvr = ovrs.length > 0
+      const sourceCount = (hasKpi ? 1 : 0) + (hasFinding ? 1 : 0) + (hasOvr ? 1 : 0)
 
-      const isCritical = k.Alert_Level === 'Critical'
-      const isRisk = k.Status === 'Risk' || k.Alert_Level === 'Alert'
-      if (isCritical) {
-        target.criticalKpiCount++
-        target.rawScore += 25
-      } else if (isRisk) {
-        target.riskKpiCount++
-        target.rawScore += 12
-      }
-    })
+      // STRICT RULE: At least 2 corroborating sources required for deep clinical crisis!
+      if (sourceCount < 2) continue
 
-    // Place Findings into domains
-    eligibleFindings.forEach(f => {
-      const domainKey = this.classifyDomain(f.original_text, f.departments?.name || '')
-      const target = domainBuckets[domainKey]
-      if (!target) return // Discard non-clinical admin items
-      target.findings.push(f)
+      const isTriple = sourceCount === 3
+      const corroborationLevel = isTriple
+        ? 'تطابق جنائي ثلاثي (3 من 3 مصادر)'
+        : 'تطابق جنائي ثنائي (2 من 3 مصادر معتمدة - أزمة إكلينيكية عميقة)'
 
-      const isRec = (f.repeat_count || 1) >= 2 || f.status === 'recurring'
-      const isHigh = f.priority === 'high'
+      const critKpis = kpis.filter(k => k.Alert_Level === 'Critical')
+      const alertKpis = kpis.filter(k => k.Alert_Level === 'Alert' || k.Status === 'Risk')
+      const recFindings = fList.filter(f => (f.repeat_count || 1) >= 2 || f.status === 'recurring')
+      const normFindings = fList.filter(f => (f.repeat_count || 1) < 2 && f.status !== 'recurring')
 
-      if (isRec) target.recurringFindingCount++
-      if (isHigh) target.highPriorityFindingCount++
+      const rawScore = (critKpis.length * 35) + (alertKpis.length * 15) + (recFindings.length * 12) + (normFindings.length * 5) + (ovrs.length * 5)
+      const multiplier = isTriple ? 1.25 : 1.15
+      const totalScore = Math.round(rawScore * multiplier * track.clinicalWeight)
 
-      target.rawScore += (isRec ? 10 : 3) + (isHigh ? 6 : 2)
-    })
-
-    // 4. Fetch Hospital OVR Incidents (The 3rd Forensic Pillar)
-    const ovrRecords = await ovrService.getHospitalOVR(hospitalId)
-    ovrRecords.forEach(ovr => {
-      let domainKey = 'PATIENT_SAFETY_GOVERNANCE'
-      if (ovr.domain_key === 'facility_equipment') domainKey = 'FACILITY_BIOMEDICAL_SAFETY'
-      else if (ovr.domain_key === 'medical_records') domainKey = 'MEDICAL_RECORDS'
-      else if (ovr.domain_key === 'infection_control') domainKey = 'INFECTION_PREVENTION'
-      else if (ovr.domain_key === 'medication_safety') domainKey = 'MEDICATION_MANAGEMENT'
-      else if (ovr.domain_key === 'critical_care') domainKey = 'CRITICAL_EMERGENCY_CARE'
-      else if (ovr.domain_key === 'patient_safety') domainKey = 'PATIENT_SAFETY_GOVERNANCE'
-      else domainKey = this.classifyDomain(`${ovr.subcategory} ${ovr.description}`)
-
-      const target = domainBuckets[domainKey]
-      if (!target) return
-      target.ovrRecords.push(ovr)
-      target.ovrCount++
-      target.rawScore += 4
-    })
-
-    // STRICT FORENSIC RULE: Must have evidence in AT LEAST 2 OUT OF 3 SOURCES!
-    // Source 1: Inspection Findings (>= 1)
-    // Source 2: Google Sheet KPIs with Risk/Critical/Alert (>= 1)
-    // Source 3: OVR Staff Incidents (>= 1)
-    for (const d of Object.values(domainBuckets)) {
-      const hasFindings = d.findings.length >= 1
-      const criticalOrRiskKpis = d.kpis.filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk' || k.Alert_Level === 'Alert')
-      const hasKpiWarning = criticalOrRiskKpis.length >= 1
-      const hasOvr = d.ovrCount >= 1
-
-      const sourceCount = (hasFindings ? 1 : 0) + (hasKpiWarning ? 1 : 0) + (hasOvr ? 1 : 0)
-      d.sourceCount = sourceCount
-      d.hasFindings = hasFindings
-      d.hasKpiWarning = hasKpiWarning
-      d.hasOvr = hasOvr
-
-      // DISQUALIFY any domain with less than 2 corroborated sources!
-      if (sourceCount < 2) {
-        d.isEligible = false
-        d.totalScore = 0
-        d.corroborationLevel = 'Disqualified (مصدر واحد فقط - غير معتمد كمشروع تحسين)'
-      } else {
-        d.isEligible = true
-        if (sourceCount === 3) {
-          // Triple Forensic Match (Highest Conviction!)
-          d.isTripleCorroborated = true
-          d.corroborationLevel = 'تطابق جنائي ثلاثي (3 من 3 مصادر: تفتيش ميداني + شيت مؤشرات جوجل + بلاغات OVR)'
-          d.totalScore = Math.round(d.rawScore * 2.5 * d.clinicalRiskFactor)
-        } else {
-          // Dual-Source Match
-          d.isTripleCorroborated = false
-          d.corroborationLevel = 'تطابق ثنائي المصدر (مصدران من 3 مصادر)'
-          d.totalScore = Math.round(d.rawScore * 1.4 * d.clinicalRiskFactor)
-        }
-      }
-    }
-
-    // Sort domains descending by total score
-    const eligibleDomains = Object.values(domainBuckets).filter(d => d.isEligible).sort((a, b) => b.totalScore - a.totalScore)
-    const sortedDomains = Object.values(domainBuckets).sort((a, b) => b.totalScore - a.totalScore)
-    
-    // Primary crisis is highest scored eligible domain
-    const primaryCrisis = eligibleDomains[0] || sortedDomains[0]
-
-    // Build evidence summaries for all eligible corroborated domains
-    const eligibleCrises = eligibleDomains.map(d => {
-      const critKpis = d.kpis
-        .filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk' || k.Alert_Level === 'Alert')
-        .map(k => `• ${k.Indicator}: القيمة الفعلية المسجلة ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
+      const critKpisEvidence = kpis
+        .map(k => `• ${k.Indicator}: ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
         .slice(0, 8)
 
-      const topFindings = d.findings
+      const findingsEvidence = fList
         .sort((a, b) => (b.repeat_count || 1) - (a.repeat_count || 1))
         .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (تكرر ${f.repeat_count || 1} مرات)`)
         .slice(0, 8)
 
-      const topOvrs = (d.ovrRecords || [])
+      const ovrsEvidence = ovrs
         .slice(0, 8)
         .map(o => `• [${o.date} - ${o.subcategory}]: ${o.description.length > 130 ? o.description.slice(0, 130) + '...' : o.description}`)
 
-      return {
-        domain_id: d.id,
-        domain_name: d.name,
-        score: d.totalScore,
-        source_count: d.sourceCount,
-        is_triple_corroborated: !!d.isTripleCorroborated,
-        corroboration_level: d.corroborationLevel,
-        findings_count: d.findings.length,
-        kpis_count: d.kpis.length,
-        ovr_count: d.ovrCount,
-        critical_kpis_evidence: critKpis,
-        correlating_findings_evidence: topFindings,
-        ovr_incidents_evidence: topOvrs
-      }
-    })
+      scoredTracks.push({
+        domain_id: track.id,
+        domain_name: track.name,
+        category: track.category,
+        score: totalScore,
+        source_count: sourceCount,
+        is_triple_corroborated: isTriple,
+        corroboration_level: corroborationLevel,
+        findings_count: fList.length,
+        kpis_count: kpis.length,
+        ovr_count: ovrs.length,
+        critical_kpis_evidence: critKpisEvidence,
+        correlating_findings_evidence: findingsEvidence,
+        ovr_incidents_evidence: ovrsEvidence
+      })
+    }
 
-    const primaryCriticalKpisSummary = primaryCrisis.kpis
-      .filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk' || k.Alert_Level === 'Alert')
-      .map(k => `• ${k.Indicator}: القيمة الفعلية المسجلة ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
-      .slice(0, 8)
-
-    const primaryTopFindingsSummary = primaryCrisis.findings
-      .sort((a, b) => (b.repeat_count || 1) - (a.repeat_count || 1))
-      .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (تكرر ${f.repeat_count || 1} مرات)`)
-      .slice(0, 8)
-
-    const primaryTopOvrSummary = (primaryCrisis.ovrRecords || [])
-      .slice(0, 8)
-      .map(o => `• [${o.date} - ${o.subcategory}]: ${o.description.length > 130 ? o.description.slice(0, 130) + '...' : o.description}`)
+    scoredTracks.sort((a, b) => b.score - a.score)
+    const primaryCrisis = scoredTracks[0] || null
 
     return {
       hospital: {
@@ -576,35 +522,11 @@ export class ImprovementProjectsService {
         eligibleFindings: eligibleFindings.length,
         totalSheetKpis: sheetKpis.length,
         criticalSheetKpis: sheetKpis.filter(k => k.Alert_Level === 'Critical' || k.Status === 'Risk' || k.Alert_Level === 'Alert').length,
-        totalOvrRecords: ovrRecords.length
+        totalOvrRecords: eligibleOvrRecords.length
       },
-      eligible_crises: eligibleCrises,
-      primary_crisis: {
-        domain_id: primaryCrisis.id,
-        domain_name: primaryCrisis.name,
-        crisis_score: primaryCrisis.totalScore,
-        source_count: primaryCrisis.sourceCount,
-        corroboration_level: primaryCrisis.corroborationLevel,
-        critical_kpis_count: primaryCrisis.criticalKpiCount,
-        recurring_findings_count: primaryCrisis.recurringFindingCount,
-        ovr_incidents_count: primaryCrisis.ovrCount,
-        is_triple_corroborated: !!primaryCrisis.isTripleCorroborated,
-        critical_kpis_evidence: primaryCriticalKpisSummary,
-        correlating_findings_evidence: primaryTopFindingsSummary,
-        ovr_incidents_evidence: primaryTopOvrSummary
-      },
-      all_domains_ranked: sortedDomains.map(d => ({
-        domain_id: d.id,
-        domain_name: d.name,
-        score: d.totalScore,
-        source_count: d.sourceCount,
-        corroboration_level: d.corroborationLevel,
-        findings_count: d.findings.length,
-        kpis_count: d.kpis.length,
-        ovr_count: d.ovrCount,
-        critical_kpis_count: d.criticalKpiCount,
-        recurring_findings_count: d.recurringFindingCount
-      }))
+      eligible_crises: scoredTracks,
+      primary_crisis: primaryCrisis,
+      all_domains_ranked: scoredTracks
     }
   }
 
@@ -623,68 +545,70 @@ export class ImprovementProjectsService {
 
     const primaryCrisis = crisisAnalysis.primary_crisis
 
+    const selectedCrises = eligibleCrises.slice(0, count)
+
     // Step B: Build verified multi-source forensic evidence dossier
-    const forensicDossierText = eligibleCrises.map((ec, idx) => `
+    const forensicDossierText = selectedCrises.map((ec, idx) => `
 ======================================================================
 الأزمة السريرية رقم (${idx + 1}): [${ec.domain_name}]
-• مستوى التطابق الجنائي: ${ec.corroboration_level} (مجموع النقاط: ${ec.score} نقطة)
-• الأدلة الجنائية الثلاثية المتطابقة:
+• التصنيف السريري: ${ec.category || 'سلامة المرضى'} (مستوى التطابق: ${ec.corroboration_level} - النتيجة: ${ec.score} نقطة)
+• الأدلة الجنائية الموثقة:
 
-١. الشاهد الأول (المرور الميداني والسلبيات المرصودة - إجمالي ${ec.findings_count} سلبية):
-${ec.correlating_findings_evidence.length > 0 ? ec.correlating_findings_evidence.join('\n') : 'لا توجد سلبيات مرصودة لهذا المسار'}
+١. الشاهد الأول (المرور الميداني والسلبيات المرصودة):
+${ec.correlating_findings_evidence.length > 0 ? ec.correlating_findings_evidence.join('\n') : 'لا توجد سلبيات مرصودة بهذا الشاهد (اكتفاء بالمصدرين الآخرين)'}
 
-٢. الشاهد الثاني (شيت مؤشرات الأداء الحسابية الرسمية بالمديرية - إجمالي ${ec.kpis_count} مؤشر):
-${ec.critical_kpis_evidence.length > 0 ? ec.critical_kpis_evidence.join('\n') : 'لا توجد مؤشرات حرجة مسجلة'}
+٢. الشاهد الثاني (شيت مؤشرات الأداء الحسابية الرسمية بالمديرية):
+${ec.critical_kpis_evidence.length > 0 ? ec.critical_kpis_evidence.join('\n') : 'لا توجد مؤشرات مسجلة بهذا الشاهد'}
 
-٣. الشاهد الثالث (بلاغات الحوادث العارضة OVR المسجلة من الأطباء والتمريض - إجمالي ${ec.ovr_count} بلاغ):
-${ec.ovr_incidents_evidence.length > 0 ? ec.ovr_incidents_evidence.join('\n') : 'لا توجد بلاغات OVR مسجلة'}
+٣. الشاهد الثالث (بلاغات الحوادث العارضة OVR المسجلة من الأطباء والتمريض):
+${ec.ovr_incidents_evidence.length > 0 ? ec.ovr_incidents_evidence.join('\n') : 'لا توجد بلاغات مسجلة بهذا الشاهد'}
 ======================================================================
 `).join('\n')
 
     // AI Prompt - Blazing Intelligence (الذكاء الحارق)
     const systemPrompt = `أنت المراجع الإكلينيكي الأعلى وخبير هندسة النظم السريرية وتوكيد الجودة المعتمد (GAHAR Fellow & Senior Clinical Systems Architect).
-مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي رفيع المستوى (Institutional Quality Improvement Project - QIP) لمعالجة الأزمات النظامية الكبرى للمستشفى، والتي تم استخراجها وتأكيدها عبر «التحقيق الجنائي الإكلينيكي ثلاثي الأركان» (Triple Forensic Triangulation):
-1. الشاهد الأول (الميداني): السلبيات الموثقة بزيارات فرق المرور والتفتيش.
-2. الشاهد الثاني (الرقمي): مؤشرات الأداء الحسابية والنسب المئوية الرسمية المسجلة بشيت جوجل.
-3. الشاهد الثالث (الواقعي): بلاغات الحوادث العارضة (OVR) وأحداث الاقتراب من الخطر (Near Misses) المسجلة من الأطباء والتمريض.
+مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي رفيع المستوى (Institutional Quality Improvement Project - QIP) لمعالجة الأزمات السريرية المعقدة للمستشفى، والمستخرجة من التحقيق الجنائي الإكلينيكي متعدد المصادر (مرور ميداني + شيت مؤشرات جوجل + بلاغات OVR).
 
 قواعد الذكاء الحارق الصارمة لهندسة مشاريع التحسين (Blazing Clinical Intelligence Rules):
-1. قاعدة التطابق متعدد المصادر الإلزامي (Multi-Source Corroboration Mandate):
-   - يُشترط حتماً في كل مشروع مقترح أن يستند إلى دليل مؤكد من (مصدرين على الأقل من المصادر الثلاثة)، والأولوية القصوى للمسارات المدعومة بالمصادر الثلاثة معاً (مرور + شيت جوجل + OVR).
-   - يجب في كل مشروع توثيق كائن "forensic_corroboration" يوضح شهود الإثبات الثلاثة بالتفصيل:
-     * corroboration_level: "تطابق جنائي ثلاثي (3 من 3 مصادر)" أو "تطابق ثنائي المصدر (2 من 3 مصادر)"
-     * source_1_field_finding: نص السلبية الميدانية الدقيقة المرصودة بالمرور
-     * source_2_sheet_kpi: اسم المؤشر من شيت جوجل مع ذكر النسبة المئوية الفعلية المسجلة (مثال: أخطاء التعريف = 10% أو الأوامر الشفهية = 0%)
-     * source_3_staff_ovr: تفاصيل واقعة وبلاغ OVR الحقيقي المسجل من الطاقم
+1. قاعدة عمق المشكلة السريرية مقابل عدد الشواهد (Critical Clinical Depth Mandate):
+   - القاعدة الذهبية الحاسمة: «مشروع تحسين لمشكلة إكلينيكية عميقة ومعقدة تمس حياة وسلامة المريض (مثل الأوامر الشفهية 0% أو التدهور السريري 0% أو أدوية LASA أو أخطاء هوية المريض ونقل الدم) بمصدرين فقط، له الأولوية القصوى والمطلقة على أي مشكلة بسيطة ولو توافرت لها 3 مصادر».
+   - وجود شاهدين إكلينيكيين مؤكدين لمشكلة عميقة يكفي تماماً ويُعتبر دليلاً جنائياً كافياً ومعتمداً لإطلاق مشروع تحسين مؤسسي عالي القيمة.
+   - إذا توافرت 3 مصادر لمشكلة عميقة فهو ممتاز، ولكن لا يُشترط أبداً 3 مصادر إذا كانت المشكلة عميقة وتتوافر لها دلائل قاطعة من مصدرين.
 
-2. الحظر المطلق والبات للمشاريع الإدارية الهزيلة وحلول "التدريب الشكلي":
-   - يُمنع منعاً باتاً صياغة مشاريع بعنوان أو بمضمون:
-     * "تحديث السياسات والإجراءات وتوحيد الوثائق"
-     * "تنظيم وترتيب المخازن أو دواليب الأرشيف"
-     * "برامج تدريبية أو ورش عمل أو حملات توعية عامة"
-     * "توفير بوسترات أو لوحات أو كروت تعريف"
-   - مشاريع الجودة الحقيقية لا تعالج الإهمال الفردي أو النظافة الروتينية، بل تعالج «الفشل الهيكلي العميق في مسار العمل» (Complex System Breakdown).
-   - الحلول المقترحة يجب أن تكون حصراً:
-     * بوابات إيقاف وفحص صلبة مانعة للخطأ (Poka-Yoke Hard-Stops) تمنع إتمام الإجراء السريري إلا بعد اكتمال التحقق.
-     * نظام التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check).
-     * مسارات التوثيق الرقمي المغلق (Closed-Loop Workflow).
-     * بروتوكول تصعيد قيادي فوري وآلي للمدير الطبي عند رصد أي مؤشر حرج أو حادث عارض.
+2. الحظر المطلق والكامل لأي مشاريع تافهة أو سطحية (Zero-Tolerance For Superficial Tasks):
+   - يُمنع منعاً باتاً صياغة أي مشروع بعنوان أو بمضمون يخص:
+     * نظافة الأسطح أو الأرضيات أو المفروشات أو سلات المهملات أو المطهرات الروتينية.
+     * استكمال أو جرد حقائب الانسكابات الكيميائية أو ماسة المواد أو كروت فحص الطفايات أو مقاييس الكلور.
+     * تعليق بوسترات أو لافتات أو كروت تعريف للموظفين أو الثلاجات أو حقوق المرضى.
+     * تنظيم وترتيب المخازن أو الأرفف أو الدواليب أو مكاتب الأرشيف.
+     * برامج تدريبية نظرية أو ورش عمل كحل أساسي (التدريب بمفرده لا يصلح كحل لمشروع تحسين مؤسسي).
+   - المشكلة المستهدفة يجب أن تكون «فشلاً هيكلياً في مسار الرعاية الطبية» (Complex Systemic Clinical Breakdown).
 
-3. التمايز التام والاستقلالية الجذرية بين المشاريع المقترحة (Zero Duplication):
-   - يجب أن يستهدف كل مشروع مساراً سريرياً حرجاً مستقلاً تماماً ومختلفاً عن المشاريع الأخرى. يُمنع تكرار نفس الفكرة بأسماء بديلة!
-   - إذا توفرت أكثر من أزمة مؤكدة جنائياً، يُوزع كل مشروع على أزمة مختلفة أو مسار إكلينيكي مستقل.
+3. طبيعة الحلول التدخلية المقترحة (Structural Engineering Interventions):
+   - بوابات إيقاف وفحص صلبة مانعة للخطأ (Poka-Yoke Hard-Stops) تمنع إتمام الإجراء الطبي إلا بعد تحقق إلزامي.
+   - نظام التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check) بواسطة اثنين من الممارسين.
+   - مسار التوثيق الرقمي والفيزيائي المغلق (Closed-Loop Workflow).
+   - بروتوكول تصعيد قيادي فوري للمدير الطبي عند تجاوز حدود الخطر.
 
-4. المصداقية التامة وخلو خط الأساس (Baseline) من الهلوسة أو الأرقام الوهمية:
-   - يُمنع اختلاق أو تخمين أي وفيات أو أرقام غير واردة بالأدلة.
-   - خط الأساس يجب أن يقتبس حرفياً الأرقام الفعلية لشيت جوجل وبلاغات OVR المرفقة أدناه.
+4. توثيق كائن "forensic_corroboration" بدقة تامة:
+   - corroboration_level: "تطابق جنائي ثلاثي (3 من 3 مصادر)" أو "تطابق جنائي ثنائي (2 من 3 مصادر معتمدة - أزمة إكلينيكية عميقة)"
+   - source_1_field_finding: نص الشاهد الأول الميداني الدقيق أو "لا ينطبق (اكتفاء بالمصدرين الآخرين)"
+   - source_2_sheet_kpi: اسم المؤشر الحقيقي مع النسبة المسجلة من الشيت
+   - source_3_staff_ovr: واقعة وبلاغ OVR الحقيقي المسجل من الطاقم أو "لا ينطبق"
+
+5. التمايز التام بين المشاريع المقترحة (Zero Duplication):
+   - يجب أن يستهدف كل مشروع أزمة سريرية مستقلة تماماً من الأزمات المرفقة بملف الأدلة.
+
+6. المصداقية التامة وخلو خط الأساس (Baseline) من الهلوسة أو الأرقام الوهمية:
+   - يُمنع اختلاق أو تخمين أي وفيات أو أرقام غير واردة بالأدلة. خط الأساس يجب أن يقتبس حرفياً الأرقام الفعلية لشيت جوجل وبلاغات OVR.
 
 أخرج النتيجة بصيغة JSON فقط.`
 
-    const userPrompt = `بيانات المستشفى والأزمات السريرية الكبرى المستخرجة عبر التحقيق الجنائي ثلاثي الأركان:
+    const userPrompt = `بيانات المستشفى والأزمات السريرية العميقة المستخرجة عبر التحقيق الجنائي:
 - اسم المستشفى: ${hospital.name} (مطابق لشيت جوجل: ${hospital.matchedSheetName || 'غير مسجل'})
-- إجمالي السلبيات المرصودة بالمرور: ${crisisAnalysis.stats.totalFindings} (السريرية المؤهلة: ${crisisAnalysis.stats.eligibleFindings})
+- إجمالي السلبيات المرصودة بالمرور (المؤهلة): ${crisisAnalysis.stats.eligibleFindings}
 - إجمالي مؤشرات الأداء المفحوصة بشيت جوجل: ${crisisAnalysis.stats.totalSheetKpis} (منها ${crisisAnalysis.stats.criticalSheetKpis} مؤشر في حالة خطر/حرج)
-- إجمالي بلاغات الحوادث العارضة (OVR) المسجلة: ${crisisAnalysis.stats.totalOvrRecords} بلاغ
+- إجمالي بلاغات الحوادث العارضة (OVR) السريرية: ${crisisAnalysis.stats.totalOvrRecords} بلاغ
 
 ملف الأدلة الجنائية للأزمات المعتمدة بالمستشفى (Evidence Dossier):
 ${forensicDossierText}
@@ -696,13 +620,13 @@ ${forensicDossierText}
 {
   "projects": [
     {
-      "title": "عنوان المشروع السريري الرصين المعبر عن المسار والحل",
+      "title": "عنوان المشروع السريري الرصين المعبر عن المسار والحل الصلب",
       "department_name": "القسم المعني",
-      "category": "سلامة المرضى / إدارة واستخدام الدواء / مكافحة العدوى والتعقيم / الرعاية الحرجة والطوارئ / الملف الطبي والتوثيق / إدارة السلامة والمرافق (FMS)",
+      "category": "سلامة المرضى / إدارة واستخدام الدواء / الرعاية الحرجة والطوارئ / مكافحة العدوى والتعقيم",
       "priority": "high",
       "forensic_corroboration": {
-        "corroboration_level": "تطابق جنائي ثلاثي (3 من 3 مصادر)",
-        "source_1_field_finding": "نص السلبية الميدانية الدقيقة من تقارير المرور",
+        "corroboration_level": "تطابق جنائي ثلاثي (3 من 3 مصادر) أو تطابق جنائي ثنائي (2 من 3 مصادر)",
+        "source_1_field_finding": "نص الشاهد الأول الميداني",
         "source_2_sheet_kpi": "اسم المؤشر من شيت جوجل مع القيمة الفعلية المسجلة",
         "source_3_staff_ovr": "واقعة وبلاغ OVR الحقيقي المسجل من الطاقم"
       },
@@ -714,9 +638,9 @@ ${forensicDossierText}
         "process_complexity": 5,
         "strategic_alignment": 5,
         "total_score": 19,
-        "eligibility_justification": "أزمة سريرية مثبتة جنائياً بالأدلة المتطابقة لتقارير المرور وشيت مؤشرات المديرية وبلاغات OVR."
+        "eligibility_justification": "أزمة سريرية مثبتة جنائياً بأدلة إكلينيكية صلبة تمس سلامة حياة المرضى."
       },
-      "problem_statement": "بيان المشكلة يربط شهود الإثبات الثلاثة دون اختلاق وفيات غير موثقة",
+      "problem_statement": "بيان المشكلة يربط شهود الإثبات دون اختلاق وفيات غير موثقة",
       "baseline_metrics": "أرقام خط الأساس الحقيقية المستخرجة حرفياً من شيت مؤشرات جوجل وبلاغات OVR",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
       "evidence_reference": "معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)",
