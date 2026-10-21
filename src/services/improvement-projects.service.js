@@ -17,32 +17,65 @@ async function checkHasTable(supabase) {
   return hasTableCache
 }
 
-async function callGroqWithRetry(payload, maxRetries = 3) {
+function getGroqKeys() {
+  const keysStr = process.env.GROQ_API_KEYS || process.env.GROQ_API_KEY || ''
+  return keysStr.split(',').map(k => k.trim()).filter(Boolean)
+}
+
+let currentGroqKeyIndex = 0
+
+async function callGroqWithRetry(payload, maxRetries = 5) {
+  const keys = getGroqKeys()
+  if (keys.length === 0) {
+    throw new Error('لم يتم العثور على أي مفتاح GROQ_API_KEY أو GROQ_API_KEYS في ملف الإعدادات.')
+  }
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-    if (res.ok) {
-      return await res.json()
-    }
-    if (res.status === 429 && attempt < maxRetries) {
-      const errText = await res.text()
-      let waitTime = 10000
-      const match = errText.match(/try again in ([0-9.]+)s/)
-      if (match && match[1]) {
-        waitTime = Math.ceil(parseFloat(match[1]) * 1000) + 2000
+    // Pick current key in round-robin fashion
+    const activeKey = keys[currentGroqKeyIndex % keys.length]
+    // Advance index for next call/pass
+    currentGroqKeyIndex = (currentGroqKeyIndex + 1) % keys.length
+
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${activeKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (res.ok) {
+        return await res.json()
       }
-      console.log(`[ImprovementProjectsService] Rate limit 429 hit. Waiting ${(waitTime / 1000).toFixed(1)}s before retry ${attempt + 1}...`)
-      await new Promise(r => setTimeout(r, waitTime))
-      continue
+
+      if (res.status === 429) {
+        // If we have multiple keys, immediately switch to the next key with ZERO wait time!
+        if (keys.length > 1 && attempt < maxRetries) {
+          console.log(`[Groq Multi-Key] Rate limit hit on key ending with ...${activeKey.slice(-6)}. Instantly switching to next available key...`)
+          continue
+        }
+
+        const errText = await res.text()
+        let waitTime = 8000
+        const match = errText.match(/try again in ([0-9.]+)s/)
+        if (match && match[1]) {
+          waitTime = Math.ceil(parseFloat(match[1]) * 1000) + 1500
+        }
+        console.log(`[ImprovementProjectsService] Rate limit 429 hit. Waiting ${(waitTime / 1000).toFixed(1)}s before retry ${attempt + 1}...`)
+        await new Promise(r => setTimeout(r, waitTime))
+        continue
+      }
+
+      const errText = await res.text()
+      throw new Error(`Groq API Error (${res.status}): ${errText}`)
+    } catch (err) {
+      if (attempt >= maxRetries) throw err
+      if (!err.message.includes('Groq API Error')) {
+        await new Promise(r => setTimeout(r, 2000))
+      }
     }
-    const errText = await res.text()
-    throw new Error(`Groq API Error (${res.status}): ${errText}`)
   }
 }
 
