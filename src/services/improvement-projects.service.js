@@ -79,6 +79,211 @@ async function callGroqWithRetry(payload, maxRetries = 5) {
   }
 }
 
+// Map department/category to standardized realistic clinical leadership & multidisciplinary team roles
+export function getStandardClinicalRoles(departmentName = '', category = '') {
+  const text = `${departmentName} ${category}`.toLowerCase()
+
+  if (text.includes('مختبر') || text.includes('معمل') || text.includes('دم') || text.includes('نقل الدم') || text.includes('lab')) {
+    return {
+      lead: 'رئيس قسم المختبرات وبنك الدم بالمستشفى',
+      team: [
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'مشرفة تمريض بنك الدم وسحب العينات',
+        'صيدلي إكلينيكي أول',
+        'كيميائي وفني تحاليل طبية أول'
+      ]
+    }
+  }
+
+  if (text.includes('صيدل') || text.includes('دواء') || text.includes('علاج') || text.includes('pharm')) {
+    return {
+      lead: 'رئيس قسم الصيدلة بالمستشفى',
+      team: [
+        'صيدلي إكلينيكي أول',
+        'مشرفة تمريض الأقسام الداخلية',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'طبيب مقيم بالقسم'
+      ]
+    }
+  }
+
+  if (text.includes('عناية') || text.includes('حرجة') || text.includes('icu') || text.includes('مركزة')) {
+    return {
+      lead: 'استشاري ورئيس قسم الرعاية المركزة بالمستشفى',
+      team: [
+        'مشرفة تمريض العناية المركزة',
+        'صيدلي إكلينيكي عناية حرجة',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'طبيب مقيم رعاية مركزة'
+      ]
+    }
+  }
+
+  if (text.includes('طوارئ') || text.includes('استقبال') || text.includes('فرز') || text.includes('triage') || text.includes('er')) {
+    return {
+      lead: 'رئيس قسم الاستقبال والطوارئ بالمستشفى',
+      team: [
+        'مشرفة تمريض قسم الطوارئ',
+        'أخصائي طب الطوارئ والحالات الحرجة',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'مشرف الخدمات المعاونة ونقل المرضى'
+      ]
+    }
+  }
+
+  if (text.includes('عمليات') || text.includes('تخدير') || text.includes('جراح') || text.includes('or')) {
+    return {
+      lead: 'رئيس قسم العمليات والتخدير بالمستشفى',
+      team: [
+        'مشرفة تمريض العمليات الجراحية',
+        'طبيب مقيم تخدير ورعاية ما بعد الجراحة',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'صيدلي إكلينيكي جراحة وتخدير'
+      ]
+    }
+  }
+
+  if (text.includes('مبتسر') || text.includes('حضّان') || text.includes('أطفال') || text.includes('nicu')) {
+    return {
+      lead: 'رئيس قسم المبتسرين وحديثي الولادة بالمستشفى',
+      team: [
+        'مشرفة تمريض وحدة المبتسرين',
+        'طبيب مقيم أطفال وحديثي ولادة',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'صيدلي إكلينيكي أطفال'
+      ]
+    }
+  }
+
+  if (text.includes('كلى') || text.includes('غسيل') || text.includes('dialysis')) {
+    return {
+      lead: 'رئيس وحدة الغسيل الكلوي بالمستشفى',
+      team: [
+        'مشرفة تمريض وحدة الغسيل الكلوي',
+        'طبيب مقيم أمراض كلى',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'مهندس صيانة الأجهزة الطبية بالمستشفى'
+      ]
+    }
+  }
+
+  if (text.includes('مكافحة') || text.includes('عدوى') || text.includes('تعقيم') || text.includes('cssd')) {
+    return {
+      lead: 'رئيس فريق مكافحة العدوى بالمستشفى',
+      team: [
+        'مشرفة التعقيم المركزي (CSSD)',
+        'مشرفة تمريض مكافحة العدوى',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'صيدلي إكلينيكي'
+      ]
+    }
+  }
+
+  if (text.includes('سجل') || text.includes('ملف') || text.includes('تذاكر') || text.includes('توثيق')) {
+    return {
+      lead: 'مدير الإدارة الطبية ورئيس لجنة السجلات الطبية',
+      team: [
+        'مشرفة التمريض العام بالمستشفى',
+        'أخصائي توكيد الجودة وسلامة المرضى',
+        'مسؤول قسم السجلات والملفات الطبية',
+        'طبيب مقيم باطنة وجراحة'
+      ]
+    }
+  }
+
+  // Fallback default
+  const dept = departmentName && departmentName !== 'عام' ? departmentName : 'القسم المعني'
+  return {
+    lead: `رئيس قسم ${dept} بالمستشفى`,
+    team: [
+      `مشرفة تمريض قسم ${dept}`,
+      'أخصائي سلامة المرضى وتوكيد الجودة',
+      'صيدلي إكلينيكي أول',
+      `طبيب مقيم بقسم ${dept}`
+    ]
+  }
+}
+
+export function sanitizeClinicalLead(rawLead, departmentName, category) {
+  const standard = getStandardClinicalRoles(departmentName, category)
+  if (!rawLead || typeof rawLead !== 'string') {
+    return standard.lead
+  }
+
+  let text = rawLead.trim()
+
+  // Banned personal names or tech terms
+  const bannedKeywords = [
+    'مهندس نظم', 'محلل نظم', 'مبرمج', 'مطور', 'it', 'برمجيات', 'software',
+    'أحمد', 'محمد', 'محمود', 'علي', 'حسن', 'حسين', 'إبراهيم', 'مصطفى',
+    'ليلى', 'سارة', 'فاطمة', 'مريم', 'منى', 'هدى', 'عبدالعزيز', 'الخالدي', 'السالم', 'عمر', 'خالد'
+  ]
+
+  // Any human honorific prefix
+  const hasHumanPrefix = /^(د\.|دكتور|دكتورة|أ\.|أستاذ|أستاذة|السيد|السيدة)\s+/i.test(text) || text.includes(' د.') || text.includes(' دكتور ')
+
+  const roleKeywords = ['رئيس', 'مدير', 'استشاري', 'أخصائي', 'مشرف', 'مشرفة', 'منسق', 'مسؤول']
+  const hasRoleKeyword = roleKeywords.some(rk => text.includes(rk))
+
+  if (hasHumanPrefix || !hasRoleKeyword || bannedKeywords.some(bk => text.toLowerCase().includes(bk))) {
+    return standard.lead
+  }
+
+  return text
+}
+
+export function sanitizeClinicalTeamMembers(rawMembers, departmentName, category) {
+  const standard = getStandardClinicalRoles(departmentName, category)
+  if (!Array.isArray(rawMembers) || rawMembers.length === 0) {
+    return standard.team
+  }
+
+  const bannedKeywords = [
+    'مهندس نظم', 'محلل نظم', 'مبرمج', 'مطور', 'it', 'برمجيات', 'software',
+    'نظم ومعلومات', 'قواعد بيانات', 'أمن سيبراني', 'د.', 'دكتور', 'دكتورة', 'أ.', 'أستاذ',
+    'ليلى', 'سارة', 'فاطمة', 'محمد', 'أحمد', 'السالم', 'الخالدي', 'عبدالعزيز', 'عمر'
+  ]
+
+  const validMembers = []
+  for (const m of rawMembers) {
+    if (typeof m !== 'string') continue
+    const cleaned = m.trim()
+    if (cleaned.length < 3 || cleaned.length > 50) continue
+    
+    // Check if it has any banned keywords
+    const isBanned = bannedKeywords.some(bk => cleaned.toLowerCase().includes(bk))
+    if (isBanned) continue
+
+    // Must have a valid hospital role term
+    const validClinicalTerms = ['طبيب', 'صيدلي', 'تمريض', 'ممرض', 'مشرف', 'مشرفة', 'أخصائي', 'استشاري', 'منسق', 'فني', 'كيميائي', 'مراقب', 'مسؤول', 'كادر']
+    const isValidRole = validClinicalTerms.some(term => cleaned.includes(term))
+    if (isValidRole) {
+      validMembers.push(cleaned)
+    }
+  }
+
+  // Supplement if needed
+  const finalSet = [...validMembers]
+  for (const stdMember of standard.team) {
+    if (finalSet.length >= 4) break
+    if (!finalSet.some(existing => existing.includes(stdMember.slice(0, 7)))) {
+      finalSet.push(stdMember)
+    }
+  }
+
+  return finalSet.slice(0, 4)
+}
+
+export function sanitizeResponsibleRole(rawResp, departmentName, category) {
+  if (!rawResp || typeof rawResp !== 'string') return `رئيس قسم ${departmentName || 'القسم'} ومشرفة التمريض`
+  let text = rawResp.trim()
+  const techBanned = ['تقنية', 'برمج', 'مبرمج', 'سيبراني', 'it', 'نظم', 'تطوير', 'د.', 'دكتور', 'ليلى', 'أحمد', 'عبدالعزيز']
+  if (techBanned.some(b => text.toLowerCase().includes(b))) {
+    return `رئيس قسم ${departmentName || 'القسم'} بالتعاون مع فريق الجودة`
+  }
+  return text
+}
+
 export class ImprovementProjectsService {
   constructor() {
     this.supabase = createServiceClient()
@@ -697,19 +902,33 @@ ${(c.ovr_incidents_evidence || []).slice(0, 4).join('\n') || 'لا توجد بل
     console.log(`[ImprovementProjectsService] Starting 4-Pass Tailored Investigation for: ${hospital.name}...`)
 
     // --- PASS 1: Initial Deep Investigation & Candidate Charters ---
-    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى خاصة بمستشفى (${hospital.name}) حصراً وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
+    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى وخبير جودة المستشفيات الحكومية. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى خاصة بمستشفى (${hospital.name}) حصراً وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
 
-قواعد التخصيص الصارمة (Anti-Homogenization Rules):
-- يُمنع منعاً باتاً صياغة مشاريع نمطية أو عامة أو مكررة تبدو كقالب مسبق الصنع.
-- يجب أن يعكس كل مشروع الطبيعة الحقيقية الخاصة جداً بمستشفى (${hospital.name}) وأقسامه الفعلية المذكورة في ملف الأدلة (مثلاً: إن كانت الأدلة عن المعمل أو الحضانات أو التعقيم أو الطوارئ، فيجب أن ينصب المشروع عليها بالتحديد).
-- خط الأساس (Baseline) لكل مؤشر يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة. ممنوع تخمين أرقام.
-- صياغة المشكلة، السبب الجذري، والتدخلات الهندسية لكل مشروع بشكل تفصيلي ودقيق.`
+قواعد التخصيص والواقعية الصارمة (Anti-Homogenization & Ground-Level Reality):
+1. يُمنع منعاً باتاً صياغة مشاريع نمطية أو عامة أو مكررة تبدو كقالب مسبق الصنع؛ يجب أن يعكس كل مشروع هوية مستشفى (${hospital.name}) وأقسامه المحددة.
+2. حظر الحلول البرمجية الخيالية (Strict Ban on Software Fantasies):
+   - يُمنع منعاً باتاً اختلاق حلول برمجية مستحيلة لا تناسب المستشفيات الحكومية مثل: (تطوير API Bridges، برامج LIMS v2.0 خاصة، أنظمة مزامنة Sync Engine مع Google Sheets، أو أتمتة غير موجودة).
+   - الحلول يجب أن تكون «هندسة مسارات فيزيائية وإجرائية ملموسة وواقعية (Physical & Workflow Poka-Yoke)»:
+     * استخدام أقفال بلاستيكية مرقمة تستعمل لمرة واحدة (Numbered Breakaway Disposable Seals) لكراش كارت مع سجل مطابقة يومي.
+     * وضع شرائط تحذيرية فوسفورية حمراء وحواجز بصرية (Red Alert Barrier Tape) على أدراج أدوية LASA والعالية الخطورة.
+     * التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check) بتوقيع ممارسَين متزامنين (ممرضة + صيدلي / ممرضة + طبيب).
+     * تطبيق التحقق بالترديد الإلزامي (Forced Read-Back) للأوامر الشفهية وقصرها على الطوارئ القصوى والإنعاش القلبي فقط.
+     * سجلات سلسلة التبريد المعتمدة ذات التوقيع المزدوج (Cold Chain Dual-Sign Logs) لثلاجات المعمل وحفظ الأدوية.
+     * فلاتر مطابقة العينات، وأكواد باركود ملصقة فورياً بجانب المريض.
+3. حظر كتابة أسماء أشخاص نهائياً (Strict Role-Only Policy - NO Human Names):
+   - يُمنع منعاً باتاً كتابة أي أسماء أشخاص حقيقيين أو وهميين (مثل "د. ليلى" أو "د. فلان" أو أي اسم ثنائي/ثلاثي).
+   - يجب كتابة «المسمى الوظيفي فقط» (Job Roles/Titles Only):
+     * project_lead: مسمى وظيفي حصراً مثل "رئيس قسم المختبرات وبنك الدم بالمستشفى" أو "رئيس قسم الصيدلة بالمستشفى" أو "استشاري ورئيس قسم العناية المركزة".
+     * team_members: مسميات وظيفية سريرية واقعية فقط مثل ["صيدلي إكلينيكي أول", "مشرفة تمريض القسم", "أخصائي سلامة المرضى وتوكيد الجودة", "طبيب مقيم بالقسم"]. يُمنع وضع وظائف غير موجودة بالمستشفيات العامة مثل "مهندس نظم" أو "مبرمج".
+4. خط الأساس والمؤشرات:
+   - خط الأساس (Baseline) يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة دون تخمين.
+   - مستهدف بلاغات OVR: يُمنع استهداف "صفر بلاغات" لأنه يدمر ثقافة الإبلاغ؛ المستهدف هو: «صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة الزمنية (48 ساعة)».`
 
     const pass1User = `بيانات المستشفى: ${hospital.name}
 ملف الأدلة الجنائية للأزمات المعتمدة بالمستشفى:
 ${verifiedGroundTruthDossier}
 
-صغ المسودة التحقيقية الأولية للمشاريع الثلاثة بأرقام خط الأساس الحقيقية الموثقة.`
+صغ المسودة التحقيقية الأولية للمشاريع الثلاثة بأرقام خط الأساس الحقيقية الموثقة، ومسميات وظيفية واقعية فقط، وبوابات فحص فيزيائية وإجرائية قابلة للتطبيق غداً صباحاً بالمستشفى الحكومي.`
 
     const p1Data = await callGroqWithRetry({
       model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
@@ -726,10 +945,11 @@ ${verifiedGroundTruthDossier}
     // --- PASS 2: Ruthless Forensic Audit & Attack ---
     const pass2System = `أنت رئيس لجان التدقيق الصارم بالهيئة العامة للاعتماد والرقابة الصحية (Chief Clinical Auditor).
 دورك أن تتقمص شخصية المراجع الصارم المتشدد الذي يهاجم أي ثغرة أو حل رخو بالدليل:
-1. هل هناك أي حل يعتمد على التدريب أو التوعية أو المنشورات الورقية؟ ارفضه فوراً واشترط بوابات Poka-Yoke صلبة وتحقق مزدوج مستقل.
-2. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
-3. هل التحليل الجذري كشف الفشل الهيكلي في مسار العمل (Process Failure)؟
-4. هل المشروع يبدو قالباً نمطياً مكرراً لا يعبر عن خصوصية مستشفى (${hospital.name})؟ ارفض أي كلام عام، واشترط أن يذكر اسم القسم الحقيقي والمعدات أو الإجراءات العينية الواردة في أدلة هذا المستشفى حصراً.
+1. هل هناك أي حل يعتمد على التدريب النظري أو التوعية أو المنشورات الورقية؟ ارفضه فوراً واشترط بوابات Poka-Yoke فيزيائية صلبة وتحقق مزدوج مستقل.
+2. هل اقترح الفريق حلولاً برمجية خيالية غير قابلة للتطبيق (مثل APIs أو Sync Engines أو ربط بـ Google Sheets)؟ ارفضها واشترط أقفالاً فيزيائية مرقمة وحواجز بصرية وسجلات مطابقة.
+3. هل كتب الفريق أي أسماء أشخاص لقائد المشروع أو الأعضاء؟ ارفض أي اسم شخص واشترط مسميات وظيفية رسمية فقط.
+4. هل استهدف المشروع "صفر بلاغات OVR" بما يخالف ثقافة السلامة العادلة (Just Culture)؟ ارفض ذلك واشترط استهداف صفر أخطاء ضارة وحوادث جسيمة مع تشجيع الإبلاغ وإغلاقه في 48 ساعة.
+5. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
 اكتب تقرير التدقيق الجنائي الصارم والمآخذ الإكلينيكية على المسودة دون أي مجاملة.`
 
     const pass2User = `المسودة المقترحة للمشاريع الثلاثة:
@@ -755,8 +975,10 @@ ${verifiedGroundTruthDossier}
     // --- PASS 3: Radical Re-Engineering & Hardening ---
     const pass3System = `أنت كبير مهندسي النظم السريرية ورئيس المجلس الاستشاري للجودة (Chief Clinical Systems Architect).
 تلقيت تقرير التدقيق الصارم، ومهمتك إعادة هندسة وبناء المشاريع الثلاثة وسد كل ثغرة نقدية:
-1. استبدال أي إجراء إداري أو توعوي ببوابات Poka-Yoke صلبة (حواجز تمنع إتمام الإجراء الطبي إلا بعد تحقق إلزامي)، وتحقق مزدوج مستقل إجباري، وتصعيد آلي فوري للمدير الطبي.
-2. ضبط أرقام خط الأساس لتكون مستخرجة 100% من أرقام شيت جوجل وبلاغات OVR الثابتة بلا أي تخمين أو اجتهاد.`
+1. استبدال أي إجراء إداري أو توعوي أو خيال برمجي ببوابات Poka-Yoke فيزيائية وإجرائية صلبة (أقفال بلاستيكية مرقمة لكراش كارت، حواجز بصرية فوسفورية لأدوية LASA، تحقق مزدوج مستقل إجباري بتوقيعين، وقصر الأوامر الشفهية على الطوارئ بالترديد الفوري).
+2. حظر أسماء الأشخاص والوظائف التقنية الدخيلة: استبدال أي أسماء أشخاص حقيقيين أو وهميين (مثل د. فلان)، واستبعاد الوظائف الدخيلة (مثل مهندس نظم، مبرمج، محلل نظم، مسؤول IT) بمسميات وظيفية إكلينيكية وتمريضية رسمية بالمستشفيات الحكومية فقط (مثل: رئيس قسم المختبرات وبنك الدم بالمستشفى، رئيس قسم الصيدلة بالمستشفى، استشاري ورئيس قسم العناية المركزة، صيدلي إكلينيكي أول، مشرفة تمريض القسم، أخصائي جودة، طبيب مقيم).
+3. ضبط مستهدف بلاغات OVR ليكون (صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة) لتعزيز ثقافة الإبلاغ.
+4. ضبط أرقام خط الأساس لتكون مستخرجة 100% من أرقام شيت جوجل وبلاغات OVR الثابتة بلا أي تخمين.`
 
     const pass3User = `تقرير التدقيق الصارم:
 ${pass2Critique}
@@ -782,12 +1004,13 @@ ${pass1Draft}
     const pass4System = `أنت المجلس الإكلينيكي الأعلى لاعتماد المنشآت وتوكيد الجودة (Supreme Accreditation & Quality Council).
 مهمتك إصدار ميثاق مشاريع التحسين الثلاثة المؤسسية المعتمدة النهائية بصيغة JSON فقط.
 
-قواعد إلزامية حاسمة لخط الأساس (Baseline Metrics):
-- القيمة الحالية (BASELINE) لكل مؤشر يجب أن تكون مطابقة حرفياً للبيانات الفعلية:
-  * مؤشر شيت جوجل: القيمة الحالية = النسبة المئوية الدقيقة من الشيت (مثلاً 90% أو 0% أو 10%).
-  * مؤشر بلاغات OVR: القيمة الحالية = العدد الفعلي الدقيق للبلاغات المسجلة المذكور في ملف الأدلة (مثلاً: 31 بلاغاً أو 5 بلاغات أو 8 بلاغات). المستهدف = صفر بلاغات (انعدام الأخطاء).
-  * مؤشر الملاحظات الميدانية: القيمة الحالية = عدد الملاحظات الميدانية المرصودة. المستهدف = 100% إغلاق وتصحيح.
-- يُمنع تخمين أي أرقام!
+قواعد إلزامية حاسمة:
+- المسمى الوظيفي الإكلينيكي فقط (Job Roles/Titles Only): يُمنع منعاً باتاً كتابة أي أسماء أشخاص حقيقيين أو وهميين في project_lead أو team_members؛ كما يُمنع كتابة وظائف تقنية شاذة بالمستشفيات الحكومية مثل (مهندس نظم، محلل نظم، مبرمج، فريق IT). اكتب المسمى الوظيفي الرسمي فقط:
+  * project_lead: مسمى وظيفي إكلينيكي/إداري رسمي فقط (مثلاً: رئيس قسم المختبرات وبنك الدم بالمستشفى، رئيس قسم الصيدلة بالمستشفى، استشاري ورئيس قسم الرعاية المركزة).
+  * team_members: مسميات وظيفية سريرية واقعية بالمستشفيات الحكومية (مثلاً: صيدلي إكلينيكي أول، مشرفة تمريض القسم، أخصائي سلامة المرضى وتوكيد الجودة، طبيب مقيم بالقسم).
+- خط الأساس: مطابق حرفياً لملف الأدلة دون تخمين.
+- مستهدف بلاغات OVR: «صفر أخطاء ضارة وحوادث جسيمة (Zero Harm) / إغلاق 100% من البلاغات خلال 48 ساعة».
+- التدخلات: حلول فيزيائية ومسار عمل صلب (Poka-Yoke فيزيائي وإجرائي، أقفال مرقمة، حواجز بصرية، تحقق مزدوج مستقل بتوقيعين، ومسؤوليات إكلينيكية وتمريضية فقط).
 
 الصيغة المطلوبة (JSON فقط ومصفوفة projects تحتوي على 3 مشاريع):
 {
@@ -795,7 +1018,7 @@ ${pass1Draft}
     {
       "title": "عنوان المشروع السريري الرصين المعبر عن المسار والحل الهندسي الصلب",
       "department_name": "القسم المعني",
-      "category": "سلامة المرضى / إدارة واستخدام الدواء / الرعاية الحرجة والطوارئ",
+      "category": "سلامة المرضى / إدارة واستخدام الدواء / الرعاية الحرجة والطوارئ / الخدمات التشخيصية وبنك الدم",
       "priority": "high",
       "forensic_corroboration": {
         "corroboration_level": "تطابق جنائي ثلاثي (3 من 3 مصادر) أو تطابق جنائي ثنائي (2 من 3 مصادر)",
@@ -823,15 +1046,15 @@ ${pass1Draft}
           "name": "اسم المؤشر الدقيق من شيت جوجل أو بلاغات OVR",
           "type": "process أو outcome",
           "baseline": "القيمة الحالية الفعلية الحقيقية (مثلاً 90% أو 31 بلاغ فعلي)",
-          "target": "المستهدف المنشود (مثلاً ≥98% أو صفر بلاغات)",
+          "target": "المستهدف المنشود الواقعي",
           "frequency": "شهري"
         }
       ],
       "interventions": [
-        { "step": "بوابة Poka-Yoke / تحقق مزدوج مستقل / مسار مغلق / تصعيد فوري للمدير الطبي", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "بوابة Poka-Yoke فيزيائية أو إجرائية / تحقق مزدوج مستقل / أقفال مرقمة / حواجز بصرية / مسار مغلق", "responsible": "المسمى الوظيفي الإكلينيكي أو التمريضي المسؤول", "duration": "أسبوعين" }
       ],
-      "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
-      "team_members": ["عضو 1", "عضو 2", "عضو 3"],
+      "project_lead": "المسمى الوظيفي فقط (مثلاً: رئيس قسم المختبرات وبنك الدم بالمستشفى - يُمنع منعاً باتاً كتابة أي أسماء أشخاص)",
+      "team_members": ["صيدلي إكلينيكي أول", "مشرفة تمريض القسم", "أخصائي سلامة المرضى وتوكيد الجودة", "طبيب مقيم بالقسم"],
       "linked_findings_summary": ["نص السلبية الميدانية ذات الصلة"]
     }
   ]
@@ -865,9 +1088,9 @@ ${verifiedGroundTruthDossier}
       throw new Error('لم يقم الذكاء الاصطناعي بتوليد مشاريع تحسين مطابقة للمواصفات.')
     }
 
-    console.log('[ImprovementProjectsService] Pass 4 (Supreme Certification) completed. Applying Ground-Truth KPI post-processing...')
+    console.log('[ImprovementProjectsService] Pass 4 (Supreme Certification) completed. Applying Ground-Truth & Role Sanitization...')
 
-    // Step C: Ground-Truth Anchoring Post-Processor (Guarantees zero guesswork in UI and DB)
+    // Step C: Ground-Truth & Clinical Role Sanitizer (Strictly Job Titles & Realistic Metrics)
     generatedList.forEach((p, idx) => {
       const matchingCrisis = selectedCrises[idx] || selectedCrises.find(c => 
         (p.category && c.category && p.category.includes(c.category)) ||
@@ -884,9 +1107,7 @@ ${verifiedGroundTruthDossier}
             const name = kpi.name || ''
             if (name.includes('OVR') || name.includes('حادث') || name.includes('بلاغ')) {
               kpi.baseline = `${matchingCrisis.ovr_count} بلاغ فعلي مسجل بالمنظومة`
-              if (!kpi.target || kpi.target.includes('2>=')) {
-                kpi.target = 'صفر بلاغات حوادث عارضة'
-              }
+              kpi.target = 'صفر أخطاء ضارة وحوادث جسيمة (مع إغلاق 100% من البلاغات خلال 48 ساعة)'
             } else if (name.includes('ملاحظ') || name.includes('سلبي') || name.includes('مرور')) {
               kpi.baseline = `${matchingCrisis.findings_count} ملاحظة وسلبية ميدانية مرصودة`
               kpi.target = '0 ملاحظات (إغلاق وتصحيح 100%)'
@@ -905,6 +1126,30 @@ ${verifiedGroundTruthDossier}
             }
           })
         }
+      }
+
+      // 1. Sanitize project_lead: STRICTLY NO HUMAN NAMES! Job roles/titles ONLY.
+      p.project_lead = sanitizeClinicalLead(p.project_lead, p.department_name, p.category)
+
+      // 2. Sanitize team_members: STRICTLY JOB ROLES / TITLES ONLY
+      p.team_members = sanitizeClinicalTeamMembers(p.team_members, p.department_name, p.category)
+
+      // 3. Sanitize interventions: remove any software API / sync engine / IT hallucinations
+      if (Array.isArray(p.interventions)) {
+        p.interventions = p.interventions.map(it => {
+          let step = typeof it === 'string' ? it : (it.step || '')
+          let responsible = typeof it === 'object' && it.responsible
+            ? sanitizeResponsibleRole(it.responsible, p.department_name, p.category)
+            : `رئيس قسم ${p.department_name || 'القسم'} ومشرفة التمريض`
+          
+          if (step.includes('API Bridge') || step.includes('Sync Engine') || step.includes('Google Sheet') || step.includes('LIMS v2.0')) {
+            step = 'تطبيق آلية التحقق المزدوج المستقل (Independent Dual Verification) وسجلات المطابقة الإلزامية قبل كل إجراء'
+          }
+          if (step.includes('قفل منطقي (Lock‑out) في CPOE') || step.includes('CPOE') || step.includes('قفل منطقي')) {
+            step = 'تطبيق قائمة التحقق السريرية الإجبارية (Mandatory Clinical Checklist) ومطابقة الهوية الثنائية قبل تنفيذ الإجراء'
+          }
+          return typeof it === 'string' ? step : { ...it, step, responsible }
+        })
       }
     })
 
@@ -929,7 +1174,7 @@ ${verifiedGroundTruthDossier}
         target_completion_date: targetDate.toISOString().split('T')[0],
         kpis: p.kpis || [],
         interventions: p.interventions || [],
-        project_lead: p.project_lead || hospital.quality_head_name || 'فريق الجودة بالمستشفى',
+        project_lead: p.project_lead || `رئيس ${p.department_name || 'القسم'} بالمستشفى`,
         team_members: p.team_members || [],
         estimated_duration_weeks: p.target_duration_weeks || 12,
         linked_findings_summary: p.linked_findings_summary || p.linked_findings || [],
