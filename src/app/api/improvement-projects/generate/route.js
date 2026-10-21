@@ -2,7 +2,7 @@ import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 import { ImprovementProjectsService } from '@/services/improvement-projects.service'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60
+export const maxDuration = 300
 
 async function checkDirectorateAuth(request) {
   const authHeader = request.headers.get('authorization')
@@ -35,15 +35,16 @@ export async function POST(request) {
     const auth = await checkDirectorateAuth(request)
     if (auth.error) return Response.json({ error: auth.error }, { status: auth.status })
 
-    const { hospitalId, focusDepartment, count = 3 } = await request.json()
+    const { hospitalId, focusDepartment } = await request.json()
 
     if (!hospitalId) {
       return Response.json({ error: 'معرّف المستشفى مطلوب لتوليد مشاريع التحسين' }, { status: 400 })
     }
 
     const service = new ImprovementProjectsService()
+    // Strictly generate the top 3 battle-tested institutional improvement projects through the 4-pass loop
     const projects = await service.generateProjectsForHospital(hospitalId, {
-      count: Math.min(Math.max(Number(count) || 3, 1), 5),
+      count: 3,
       focusDepartment: focusDepartment || null
     })
 

@@ -975,22 +975,32 @@ export default function ImprovementProjectsPage() {
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 4 }}>
-                  عدد المشاريع المقترحة:
-                </label>
-                <select
-                  disabled={isGenerating}
-                  value={generateCount}
-                  onChange={(e) => setGenerateCount(Number(e.target.value))}
-                  className="form-select"
-                  style={{ width: '100%', padding: '8px 12px', fontSize: 13 }}
-                >
-                  <option value={2}>2 مشاريع تحسين أساسية</option>
-                  <option value={3}>3 مشاريع تحسين متوازنة (موصى به)</option>
-                  <option value={4}>4 مشاريع شاملة</option>
-                  <option value={5}>5 مشاريع تفصيلية للأقسام الرئيسية</option>
-                </select>
+              {/* Locked strictly to 3 major strategic improvement projects */}
+              <div style={{
+                background: 'rgba(13, 148, 136, 0.08)',
+                border: '1px solid rgba(13, 148, 136, 0.25)',
+                borderRadius: 10,
+                padding: '12px 14px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#0f766e', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    🎯 عدد المشاريع المقترحة: 3 مشاريع استراتيجية معتمدة
+                  </span>
+                  <span style={{
+                    fontSize: 11,
+                    fontWeight: 800,
+                    padding: '3px 8px',
+                    borderRadius: 12,
+                    background: '#0d9488',
+                    color: '#fff',
+                    letterSpacing: 0.3
+                  }}>
+                    تدقيق جنائي رباعي (4 دورات نقد متتالية)
+                  </span>
+                </div>
+                <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
+                  سيتم استخراج أعمق 3 أزمات سريرية بالمستشفى وإخضاعها لـ <strong>4 دورات فحص وتدقيق ونقد جنائي صارم</strong> (تحقيق أولي ⬅️ تدقيق هجومي ⬅️ إعادة هندسة النظم ⬅️ اعتماد خط الأساس 100% من واقع شيت جوجل وبلاغات OVR والمرور الميداني دون أي تخمين).
+                </p>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
@@ -1012,12 +1022,12 @@ export default function ImprovementProjectsPage() {
                   {isGenerating ? (
                     <>
                       <div className="loading-spinner" style={{ width: 14, height: 14 }} />
-                      جاري فحص تقارير المرور والتحليل...
+                      <span>جاري التدقيق الجنائي الرباعي (4 دورات فحص ونقد)...</span>
                     </>
                   ) : (
                     <>
                       <SparklesIcon style={{ width: 16, height: 16 }} />
-                      بدء التحليل والتوليد
+                      بدء التحليل والتدقيق الرباعي
                     </>
                   )}
                 </button>

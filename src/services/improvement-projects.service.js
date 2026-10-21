@@ -17,6 +17,35 @@ async function checkHasTable(supabase) {
   return hasTableCache
 }
 
+async function callGroqWithRetry(payload, maxRetries = 3) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    if (res.ok) {
+      return await res.json()
+    }
+    if (res.status === 429 && attempt < maxRetries) {
+      const errText = await res.text()
+      let waitTime = 10000
+      const match = errText.match(/try again in ([0-9.]+)s/)
+      if (match && match[1]) {
+        waitTime = Math.ceil(parseFloat(match[1]) * 1000) + 2000
+      }
+      console.log(`[ImprovementProjectsService] Rate limit 429 hit. Waiting ${(waitTime / 1000).toFixed(1)}s before retry ${attempt + 1}...`)
+      await new Promise(r => setTimeout(r, waitTime))
+      continue
+    }
+    const errText = await res.text()
+    throw new Error(`Groq API Error (${res.status}): ${errText}`)
+  }
+}
+
 export class ImprovementProjectsService {
   constructor() {
     this.supabase = createServiceClient()
@@ -530,10 +559,8 @@ export class ImprovementProjectsService {
     }
   }
 
-  // 9. AI Generation: Propose Evidence-Based QIPs Grounded in Forensic Multi-Source Triangulation
+  // 9. AI Generation: 4-Pass Adversarial Investigation Loop (Investigate -> Ruthless Audit -> Hardening -> Supreme Certification)
   async generateProjectsForHospital(hospitalId, options = {}) {
-    const { count = 3, focusDepartment = null } = options
-
     // Step A: Perform full integrated crisis analysis (Findings + Google Sheet KPIs + OVR)
     const crisisAnalysis = await this.analyzeHospitalCrisis(hospitalId)
     const hospital = crisisAnalysis.hospital
@@ -543,86 +570,137 @@ export class ImprovementProjectsService {
       throw new Error('لم يتم العثور على أي أزمة سريرية مستوفية لشرط التطابق متعدد المصادر (مصدرين على الأقل من 3).')
     }
 
-    const primaryCrisis = crisisAnalysis.primary_crisis
-
+    // Strictly generate the top 3 major institutional improvement projects
+    const count = 3
     const selectedCrises = eligibleCrises.slice(0, count)
 
-    // Step B: Build verified multi-source forensic evidence dossier
-    const forensicDossierText = selectedCrises.map((ec, idx) => `
+    // Step B: Build verified ground-truth multi-source evidence dossier (Zero-guesswork baseline values)
+    const verifiedGroundTruthDossier = selectedCrises.map((c, idx) => {
+      const kpiLines = (c.critical_kpis_evidence || []).map(k => `• [مؤشر شيت جوجل]: ${k}`)
+      const ovrLines = `• [بلاغات الحوادث العارضة OVR]: إجمالي ${c.ovr_count} بلاغ فعلي مسجل بالمنظومة لهذا المسار`
+      const findingLines = `• [ملاحظات المرور والتفتيش]: إجمالي ${c.findings_count} ملاحظة وسلبية ميدانية مرصودة`
+      return `
 ======================================================================
-الأزمة السريرية رقم (${idx + 1}): [${ec.domain_name}]
-• التصنيف السريري: ${ec.category || 'سلامة المرضى'} (مستوى التطابق: ${ec.corroboration_level} - النتيجة: ${ec.score} نقطة)
-• الأدلة الجنائية الموثقة:
+الأزمة السريرية رقم (${idx + 1}): [${c.domain_name}]
+• التصنيف السريري: ${c.category || 'سلامة المرضى'}
+• مستوى التطابق الجنائي: ${c.corroboration_level} (مجموع النقاط: ${c.score})
 
-١. الشاهد الأول (المرور الميداني والسلبيات المرصودة):
-${ec.correlating_findings_evidence.length > 0 ? ec.correlating_findings_evidence.join('\n') : 'لا توجد سلبيات مرصودة بهذا الشاهد (اكتفاء بالمصدرين الآخرين)'}
+أرقام خط الأساس الحقيقية الثابتة (Ground Truth Metrics - يُمنع منعاً باتاً تخمين أو اختراع أرقام أخرى):
+${kpiLines.length > 0 ? kpiLines.join('\n') : '• لا توجد مؤشرات رقمية بالشيت لهذا المسار'}
+${ovrLines}
+${findingLines}
 
-٢. الشاهد الثاني (شيت مؤشرات الأداء الحسابية الرسمية بالمديرية):
-${ec.critical_kpis_evidence.length > 0 ? ec.critical_kpis_evidence.join('\n') : 'لا توجد مؤشرات مسجلة بهذا الشاهد'}
+أدلة الشواهد التفصيلية الموثقة:
+١. الشاهد الأول (المرور الميداني والسلبيات):
+${(c.correlating_findings_evidence || []).slice(0, 4).join('\n') || 'لا توجد سلبيات مرصودة'}
 
-٣. الشاهد الثالث (بلاغات الحوادث العارضة OVR المسجلة من الأطباء والتمريض):
-${ec.ovr_incidents_evidence.length > 0 ? ec.ovr_incidents_evidence.join('\n') : 'لا توجد بلاغات مسجلة بهذا الشاهد'}
+٢. الشاهد الثاني (شيت مؤشرات جوجل الرسمي بالمديرية):
+${(c.critical_kpis_evidence || []).slice(0, 4).join('\n') || 'لا توجد مؤشرات مسجلة'}
+
+٣. الشاهد الثالث (بلاغات OVR الحقيقية المسجلة من الطاقم الطبي والتمريضي):
+${(c.ovr_incidents_evidence || []).slice(0, 4).join('\n') || 'لا توجد بلاغات مسجلة'}
 ======================================================================
-`).join('\n')
+`
+    }).join('\n')
 
-    // AI Prompt - Blazing Intelligence (الذكاء الحارق)
-    const systemPrompt = `أنت المراجع الإكلينيكي الأعلى وخبير هندسة النظم السريرية وتوكيد الجودة المعتمد (GAHAR Fellow & Senior Clinical Systems Architect).
-مهمتك تصميم ميثاق مشروع تحسين جودة مؤسسي استراتيجي رفيع المستوى (Institutional Quality Improvement Project - QIP) لمعالجة الأزمات السريرية المعقدة للمستشفى، والمستخرجة من التحقيق الجنائي الإكلينيكي متعدد المصادر (مرور ميداني + شيت مؤشرات جوجل + بلاغات OVR).
+    console.log(`[ImprovementProjectsService] Starting 4-Pass Adversarial Investigation Loop for: ${hospital.name}...`)
 
-قواعد الذكاء الحارق الصارمة لهندسة مشاريع التحسين (Blazing Clinical Intelligence Rules):
-1. قاعدة عمق المشكلة السريرية مقابل عدد الشواهد (Critical Clinical Depth Mandate):
-   - القاعدة الذهبية الحاسمة: «مشروع تحسين لمشكلة إكلينيكية عميقة ومعقدة تمس حياة وسلامة المريض (مثل الأوامر الشفهية 0% أو التدهور السريري 0% أو أدوية LASA أو أخطاء هوية المريض ونقل الدم) بمصدرين فقط، له الأولوية القصوى والمطلقة على أي مشكلة بسيطة ولو توافرت لها 3 مصادر».
-   - وجود شاهدين إكلينيكيين مؤكدين لمشكلة عميقة يكفي تماماً ويُعتبر دليلاً جنائياً كافياً ومعتمداً لإطلاق مشروع تحسين مؤسسي عالي القيمة.
-   - إذا توافرت 3 مصادر لمشكلة عميقة فهو ممتاز، ولكن لا يُشترط أبداً 3 مصادر إذا كانت المشكلة عميقة وتتوافر لها دلائل قاطعة من مصدرين.
+    // --- PASS 1: Initial Deep Investigation & Candidate Charters ---
+    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى بالمستشفى وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
+قواعد خط الأساس الصارمة:
+- خط الأساس (Baseline) لكل مؤشر يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة (النسبة المئوية من شيت جوجل، والعدد الفعلي لبلاغات OVR، وعدد الملاحظات الميدانية). ممنوع تخمين أرقام.
+- صياغة المشكلة، السبب الجذري، والتدخلات الهندسية لكل مشروع بشكل تفصيلي ودقيق.`
 
-2. الحظر المطلق والكامل لأي مشاريع تافهة أو سطحية (Zero-Tolerance For Superficial Tasks):
-   - يُمنع منعاً باتاً صياغة أي مشروع بعنوان أو بمضمون يخص:
-     * نظافة الأسطح أو الأرضيات أو المفروشات أو سلات المهملات أو المطهرات الروتينية.
-     * استكمال أو جرد حقائب الانسكابات الكيميائية أو ماسة المواد أو كروت فحص الطفايات أو مقاييس الكلور.
-     * تعليق بوسترات أو لافتات أو كروت تعريف للموظفين أو الثلاجات أو حقوق المرضى.
-     * تنظيم وترتيب المخازن أو الأرفف أو الدواليب أو مكاتب الأرشيف.
-     * برامج تدريبية نظرية أو ورش عمل كحل أساسي (التدريب بمفرده لا يصلح كحل لمشروع تحسين مؤسسي).
-   - المشكلة المستهدفة يجب أن تكون «فشلاً هيكلياً في مسار الرعاية الطبية» (Complex Systemic Clinical Breakdown).
+    const pass1User = `بيانات المستشفى: ${hospital.name}
+ملف الأدلة الجنائية للأزمات المعتمدة بالمستشفى:
+${verifiedGroundTruthDossier}
 
-3. طبيعة الحلول التدخلية المقترحة (Structural Engineering Interventions):
-   - بوابات إيقاف وفحص صلبة مانعة للخطأ (Poka-Yoke Hard-Stops) تمنع إتمام الإجراء الطبي إلا بعد تحقق إلزامي.
-   - نظام التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check) بواسطة اثنين من الممارسين.
-   - مسار التوثيق الرقمي والفيزيائي المغلق (Closed-Loop Workflow).
-   - بروتوكول تصعيد قيادي فوري للمدير الطبي عند تجاوز حدود الخطر.
+صغ المسودة التحقيقية الأولية للمشاريع الثلاثة بأرقام خط الأساس الحقيقية الموثقة.`
 
-4. توثيق كائن "forensic_corroboration" بدقة تامة:
-   - corroboration_level: "تطابق جنائي ثلاثي (3 من 3 مصادر)" أو "تطابق جنائي ثنائي (2 من 3 مصادر معتمدة - أزمة إكلينيكية عميقة)"
-   - source_1_field_finding: نص الشاهد الأول الميداني الدقيق أو "لا ينطبق (اكتفاء بالمصدرين الآخرين)"
-   - source_2_sheet_kpi: اسم المؤشر الحقيقي مع النسبة المسجلة من الشيت
-   - source_3_staff_ovr: واقعة وبلاغ OVR الحقيقي المسجل من الطاقم أو "لا ينطبق"
+    const p1Data = await callGroqWithRetry({
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      messages: [
+        { role: 'system', content: pass1System },
+        { role: 'user', content: pass1User }
+      ],
+      temperature: 0.2,
+      max_tokens: 2200
+    })
+    const pass1Draft = p1Data.choices[0].message.content
+    console.log('[ImprovementProjectsService] Pass 1 (Forensic Investigation) completed.')
 
-5. التمايز التام بين المشاريع المقترحة (Zero Duplication):
-   - يجب أن يستهدف كل مشروع أزمة سريرية مستقلة تماماً من الأزمات المرفقة بملف الأدلة.
+    // --- PASS 2: Ruthless Forensic Audit & Attack ---
+    const pass2System = `أنت رئيس لجان التدقيق الصارم بالهيئة العامة للاعتماد والرقابة الصحية (Chief Clinical Auditor).
+دورك أن تتقمص شخصية المراجع الصارم المتشدد الذي يهاجم أي ثغرة أو حل رخو بالدليل:
+1. هل هناك أي حل يعتمد على التدريب أو التوعية أو المنشورات الورقية؟ ارفضه فوراً واشترط بوابات Poka-Yoke صلبة وتحقق مزدوج مستقل.
+2. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
+3. هل التحليل الجذري كشف الفشل الهيكلي في مسار العمل (Process Failure)؟
+اكتب تقرير التدقيق الجنائي الصارم والمآخذ الإكلينيكية على المسودة دون أي مجاملة.`
 
-6. المصداقية التامة وخلو خط الأساس (Baseline) من الهلوسة أو الأرقام الوهمية:
-   - يُمنع اختلاق أو تخمين أي وفيات أو أرقام غير واردة بالأدلة. خط الأساس يجب أن يقتبس حرفياً الأرقام الفعلية لشيت جوجل وبلاغات OVR.
+    const pass2User = `المسودة المقترحة للمشاريع الثلاثة:
+${pass1Draft}
 
-أخرج النتيجة بصيغة JSON فقط.`
+ملف الأدلة الجنائية الأصلي:
+${verifiedGroundTruthDossier}
 
-    const userPrompt = `بيانات المستشفى والأزمات السريرية العميقة المستخرجة عبر التحقيق الجنائي:
-- اسم المستشفى: ${hospital.name} (مطابق لشيت جوجل: ${hospital.matchedSheetName || 'غير مسجل'})
-- إجمالي السلبيات المرصودة بالمرور (المؤهلة): ${crisisAnalysis.stats.eligibleFindings}
-- إجمالي مؤشرات الأداء المفحوصة بشيت جوجل: ${crisisAnalysis.stats.totalSheetKpis} (منها ${crisisAnalysis.stats.criticalSheetKpis} مؤشر في حالة خطر/حرج)
-- إجمالي بلاغات الحوادث العارضة (OVR) السريرية: ${crisisAnalysis.stats.totalOvrRecords} بلاغ
+اكتب تقرير التدقيق الجنائي الصارم والمآخذ الإكلينيكية على المسودة.`
 
-ملف الأدلة الجنائية للأزمات المعتمدة بالمستشفى (Evidence Dossier):
-${forensicDossierText}
+    const p2Data = await callGroqWithRetry({
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      messages: [
+        { role: 'system', content: pass2System },
+        { role: 'user', content: pass2User }
+      ],
+      temperature: 0.2,
+      max_tokens: 2200
+    })
+    const pass2Critique = p2Data.choices[0].message.content
+    console.log('[ImprovementProjectsService] Pass 2 (Ruthless Audit Critique) completed.')
 
-المطلوب:
-صِغ بالضبط عدد (${count}) مقترحات مشاريع تحسين مؤسسية جادة لمعالجة هذه الأزمات السريرية، بحيث يركز كل مشروع على مسار سريري حرج ومستقل تماماً ويثبت تطابقه مع مصدرين أو 3 مصادر.
+    // --- PASS 3: Radical Re-Engineering & Hardening ---
+    const pass3System = `أنت كبير مهندسي النظم السريرية ورئيس المجلس الاستشاري للجودة (Chief Clinical Systems Architect).
+تلقيت تقرير التدقيق الصارم، ومهمتك إعادة هندسة وبناء المشاريع الثلاثة وسد كل ثغرة نقدية:
+1. استبدال أي إجراء إداري أو توعوي ببوابات Poka-Yoke صلبة (حواجز تمنع إتمام الإجراء الطبي إلا بعد تحقق إلزامي)، وتحقق مزدوج مستقل إجباري، وتصعيد آلي فوري للمدير الطبي.
+2. ضبط أرقام خط الأساس لتكون مستخرجة 100% من أرقام شيت جوجل وبلاغات OVR الثابتة بلا أي تخمين أو اجتهاد.`
 
-الصيغة المطلوبة (JSON فقط - مصفوفة projects تحتوي على ${count} مشروع):
+    const pass3User = `تقرير التدقيق الصارم:
+${pass2Critique}
+
+المسودة السابقة:
+${pass1Draft}
+
+أعد صياغة وهندسة المشاريع الثلاثة بحلول قاطعة وصلبة تعالج كافة مآخذ التدقيق.`
+
+    const p3Data = await callGroqWithRetry({
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      messages: [
+        { role: 'system', content: pass3System },
+        { role: 'user', content: pass3User }
+      ],
+      temperature: 0.15,
+      max_tokens: 2600
+    })
+    const pass3Overhaul = p3Data.choices[0].message.content
+    console.log('[ImprovementProjectsService] Pass 3 (Re-Engineering & Hardening) completed.')
+
+    // --- PASS 4: Supreme Certification & Final Institutional JSON Charter ---
+    const pass4System = `أنت المجلس الإكلينيكي الأعلى لاعتماد المنشآت وتوكيد الجودة (Supreme Accreditation & Quality Council).
+مهمتك إصدار ميثاق مشاريع التحسين الثلاثة المؤسسية المعتمدة النهائية بصيغة JSON فقط.
+
+قواعد إلزامية حاسمة لخط الأساس (Baseline Metrics):
+- القيمة الحالية (BASELINE) لكل مؤشر يجب أن تكون مطابقة حرفياً للبيانات الفعلية:
+  * مؤشر شيت جوجل: القيمة الحالية = النسبة المئوية الدقيقة من الشيت (مثلاً 90% أو 0% أو 10%).
+  * مؤشر بلاغات OVR: القيمة الحالية = العدد الفعلي الدقيق للبلاغات المسجلة المذكور في ملف الأدلة (مثلاً: 31 بلاغاً أو 5 بلاغات أو 8 بلاغات). المستهدف = صفر بلاغات (انعدام الأخطاء).
+  * مؤشر الملاحظات الميدانية: القيمة الحالية = عدد الملاحظات الميدانية المرصودة. المستهدف = 100% إغلاق وتصحيح.
+- يُمنع تخمين أي أرقام!
+
+الصيغة المطلوبة (JSON فقط ومصفوفة projects تحتوي على 3 مشاريع):
 {
   "projects": [
     {
-      "title": "عنوان المشروع السريري الرصين المعبر عن المسار والحل الصلب",
+      "title": "عنوان المشروع السريري الرصين المعبر عن المسار والحل الهندسي الصلب",
       "department_name": "القسم المعني",
-      "category": "سلامة المرضى / إدارة واستخدام الدواء / الرعاية الحرجة والطوارئ / مكافحة العدوى والتعقيم",
+      "category": "سلامة المرضى / إدارة واستخدام الدواء / الرعاية الحرجة والطوارئ",
       "priority": "high",
       "forensic_corroboration": {
         "corroboration_level": "تطابق جنائي ثلاثي (3 من 3 مصادر) أو تطابق جنائي ثنائي (2 من 3 مصادر)",
@@ -630,7 +708,7 @@ ${forensicDossierText}
         "source_2_sheet_kpi": "اسم المؤشر من شيت جوجل مع القيمة الفعلية المسجلة",
         "source_3_staff_ovr": "واقعة وبلاغ OVR الحقيقي المسجل من الطاقم"
       },
-      "why_hard_to_solve": "شرح لماذا هذه المشكلة مستعصية ولا تُحل بالتدريب البسيط وما هي عوائق مسار العمل",
+      "why_hard_to_solve": "شرح لماذا المشكلة مستعصية ولا تُحل بالتدريب البسيط وما هي عوائق مسار العمل",
       "root_cause_analysis": "تحليل الأسباب الجذرية النظامية للخلل في مسار العمل (Process Failure)",
       "prioritization_matrix": {
         "patient_safety_risk": 5,
@@ -638,62 +716,104 @@ ${forensicDossierText}
         "process_complexity": 5,
         "strategic_alignment": 5,
         "total_score": 19,
-        "eligibility_justification": "أزمة سريرية مثبتة جنائياً بأدلة إكلينيكية صلبة تمس سلامة حياة المرضى."
+        "eligibility_justification": "أزمة سريرية حيوية معتمدة بأدلة إكلينيكية صلبة تمس سلامة حياة المرضى."
       },
       "problem_statement": "بيان المشكلة يربط شهود الإثبات دون اختلاق وفيات غير موثقة",
-      "baseline_metrics": "أرقام خط الأساس الحقيقية المستخرجة حرفياً من شيت مؤشرات جوجل وبلاغات OVR",
+      "baseline_metrics": "أرقام خط الأساس الحقيقية المستخرجة حرفياً من الشيت وبلاغات OVR",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
       "evidence_reference": "معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)",
       "target_duration_weeks": 12,
       "kpis": [
-        { "name": "مؤشر العملية للالتزام بالمسار", "type": "process", "baseline": "الرقم الحقيقي من شيت جوجل أو قيد التدقيق الأولي", "target": "95%", "frequency": "شهري" },
-        { "name": "مؤشر النتيجة السريرية/التشغيلية", "type": "outcome", "baseline": "الرقم الحقيقي من شيت جوجل أو قيد الرصد المرجعي", "target": "المعيار المنشود", "frequency": "شهري" }
+        {
+          "name": "اسم المؤشر الدقيق من شيت جوجل أو بلاغات OVR",
+          "type": "process أو outcome",
+          "baseline": "القيمة الحالية الفعلية الحقيقية (مثلاً 90% أو 31 بلاغ فعلي)",
+          "target": "المستهدف المنشود (مثلاً ≥98% أو صفر بلاغات)",
+          "frequency": "شهري"
+        }
       ],
       "interventions": [
-        { "step": "إعادة هندسة المسار / وضع بوابة فحص إلزامية Poka-Yoke / تحقق مزدوج مستقل / بروتوكول تصعيد", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
+        { "step": "بوابة Poka-Yoke / تحقق مزدوج مستقل / مسار مغلق / تصعيد فوري للمدير الطبي", "responsible": "المسؤول عن التنفيذ", "duration": "أسبوعين" }
       ],
       "project_lead": "المسؤول المقترح عن قيادة المشروع بالمستشفى",
       "team_members": ["عضو 1", "عضو 2", "عضو 3"],
-      "linked_findings_summary": ["نص السلبية المرصودة ذات الصلة"]
+      "linked_findings_summary": ["نص السلبية الميدانية ذات الصلة"]
     }
   ]
 }`
 
-    // Call Groq API
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.15,
-        max_tokens: 6000
-      })
+    const pass4User = `المشاريع بعد إعادة هندستها وسد الثغرات في Pass 3:
+${pass3Overhaul}
+
+ملف الأدلة الجنائية الأصلي بأرقامه الحقيقية الثابتة:
+${verifiedGroundTruthDossier}
+
+أخرج ميثاق المشاريع الثلاثة النهائي المعتمد بصيغة JSON فقط.`
+
+    const p4Data = await callGroqWithRetry({
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      messages: [
+        { role: 'system', content: pass4System },
+        { role: 'user', content: pass4User }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.1,
+      max_tokens: 5000
     })
 
-    if (!res.ok) {
-      const errText = await res.text()
-      throw new Error(`Groq AI Error (${res.status}): ${errText}`)
-    }
-
-    const aiResponse = await res.json()
-    const choice = aiResponse.choices?.[0]
+    const choice = p4Data.choices?.[0]
     const content = choice?.message?.content || '{}'
     const parsed = JSON.parse(content)
-    const generatedList = parsed.projects || []
+    const generatedList = (parsed.projects || []).slice(0, 3)
 
     if (!Array.isArray(generatedList) || generatedList.length === 0) {
       throw new Error('لم يقم الذكاء الاصطناعي بتوليد مشاريع تحسين مطابقة للمواصفات.')
     }
 
-    // Save and return generated projects
+    console.log('[ImprovementProjectsService] Pass 4 (Supreme Certification) completed. Applying Ground-Truth KPI post-processing...')
+
+    // Step C: Ground-Truth Anchoring Post-Processor (Guarantees zero guesswork in UI and DB)
+    generatedList.forEach((p, idx) => {
+      const matchingCrisis = selectedCrises[idx] || selectedCrises.find(c => 
+        (p.category && c.category && p.category.includes(c.category)) ||
+        (p.title && c.domain_name && (p.title.includes(c.domain_name.slice(0, 10)) || c.domain_name.includes(p.title.slice(0, 10))))
+      ) || selectedCrises[idx]
+
+      if (matchingCrisis) {
+        // Anchor baseline_metrics text
+        p.baseline_metrics = `مؤشرات شيت جوجل: ${(matchingCrisis.critical_kpis_evidence || []).join(' | ') || 'لا توجد'} - بلاغات OVR: ${matchingCrisis.ovr_count} بلاغ فعلي مسجل - ملاحظات المرور: ${matchingCrisis.findings_count} ملاحظة ميدانية`
+
+        // Anchor KPIs
+        if (Array.isArray(p.kpis)) {
+          p.kpis.forEach(kpi => {
+            const name = kpi.name || ''
+            if (name.includes('OVR') || name.includes('حادث') || name.includes('بلاغ')) {
+              kpi.baseline = `${matchingCrisis.ovr_count} بلاغ فعلي مسجل بالمنظومة`
+              if (!kpi.target || kpi.target.includes('2>=')) {
+                kpi.target = 'صفر بلاغات حوادث عارضة'
+              }
+            } else if (name.includes('ملاحظ') || name.includes('سلبي') || name.includes('مرور')) {
+              kpi.baseline = `${matchingCrisis.findings_count} ملاحظة وسلبية ميدانية مرصودة`
+              kpi.target = '0 ملاحظات (إغلاق وتصحيح 100%)'
+            } else if (matchingCrisis.critical_kpis_evidence && matchingCrisis.critical_kpis_evidence.length > 0) {
+              for (const sheetKpiText of matchingCrisis.critical_kpis_evidence) {
+                const parts = sheetKpiText.split('=')
+                const kpiTitle = parts[0]?.trim() || ''
+                const kpiValPart = parts[1] || ''
+                const matchVal = kpiValPart.match(/([0-9.]+%?)/)
+                if (kpiTitle && (name.includes(kpiTitle.slice(0, 12)) || kpiTitle.includes(name.slice(0, 12)))) {
+                  if (matchVal && matchVal[1]) {
+                    kpi.baseline = matchVal[1]
+                  }
+                }
+              }
+            }
+          })
+        }
+      }
+    })
+
+    // Step D: Save and return generated projects
     const savedProjects = []
     for (const p of generatedList) {
       const targetDate = new Date()
@@ -708,7 +828,7 @@ ${forensicDossierText}
         priority: p.priority || 'high',
         status: 'draft',
         problem_statement: p.problem_statement || p.problem || 'بيان المشكلة قيد القياس والتدقيق',
-        baseline_metrics: p.baseline_metrics || p.baseline || 'مستند إلى شيت مؤشرات الأداء الرسمي بالمديرية وبلاغات OVR',
+        baseline_metrics: p.baseline_metrics || 'مستند إلى شيت مؤشرات الأداء الرسمي بالمديرية وبلاغات OVR',
         smart_goal: p.smart_goal || p.goal || 'رفع نسبة الامتثال لحزمة التدابير الإكلينيكية إلى 95% خلال 12 أسبوعاً',
         evidence_reference: p.evidence_reference || p.evidence || 'معايير الهيئة العامة للاعتماد والرقابة الصحية (GAHAR)',
         target_completion_date: targetDate.toISOString().split('T')[0],
@@ -722,7 +842,7 @@ ${forensicDossierText}
         why_hard_to_solve: p.why_hard_to_solve || '',
         root_cause_analysis: p.root_cause_analysis || '',
         forensic_corroboration: p.forensic_corroboration || null,
-        directorate_notes: `مشروع تحسين جودة مؤسسي مستند إلى التحقيق الجنائي ثلاثي الأركان (${p.forensic_corroboration?.corroboration_level || 'مصدران أو أكثر'})`
+        directorate_notes: `مشروع تحسين جودة مؤسسي معتمد عبر التدقيق الجنائي الرباعي (4 دورات نقد متتالية) وتطابق ثلاثي الأركان (${p.forensic_corroboration?.corroboration_level || 'مصدران أو أكثر'})`
       }
 
       const saved = await this.saveProject(projectRecord)
