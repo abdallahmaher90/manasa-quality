@@ -444,100 +444,158 @@ export class ImprovementProjectsService {
     const rawOvrRecords = await ovrService.getHospitalOVR(hospitalId)
     const eligibleOvrRecords = (rawOvrRecords || []).filter(o => !isTrivialNoise(o.description) && !isTrivialNoise(o.subcategory))
 
-    // 5. Deep Clinical Crisis Tracks (GAHAR / JCI Patient Safety & Clinical Governance)
+    // 5. Comprehensive Clinical Crisis Tracks (Covering all hospital specialties and departments)
     const CLINICAL_CRISIS_TRACKS = [
       {
-        id: 'VERBAL_ORDERS_HANDOVER',
-        name: 'الأوامر الشفهية والهاتفية والتسليم والتسلم الحرج (NPSG: Verbal Orders & Handover)',
-        category: 'سلامة المرضى (NPSG)',
-        clinicalWeight: 2.5,
-        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية') || (k.Indicator || '').includes('تسليم وتسلم'),
-        findingMatch: f => (f.original_text || '').includes('شفه') || (f.original_text || '').includes('هاتف') || (f.original_text || '').includes('تسليم وتسلم') || (f.original_text || '').includes('isbar'),
-        ovrMatch: o => (o.description || '').includes('isbar') || (o.description || '').includes('تسليم وتسلم') || (o.description || '').includes('شفه') || (o.subcategory || '').includes('handover') || (o.subcategory || '').includes('Compliance with handover')
+        id: 'LABORATORY_BLOOD_BANK',
+        name: 'المعمل وبنك الدم وسلامة نقل الدم والفحوصات الحرجة (Laboratory & Blood Safety)',
+        category: 'الخدمات التشخيصية وبنك الدم',
+        deptMatch: d => d.includes('معمل') || d.includes('مختبر') || d.includes('بنك الدم') || d.includes('تحاليل'),
+        findingMatch: f => f.includes('معمل') || f.includes('بنك دم') || f.includes('عينات') || f.includes('كواشف') || f.includes('نقل دم') || f.includes('تطابق فصائل') || f.includes('نتائج حرجه') || f.includes('ثلاجة المعمل'),
+        ovrMatch: o => o.includes('Lab') || o.includes('Blood') || o.includes('معمل') || o.includes('دم') || o.includes('عينة') || o.includes('مجلطة'),
+        kpiMatch: k => (k.Indicator || '').includes('النتائج الحرجة') || (k.Indicator || '').includes('نقل الدم') || (k.Indicator || '').includes('المعمل')
       },
       {
-        id: 'PATIENT_IDENTIFICATION',
-        name: 'التحقق من هوية المريض ومطابقة الأساور ونقل الدم (NPSG: Patient Identification)',
-        category: 'سلامة المرضى (NPSG)',
-        clinicalWeight: 2.5,
-        kpiMatch: k => (k.Indicator || '').includes('التعريف الصحيح للمريض') || (k.Indicator || '').includes('الأخطاء في عناصر الرعاية المرتبطة بالتعريف'),
-        findingMatch: f => (f.original_text || '').includes('تعريف المريض') || (f.original_text || '').includes('اسورة') || (f.original_text || '').includes('اسطورة') || (f.original_text || '').includes('اساور') || (f.original_text || '').includes('كانولا غير معرف'),
-        ovrMatch: o => (o.subcategory || '').includes('Patient identification') || (o.description || '').includes('اسطوره') || (o.description || '').includes('اسورة') || (o.description || '').includes('اساور') || (o.description || '').includes('تعريف المريض') || (o.description || '').includes('نقل الدم')
-      },
-      {
-        id: 'CLINICAL_DETERIORATION_ALARMS',
-        name: 'الاستجابة للتدهور السريري والإنذارات الحرجة وجاهزية الإنعاش (Rapid Response & Resuscitation)',
+        id: 'EMERGENCY_TRIAGE_CARE',
+        name: 'قسم الطوارئ والاستقبال وفرز الحالات والإنعاش القلبي الرئوي (Emergency & Resuscitation)',
         category: 'الرعاية الحرجة والطوارئ',
-        clinicalWeight: 2.4,
-        kpiMatch: k => (k.Indicator || '').includes('التدهور الإكلينيكي') || (k.Indicator || '').includes('الإنذارات الحرجة') || (k.Indicator || '').includes('وفيات العناية'),
-        findingMatch: f => (f.original_text || '').includes('تدهور') || (f.original_text || '').includes('الإنذارات') || (f.original_text || '').includes('الانذارات') || (f.original_text || '').includes('كود بلو') || (f.original_text || '').includes('cpr') || (f.original_text || '').includes('جهاز dc'),
-        ovrMatch: o => (o.description || '').includes('تنفس صناعي') || (o.description || '').includes('ريسفنت') || (o.description || '').includes('تدهور') || (o.description || '').includes('انعاش') || (o.description || '').includes('cpr')
+        deptMatch: d => d.includes('طوارئ') || d.includes('استقبال') || d.includes('فرز') || d.includes('ترياج'),
+        findingMatch: f => f.includes('طوارئ') || f.includes('استقبال') || f.includes('فرز') || f.includes('cpr') || f.includes('كود بلو') || f.includes('انعاش') || f.includes('صدمات'),
+        ovrMatch: o => o.includes('Emergency') || o.includes('Triage') || o.includes('طوارئ') || o.includes('استقبال') || o.includes('انعاش') || o.includes('cpr'),
+        kpiMatch: k => (k.Indicator || '').includes('التدهور') || (k.Indicator || '').includes('الإنذارات')
       },
       {
-        id: 'MEDICATION_SAFETY_LASA_HIGH_ALERT',
-        name: 'الأدوية عالية الخطورة والمتشابهة (LASA) وعربة الطوارئ والتوافق الدوائي (Medication Safety)',
+        id: 'NICU_PEDIATRICS',
+        name: 'الحضانات ورعاية حديثي الولادة والمبتسرين وطب الأطفال (NICU & Neonatal Safety)',
+        category: 'صحة الأطفال وحديثي الولادة',
+        deptMatch: d => d.includes('حضان') || d.includes('مبتسر') || d.includes('اطفال') || d.includes('أطفال'),
+        findingMatch: f => f.includes('حضان') || f.includes('مبتسر') || f.includes('طفل') || f.includes('اطفال') || f.includes('حديثي الولادة') || f.includes('صفراء') || f.includes('ضوئي'),
+        ovrMatch: o => o.includes('NICU') || o.includes('حضان') || o.includes('مبتسر') || o.includes('اطفال'),
+        kpiMatch: k => (k.Indicator || '').includes('وفيات الحضانات') || (k.Indicator || '').includes('الحضانات')
+      },
+      {
+        id: 'ICU_CRITICAL_CARE',
+        name: 'العناية المركزة والاستجابة للتدهور السريري والإنذارات الحرجة (ICU & Critical Care)',
+        category: 'الرعاية الحرجة والطوارئ',
+        deptMatch: d => d.includes('عناي') || d.includes('مركزه') || d.includes('icu'),
+        findingMatch: f => f.includes('عناي') || f.includes('تدهور') || f.includes('تنفس صناعي') || f.includes('انذارات حرجه') || f.includes('قرح فراش') || f.includes('قساطر وريدية'),
+        ovrMatch: o => o.includes('ICU') || o.includes('عناي') || o.includes('تنفس صناعي') || o.includes('ريسفنت'),
+        kpiMatch: k => (k.Indicator || '').includes('وفيات العناية') || (k.Indicator || '').includes('التدهور الإكلينيكي') || (k.Indicator || '').includes('الإنذارات الحرجة')
+      },
+      {
+        id: 'SURGICAL_OR_ANESTHESIA',
+        name: 'العمليات الجراحية والتخدير والأمان الجراحي والوقت المستقطع (Surgical Safety & OR)',
+        category: 'الخدمات الجراحية والتخدير',
+        deptMatch: d => d.includes('عمليات') || d.includes('جراح') || d.includes('تخدير') || d.includes('افاقه'),
+        findingMatch: f => f.includes('عمليات') || f.includes('جراح') || f.includes('وقت مستقطع') || f.includes('تخدير') || f.includes('موضع الجراح') || f.includes('افاقة'),
+        ovrMatch: o => o.includes('Surgical') || o.includes('عمليات') || o.includes('جراح') || o.includes('تخدير') || o.includes('الوقت المستقطع'),
+        kpiMatch: k => (k.Indicator || '').includes('الجراحة') || (k.Indicator || '').includes('تحديد موضع')
+      },
+      {
+        id: 'MEDICATION_SAFETY_PHARMACY',
+        name: 'الصيدلية وسلامة الدواء والأدوية عالية الخطورة وLASA (Medication Safety & Pharmacy)',
         category: 'إدارة واستخدام الدواء',
-        clinicalWeight: 2.4,
-        kpiMatch: k => (k.Indicator || '').includes('عالية الخطورة') || (k.Indicator || '').includes('المتشابهة في الشكل') || (k.Indicator || '').includes('النتائج الدوائية العكسية'),
-        findingMatch: f => (f.original_text || '').includes('عاليه الخطور') || (f.original_text || '').includes('عالية الخطور') || (f.original_text || '').includes('المتشابهه') || (f.original_text || '').includes('كراش') || (f.original_text || '').includes('التوافق الدوائي') || (f.original_text || '').includes('lasa'),
-        ovrMatch: o => (o.subcategory || '').includes('Medication') || (o.description || '').includes('كراش') || (o.description || '').includes('محاليل') || (o.description || '').includes('انسولين') || (o.description || '').includes('دوائ')
+        deptMatch: d => d.includes('صيدل') || d.includes('دواء'),
+        findingMatch: f => f.includes('صيدل') || f.includes('دواء') || f.includes('دوائ') || f.includes('كراش') || f.includes('عاليه الخطور') || f.includes('lasa') || f.includes('ترياق') || f.includes('التوافق الدوائي'),
+        ovrMatch: o => o.includes('Medication') || o.includes('صيدل') || o.includes('دواء') || o.includes('محاليل') || o.includes('انسولين'),
+        kpiMatch: k => (k.Indicator || '').includes('عالية الخطورة') || (k.Indicator || '').includes('المتشابهة') || (k.Indicator || '').includes('النتائج الدوائية العكسية')
       },
       {
-        id: 'SURGICAL_SAFETY_TIME_OUT',
-        name: 'الأمان الجراحي والوقت المستقطع وتفادي جراحة المريض الخطأ (Surgical Safety & Time-Out)',
+        id: 'INFECTION_CONTROL_CSSD',
+        name: 'مكافحة العدوى والتعقيم المركزي والعزل الطبي وإدارة النفايات (Infection Prevention & CSSD)',
+        category: 'مكافحة العدوى والسلامة البيئية',
+        deptMatch: d => d.includes('تعقيم') || d.includes('مكافحة العدوى') || d.includes('عزل') || d.includes('نفايات'),
+        findingMatch: f => f.includes('تعقيم') || f.includes('اوتوكلاف') || f.includes('عزل') || f.includes('واقيات') || f.includes('نفايات خطره') || f.includes('مكافحه العدوى') || f.includes('غرفة النفايات'),
+        ovrMatch: o => o.includes('Infection') || o.includes('PPE') || o.includes('تعقيم') || o.includes('عدوى') || o.includes('نفايات') || o.includes('وخز'),
+        kpiMatch: k => (k.Indicator || '').includes('مكافحة العدوى') || (k.Indicator || '').includes('الحقن الآمن')
+      },
+      {
+        id: 'HEMODIALYSIS_NEPHROLOGY',
+        name: 'الغسيل الكلوي وسلامة محطة معالجة المياه والوصلات الوعائية (Hemodialysis Safety)',
+        category: 'أمراض الكلى والغسيل الكلوي',
+        deptMatch: d => d.includes('كلى') || d.includes('كلوي') || d.includes('غسيل'),
+        findingMatch: f => f.includes('غسيل كلوي') || f.includes('محطة مياه') || f.includes('فلتر') || f.includes('غسيل دموي') || f.includes('فلاتر') || f.includes('عينة مياه'),
+        ovrMatch: o => o.includes('Dialysis') || o.includes('كلى') || o.includes('غسيل كلوي'),
+        kpiMatch: k => (k.Indicator || '').includes('الغسيل الكلوي') || (k.Indicator || '').includes('الكلى')
+      },
+      {
+        id: 'MEDICAL_RECORDS_DOCUMENTATION',
+        name: 'السجلات والملفات الطبية وتذاكر الاستقبال وحوكمة التوثيق (Medical Records Governance)',
+        category: 'حوكمة السجلات والمعلومات السريرية',
+        deptMatch: d => d.includes('ملف') || d.includes('سجل') || d.includes('تذاكر') || d.includes('ارشيف'),
+        findingMatch: f => f.includes('تذكرة') || f.includes('ملف طبي') || f.includes('نموذج') || f.includes('اقرار') || f.includes('اختصارات') || f.includes('تسليم وتسلم'),
+        ovrMatch: o => o.includes('Medical Records') || o.includes('Forms') || o.includes('تذاكر') || o.includes('ملف') || o.includes('اقرار') || o.includes('تسليم وتسلم'),
+        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية') || (k.Indicator || '').includes('السجلات')
+      },
+      {
+        id: 'BIOMEDICAL_EQUIPMENT_MAINTENANCE',
+        name: 'الأجهزة والمعدات الطبية الحيوية والمعايرة والصيانة الدورية (Biomedical Equipment & FMS)',
+        category: 'الأجهزة الطبية والسلامة الهندسية',
+        deptMatch: d => d.includes('صيان') || d.includes('اجهزه') || d.includes('هندسي') || d.includes('غازات'),
+        findingMatch: f => f.includes('معايره') || f.includes('جهاز معطل') || f.includes('صيانه دوريه') || f.includes('شبكة الغازات') || f.includes('اسطوانات اكسجين') || f.includes('مولد'),
+        ovrMatch: o => o.includes('Maintenance') || o.includes('Device') || o.includes('Equipment') || o.includes('اعطال') || o.includes('صيانة') || o.includes('جهاز'),
+        kpiMatch: k => (k.Indicator || '').includes('الصيانة') || (k.Indicator || '').includes('الأجهزة')
+      },
+      {
+        id: 'PATIENT_SAFETY_NPSG',
+        name: 'التحقق من هوية المريض ومطابقة الأساور ومنع السقوط (Patient Identification & Fall Safety)',
         category: 'سلامة المرضى (NPSG)',
-        clinicalWeight: 2.3,
-        kpiMatch: k => (k.Indicator || '').includes('تحديد موضع الإجراء الجراحي') || (k.Indicator || '').includes('الجراحة التفقدية'),
-        findingMatch: f => (f.original_text || '').includes('الوقت المستقطع') || (f.original_text || '').includes('الإجراءات التداخلية') || (f.original_text || '').includes('موضع الجراح'),
-        ovrMatch: o => (o.description || '').includes('غسيل الأيدي الجراحي قبل العمليه') || (o.description || '').includes('تأجيل حاله عمليات') || (o.description || '').includes('الوقت المستقطع')
+        deptMatch: d => d.includes('تمريض') || d.includes('جودة'),
+        findingMatch: f => f.includes('تعريف المريض') || f.includes('اسورة') || f.includes('اساور') || f.includes('سقوط مريض'),
+        ovrMatch: o => o.includes('Patient identification') || o.includes('Fall') || o.includes('اسورة') || o.includes('تعريف المريض') || o.includes('سقوط'),
+        kpiMatch: k => (k.Indicator || '').includes('التعريف الصحيح') || (k.Indicator || '').includes('الأخطاء في عناصر الرعاية')
       },
       {
-        id: 'CRITICAL_PANIC_VALUES',
-        name: 'الإبلاغ الفوري للنتائج التشخيصية الحرجة (Critical Panic Diagnostic Results Communication)',
-        category: 'الرعاية الحرجة والتشخيص',
-        clinicalWeight: 2.2,
-        kpiMatch: k => (k.Indicator || '').includes('النتائج الحرجة') || (k.Indicator || '').includes('المحولة من العيادات الى المعمل'),
-        findingMatch: f => (f.original_text || '').includes('النتائج الحرجه') || (f.original_text || '').includes('النتائج الحرجة') || (f.original_text || '').includes('tat'),
-        ovrMatch: o => (o.description || '').includes('مجلطة') || (o.description || '').includes('رفضها') || (o.description || '').includes('نتائج حرجة') || (o.description || '').includes('نتيجه حرجه')
-      },
-      {
-        id: 'DEVICE_ASSOCIATED_INFECTIONS',
-        name: 'حزم الوقاية من عدوى الأجهزة التداخلية (CLABSI, CAUTI, VAP Bundles)',
-        category: 'مكافحة العدوى والتعقيم',
-        clinicalWeight: 2.2,
-        kpiMatch: k => (k.Indicator || '').includes('الحقن الآمن') || (k.Indicator || '').includes('مكافحة العدوى'),
-        findingMatch: f => (f.original_text || '').includes('قسطرة') || (f.original_text || '').includes('قساطر') || (f.original_text || '').includes('تنفس صناعي'),
-        ovrMatch: o => (o.description || '').includes('القسطرة المركزية') || (o.description || '').includes('القسطرة البولية') || (o.description || '').includes('مجري الدم') || (o.subcategory || '').includes('Urinary') || (o.subcategory || '').includes('Bloodstream')
+        id: 'VERBAL_ORDERS_HANDOVER',
+        name: 'الأوامر الشفهية والتسليم والتسلم الحرج بين المناوبات (Verbal Orders & Handover)',
+        category: 'سلامة المرضى والاتصال الفعال',
+        deptMatch: d => d.includes('داخلي') || d.includes('جناح'),
+        findingMatch: f => f.includes('شفه') || f.includes('هاتف') || f.includes('تسليم وتسلم') || f.includes('isbar'),
+        ovrMatch: o => o.includes('isbar') || o.includes('تسليم وتسلم') || o.includes('شفه') || o.includes('Handover'),
+        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية')
       }
     ]
 
     const scoredTracks = []
     for (const track of CLINICAL_CRISIS_TRACKS) {
       const kpis = sheetKpis.filter(track.kpiMatch)
-      const fList = eligibleFindings.filter(track.findingMatch)
-      const ovrs = eligibleOvrRecords.filter(track.ovrMatch)
+      const fList = eligibleFindings.filter(f => {
+        const text = (f.original_text || '').toLowerCase()
+        const dName = (f.departments?.name || '').toLowerCase()
+        return track.deptMatch(dName) || track.findingMatch(text)
+      })
+      const ovrs = eligibleOvrRecords.filter(o => {
+        const sub = (o.subcategory || '').toLowerCase()
+        const cat = (o.category || '').toLowerCase()
+        const desc = (o.description || '').toLowerCase()
+        const full = `${sub} ${cat} ${desc}`
+        return track.ovrMatch(full)
+      })
 
       const hasKpi = kpis.length > 0
       const hasFinding = fList.length > 0
       const hasOvr = ovrs.length > 0
       const sourceCount = (hasKpi ? 1 : 0) + (hasFinding ? 1 : 0) + (hasOvr ? 1 : 0)
 
-      // STRICT RULE: At least 2 corroborating sources required for deep clinical crisis!
-      if (sourceCount < 2) continue
+      // Must have at least 1 corroborating source with substantive evidence
+      if (sourceCount < 2 && fList.length === 0 && ovrs.length === 0) continue
 
       const isTriple = sourceCount === 3
       const corroborationLevel = isTriple
         ? 'تطابق جنائي ثلاثي (3 من 3 مصادر)'
-        : 'تطابق جنائي ثنائي (2 من 3 مصادر معتمدة - أزمة إكلينيكية عميقة)'
+        : (sourceCount === 2 ? 'تطابق جنائي ثنائي (مصدران معتمدان)' : 'مبني على المرور الميداني وبلاغات الأطقم')
 
       const critKpis = kpis.filter(k => k.Alert_Level === 'Critical')
       const alertKpis = kpis.filter(k => k.Alert_Level === 'Alert' || k.Status === 'Risk')
       const recFindings = fList.filter(f => (f.repeat_count || 1) >= 2 || f.status === 'recurring')
       const normFindings = fList.filter(f => (f.repeat_count || 1) < 2 && f.status !== 'recurring')
 
-      const rawScore = (critKpis.length * 35) + (alertKpis.length * 15) + (recFindings.length * 12) + (normFindings.length * 5) + (ovrs.length * 5)
-      const multiplier = isTriple ? 1.25 : 1.15
-      const totalScore = Math.round(rawScore * multiplier * track.clinicalWeight)
+      // Unbiased data-driven scoring: strictly reflect what is hurting THIS hospital
+      const rawScore = (critKpis.length * 35) + (alertKpis.length * 15) + (recFindings.length * 20) + (normFindings.length * 10) + (ovrs.length * 8)
+      const multiplier = isTriple ? 1.25 : 1.1
+      const totalScore = Math.round(rawScore * multiplier)
+
+      if (totalScore <= 0 && fList.length === 0) continue
 
       const critKpisEvidence = kpis
         .map(k => `• ${k.Indicator}: ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
@@ -600,10 +658,10 @@ export class ImprovementProjectsService {
     const eligibleCrises = crisisAnalysis.eligible_crises || []
 
     if (eligibleCrises.length === 0) {
-      throw new Error('لم يتم العثور على أي أزمة سريرية مستوفية لشرط التطابق متعدد المصادر (مصدرين على الأقل من 3).')
+      throw new Error('لم يتم العثور على أي أزمة سريرية مستوفية لشرط التطابق متعدد المصادر بالمستشفى.')
     }
 
-    // Strictly generate the top 3 major institutional improvement projects
+    // Strictly generate the top 3 major institutional improvement projects tailored to THIS hospital
     const count = 3
     const selectedCrises = eligibleCrises.slice(0, count)
 
@@ -636,12 +694,15 @@ ${(c.ovr_incidents_evidence || []).slice(0, 4).join('\n') || 'لا توجد بل
 `
     }).join('\n')
 
-    console.log(`[ImprovementProjectsService] Starting 4-Pass Adversarial Investigation Loop for: ${hospital.name}...`)
+    console.log(`[ImprovementProjectsService] Starting 4-Pass Tailored Investigation for: ${hospital.name}...`)
 
     // --- PASS 1: Initial Deep Investigation & Candidate Charters ---
-    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى بالمستشفى وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
-قواعد خط الأساس الصارمة:
-- خط الأساس (Baseline) لكل مؤشر يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة (النسبة المئوية من شيت جوجل، والعدد الفعلي لبلاغات OVR، وعدد الملاحظات الميدانية). ممنوع تخمين أرقام.
+    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى خاصة بمستشفى (${hospital.name}) حصراً وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
+
+قواعد التخصيص الصارمة (Anti-Homogenization Rules):
+- يُمنع منعاً باتاً صياغة مشاريع نمطية أو عامة أو مكررة تبدو كقالب مسبق الصنع.
+- يجب أن يعكس كل مشروع الطبيعة الحقيقية الخاصة جداً بمستشفى (${hospital.name}) وأقسامه الفعلية المذكورة في ملف الأدلة (مثلاً: إن كانت الأدلة عن المعمل أو الحضانات أو التعقيم أو الطوارئ، فيجب أن ينصب المشروع عليها بالتحديد).
+- خط الأساس (Baseline) لكل مؤشر يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة. ممنوع تخمين أرقام.
 - صياغة المشكلة، السبب الجذري، والتدخلات الهندسية لكل مشروع بشكل تفصيلي ودقيق.`
 
     const pass1User = `بيانات المستشفى: ${hospital.name}
@@ -668,6 +729,7 @@ ${verifiedGroundTruthDossier}
 1. هل هناك أي حل يعتمد على التدريب أو التوعية أو المنشورات الورقية؟ ارفضه فوراً واشترط بوابات Poka-Yoke صلبة وتحقق مزدوج مستقل.
 2. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
 3. هل التحليل الجذري كشف الفشل الهيكلي في مسار العمل (Process Failure)؟
+4. هل المشروع يبدو قالباً نمطياً مكرراً لا يعبر عن خصوصية مستشفى (${hospital.name})؟ ارفض أي كلام عام، واشترط أن يذكر اسم القسم الحقيقي والمعدات أو الإجراءات العينية الواردة في أدلة هذا المستشفى حصراً.
 اكتب تقرير التدقيق الجنائي الصارم والمآخذ الإكلينيكية على المسودة دون أي مجاملة.`
 
     const pass2User = `المسودة المقترحة للمشاريع الثلاثة:
