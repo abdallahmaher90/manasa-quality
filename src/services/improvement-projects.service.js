@@ -191,6 +191,30 @@ export function getStandardClinicalRoles(departmentName = '', category = '') {
     }
   }
 
+  if (text.includes('تدفق') || text.includes('سعة') || text.includes('خروج') || text.includes('أسرة') || text.includes('flow')) {
+    return {
+      lead: 'مدير الإدارة الطبية ورئيس لجنة إدارة التدفق والأسرة بالمستشفى',
+      team: [
+        'مشرفة التمريض العام بالمستشفى',
+        'أخصائي سلامة المرضى وتوكيد الجودة',
+        'صيدلي إكلينيكي أول',
+        'طبيب مقيم باطنة وجراحة'
+      ]
+    }
+  }
+
+  if (text.includes('قلب') || text.includes('stemi') || text.includes('جلطة') || text.includes('مذيب') || text.includes('d2n')) {
+    return {
+      lead: 'استشاري أمراض القلب ورئيس قسم الطوارئ بالمستشفى',
+      team: [
+        'مشرفة تمريض قسم الطوارئ',
+        'طبيب مقيم رعاية قلب وطوارئ',
+        'صيدلي إكلينيكي عناية حرجة',
+        'أخصائي سلامة المرضى وتوكيد الجودة'
+      ]
+    }
+  }
+
   // Fallback default
   const dept = departmentName && departmentName !== 'عام' ? departmentName : 'القسم المعني'
   return {
@@ -649,115 +673,88 @@ export class ImprovementProjectsService {
     const rawOvrRecords = await ovrService.getHospitalOVR(hospitalId)
     const eligibleOvrRecords = (rawOvrRecords || []).filter(o => !isTrivialNoise(o.description) && !isTrivialNoise(o.subcategory))
 
-    // 5. Comprehensive Clinical Crisis Tracks (Covering all hospital specialties and departments)
+    // 5. High-Impact Clinical & Operational Pathways (IHI, NHS & GAHAR Standards)
     const CLINICAL_CRISIS_TRACKS = [
       {
-        id: 'LABORATORY_BLOOD_BANK',
-        name: 'المعمل وبنك الدم وسلامة نقل الدم والفحوصات الحرجة (Laboratory & Blood Safety)',
-        category: 'الخدمات التشخيصية وبنك الدم',
-        deptMatch: d => d.includes('معمل') || d.includes('مختبر') || d.includes('بنك الدم') || d.includes('تحاليل'),
-        findingMatch: f => f.includes('معمل') || f.includes('بنك دم') || f.includes('عينات') || f.includes('كواشف') || f.includes('نقل دم') || f.includes('تطابق فصائل') || f.includes('نتائج حرجه') || f.includes('ثلاجة المعمل'),
-        ovrMatch: o => o.includes('Lab') || o.includes('Blood') || o.includes('معمل') || o.includes('دم') || o.includes('عينة') || o.includes('مجلطة'),
-        kpiMatch: k => (k.Indicator || '').includes('النتائج الحرجة') || (k.Indicator || '').includes('نقل الدم') || (k.Indicator || '').includes('المعمل')
+        id: 'ACUTE_CARDIAC_STEMI_D2N',
+        name: 'احتشاء عضلة القلب الحاد وزمن بدء إذابة الجلطة (Door-to-Needle STEMI Pathway)',
+        category: 'الرعاية الحرجة والقلبية الطارئة',
+        deptMatch: d => d.includes('طوارئ') || d.includes('استقبال') || d.includes('قلب') || d.includes('عناي'),
+        findingMatch: f => f.includes('رسم قلب') || f.includes('ecg') || f.includes('جلطة') || f.includes('تدهور') || f.includes('انعاش') || f.includes('طوارئ') || f.includes('صدمات'),
+        ovrMatch: o => o.includes('Emergency') || o.includes('Triage') || o.includes('Cardiac') || o.includes('انعاش') || o.includes('قلب') || o.includes('cpr'),
+        kpiMatch: k => (k.Indicator || '').includes('التدهور') || (k.Indicator || '').includes('الإنذارات') || (k.Indicator || '').includes('وفيات العناية')
       },
       {
-        id: 'EMERGENCY_TRIAGE_CARE',
-        name: 'قسم الطوارئ والاستقبال وفرز الحالات والإنعاش القلبي الرئوي (Emergency & Resuscitation)',
-        category: 'الرعاية الحرجة والطوارئ',
-        deptMatch: d => d.includes('طوارئ') || d.includes('استقبال') || d.includes('فرز') || d.includes('ترياج'),
-        findingMatch: f => f.includes('طوارئ') || f.includes('استقبال') || f.includes('فرز') || f.includes('cpr') || f.includes('كود بلو') || f.includes('انعاش') || f.includes('صدمات'),
-        ovrMatch: o => o.includes('Emergency') || o.includes('Triage') || o.includes('طوارئ') || o.includes('استقبال') || o.includes('انعاش') || o.includes('cpr'),
-        kpiMatch: k => (k.Indicator || '').includes('التدهور') || (k.Indicator || '').includes('الإنذارات')
-      },
-      {
-        id: 'NICU_PEDIATRICS',
-        name: 'الحضانات ورعاية حديثي الولادة والمبتسرين وطب الأطفال (NICU & Neonatal Safety)',
-        category: 'صحة الأطفال وحديثي الولادة',
-        deptMatch: d => d.includes('حضان') || d.includes('مبتسر') || d.includes('اطفال') || d.includes('أطفال'),
-        findingMatch: f => f.includes('حضان') || f.includes('مبتسر') || f.includes('طفل') || f.includes('اطفال') || f.includes('حديثي الولادة') || f.includes('صفراء') || f.includes('ضوئي'),
-        ovrMatch: o => o.includes('NICU') || o.includes('حضان') || o.includes('مبتسر') || o.includes('اطفال'),
-        kpiMatch: k => (k.Indicator || '').includes('وفيات الحضانات') || (k.Indicator || '').includes('الحضانات')
-      },
-      {
-        id: 'ICU_CRITICAL_CARE',
-        name: 'العناية المركزة والاستجابة للتدهور السريري والإنذارات الحرجة (ICU & Critical Care)',
-        category: 'الرعاية الحرجة والطوارئ',
+        id: 'ICU_VENTILATOR_VAP_BUNDLE',
+        name: 'حزمة العناية بالتنفس الصناعي وخفض وفيات الرعاية والالتهاب الرئوي (IHI Ventilator Bundle & ICU Mortality)',
+        category: 'الرعاية المركزة ومكافحة العدوى',
         deptMatch: d => d.includes('عناي') || d.includes('مركزه') || d.includes('icu'),
-        findingMatch: f => f.includes('عناي') || f.includes('تدهور') || f.includes('تنفس صناعي') || f.includes('انذارات حرجه') || f.includes('قرح فراش') || f.includes('قساطر وريدية'),
-        ovrMatch: o => o.includes('ICU') || o.includes('عناي') || o.includes('تنفس صناعي') || o.includes('ريسفنت'),
-        kpiMatch: k => (k.Indicator || '').includes('وفيات العناية') || (k.Indicator || '').includes('التدهور الإكلينيكي') || (k.Indicator || '').includes('الإنذارات الحرجة')
+        findingMatch: f => f.includes('عناي') || f.includes('تنفس صناعي') || f.includes('ريسفنت') || f.includes('قرح فراش') || f.includes('تدهور') || f.includes('قساطر'),
+        ovrMatch: o => o.includes('ICU') || o.includes('عناي') || o.includes('تنفس صناعي') || o.includes('ريسفنت') || o.includes('Ventilator'),
+        kpiMatch: k => (k.Indicator || '').includes('وفيات العناية') || (k.Indicator || '').includes('اشغال الأسرة في العناية') || (k.Indicator || '').includes('دوران السرير في الرعاية')
       },
       {
-        id: 'SURGICAL_OR_ANESTHESIA',
-        name: 'العمليات الجراحية والتخدير والأمان الجراحي والوقت المستقطع (Surgical Safety & OR)',
+        id: 'PATIENT_FLOW_CAPACITY_DISCHARGE',
+        name: 'إدارة التدفق السريري والخروج المبكر لكسر اختناق سعة الأسرة (Criteria-Led Discharge & Patient Flow)',
+        category: 'إدارة التدفق السريري وسعة المنشأة',
+        deptMatch: d => d.includes('داخلي') || d.includes('تذاكر') || d.includes('استقبال') || d.includes('طوارئ') || d.includes('ملف'),
+        findingMatch: f => f.includes('تذكرة') || f.includes('خروج') || f.includes('حجز') || f.includes('احالة') || f.includes('انتظار') || f.includes('تكدس') || f.includes('دوران'),
+        ovrMatch: o => o.includes('Medical Records') || o.includes('Forms') || o.includes('انتظار') || o.includes('احالة') || o.includes('تذاكر'),
+        kpiMatch: k => (k.Indicator || '').includes('دوران السرير') || (k.Indicator || '').includes('اشغال الأسرة') || (k.Indicator || '').includes('مدة الانتظار في الطوارئ') || (k.Indicator || '').includes('تحويلها للحجز')
+      },
+      {
+        id: 'SEPSIS_HOUR_ONE_BUNDLE',
+        name: 'حزمة إنقاذ الإنتان والصدمة التسممية في الساعة الذهبية (Hour-1 Sepsis Resuscitation Bundle)',
+        category: 'الرعاية الحرجة ومكافحة العدوى',
+        deptMatch: d => d.includes('عناي') || d.includes('طوارئ') || d.includes('داخلي'),
+        findingMatch: f => f.includes('تسمم') || f.includes('ميكروب') || f.includes('حرارة') || f.includes('مضاد حيوي') || f.includes('صدمة') || f.includes('انتان'),
+        ovrMatch: o => o.includes('Infection') || o.includes('Sepsis') || o.includes('عدوى') || o.includes('دم'),
+        kpiMatch: k => (k.Indicator || '').includes('العدوى المصاحبة') || (k.Indicator || '').includes('وفيات العناية')
+      },
+      {
+        id: 'SAFE_INJECTIONS_INFUSION_SAFETY',
+        name: 'ممارسات الحقن الآمن ومأمونية المحاليل الوريدية لمنع تجرثم الدم (Safe Injection Practices & IV Line Safety)',
+        category: 'مكافحة العدوى وسلامة المرضى',
+        deptMatch: d => d.includes('تمريض') || d.includes('مكافحة العدوى') || d.includes('ملاحظة') || d.includes('داخلي'),
+        findingMatch: f => f.includes('حقن') || f.includes('محاليل') || f.includes('ثقب') || f.includes('سرنج') || f.includes('كانولا') || f.includes('واقيات'),
+        ovrMatch: o => o.includes('Injection') || o.includes('IV') || o.includes('محاليل') || o.includes('حقن') || o.includes('وخز'),
+        kpiMatch: k => (k.Indicator || '').includes('الحقن الآمن') || (k.Indicator || '').includes('الواقيات الشخصية')
+      },
+      {
+        id: 'DEFIBRILLATOR_RESUSCITATION_READINESS',
+        name: 'الجاهزية التشغيلية لأجهزة الصدمات الكهربائية وسرعة استجابة الإنعاش (Defibrillator & Code Blue Readiness)',
+        category: 'الأجهزة الطبية والسلامة الهندسية / الرعاية الحرجة',
+        deptMatch: d => d.includes('صيان') || d.includes('اجهزه') || d.includes('طوارئ') || d.includes('عناي'),
+        findingMatch: f => f.includes('صدمات') || f.includes('dc') || f.includes('كود بلو') || f.includes('معايره') || f.includes('جهاز معطل') || f.includes('صيانه'),
+        ovrMatch: o => o.includes('Maintenance') || o.includes('Device') || o.includes('Equipment') || o.includes('اعطال') || o.includes('صيانة') || o.includes('جهاز'),
+        kpiMatch: k => (k.Indicator || '').includes('إصلاح الأجهزة') || (k.Indicator || '').includes('عقود الصيانة') || (k.Indicator || '').includes('الأجهزة')
+      },
+      {
+        id: 'SURGICAL_SAFETY_BUNDLE',
+        name: 'حزمة الأمان الجراحي والوقاية من عدوى موضع الجراحة (Surgical Safety Checklist & SSI Prevention)',
         category: 'الخدمات الجراحية والتخدير',
-        deptMatch: d => d.includes('عمليات') || d.includes('جراح') || d.includes('تخدير') || d.includes('افاقه'),
+        deptMatch: d => d.includes('عمليات') || d.includes('جراح') || d.includes('تخدير'),
         findingMatch: f => f.includes('عمليات') || f.includes('جراح') || f.includes('وقت مستقطع') || f.includes('تخدير') || f.includes('موضع الجراح') || f.includes('افاقة'),
         ovrMatch: o => o.includes('Surgical') || o.includes('عمليات') || o.includes('جراح') || o.includes('تخدير') || o.includes('الوقت المستقطع'),
-        kpiMatch: k => (k.Indicator || '').includes('الجراحة') || (k.Indicator || '').includes('تحديد موضع')
+        kpiMatch: k => (k.Indicator || '').includes('الجراحة التفقدية') || (k.Indicator || '').includes('العمليات الجراحية')
       },
       {
-        id: 'MEDICATION_SAFETY_PHARMACY',
-        name: 'الصيدلية وسلامة الدواء والأدوية عالية الخطورة وLASA (Medication Safety & Pharmacy)',
-        category: 'إدارة واستخدام الدواء',
-        deptMatch: d => d.includes('صيدل') || d.includes('دواء'),
-        findingMatch: f => f.includes('صيدل') || f.includes('دواء') || f.includes('دوائ') || f.includes('كراش') || f.includes('عاليه الخطور') || f.includes('lasa') || f.includes('ترياق') || f.includes('التوافق الدوائي'),
-        ovrMatch: o => o.includes('Medication') || o.includes('صيدل') || o.includes('دواء') || o.includes('محاليل') || o.includes('انسولين'),
-        kpiMatch: k => (k.Indicator || '').includes('عالية الخطورة') || (k.Indicator || '').includes('المتشابهة') || (k.Indicator || '').includes('النتائج الدوائية العكسية')
+        id: 'NEONATAL_RDS_HYPOTHERMIA_NICU',
+        name: 'إنعاش حديثي الولادة والمبتسرين ومتلازمة الضائقة التنفسية بالحضان (Neonatal RDS & Resuscitation)',
+        category: 'صحة الأطفال وحديثي الولادة',
+        deptMatch: d => d.includes('حضان') || d.includes('مبتسر') || d.includes('اطفال'),
+        findingMatch: f => f.includes('حضان') || f.includes('مبتسر') || f.includes('طفل') || f.includes('صفراء') || f.includes('تنفس') || f.includes('سيباب'),
+        ovrMatch: o => o.includes('NICU') || o.includes('حضان') || o.includes('مبتسر') || o.includes('اطفال'),
+        kpiMatch: k => (k.Indicator || '').includes('وفيات الحضان') || (k.Indicator || '').includes('الاشغال في الحضان') || (k.Indicator || '').includes('دوران السرير في الحضان')
       },
       {
-        id: 'INFECTION_CONTROL_CSSD',
-        name: 'مكافحة العدوى والتعقيم المركزي والعزل الطبي وإدارة النفايات (Infection Prevention & CSSD)',
-        category: 'مكافحة العدوى والسلامة البيئية',
-        deptMatch: d => d.includes('تعقيم') || d.includes('مكافحة العدوى') || d.includes('عزل') || d.includes('نفايات'),
-        findingMatch: f => f.includes('تعقيم') || f.includes('اوتوكلاف') || f.includes('عزل') || f.includes('واقيات') || f.includes('نفايات خطره') || f.includes('مكافحه العدوى') || f.includes('غرفة النفايات'),
-        ovrMatch: o => o.includes('Infection') || o.includes('PPE') || o.includes('تعقيم') || o.includes('عدوى') || o.includes('نفايات') || o.includes('وخز'),
-        kpiMatch: k => (k.Indicator || '').includes('مكافحة العدوى') || (k.Indicator || '').includes('الحقن الآمن')
-      },
-      {
-        id: 'HEMODIALYSIS_NEPHROLOGY',
-        name: 'الغسيل الكلوي وسلامة محطة معالجة المياه والوصلات الوعائية (Hemodialysis Safety)',
-        category: 'أمراض الكلى والغسيل الكلوي',
-        deptMatch: d => d.includes('كلى') || d.includes('كلوي') || d.includes('غسيل'),
-        findingMatch: f => f.includes('غسيل كلوي') || f.includes('محطة مياه') || f.includes('فلتر') || f.includes('غسيل دموي') || f.includes('فلاتر') || f.includes('عينة مياه'),
-        ovrMatch: o => o.includes('Dialysis') || o.includes('كلى') || o.includes('غسيل كلوي'),
-        kpiMatch: k => (k.Indicator || '').includes('الغسيل الكلوي') || (k.Indicator || '').includes('الكلى')
-      },
-      {
-        id: 'MEDICAL_RECORDS_DOCUMENTATION',
-        name: 'السجلات والملفات الطبية وتذاكر الاستقبال وحوكمة التوثيق (Medical Records Governance)',
-        category: 'حوكمة السجلات والمعلومات السريرية',
-        deptMatch: d => d.includes('ملف') || d.includes('سجل') || d.includes('تذاكر') || d.includes('ارشيف'),
-        findingMatch: f => f.includes('تذكرة') || f.includes('ملف طبي') || f.includes('نموذج') || f.includes('اقرار') || f.includes('اختصارات') || f.includes('تسليم وتسلم'),
-        ovrMatch: o => o.includes('Medical Records') || o.includes('Forms') || o.includes('تذاكر') || o.includes('ملف') || o.includes('اقرار') || o.includes('تسليم وتسلم'),
-        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية') || (k.Indicator || '').includes('السجلات')
-      },
-      {
-        id: 'BIOMEDICAL_EQUIPMENT_MAINTENANCE',
-        name: 'الأجهزة والمعدات الطبية الحيوية والمعايرة والصيانة الدورية (Biomedical Equipment & FMS)',
-        category: 'الأجهزة الطبية والسلامة الهندسية',
-        deptMatch: d => d.includes('صيان') || d.includes('اجهزه') || d.includes('هندسي') || d.includes('غازات'),
-        findingMatch: f => f.includes('معايره') || f.includes('جهاز معطل') || f.includes('صيانه دوريه') || f.includes('شبكة الغازات') || f.includes('اسطوانات اكسجين') || f.includes('مولد'),
-        ovrMatch: o => o.includes('Maintenance') || o.includes('Device') || o.includes('Equipment') || o.includes('اعطال') || o.includes('صيانة') || o.includes('جهاز'),
-        kpiMatch: k => (k.Indicator || '').includes('الصيانة') || (k.Indicator || '').includes('الأجهزة')
-      },
-      {
-        id: 'PATIENT_SAFETY_NPSG',
-        name: 'التحقق من هوية المريض ومطابقة الأساور ومنع السقوط (Patient Identification & Fall Safety)',
-        category: 'سلامة المرضى (NPSG)',
-        deptMatch: d => d.includes('تمريض') || d.includes('جودة'),
-        findingMatch: f => f.includes('تعريف المريض') || f.includes('اسورة') || f.includes('اساور') || f.includes('سقوط مريض'),
-        ovrMatch: o => o.includes('Patient identification') || o.includes('Fall') || o.includes('اسورة') || o.includes('تعريف المريض') || o.includes('سقوط'),
-        kpiMatch: k => (k.Indicator || '').includes('التعريف الصحيح') || (k.Indicator || '').includes('الأخطاء في عناصر الرعاية')
-      },
-      {
-        id: 'VERBAL_ORDERS_HANDOVER',
-        name: 'الأوامر الشفهية والتسليم والتسلم الحرج بين المناوبات (Verbal Orders & Handover)',
-        category: 'سلامة المرضى والاتصال الفعال',
-        deptMatch: d => d.includes('داخلي') || d.includes('جناح'),
-        findingMatch: f => f.includes('شفه') || f.includes('هاتف') || f.includes('تسليم وتسلم') || f.includes('isbar'),
-        ovrMatch: o => o.includes('isbar') || o.includes('تسليم وتسلم') || o.includes('شفه') || o.includes('Handover'),
-        kpiMatch: k => (k.Indicator || '').includes('الأوامر الشفهية')
+        id: 'LABORATORY_BLOOD_TRANSFUSION',
+        name: 'سلامة ومأمونية نقل الدم ومطابقة الفصائل بجانب سرير المريض (Safe Bedside Blood Transfusion Verification)',
+        category: 'الخدمات التشخيصية وبنك الدم',
+        deptMatch: d => d.includes('معمل') || d.includes('مختبر') || d.includes('بنك الدم'),
+        findingMatch: f => f.includes('نقل دم') || f.includes('تطابق فصائل') || f.includes('كيس دم') || f.includes('بنك دم') || f.includes('عينات'),
+        ovrMatch: o => o.includes('Blood') || o.includes('دم') || o.includes('نقل دم'),
+        kpiMatch: k => (k.Indicator || '').includes('المعمل') || (k.Indicator || '').includes('نقل الدم')
       }
     ]
 
@@ -902,32 +899,36 @@ ${(c.ovr_incidents_evidence || []).slice(0, 4).join('\n') || 'لا توجد بل
     console.log(`[ImprovementProjectsService] Starting 4-Pass Tailored Investigation for: ${hospital.name}...`)
 
     // --- PASS 1: Initial Deep Investigation & Candidate Charters ---
-    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى وخبير جودة المستشفيات الحكومية. مهمتك دراسة ملف الأدلة الجنائية لـ 3 أزمات سريرية كبرى خاصة بمستشفى (${hospital.name}) حصراً وصياغة مسودة تحقيقية شاملة لـ 3 مشاريع تحسين جودة مؤسسية صلبة.
+    const pass1System = `أنت المحقق الإكلينيكي الجنائي الأعلى وخبير جودة المستشفيات وفق معايير الاعتماد الوطنية والدولية (GAHAR / IHI / NHS). مهمتك دراسة ملف الأدلة لـ 3 أزمات سريرية وتشغيلية كبرى بمستشفى (${hospital.name}) وصياغة ميثاق 3 مشاريع تحسين جودة مؤسسية كبرى (Flagship Quality Improvement Projects).
 
-قواعد التخصيص والواقعية الصارمة (Anti-Homogenization & Ground-Level Reality):
-1. يُمنع منعاً باتاً صياغة مشاريع نمطية أو عامة أو مكررة تبدو كقالب مسبق الصنع؛ يجب أن يعكس كل مشروع هوية مستشفى (${hospital.name}) وأقسامه المحددة.
-2. حظر الحلول البرمجية الخيالية (Strict Ban on Software Fantasies):
+قواعد التحسين المؤسسي والعمق السريري الصارمة (Clinical Depth & Benchmarks):
+1. التمييز الحاسم بين الإجراءات التصحيحية العادية ومشاريع التحسين المؤسسية (CAPA vs. Flagship QIP):
+   - يُمنع منعاً باتاً تحويل السلبيات التفتيشية الروتينية (مثل وضع استيكر على ثلاجة، أو شراء أقفال، أو تعليق بوستر، أو عقد محاضرة تدريبية عادية) إلى مشاريع تحسين؛ فهذه إجراءات تصحيحية فورية (CAPA) وليست مشاريع جودة.
+   - مشاريع التحسين المؤسسية يجب أن تستهدف «إعادة هندسة مسارات سريرية كبرى وعلاج اختناقات تشغيلية حاسمة» تمس الوفيات ومعدلات المضاعفات، مستندة إلى نماذج عالمية معتمدة:
+     * مسار احتشاء عضلة القلب الحاد وزمن إذابة الجلطة (Door-to-Needle STEMI Pathway < 30 min وفق معايير AHA/GAHAR).
+     * حزم الرعاية الحرجة وخفض الوفيات مثل حزمة التنفس الصناعي (IHI Ventilator Care Bundle لخفض VAP ووفيات العناية 23%).
+     * إعادة هندسة التدفق السريري والخروج المبكر قبل 11:00 صباحاً (Criteria-Led Discharge & Patient Flow لكسر اختناق إشغال 100% ودوران السرير).
+     * حزمة إنقاذ الإنتان والصدمة التسممية في الساعة الأولى (Hour-1 Sepsis Resuscitation Bundle).
+     * ممارسات الحقن الآمن ومأمونية المحاليل الوريدية لمنع تجرثم الدم.
+     * الجاهزية والاستجابة لحالات التدهور الإكلينيكي وإنعاش القلب (Code Blue & Resuscitation).
+2. قاعدة التركيز الحاسم وفك الارتباط (Single-Problem Focus & Strict Anti-Bundling):
+   - كل مشروع يركز على «قضية سريرية واحدة محددة بدقة»؛ يُمنع منعاً باتاً دمج مسارين منفصلين أو تكديس مشكلات متباينة في نفس المشروع أو في الهدف الذكي.
+   - لكل مشروع: بيان مشكلة محدد، وهدف ذكي (SMART Goal) واحد غير مشتت يركز على نتيجة سريرية أو تشغيلية واحدة قابلة للقياس الدقيق.
+3. حظر الحلول البرمجية الخيالية (Strict Ban on Software Fantasies):
    - يُمنع منعاً باتاً اختلاق حلول برمجية مستحيلة لا تناسب المستشفيات الحكومية مثل: (تطوير API Bridges، برامج LIMS v2.0 خاصة، أنظمة مزامنة Sync Engine مع Google Sheets، أو أتمتة غير موجودة).
-   - الحلول يجب أن تكون «هندسة مسارات فيزيائية وإجرائية ملموسة وواقعية (Physical & Workflow Poka-Yoke)»:
-     * استخدام أقفال بلاستيكية مرقمة تستعمل لمرة واحدة (Numbered Breakaway Disposable Seals) لكراش كارت مع سجل مطابقة يومي.
-     * وضع شرائط تحذيرية فوسفورية حمراء وحواجز بصرية (Red Alert Barrier Tape) على أدراج أدوية LASA والعالية الخطورة.
-     * التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check) بتوقيع ممارسَين متزامنين (ممرضة + صيدلي / ممرضة + طبيب).
-     * تطبيق التحقق بالترديد الإلزامي (Forced Read-Back) للأوامر الشفهية وقصرها على الطوارئ القصوى والإنعاش القلبي فقط.
-     * سجلات سلسلة التبريد المعتمدة ذات التوقيع المزدوج (Cold Chain Dual-Sign Logs) لثلاجات المعمل وحفظ الأدوية.
-     * فلاتر مطابقة العينات، وأكواد باركود ملصقة فورياً بجانب المريض.
-3. حظر كتابة أسماء أشخاص نهائياً (Strict Role-Only Policy - NO Human Names):
-   - يُمنع منعاً باتاً كتابة أي أسماء أشخاص حقيقيين أو وهميين (مثل "د. ليلى" أو "د. فلان" أو أي اسم ثنائي/ثلاثي).
+   - الحلول يجب أن تكون «هندسة مسارات فيزيائية وسريرية وإجرائية ملموسة وواقعية (Physical & Clinical Workflow Poka-Yoke)»:
+     * غرف فحص سريع Fast-track معيارية بجانب الاستقبال، ومسار استدعاء فوري Code STEMI.
+     * قوائم تفقدية إجبارية لحزم الرعاية (Bundle Checklists) بجانب سرير المريض، وتحديد زوايا فيزيائية لرأس السرير (30-45°).
+     * تطبيق معايير الخروج المسبق المتفق عليها قبل 24 ساعة (Criteria-Led Discharge)، وجولات تفقدية صباحية مبكرة للأطباء والصيادلة.
+     * التحقق المزدوج المستقل الإجباري (Independent Forced Double-Check) بتوقيع ممارسَين متزامنين.
+4. حظر كتابة أسماء أشخاص نهائياً (Strict Role-Only Policy - NO Human Names):
+   - يُمنع منعاً باتاً كتابة أي أسماء أشخاص حقيقيين أو وهميين (مثل "د. فلان" أو أي اسم شخص).
    - يجب كتابة «المسمى الوظيفي فقط» (Job Roles/Titles Only):
-     * project_lead: مسمى وظيفي حصراً مثل "رئيس قسم المختبرات وبنك الدم بالمستشفى" أو "رئيس قسم الصيدلة بالمستشفى" أو "استشاري ورئيس قسم العناية المركزة".
-     * team_members: مسميات وظيفية سريرية واقعية فقط مثل ["صيدلي إكلينيكي أول", "مشرفة تمريض القسم", "أخصائي سلامة المرضى وتوكيد الجودة", "طبيب مقيم بالقسم"]. يُمنع وضع وظائف غير موجودة بالمستشفيات العامة مثل "مهندس نظم" أو "مبرمج".
-4. قاعدة التركيز الحاسم والعمق السريري (Single-Problem Focus & Deep Clinical Impact):
-   - يُمنع منعاً باتاً دمج أكثر من مشكلة أو مسارين منفصلين في مشروع واحد (مثلاً: يُمنع دمج نقل الدم مع النتائج الحرجة، ويُمنع دمج أدوية LASA مع أقفال الكراش كارت، ويُمنع خلط قضايا متعددة في نفس الهدف الذكي).
-   - تجنب تحويل السلبيات التفتيشية العادية والروتينية (مثل وضع استيكر على ثلاجة، أو شراء أقفال كراش كارت، أو تعليق بوستر) إلى مشاريع تحسين؛ هذه إجراءات تصحيحية فورية وليست مشاريع جودة مؤسسية.
-   - يجب أن يركز كل مشروع على «قضية سريرية واحدة عميقة وجوهرية» (Single High-Impact Clinical Crisis) ترتبط بالوفيات، أو فشل الإنقاذ (Failure to Rescue)، أو تفشي العدوى الوريدية، أو جاهزية أجهزة الإنعاش، أو اختناق دوران الأسرة.
-   - لكل مشروع: بيان مشكلة محدد بدقة، وهدف ذكي (SMART Goal) واحد غير مشتت يركز على نتيجة سريرية واحدة ومسار عمل واحد محدد.
+     * project_lead: مسمى وظيفي إكلينيكي/إداري رسمي فقط مثل "استشاري أمراض القلب ورئيس قسم الطوارئ بالمستشفى" أو "استشاري ورئيس قسم الرعاية المركزة بالمستشفى" أو "مدير الإدارة الطبية ورئيس لجنة التدفق والأسرة".
+     * team_members: مسميات وظيفية سريرية واقعية فقط مثل ["مشرفة تمريض قسم الطوارئ", "طبيب مقيم رعاية مركزة", "صيدلي إكلينيكي عناية حرجة", "أخصائي سلامة المرضى وتوكيد الجودة"]. يُمنع وضع وظائف غير موجودة بالمستشفيات العامة مثل "مهندس نظم" أو "مبرمج".
 5. خط الأساس والمؤشرات:
-   - خط الأساس (Baseline) يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة دون تخمين.
-   - مستهدف بلاغات OVR: يُمنع استهداف "صفر بلاغات" لأنه يدمر ثقافة الإبلاغ؛ المستهدف هو: «صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة الزمنية (48 ساعة)».`
+   - خط الأساس (Baseline) يجب أن يقتبس حرفياً الأرقام الفعلية المذكورة في ملف الأدلة دون اختلاق.
+   - مستهدف بلاغات OVR: «صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة الزمنية (48 ساعة)».`
 
     const pass1User = `بيانات المستشفى: ${hospital.name}
 ملف الأدلة الجنائية للأزمات المعتمدة بالمستشفى:
@@ -950,12 +951,13 @@ ${verifiedGroundTruthDossier}
     // --- PASS 2: Ruthless Forensic Audit & Attack ---
     const pass2System = `أنت رئيس لجان التدقيق الصارم بالهيئة العامة للاعتماد والرقابة الصحية (Chief Clinical Auditor).
 دورك أن تتقمص شخصية المراجع الصارم المتشدد الذي يهاجم أي ثغرة أو حل رخو بالدليل:
-1. هل هناك أي حل يعتمد على التدريب النظري أو التوعية أو المنشورات الورقية؟ ارفضه فوراً واشترط بوابات Poka-Yoke فيزيائية صلبة وتحقق مزدوج مستقل.
-2. هل اقترح الفريق حلولاً برمجية خيالية غير قابلة للتطبيق (مثل APIs أو Sync Engines أو ربط بـ Google Sheets)؟ ارفضها واشترط أقفالاً فيزيائية مرقمة وحواجز بصرية وسجلات مطابقة.
-3. هل كتب الفريق أي أسماء أشخاص لقائد المشروع أو الأعضاء؟ ارفض أي اسم شخص واشترط مسميات وظيفية رسمية فقط.
-4. هل استهدف المشروع "صفر بلاغات OVR" بما يخالف ثقافة السلامة العادلة (Just Culture)؟ ارفض ذلك واشترط استهداف صفر أخطاء ضارة وحوادث جسيمة مع تشجيع الإبلاغ وإغلاقه في 48 ساعة.
-5. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
-6. هل قام الفريق بدمج مواضيع غير مترابطة في نفس المشروع (كدمج نقل الدم مع النتائج الحرجة، أو خلط أدوية LASA مع أقفال الكراش كارت)؟ أو اعتمد على سلبيات تفتيش عادية وسطحية؟ ارفض ذلك فوراً واشترط فصلاً تاماً وتركيزاً عميقاً على قضية إكلينيكية جوهرية واحدة محددة لكل مشروع بهدف ذكي واحد صريح.
+1. هل انحدر أي مشروع إلى مستوى السلبيات التفتيشية الروتينية (مثل وضع استيكرات أو تعليق أوراق أو شراء أقفال) التي تُحل بتدريب بسيط أو إجراء تصحيحي فوري (CAPA) بدلاً من أن يكون مشروع تحسين سريري مؤسسي عميق؟ ارفض ذلك فوراً واشترط إعادة هيكلة المسار كمسار سريري/تشغيلي نوعي (مثل STEMI D2N أو VAP Bundle أو Criteria-Led Discharge).
+2. هل قام الفريق بدمج موضوعين منفصلين أو أكثر في نفس المشروع أو خلط قضايا متباينة في الهدف الذكي؟ ارفض ذلك فوراً واشترط فصلاً تاماً وتركيزاً مطلقاً على مسار سريري واحد وهدف ذكي واحد.
+3. هل هناك أي حل يعتمد على التدريب النظري أو التوعية أو المنشورات الورقية؟ ارفضه واشترط هندسة مسار سريري صلب وحزم تدابير إجبارية وتحقق مزدوج مستقل.
+4. هل اقترح الفريق حلولاً برمجية خيالية غير قابلة للتطبيق (مثل APIs أو Sync Engines أو ربط بـ Google Sheets)؟ ارفضها واشترط آليات فيزيائية ومسارات عمل معتمدة بالمستشفيات العامة.
+5. هل كتب الفريق أي أسماء أشخاص لقائد المشروع أو الأعضاء؟ ارفض أي اسم شخص واشترط مسميات وظيفية رسمية فقط.
+6. هل استهدف المشروع "صفر بلاغات OVR" بما يخالف ثقافة السلامة العادلة (Just Culture)؟ ارفض ذلك واشترط استهداف صفر أخطاء ضارة وحوادث جسيمة مع تشجيع الإبلاغ وإغلاقه في 48 ساعة.
+7. هل التزم الفريق حرفياً بأرقام خط الأساس (Baseline) الواردة في ملف الأدلة؟ هاجم أي رقم وهمي أو مخترع.
 اكتب تقرير التدقيق الجنائي الصارم والمآخذ الإكلينيكية على المسودة دون أي مجاملة.`
 
     const pass2User = `المسودة المقترحة للمشاريع الثلاثة:
@@ -981,11 +983,12 @@ ${verifiedGroundTruthDossier}
     // --- PASS 3: Radical Re-Engineering & Hardening ---
     const pass3System = `أنت كبير مهندسي النظم السريرية ورئيس المجلس الاستشاري للجودة (Chief Clinical Systems Architect).
 تلقيت تقرير التدقيق الصارم، ومهمتك إعادة هندسة وبناء المشاريع الثلاثة وسد كل ثغرة نقدية:
-1. استبدال أي إجراء إداري أو توعوي أو خيال برمجي ببوابات Poka-Yoke فيزيائية وإجرائية صلبة (أقفال بلاستيكية مرقمة لكراش كارت، حواجز بصرية فوسفورية لأدوية LASA، تحقق مزدوج مستقل إجباري بتوقيعين، وقصر الأوامر الشفهية على الطوارئ بالترديد الفوري).
-2. حظر أسماء الأشخاص والوظائف التقنية الدخيلة: استبدال أي أسماء أشخاص حقيقيين أو وهميين (مثل د. فلان)، واستبعاد الوظائف الدخيلة (مثل مهندس نظم، مبرمج، محلل نظم، مسؤول IT) بمسميات وظيفية إكلينيكية وتمريضية رسمية بالمستشفيات الحكومية فقط (مثل: رئيس قسم المختبرات وبنك الدم بالمستشفى، رئيس قسم الصيدلة بالمستشفى، استشاري ورئيس قسم العناية المركزة، صيدلي إكلينيكي أول، مشرفة تمريض القسم، أخصائي جودة، طبيب مقيم).
-3. فك أي دمج عشوائي للمشكلات: يُمنع تكديس سلبيات عادية في هدف واحد، ويجب تخصيص كل مشروع لقضية سريرية عميقة واحدة (مثل الإنذار المبكر للتدهور، أو الحقن الآمن، أو جاهزية أجهزة الصدمات) بهدف ذكي واحد شديد التركيز والوضوح.
-4. ضبط مستهدف بلاغات OVR ليكون (صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة) لتعزيز ثقافة الإبلاغ.
-5. ضبط أرقام خط الأساس لتكون مستخرجة 100% من أرقام شيت جوجل وبلاغات OVR الثابتة بلا أي تخمين.`
+1. الترقية من مستوى CAPA إلى مشاريع جودة مؤسسية كبرى: استبعاد السلبيات العادية واستبدالها بمسارات سريرية معيارية (مثل مسار Door-to-Needle STEMI لجلطات القلب، حزمة العناية بالتنفس الصناعي VAP Bundle لخفض وفيات العناية، وإعادة هندسة الخروج المبكر Criteria-Led Discharge لكسر اختناق الأسرة).
+2. فك أي دمج عشوائي للمشكلات: كل مشروع يختص بقضية سريرية واحدة عميقة، بهدف ذكي واحد صريح وواضح وغير مشتت.
+3. استبدال أي إجراء إداري أو توعوي أو خيال برمجي ببوابات فيزيائية وسريرية صلبة (حزم رعاية سريرية معيارية، بوابات فحص سريع Fast-track، مقاييس زوايا الأسرة، تحقق مزدوج مستقل بتوقيعين، ومسارات خروج موحدة).
+4. حظر أسماء الأشخاص والوظائف التقنية الدخيلة: استبدال أي أسماء أشخاص حقيقيين أو وهميين (مثل د. فلان)، واستبعاد الوظائف الدخيلة (مثل مهندس نظم، مبرمج، محلل نظم، مسؤول IT) بمسميات وظيفية إكلينيكية وتمريضية رسمية بالمستشفيات الحكومية فقط.
+5. ضبط مستهدف بلاغات OVR ليكون (صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات وفق المهلة) لتعزيز ثقافة الإبلاغ.
+6. ضبط أرقام خط الأساس لتكون مستخرجة 100% من أرقام شيت جوجل وبلاغات OVR الثابتة بلا أي تخمين.`
 
     const pass3User = `تقرير التدقيق الصارم:
 ${pass2Critique}
@@ -1012,13 +1015,14 @@ ${pass1Draft}
 مهمتك إصدار ميثاق مشاريع التحسين الثلاثة المؤسسية المعتمدة النهائية بصيغة JSON فقط.
 
 قواعد إلزامية حاسمة:
-- التركيز السريري الصارم (Single-Problem Focus): كل مشروع يركز حصراً على «قضية إكلينيكية واحدة عميقة وجوهرية»؛ يُمنع دمج موضوعين منفصلين في مشروع واحد أو في الهدف الذكي.
+- مشاريع جودة مؤسسية معيارية (International Clinical Quality Benchmarks): يجب أن تعكس المشاريع مسارات سريرية وتشغيلية كبرى (مثل STEMI D2N، VAP Care Bundle، Criteria-Led Discharge قبل 11:00 صباحاً، Sepsis Hour-1، أو Safe Injections) ولا تنحدر لسلبيات CAPA الروتينية العادية.
+- التركيز السريري الصارم (Single-Problem Focus): كل مشروع يركز حصراً على «قضية سريرية واحدة عميقة وجوهرية»؛ يُمنع دمج موضوعين منفصلين في مشروع واحد أو في الهدف الذكي.
 - المسمى الوظيفي الإكلينيكي فقط (Job Roles/Titles Only): يُمنع منعاً باتاً كتابة أي أسماء أشخاص حقيقيين أو وهميين في project_lead أو team_members؛ كما يُمنع كتابة وظائف تقنية شاذة بالمستشفيات الحكومية مثل (مهندس نظم، محلل نظم، مبرمج، فريق IT). اكتب المسمى الوظيفي الرسمي فقط:
-  * project_lead: مسمى وظيفي إكلينيكي/إداري رسمي فقط (مثلاً: رئيس قسم المختبرات وبنك الدم بالمستشفى، رئيس قسم الصيدلة بالمستشفى، استشاري ورئيس قسم الرعاية المركزة).
-  * team_members: مسميات وظيفية سريرية واقعية بالمستشفيات الحكومية (مثلاً: صيدلي إكلينيكي أول، مشرفة تمريض القسم، أخصائي سلامة المرضى وتوكيد الجودة، طبيب مقيم بالقسم).
+  * project_lead: مسمى وظيفي إكلينيكي/إداري رسمي فقط (مثلاً: استشاري أمراض القلب ورئيس قسم الطوارئ بالمستشفى، استشاري ورئيس قسم الرعاية المركزة بالمستشفى، مدير الإدارة الطبية ورئيس لجنة التدفق والأسرة بالمستشفى).
+  * team_members: مسميات وظيفية سريرية واقعية بالمستشفيات الحكومية (مثلاً: مشرفة تمريض القسم، صيدلي إكلينيكي عناية حرجة، أخصائي سلامة المرضى وتوكيد الجودة، طبيب مقيم بالقسم).
 - خط الأساس: مطابق حرفياً لملف الأدلة دون تخمين.
 - مستهدف بلاغات OVR: «صفر أخطاء ضارة وحوادث جسيمة (Zero Harm) / إغلاق 100% من البلاغات خلال 48 ساعة».
-- التدخلات: حلول فيزيائية ومسار عمل صلب (Poka-Yoke فيزيائي وإجرائي، أقفال مرقمة، حواجز بصرية، تحقق مزدوج مستقل بتوقيعين، ومسؤوليات إكلينيكية وتمريضية فقط).
+- التدخلات: حلول فيزيائية ومسار عمل صلب (مسارات Fast-track، حزم رعاية IHI Bundles، معايير خروج مسبقة، تحقق مزدوج مستقل بتوقيعين، ومسؤوليات إكلينيكية وتمريضية فقط).
 
 الصيغة المطلوبة (JSON فقط ومصفوفة projects تحتوي على 3 مشاريع):
 {
