@@ -1338,6 +1338,20 @@ export default function ImprovementProjectsPage() {
                         <span>{finding}</span>
                       </div>
                     ))}
+                    {selectedProject.evidence_references && (
+                      <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px dashed #cbd5e1', fontSize: 11, color: 'var(--text-muted)' }}>
+                        <strong style={{ color: 'var(--text-secondary)' }}>🔍 مراجع التدقيق (Audit IDs): </strong>
+                        {selectedProject.evidence_references.finding_ids?.length > 0 && (
+                          <span>سلبيات تفتيش: {selectedProject.evidence_references.finding_ids.length} (معرفات: <code style={{ fontSize: 10 }}>{selectedProject.evidence_references.finding_ids.slice(0, 3).map(id => id.slice(0, 8)).join(', ')}{selectedProject.evidence_references.finding_ids.length > 3 ? '...' : ''}</code>) • </span>
+                        )}
+                        {selectedProject.evidence_references.sheet_kpis?.length > 0 && (
+                          <span>مؤشرات أداء: {selectedProject.evidence_references.sheet_kpis.length} • </span>
+                        )}
+                        {selectedProject.evidence_references.ovr_ids?.length > 0 && (
+                          <span>بلاغات OVR: {selectedProject.evidence_references.ovr_ids.length}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
