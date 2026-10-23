@@ -22,9 +22,9 @@ async function checkDirectorateAuth(request) {
     .eq('id', user.id)
     .single()
 
-  const isDirectorate = ['directorate_admin', 'directorate_member'].includes(profile?.role)
-  if (!isDirectorate) {
-    return { error: 'هذا القسم مخصص لأعضاء إدارة الجودة بالمديرية فقط', status: 403 }
+  const isDirectorateAdmin = profile?.role === 'directorate_admin'
+  if (!isDirectorateAdmin) {
+    return { error: 'هذا القسم مخصص لمدير المديرية فقط حالياً قيد المراجعة', status: 403 }
   }
 
   return { user, profile }

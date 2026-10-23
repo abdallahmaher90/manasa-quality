@@ -27,7 +27,7 @@ const navItems = [
     section: 'التحليلات ومشاريع الجودة',
     roles: ['directorate_admin', 'directorate_member'],
     items: [
-      { href: '/improvement-projects', icon: <SparklesIcon className="w-5 h-5" />, label: 'مشاريع التحسين (QIPs)' },
+      { href: '/improvement-projects', icon: <SparklesIcon className="w-5 h-5" />, label: 'مشاريع التحسين (QIPs)', roles: ['directorate_admin'] },
       { href: '/cross-report', icon: <ClipboardIcon className="w-5 h-5" />, label: 'تقرير مقارن بالأقسام' },
       { href: '/statistics', icon: <ChartIcon className="w-5 h-5" />, label: 'الإحصائيات' },
     ]

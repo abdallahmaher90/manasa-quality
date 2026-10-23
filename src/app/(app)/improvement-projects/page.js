@@ -83,7 +83,7 @@ export default function ImprovementProjectsPage() {
       const role = profile?.role
       setUserRole(role)
 
-      if (!['directorate_admin', 'directorate_member'].includes(role)) {
+      if (role !== 'directorate_admin') {
         setLoading(false)
         return
       }
@@ -358,16 +358,16 @@ export default function ImprovementProjectsPage() {
     )
   }
 
-  // Directorate Access Guard
-  if (!['directorate_admin', 'directorate_member'].includes(userRole)) {
+  // Directorate Admin Only Guard (Hidden from all other users)
+  if (userRole !== 'directorate_admin') {
     return (
       <div className="card" style={{ maxWidth: 540, margin: '60px auto', padding: 32, textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-          قسم مخصص لأعضاء المديرية فقط
+          قسم قيد المراجعة والتطوير الداخلي
         </h2>
         <p style={{ color: 'var(--text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-          قسم مشاريع التحسين ومقترحات الأداء متاح حصرياً لأعضاء فريق إدارة الجودة بالمديرية لمراجعة واعتماد مشاريع المستشفيات.
+          هذا القسم قيد المعايرة والاختبار الداخلي حالياً ومتاح حصرياً للإدارة العليا.
         </p>
         <Link href="/dashboard" className="btn btn-primary" style={{ padding: '8px 24px' }}>
           العودة للرئيسية

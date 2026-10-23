@@ -659,7 +659,10 @@ export class ImprovementProjectsService {
         'انسكابات', 'انسكاب', 'كيت انسكاب', 'ماسة المواد الكيميائية', 'ماسه المواد الكيميائيه',
         'مقياس الكلور', 'غاسلة اعين', 'غاسله اعين', 'تلاجة الموتى', 'تلاجه الموتي', 'مفروشات النظيفه', 'المغسلة', 'المطبخ',
         'وجبات بدون تعريف', 'كروت صيانه وتعريف على الثلاجات', 'كراتين على الارض', 'كاراتين على الارض',
-        'لوحه بالخدمات', 'لوحات حقوق وواجبات', 'لوحة حقوق وواجبات', 'حنفية بحوض', 'تسريب بالحنفية', 'تسريب ف الحنفية'
+        'لوحه بالخدمات', 'لوحات حقوق وواجبات', 'لوحة حقوق وواجبات', 'حنفية بحوض', 'تسريب بالحنفية', 'تسريب ف الحنفية',
+        'لا يوجد i.d', 'بطاقة تعريف', 'بطاقات تعريف', 'كارنيه', 'كارنيهات', 'قائمة الاختصارات', 'قائمه الاختصارات',
+        'اختصارات ورموز', 'اختصارات بالملف', 'اختصارات ف التذكره', 'بدون تاريخ اصدار', 'قائمه ثبات التطعيمات',
+        'اسلاك مكشوفه', 'اسلاك كهرباء'
       ]
       return noisePatterns.some(t => lower.includes(t))
     }
@@ -679,88 +682,116 @@ export class ImprovementProjectsService {
         id: 'ACUTE_CARDIAC_STEMI_D2N',
         name: 'احتشاء عضلة القلب الحاد وزمن بدء إذابة الجلطة (Door-to-Needle STEMI Pathway)',
         category: 'الرعاية الحرجة والقلبية الطارئة',
-        deptMatch: d => d.includes('طوارئ') || d.includes('استقبال') || d.includes('قلب') || d.includes('عناي'),
-        findingMatch: f => f.includes('رسم قلب') || f.includes('ecg') || f.includes('جلطة') || f.includes('تدهور') || f.includes('انعاش') || f.includes('طوارئ') || f.includes('صدمات'),
-        ovrMatch: o => o.includes('Emergency') || o.includes('Triage') || o.includes('Cardiac') || o.includes('انعاش') || o.includes('قلب') || o.includes('cpr'),
-        kpiMatch: k => (k.Indicator || '').includes('التدهور') || (k.Indicator || '').includes('الإنذارات') || (k.Indicator || '').includes('وفيات العناية')
+        deptMatch: d => d.includes('طوارئ') || d.includes('استقبال') || d.includes('قلب'),
+        findingMatch: f => f.includes('رسم قلب') || f.includes('ecg') || f.includes('جلطة') || (f.includes('تدهور') && f.includes('طوارئ')),
+        ovrMatch: o => (o.includes('Cardiac') || o.includes('ecg') || o.includes('رسم قلب') || o.includes('ألم بالصدر') || o.includes('جلطة')) && !o.includes('غسيل'),
+        kpiMatch: k => (k.Indicator || '').includes('التدهور') || (k.Indicator || '').includes('الإنذارات')
       },
       {
         id: 'ICU_VENTILATOR_VAP_BUNDLE',
         name: 'حزمة العناية بالتنفس الصناعي وخفض وفيات الرعاية والالتهاب الرئوي (IHI Ventilator Bundle & ICU Mortality)',
         category: 'الرعاية المركزة ومكافحة العدوى',
         deptMatch: d => d.includes('عناي') || d.includes('مركزه') || d.includes('icu'),
-        findingMatch: f => f.includes('عناي') || f.includes('تنفس صناعي') || f.includes('ريسفنت') || f.includes('قرح فراش') || f.includes('تدهور') || f.includes('قساطر'),
-        ovrMatch: o => o.includes('ICU') || o.includes('عناي') || o.includes('تنفس صناعي') || o.includes('ريسفنت') || o.includes('Ventilator'),
+        findingMatch: f => f.includes('عناي') || f.includes('تنفس صناعي') || f.includes('ريسفنت') || f.includes('قرح فراش'),
+        ovrMatch: o => o.includes('ICU') || o.includes('تنفس صناعي') || o.includes('ريسفنت') || o.includes('Ventilator'),
         kpiMatch: k => (k.Indicator || '').includes('وفيات العناية') || (k.Indicator || '').includes('اشغال الأسرة في العناية') || (k.Indicator || '').includes('دوران السرير في الرعاية')
       },
       {
         id: 'PATIENT_FLOW_CAPACITY_DISCHARGE',
         name: 'إدارة التدفق السريري والخروج المبكر لكسر اختناق سعة الأسرة (Criteria-Led Discharge & Patient Flow)',
         category: 'إدارة التدفق السريري وسعة المنشأة',
-        deptMatch: d => d.includes('داخلي') || d.includes('تذاكر') || d.includes('استقبال') || d.includes('طوارئ') || d.includes('ملف'),
-        findingMatch: f => f.includes('تذكرة') || f.includes('خروج') || f.includes('حجز') || f.includes('احالة') || f.includes('انتظار') || f.includes('تكدس') || f.includes('دوران'),
-        ovrMatch: o => o.includes('Medical Records') || o.includes('Forms') || o.includes('انتظار') || o.includes('احالة') || o.includes('تذاكر'),
-        kpiMatch: k => (k.Indicator || '').includes('دوران السرير') || (k.Indicator || '').includes('اشغال الأسرة') || (k.Indicator || '').includes('مدة الانتظار في الطوارئ') || (k.Indicator || '').includes('تحويلها للحجز')
+        deptMatch: d => d.includes('داخلي') || d.includes('تذاكر') || d.includes('استقبال') || d.includes('طوارئ'),
+        findingMatch: f => f.includes('خروج') || f.includes('حجز') || f.includes('احالة') || f.includes('تكدس') || f.includes('تذاكر غير مكتملة'),
+        ovrMatch: o => o.includes('تكدس') || o.includes('تأخر حجز') || o.includes('ازدحام') || o.includes('طوارئ غير مكتمل'),
+        kpiMatch: k => (k.Indicator || '').includes('دوران السرير') || ((k.Indicator || '').includes('اشغال الأسرة') && parseFloat(k.Value || 0) > 80)
       },
       {
         id: 'SEPSIS_HOUR_ONE_BUNDLE',
         name: 'حزمة إنقاذ الإنتان والصدمة التسممية في الساعة الذهبية (Hour-1 Sepsis Resuscitation Bundle)',
         category: 'الرعاية الحرجة ومكافحة العدوى',
-        deptMatch: d => d.includes('عناي') || d.includes('طوارئ') || d.includes('داخلي'),
-        findingMatch: f => f.includes('تسمم') || f.includes('ميكروب') || f.includes('حرارة') || f.includes('مضاد حيوي') || f.includes('صدمة') || f.includes('انتان'),
-        ovrMatch: o => o.includes('Infection') || o.includes('Sepsis') || o.includes('عدوى') || o.includes('دم'),
-        kpiMatch: k => (k.Indicator || '').includes('العدوى المصاحبة') || (k.Indicator || '').includes('وفيات العناية')
+        deptMatch: d => d.includes('عناي') || d.includes('طوارئ'),
+        findingMatch: f => f.includes('تسمم') || f.includes('ميكروب') || f.includes('عدوى دم') || f.includes('صدمة انتانية'),
+        ovrMatch: o => (o.includes('Infection') || o.includes('Sepsis') || o.includes('تسمم دم') || o.includes('تجرثم')) && !o.includes('غسيل'),
+        kpiMatch: k => (k.Indicator || '').includes('العدوى المصاحبة')
       },
       {
         id: 'SAFE_INJECTIONS_INFUSION_SAFETY',
         name: 'ممارسات الحقن الآمن ومأمونية المحاليل الوريدية لمنع تجرثم الدم (Safe Injection Practices & IV Line Safety)',
         category: 'مكافحة العدوى وسلامة المرضى',
         deptMatch: d => d.includes('تمريض') || d.includes('مكافحة العدوى') || d.includes('ملاحظة') || d.includes('داخلي'),
-        findingMatch: f => f.includes('حقن') || f.includes('محاليل') || f.includes('ثقب') || f.includes('سرنج') || f.includes('كانولا') || f.includes('واقيات'),
-        ovrMatch: o => o.includes('Injection') || o.includes('IV') || o.includes('محاليل') || o.includes('حقن') || o.includes('وخز'),
+        findingMatch: f => f.includes('حقن') || f.includes('محاليل') || f.includes('ثقب') || f.includes('سرنج') || f.includes('كانولا') || f.includes('وخز'),
+        ovrMatch: o => o.includes('Safe Injection') || o.includes('حقن') || o.includes('وخز') || o.includes('سرنج') || o.includes('حامل محاليل'),
         kpiMatch: k => (k.Indicator || '').includes('الحقن الآمن') || (k.Indicator || '').includes('الواقيات الشخصية')
       },
       {
         id: 'DEFIBRILLATOR_RESUSCITATION_READINESS',
         name: 'الجاهزية التشغيلية لأجهزة الصدمات الكهربائية وسرعة استجابة الإنعاش (Defibrillator & Code Blue Readiness)',
         category: 'الأجهزة الطبية والسلامة الهندسية / الرعاية الحرجة',
-        deptMatch: d => d.includes('صيان') || d.includes('اجهزه') || d.includes('طوارئ') || d.includes('عناي'),
-        findingMatch: f => f.includes('صدمات') || f.includes('dc') || f.includes('كود بلو') || f.includes('معايره') || f.includes('جهاز معطل') || f.includes('صيانه'),
-        ovrMatch: o => o.includes('Maintenance') || o.includes('Device') || o.includes('Equipment') || o.includes('اعطال') || o.includes('صيانة') || o.includes('جهاز'),
-        kpiMatch: k => (k.Indicator || '').includes('إصلاح الأجهزة') || (k.Indicator || '').includes('عقود الصيانة') || (k.Indicator || '').includes('الأجهزة')
+        deptMatch: d => d.includes('طوارئ') || d.includes('عناي'),
+        findingMatch: f => f.includes('صدمات') || f.includes('dc shock') || f.includes('كود بلو') || f.includes('code blue'),
+        ovrMatch: o => o.includes('صدمات') || o.includes('dc shock') || o.includes('كود بلو') || o.includes('code blue'),
+        kpiMatch: k => (k.Indicator || '').includes('إصلاح الأجهزة')
       },
       {
         id: 'SURGICAL_SAFETY_BUNDLE',
         name: 'حزمة الأمان الجراحي والوقاية من عدوى موضع الجراحة (Surgical Safety Checklist & SSI Prevention)',
         category: 'الخدمات الجراحية والتخدير',
         deptMatch: d => d.includes('عمليات') || d.includes('جراح') || d.includes('تخدير'),
-        findingMatch: f => f.includes('عمليات') || f.includes('جراح') || f.includes('وقت مستقطع') || f.includes('تخدير') || f.includes('موضع الجراح') || f.includes('افاقة'),
-        ovrMatch: o => o.includes('Surgical') || o.includes('عمليات') || o.includes('جراح') || o.includes('تخدير') || o.includes('الوقت المستقطع'),
-        kpiMatch: k => (k.Indicator || '').includes('الجراحة التفقدية') || (k.Indicator || '').includes('العمليات الجراحية')
+        findingMatch: f => f.includes('عمليات') || f.includes('جراح') || f.includes('وقت مستقطع') || f.includes('time out'),
+        ovrMatch: o => o.includes('Surgical') || o.includes('عمليات جراحية') || o.includes('الوقت المستقطع'),
+        kpiMatch: k => (k.Indicator || '').includes('الجراحة التفقدية')
       },
       {
         id: 'NEONATAL_RDS_HYPOTHERMIA_NICU',
         name: 'إنعاش حديثي الولادة والمبتسرين ومتلازمة الضائقة التنفسية بالحضان (Neonatal RDS & Resuscitation)',
         category: 'صحة الأطفال وحديثي الولادة',
-        deptMatch: d => d.includes('حضان') || d.includes('مبتسر') || d.includes('اطفال'),
-        findingMatch: f => f.includes('حضان') || f.includes('مبتسر') || f.includes('طفل') || f.includes('صفراء') || f.includes('تنفس') || f.includes('سيباب'),
-        ovrMatch: o => o.includes('NICU') || o.includes('حضان') || o.includes('مبتسر') || o.includes('اطفال'),
-        kpiMatch: k => (k.Indicator || '').includes('وفيات الحضان') || (k.Indicator || '').includes('الاشغال في الحضان') || (k.Indicator || '').includes('دوران السرير في الحضان')
+        deptMatch: d => d.includes('حضان') || d.includes('مبتسر'),
+        findingMatch: f => f.includes('سيباب') || f.includes('تنفس صناعي بالحضان') || f.includes('انعاش مبتسر') || f.includes('ضائقة تنفسية') || f.includes('انقطاع تنفس') || f.includes('وفيات الحضان'),
+        ovrMatch: o => (o.includes('إنعاش') || o.includes('تنفس صناعي') || o.includes('سيباب') || o.includes('RDS')) && (o.includes('حضان') || o.includes('NICU')),
+        kpiMatch: k => ((k.Indicator || '').includes('وفيات الحضان') && parseFloat(k.Value || 0) > 0) || (k.Indicator || '').includes('دوران السرير في الحضان')
+      },
+      {
+        id: 'HEMODIALYSIS_SAFETY_WATER_TREATMENT',
+        name: 'سلامة جلسات الغسيل الكلوي ومحطة معالجة المياه والوقاية من التجلط وتلوث الوصلات (Hemodialysis Safety & Water Treatment)',
+        category: 'الخدمات الكلوية التخصصية وسلامة المرضى',
+        deptMatch: d => d.includes('كلى') || d.includes('غسيل') || d.includes('dialysis'),
+        findingMatch: f => f.includes('غسيل كلوي') || f.includes('محطة المياه') || f.includes('فلتر') || f.includes('وصلات') || f.includes('معالجة المياه') || f.includes('نتائج حرجه الاكلينيكيه او الفسيولوجيه'),
+        ovrMatch: o => o.includes('الغسيل الكلوي') || o.includes('معالجة المياه') || o.includes('تجلط بالدم بالوصلات') || o.includes('ماكينات'),
+        kpiMatch: k => (k.Indicator || '').includes('الغسيل الكلوي') || (k.Indicator || '').includes('الكلى')
       },
       {
         id: 'LABORATORY_BLOOD_TRANSFUSION',
         name: 'سلامة ومأمونية نقل الدم ومطابقة الفصائل بجانب سرير المريض (Safe Bedside Blood Transfusion Verification)',
         category: 'الخدمات التشخيصية وبنك الدم',
-        deptMatch: d => d.includes('معمل') || d.includes('مختبر') || d.includes('بنك الدم'),
-        findingMatch: f => f.includes('نقل دم') || f.includes('تطابق فصائل') || f.includes('كيس دم') || f.includes('بنك دم') || f.includes('عينات'),
-        ovrMatch: o => o.includes('Blood') || o.includes('دم') || o.includes('نقل دم'),
-        kpiMatch: k => (k.Indicator || '').includes('المعمل') || (k.Indicator || '').includes('نقل الدم')
+        deptMatch: d => d.includes('بنك الدم') || d.includes('نقل الدم'),
+        findingMatch: f => f.includes('نقل دم') || f.includes('تطابق فصائل') || f.includes('كيس دم') || f.includes('فصيلة الدم'),
+        ovrMatch: o => (o.includes('نقل دم') || o.includes('كيس دم') || o.includes('فصائل الدم') || o.includes('Blood Transfusion')) && !o.includes('غسيل كلوي'),
+        kpiMatch: k => {
+          const ind = (k.Indicator || '')
+          return !ind.includes('الكشف الدوري') && !ind.includes('المحولة من العيادات') && (ind.includes('نقل الدم') || ind.includes('بنك الدم') || ind.includes('مشتقات الدم'))
+        }
       }
     ]
 
+    // Helper: Filter only KPIs indicating real deficiencies/risks (rejecting Normal, Target Achieved, and 0% mortality/infection)
+    const isDeficientKpi = (k) => {
+      if (!k) return false
+      const alert = (k.Alert_Level || '').trim().toLowerCase()
+      const status = (k.Status || '').trim().toLowerCase()
+      if (alert === 'normal' || status === 'normal' || status === 'good' || status === 'target_achieved') {
+        return false
+      }
+      const ind = (k.Indicator || '').toLowerCase()
+      const val = parseFloat(k.Value || 0)
+      if ((ind.includes('وفيات') || ind.includes('عدوى') || ind.includes('تدهور') || ind.includes('انتظار')) && val === 0) {
+        return false
+      }
+      return alert === 'critical' || alert === 'alert' || status === 'risk' || (val > 0 && alert !== 'normal')
+    }
+
     const scoredTracks = []
     for (const track of CLINICAL_CRISIS_TRACKS) {
-      const kpis = sheetKpis.filter(track.kpiMatch)
+      const deficientKpis = sheetKpis.filter(k => track.kpiMatch(k) && isDeficientKpi(k))
       const fList = eligibleFindings.filter(f => {
         const text = (f.original_text || '').toLowerCase()
         const dName = (f.departments?.name || '').toLowerCase()
@@ -774,32 +805,36 @@ export class ImprovementProjectsService {
         return track.ovrMatch(full)
       })
 
-      const hasKpi = kpis.length > 0
+      const hasKpi = deficientKpis.length > 0
       const hasFinding = fList.length > 0
       const hasOvr = ovrs.length > 0
       const sourceCount = (hasKpi ? 1 : 0) + (hasFinding ? 1 : 0) + (hasOvr ? 1 : 0)
 
-      // Must have at least 1 corroborating source with substantive evidence
-      if (sourceCount < 2 && fList.length === 0 && ovrs.length === 0) continue
+      // Strict Criterion: A domain CANNOT be a project crisis if it has ZERO findings AND ZERO deficient KPIs!
+      // (Loose OVR keyword matches alone cannot manufacture an improvement project without any finding or KPI failure)
+      if (deficientKpis.length === 0 && fList.length === 0) continue
+
+      // Must have at least 2 corroborating sources OR at least 2 distinct field findings/recurring issues
+      if (sourceCount < 2 && fList.length < 2) continue
 
       const isTriple = sourceCount === 3
       const corroborationLevel = isTriple
         ? 'تطابق جنائي ثلاثي (3 من 3 مصادر)'
-        : (sourceCount === 2 ? 'تطابق جنائي ثنائي (مصدران معتمدان)' : 'مبني على المرور الميداني وبلاغات الأطقم')
+        : (sourceCount === 2 ? 'تطابق جنائي ثنائي (مصدران معتمدان)' : 'مبني على المرور الميداني الموثق')
 
-      const critKpis = kpis.filter(k => k.Alert_Level === 'Critical')
-      const alertKpis = kpis.filter(k => k.Alert_Level === 'Alert' || k.Status === 'Risk')
+      const critKpis = deficientKpis.filter(k => k.Alert_Level === 'Critical')
+      const alertKpis = deficientKpis.filter(k => k.Alert_Level === 'Alert' || k.Status === 'Risk')
       const recFindings = fList.filter(f => (f.repeat_count || 1) >= 2 || f.status === 'recurring')
       const normFindings = fList.filter(f => (f.repeat_count || 1) < 2 && f.status !== 'recurring')
 
-      // Unbiased data-driven scoring: strictly reflect what is hurting THIS hospital
-      const rawScore = (critKpis.length * 35) + (alertKpis.length * 15) + (recFindings.length * 20) + (normFindings.length * 10) + (ovrs.length * 8)
+      // Unbiased data-driven scoring: strictly reflect what is genuinely hurting THIS hospital
+      const rawScore = (critKpis.length * 40) + (alertKpis.length * 20) + (recFindings.length * 25) + (normFindings.length * 15) + (Math.min(ovrs.length, 10) * 5)
       const multiplier = isTriple ? 1.25 : 1.1
       const totalScore = Math.round(rawScore * multiplier)
 
-      if (totalScore <= 0 && fList.length === 0) continue
+      if (totalScore <= 0) continue
 
-      const critKpisEvidence = kpis
+      const critKpisEvidence = deficientKpis
         .map(k => `• ${k.Indicator}: ${k.Value}% (حالة الخطر: ${k.Alert_Level || k.Status})`)
         .slice(0, 8)
 
@@ -821,7 +856,7 @@ export class ImprovementProjectsService {
         is_triple_corroborated: isTriple,
         corroboration_level: corroborationLevel,
         findings_count: fList.length,
-        kpis_count: kpis.length,
+        kpis_count: deficientKpis.length,
         ovr_count: ovrs.length,
         critical_kpis_evidence: critKpisEvidence,
         correlating_findings_evidence: findingsEvidence,
