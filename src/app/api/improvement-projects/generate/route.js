@@ -35,17 +35,26 @@ export async function POST(request) {
     const auth = await checkDirectorateAuth(request)
     if (auth.error) return Response.json({ error: auth.error }, { status: auth.status })
 
-    const { hospitalId, focusDepartment } = await request.json()
+    const { hospitalId, focusDepartment, count = 3 } = await request.json()
 
     if (!hospitalId) {
       return Response.json({ error: 'معرّف المستشفى مطلوب لتوليد مشاريع التحسين' }, { status: 400 })
     }
 
+    const projectCount = Number(count)
+    if (!Number.isInteger(projectCount) || projectCount < 1 || projectCount > 3) {
+      return Response.json({ error: 'عدد المشاريع يجب أن يكون من 1 إلى 3' }, { status: 400 })
+    }
+    if (focusDepartment !== null && focusDepartment !== undefined &&
+        (typeof focusDepartment !== 'string' || focusDepartment.trim().length > 100)) {
+      return Response.json({ error: 'اسم القسم غير صالح' }, { status: 400 })
+    }
+
     const service = new ImprovementProjectsService()
-    // Strictly generate the top 3 battle-tested institutional improvement projects through the 4-pass loop
+    // Generate a bounded number of drafts, anchored to the selected evidence clusters.
     const projects = await service.generateProjectsForHospital(hospitalId, {
-      count: 3,
-      focusDepartment: focusDepartment || null
+      count: projectCount,
+      focusDepartment: focusDepartment?.trim() || null
     })
 
     return Response.json({

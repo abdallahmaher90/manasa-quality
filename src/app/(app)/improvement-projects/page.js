@@ -169,7 +169,7 @@ export default function ImprovementProjectsPage() {
         body: JSON.stringify({
           hospitalId: generateHospitalId,
           focusDepartment: generateFocusDept.trim() || null,
-          count: generateCount
+          count: generateCount || 3
         })
       })
 
@@ -984,7 +984,7 @@ export default function ImprovementProjectsPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
                   <span style={{ fontSize: 13, fontWeight: 800, color: '#0f766e', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    🎯 عدد المشاريع المقترحة: 3 مشاريع استراتيجية معتمدة
+                    🎯 حتى 3 مشروعات مرتبة حسب قوة الأدلة
                   </span>
                   <span style={{
                     fontSize: 11,
@@ -995,11 +995,11 @@ export default function ImprovementProjectsPage() {
                     color: '#fff',
                     letterSpacing: 0.3
                   }}>
-                    تدقيق جنائي رباعي (4 دورات نقد متتالية)
+                    تحليل أدلة ومراجعة بشرية للأسباب
                   </span>
                 </div>
                 <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
-                  سيتم استخراج أعمق 3 أزمات سريرية بالمستشفى وإخضاعها لـ <strong>4 دورات فحص وتدقيق ونقد جنائي صارم</strong> (تحقيق أولي ⬅️ تدقيق هجومي ⬅️ إعادة هندسة النظم ⬅️ اعتماد خط الأساس 100% من واقع شيت جوجل وبلاغات OVR والمرور الميداني دون أي تخمين).
+                  سيحلل المحرك السلبيات النشطة، ومؤشرات الأداء، وبلاغات OVR المتاحة، ثم يقترح مشروعات للمشكلات الأعلى دعماً بالأدلة. ستظهر الأسباب الجذرية كفرضيات مرتبطة بسلبيات محددة، وتحتاج للتحقق الميداني قبل اعتماد التدخلات.
                 </p>
               </div>
 
@@ -1022,12 +1022,12 @@ export default function ImprovementProjectsPage() {
                   {isGenerating ? (
                     <>
                       <div className="loading-spinner" style={{ width: 14, height: 14 }} />
-                      <span>جاري التدقيق الجنائي الرباعي (4 دورات فحص ونقد)...</span>
+                      <span>جاري تحليل الأدلة وتجهيز مسودات المشروعات...</span>
                     </>
                   ) : (
                     <>
                       <SparklesIcon style={{ width: 16, height: 16 }} />
-                      بدء التحليل والتدقيق الرباعي
+                      بدء التحليل وتجهيز المسودات
                     </>
                   )}
                 </button>
@@ -1229,11 +1229,29 @@ export default function ImprovementProjectsPage() {
               {selectedProject.root_cause_analysis && (
                 <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 8, padding: 14 }}>
                   <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--primary-dark)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span>🔍</span> تحليل الأسباب الجذرية النظامية للخلل في مسار العمل (Deep Root Cause Analysis):
+                    <span>🔍</span> فرضيات أولية للأسباب الجذرية (تحتاج إلى تحقق ميداني):
                   </div>
                   <div style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     {selectedProject.root_cause_analysis}
                   </div>
+                  {selectedProject.root_cause_hypotheses?.length > 0 && (
+                    <ul style={{ margin: '10px 0 0', paddingRight: 20, fontSize: 12, color: 'var(--text-secondary)' }}>
+                      {selectedProject.root_cause_hypotheses.map((item, index) => (
+                        <li key={`${item.hypothesis}-${index}`}>
+                          {item.hypothesis}
+                          {item.supporting_finding_ids?.length > 0 && (
+                            <span style={{ color: 'var(--text-muted)' }}> — مدعومة بـ {item.supporting_finding_ids.length} من معرفات السلبيات</span>
+                          )}
+                          {item.how_to_validate && <div style={{ marginTop: 3 }}>طريقة التحقق: {item.how_to_validate}</div>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {selectedProject.root_cause_validation_plan && (
+                    <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid #cbd5e1', fontSize: 12, color: 'var(--text-secondary)' }}>
+                      <strong>خطة التحقق قبل اعتماد السبب:</strong> {selectedProject.root_cause_validation_plan}
+                    </div>
+                  )}
                 </div>
               )}
 

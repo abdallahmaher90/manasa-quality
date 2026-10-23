@@ -101,7 +101,8 @@ export function extractKpiUnit(indicatorName = '') {
 
 export function formatKpiDisplay(indicator, value) {
   const unit = extractKpiUnit(indicator)
-  const val = typeof value === 'number' ? value : (parseFloat(value) ?? value)
+  const val = typeof value === 'number' ? value : Number.parseFloat(String(value ?? '').replace(',', '.'))
+  if (!Number.isFinite(val)) return 'القيمة غير متاحة'
   if (unit === '%') return `${val}%`
   if (unit === 'أيام') return `${val} أيام`
   if (unit === 'ساعات') return `${val} ساعة`
@@ -111,14 +112,15 @@ export function formatKpiDisplay(indicator, value) {
 }
 
 export function getKpiPolarity(indicatorName = '') {
-  const norm = (indicatorName || '').toLowerCase()
+  const norm = normalizeClinicalText(indicatorName)
   // Negative indicators: 0 is target achieved / desirable, higher values are harmful
   const negativePatterns = [
     'وفيات', 'وفاة', 'عدوى', 'وخز', 'أخطاء', 'اخطاء', 'سقوط', 'قرح', 'جلطات',
     'توصيل خاطئ', 'انتهاكات', 'أعطال', 'اعطال', 'معطلة', 'معطله', 'شكاوى', 'شكاوي',
-    'إعادة دخول', 'اعادة دخول', 'انتظار', 'اختصارات ممنوعة', 'اختصارات الممنوعة'
+    'إعادة دخول', 'اعادة دخول', 'انتظار', 'زمن', 'وقت', 'مدة', 'تأخير', 'تاخير',
+    'دوران السرير', 'مدة الإقامة', 'مدة البقاء', 'اختصارات ممنوعة', 'اختصارات الممنوعة'
   ]
-  if (negativePatterns.some(p => norm.includes(p))) {
+  if (negativePatterns.some(p => norm.includes(normalizeClinicalText(p)))) {
     return 'LOWER_IS_BETTER'
   }
   return 'HIGHER_IS_BETTER'
@@ -126,15 +128,24 @@ export function getKpiPolarity(indicatorName = '') {
 
 export function isDeficientKpi(k) {
   if (!k || !k.Indicator) return false
-  const alert = (k.Alert_Level || '').trim().toLowerCase()
-  const status = (k.Status || '').trim().toLowerCase()
-  const val = parseFloat(k.Value || 0)
+  const alert = normalizeClinicalText(k.Alert_Level || '')
+  const status = normalizeClinicalText(k.Status || '')
+  const hasValue = k.Value !== null && k.Value !== undefined && String(k.Value).trim() !== ''
+  const val = hasValue ? Number.parseFloat(String(k.Value).replace(',', '.')) : Number.NaN
   const polarity = getKpiPolarity(k.Indicator)
 
   // Explicit normal or OK
-  if (alert === 'normal' || status === 'normal' || status === 'good' || status === 'ok' || status === 'target_achieved') {
+  if (['normal', 'good', 'ok', 'target achieved'].includes(alert) ||
+      ['normal', 'good', 'ok', 'target achieved'].includes(status)) {
     return false
   }
+
+  // An explicit risk state is useful evidence even when the source omitted a value.
+  if (['critical', 'alert'].includes(alert) || status === 'risk') return true
+
+  // Missing or malformed values are unknown, not zero. Treating them as zero
+  // used to create false crises for every higher-is-better indicator.
+  if (!Number.isFinite(val)) return false
 
   // If LOWER_IS_BETTER and value is 0, it is TARGET ACHIEVED / EXCELLENT (not a deficiency)
   if (polarity === 'LOWER_IS_BETTER' && val === 0) {
@@ -147,11 +158,19 @@ export function isDeficientKpi(k) {
   }
 
   // For non-zero values, check alert levels and risk status
-  if (alert === 'critical' || alert === 'alert' || status === 'risk') {
-    return true
-  }
-
   return false
+}
+
+function normalizeClinicalText(value = '') {
+  return String(value)
+    .toLowerCase()
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\u064B-\u065F\u0640]/g, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 // -------------------------------------------------------------
@@ -772,35 +791,40 @@ export class ImprovementProjectsService {
 
   // 3. Save Project
   async saveProject(projectData) {
+    const [saved] = await this.saveProjects([projectData])
+    return saved
+  }
+
+  async saveProjects(projects) {
+    if (!Array.isArray(projects) || projects.length === 0) return []
     const now = new Date().toISOString()
-    const id = projectData.id || crypto.randomUUID()
-    const project = {
+    const normalizedProjects = projects.map(projectData => ({
       ...projectData,
-      id,
+      id: projectData.id || crypto.randomUUID(),
       status: projectData.status || 'draft',
       priority: projectData.priority || 'high',
       created_at: projectData.created_at || now,
       updated_at: now
-    }
+    }))
 
     const hasTable = await checkHasTable(this.supabase)
     if (hasTable) {
       const { data, error } = await this.supabase
         .from('improvement_projects')
-        .insert(project)
+        .insert(normalizedProjects)
         .select()
-        .single()
       if (error) throw error
       return data
     }
 
-    const { error } = await this.supabase.from('settings').upsert({
-      key: `improvement_project:${id}`,
+    const settingsRows = normalizedProjects.map(project => ({
+      key: `improvement_project:${project.id}`,
       value: JSON.stringify(project)
-    }, { onConflict: 'key' })
+    }))
+    const { error } = await this.supabase.from('settings').upsert(settingsRows, { onConflict: 'key' })
 
     if (error) throw error
-    return project
+    return normalizedProjects
   }
 
   // 4. Update Project
@@ -929,7 +953,7 @@ export class ImprovementProjectsService {
   }
 
   // 8. Analyze Hospital Crisis (Data-First Bottom-Up Evidence Clustering)
-  async analyzeHospitalCrisis(hospitalId) {
+  async analyzeHospitalCrisis(hospitalId, { focusDepartment = null } = {}) {
     // 1. Fetch Hospital Details
     const { data: hospital, error: hospErr } = await this.supabase
       .from('hospitals')
@@ -940,13 +964,37 @@ export class ImprovementProjectsService {
     if (hospErr || !hospital) throw new Error('المستشفى غير موجود')
 
     // 2. Fetch Findings: STRICTLY EXCLUDE RESOLVED / CLOSED FINDINGS!
-    const { data: findings } = await this.supabase
+    const { data: findings, error: findingsError } = await this.supabase
       .from('v_report_findings')
       .select('id, department_id, original_text, priority, status, repeat_count, canonical_finding_id, departments(name)')
       .eq('hospital_id', hospitalId)
       .not('status', 'in', '("resolved_confirmed","resolved_by_hospital","resolved")')
 
-    const eligibleFindings = (findings || []).filter(f => !isTrivialNoise(f))
+    if (findingsError) throw new Error(`تعذر تحميل سلبيات المستشفى لتحليل مشاريع التحسين: ${findingsError.message}`)
+
+    let hospitalFindings = findings || []
+    let matchedFocusDepartment = null
+    if (focusDepartment) {
+      const requestedDepartment = normalizeClinicalText(focusDepartment)
+      const availableDepartments = [...new Set(hospitalFindings.map(f => f.departments?.name).filter(Boolean))]
+      const exactMatches = availableDepartments.filter(name => normalizeClinicalText(name) === requestedDepartment)
+      const partialMatches = exactMatches.length
+        ? exactMatches
+        : availableDepartments.filter(name => normalizeClinicalText(name).includes(requestedDepartment))
+
+      if (partialMatches.length === 0) {
+        throw new Error(`لم يتم العثور على قسم مطابق لـ "${focusDepartment}" ضمن سلبيات المستشفى.`)
+      }
+      if (partialMatches.length > 1) {
+        throw new Error(`اسم القسم "${focusDepartment}" غير محدد؛ اختر اسماً أوضح.`)
+      }
+
+      matchedFocusDepartment = partialMatches[0]
+      const normalizedFocus = normalizeClinicalText(matchedFocusDepartment)
+      hospitalFindings = hospitalFindings.filter(f => normalizeClinicalText(f.departments?.name || '') === normalizedFocus)
+    }
+
+    const eligibleFindings = hospitalFindings.filter(f => !isTrivialNoise(f))
 
     // 3. Fetch Google Sheet KPIs
     const { matchedName: matchedSheetName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
@@ -954,42 +1002,41 @@ export class ImprovementProjectsService {
 
     // 4. Fetch Hospital OVR Incidents
     const rawOvrRecords = await ovrService.getHospitalOVR(hospitalId)
-    const eligibleOvrRecords = (rawOvrRecords || []).filter(o => !isTrivialNoise(o.description) && !isTrivialNoise(o.subcategory))
+    let eligibleOvrRecords = (rawOvrRecords || []).filter(o =>
+      !isTrivialNoise([o.subcategory, o.category, o.description].filter(Boolean).join(' ')))
+    const isInFocusedDepartment = record => {
+      if (!matchedFocusDepartment) return true
+      const recordDepartment = record.department_name || record.Department_Name || record.departmentName ||
+        record.Department || record.department || record.dept_name
+      return Boolean(recordDepartment) && normalizeClinicalText(recordDepartment) === normalizeClinicalText(matchedFocusDepartment)
+    }
+    const scopedOvrRecords = eligibleOvrRecords.filter(isInFocusedDepartment)
+    eligibleOvrRecords = matchedFocusDepartment ? scopedOvrRecords : eligibleOvrRecords
 
     // 5. Dynamic Bottom-Up Thematic Clustering
-    const normalize = (t) => {
-      if (!t) return ''
-      return t
-        .toLowerCase()
-        .replace(/[أإآ]/g, 'ا')
-        .replace(/ة/g, 'ه')
-        .replace(/ى/g, 'ي')
-        .replace(/[\u064B-\u065F]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim()
-    }
-
     const clusters = []
 
     for (const domain of CLINICAL_DOMAINS) {
       // Semantic matching on finding text (Department is secondary context, NOT standalone evidence!)
       const domainFindings = eligibleFindings.filter(f => {
-        const normF = normalize(f.original_text || '')
-        const normD = normalize(f.departments?.name || '')
-        const textMatched = domain.findingKeywords.some(kw => normF.includes(normalize(kw)))
-        if (textMatched) return true
+        const normF = normalizeClinicalText(f.original_text || '')
+        const normD = normalizeClinicalText(f.departments?.name || '')
+        const matchingDomain = this.classifyDomain(f.original_text || '', '')
+        if (matchingDomain !== 'OTHER_GENERAL') return matchingDomain === domain.id
         
         // If department matches, require at least generic clinical keyword, never blind assignment
-        const deptMatched = domain.deptKeywords.some(kw => normD.includes(normalize(kw)))
+        const deptMatched = domain.deptKeywords.some(kw => normD.includes(normalizeClinicalText(kw)))
         if (deptMatched) {
-          const genericClinical = ['غير مطابق', 'غير مكتمل', 'لا يوجد', 'عدم توفر', 'نقص', 'خلل', 'تاخر', 'تأخر']
-          return genericClinical.some(g => normF.includes(g))
+          const genericClinical = ['غير مطابق', 'غير مكتمل', 'لا يوجد', 'عدم توفر', 'نقص', 'خلل', 'تاخر']
+            .map(normalizeClinicalText)
+          return this.classifyDomain('', f.departments?.name || '') === domain.id &&
+            genericClinical.some(g => normF.includes(g))
         }
         return false
       })
 
       // Deficient KPIs matching this domain
-      const domainKpis = activeDeficientKpis.filter(k => domain.kpiMatch(k))
+      const domainKpis = activeDeficientKpis.filter(k => domain.kpiMatch(k) && isInFocusedDepartment(k))
 
       // OVR incidents matching this domain
       const domainOvrs = eligibleOvrRecords.filter(o => {
@@ -1032,8 +1079,9 @@ export class ImprovementProjectsService {
         }
       }
 
-      const critKpis = domainKpis.filter(k => k.Alert_Level === 'Critical')
-      const alertKpis = domainKpis.filter(k => k.Alert_Level === 'Alert' || k.Status === 'Risk')
+      const critKpis = domainKpis.filter(k => normalizeClinicalText(k.Alert_Level || '') === 'critical')
+      const alertKpis = domainKpis.filter(k =>
+        normalizeClinicalText(k.Alert_Level || '') === 'alert' || normalizeClinicalText(k.Status || '') === 'risk')
       const recurringFindings = domainFindings.filter(f => f.status === 'recurring')
       const highFindings = domainFindings.filter(f => f.priority === 'high' && f.status !== 'recurring')
       const normalFindings = domainFindings.filter(f => f.priority !== 'high' && f.status !== 'recurring')
@@ -1089,7 +1137,10 @@ export class ImprovementProjectsService {
 
       const ovrsEvidence = domainOvrs
         .slice(0, 5)
-        .map(o => `• [${o.date || 'بلاغ'} - ${o.subcategory || 'حدث'}]: ${o.description.length > 130 ? o.description.slice(0, 130) + '...' : o.description}`)
+        .map(o => {
+          const description = String(o.description || o.subcategory || 'بلاغ دون وصف')
+          return `• [${o.date || 'بلاغ'} - ${o.subcategory || 'حدث'}]: ${description.length > 130 ? description.slice(0, 130) + '...' : description}`
+        })
 
       // Distinct primary department for this cluster
       const deptCounts = {}
@@ -1137,8 +1188,9 @@ export class ImprovementProjectsService {
         matchedSheetName
       },
       stats: {
-        totalFindings: findings?.length || 0,
+        totalFindings: hospitalFindings.length,
         eligibleFindings: eligibleFindings.length,
+        focusDepartment: matchedFocusDepartment,
         totalSheetKpis: sheetKpis.length,
         criticalSheetKpis: activeDeficientKpis.length,
         totalOvrRecords: eligibleOvrRecords.length
@@ -1154,7 +1206,9 @@ export class ImprovementProjectsService {
     const isDryRun = Boolean(options.dryRun)
 
     // Step A: Perform full integrated evidence clustering
-    const crisisAnalysis = await this.analyzeHospitalCrisis(hospitalId)
+    const crisisAnalysis = await this.analyzeHospitalCrisis(hospitalId, {
+      focusDepartment: options.focusDepartment || null
+    })
     const hospital = crisisAnalysis.hospital
     const eligibleCrises = crisisAnalysis.eligible_crises || []
 
@@ -1163,7 +1217,8 @@ export class ImprovementProjectsService {
     }
 
     // Strictly generate up to 3 major projects, 1 per distinct problem cluster
-    const count = Math.min(options.count || 3, eligibleCrises.length)
+    const requestedCount = Number.parseInt(options.count, 10)
+    const count = Math.min(Number.isFinite(requestedCount) && requestedCount > 0 ? requestedCount : 3, 3, eligibleCrises.length)
     const selectedCrises = eligibleCrises.slice(0, count)
 
     // Step B: Build verified ground-truth dossier with auditable IDs and genuine units
@@ -1173,7 +1228,7 @@ export class ImprovementProjectsService {
         ? `  • إجمالي ${c.ovr_count} بلاغ فعلي مسجل لهذا المسار:\n${(c.ovr_incidents_evidence || []).join('\n')}`
         : '  • لا توجد بلاغات OVR مسجلة لهذا المسار'
       const findingLines = c.findings_count > 0
-        ? `  • إجمالي ${c.findings_count} ملاحظة وسلبية ميدانية مرصودة:\n${(c.correlating_findings_evidence || []).join('\n')}`
+        ? `  • إجمالي ${c.findings_count} ملاحظة وسلبية ميدانية مرصودة. المعرفات المتاحة للاستشهاد: ${c.findings.slice(0, 8).map(f => f.id).join(', ')}\n${(c.correlating_findings_evidence || []).join('\n')}`
         : '  • لا توجد سلبيات ميدانية مرصودة'
 
       return `
@@ -1198,7 +1253,7 @@ ${ovrLines}
     console.log(`[ImprovementProjectsService] Generating grounded quality projects for: ${hospital.name} (${selectedCrises.length} problems, dryRun=${isDryRun})...`)
 
     // Step C: Single High-Fidelity Structured LLM Prompt
-    const systemPrompt = `أنت خبير معتمد في جودة الرعاية الصحية وإدارة الأداء وفق معايير الاعتماد الوطنية (GAHAR) ومعهد تحسين الرعاية الصحية (IHI).
+    const systemPrompt = `أنت خبير في تحسين جودة الرعاية الصحية. صغ مسودة ميثاق لمراجع بشري، ولا تدّع أن تحليل السبب الجذري اكتمل آلياً.
 مهمتك صياغة ميثاق مشاريع تحسين جودة واقعية لمستشفى (${hospital.name}) استناداً بدقة إلى ملف الأدلة الحقيقي المرفق.
 
 قواعد إلزامية حاسمة:
@@ -1210,6 +1265,8 @@ ${ovrLines}
    - يُمنع اختلاق بلاغات OVR أو مؤشرات شيت إذا لم تكن موجودة للمسار.
    - إذا توفرت السلبيات الميدانية فقط، صرّح بأن المشروع مبني على المرور الميداني وسلبيات التفتيش فقط.
    - احتفظ بالقيم الحقيقية للـ KPIs ووحداتها الصحيحة (أيام، %، عدد). لا تحول الأيام إلى نسبة مئوية أبداً.
+   - كل فرضية سبب جذري يجب أن تستشهد بمعرف سلبية واحد أو أكثر موجود حرفياً في ملف الأدلة. إذا لم تدعم الأدلة الفرضية، لا تذكرها.
+   - اكتب الأسباب المحتملة كفرضيات أولية تحتاج للتحقق بالملاحظة ورسم مسار العمل و5 Whys؛ لا تصفها كحقائق مثبتة.
 3. التمييز بين CAPA ومشاريع الجودة:
    - لا تصنع مشروعاً لإصلاح سلبية ورقية واحدة تافهة.
    - اجعل المشروع إعادة هندسة لمسار العمل وتطبيق آليات فيزيائية وإجرائية مانعة للخطأ (Checklists, Independent Dual Verification, Visual Controls).
@@ -1218,7 +1275,8 @@ ${ovrLines}
 5. المسمى الوظيفي فقط (Job Roles Only - NO Human Names):
    - ممنوع كتابة أسماء أشخاص حقيقيين أو وهميين (مثل د. فلان).
    - اكتب المسمى الوظيفي الإكلينيكي أو التمريضي الرسمي فقط (مثلاً: رئيس قسم الصيدلة بالمستشفى، رئيس قسم الاستقبال والطوارئ، مشرفة تمريض القسم).
-6. صيغة الإخراج: JSON فقط ومصفوفة "projects" تحتوي على المشاريع المقترحة.`
+6. لا تخترع مرضاً أو معدلاً سريرياً أو خللاً في خطوة عمل لم تذكره الأدلة. استخدم صياغة عامة مرتبطة بالمجال عند غياب التفاصيل.
+7. صيغة الإخراج: JSON فقط ومصفوفة "projects" تحتوي على مشروع واحد لكل problem_id.`
 
     const userPrompt = `ملف الأدلة المعتمد لمستشفى (${hospital.name}):
 ${groundTruthDossier}
@@ -1233,10 +1291,13 @@ ${groundTruthDossier}
       "category": "تصنيف المشروع",
       "priority": "high",
       "why_hard_to_solve": "شرح لماذا المشكلة مستعصية ولا تُحل بالتدريب البسيط وما هي عوائق مسار العمل",
-      "root_cause_analysis": "تحليل الأسباب الجذرية النظامية للخلل في مسار العمل",
+      "root_cause_hypotheses": [
+        { "hypothesis": "فرضية تشغيلية محددة وليست حقيقة مثبتة", "supporting_finding_ids": ["معرف سلبية من ملف الأدلة"], "how_to_validate": "طريقة تحقق ميدانية قابلة للتنفيذ" }
+      ],
       "problem_statement": "بيان المشكلة يربط الأدلة الحقيقية دون اختلاق",
       "smart_goal": "الهدف الذكي القابل للقياس وموعد الإنجاز المستهدف",
       "evidence_reference": "اسم معيار GAHAR المعني",
+      "root_cause_validation_plan": "خطة تحقق تبدأ برسم العملية وملاحظة الحالات ثم 5 Whys ومراجعة السجلات",
       "target_duration_weeks": 12,
       "interventions": [
         {
@@ -1275,21 +1336,35 @@ ${groundTruthDossier}
       throw new Error('لم يقم الذكاء الاصطناعي بتوليد أي مشروع تحسين مطابق لملف الأدلة.')
     }
 
+    // Never repair a bad model-to-evidence match by assigning it to another
+    // crisis. That can attach a plausible project to unrelated findings.
+    const crisisById = new Map(selectedCrises.map(crisis => [crisis.problem_id, crisis]))
+    const seenProblemIds = new Set()
+    for (const project of generatedProjects) {
+      if (!project || typeof project !== 'object' || !crisisById.has(project.problem_id)) {
+        throw new Error('تعذر ربط أحد المشاريع بالمشكلة والأدلة الصحيحة؛ لم يتم حفظ أي مشروع.')
+      }
+      if (seenProblemIds.has(project.problem_id)) {
+        throw new Error('أعاد النموذج أكثر من مشروع للمشكلة نفسها؛ لم يتم حفظ أي مشروع.')
+      }
+      seenProblemIds.add(project.problem_id)
+    }
+    if (seenProblemIds.size !== selectedCrises.length) {
+      throw new Error('لم ينتج النموذج مشروعاً لكل مشكلة مختارة؛ لم يتم حفظ أي مشروع. أعد المحاولة أو قلل عدد المشاريع.')
+    }
+
     console.log(`[ImprovementProjectsService] Generation successful. Anchoring ${generatedProjects.length} projects to ground-truth evidence...`)
 
     // Step D: Deterministic Post-Processing Anchor (Match by explicit problem_id, NEVER by index [idx])
     const anchoredProjects = []
 
     for (const genProj of generatedProjects) {
-      // Find matching cluster by problem_id first, then by domain_id
-      const cluster = selectedCrises.find(c => c.problem_id === genProj.problem_id) ||
-                      selectedCrises.find(c => c.domain_id === genProj.category || c.domain_name === genProj.title) ||
-                      selectedCrises[0]
+      const cluster = crisisById.get(genProj.problem_id)
 
       if (!cluster) continue
 
-      const deptName = genProj.department_name || cluster.primary_department || 'عام'
-      const category = genProj.category || cluster.category || 'سلامة المرضى'
+      const deptName = crisisAnalysis.stats.focusDepartment || cluster.primary_department || 'عام'
+      const category = cluster.category || 'سلامة المرضى'
 
       // 1. Anchor auditable evidence references
       const evidenceReferences = {
@@ -1327,24 +1402,27 @@ ${groundTruthDossier}
 
       // 3. Anchor KPIs with genuine values and realistic targets (No blind 95%!)
       const anchoredKpis = cluster.deficient_kpis.map(k => {
-        let realisticTarget = 'تحسين ملحوظ'
-        const val = parseFloat(k.Value) || 0
-        if (k.unit === '%') {
-          if (k.Indicator.includes('وفيات') || k.Indicator.includes('عدوى') || k.Indicator.includes('أخطاء') || k.Indicator.includes('معطلة')) {
-            realisticTarget = `خفض النسبة إلى أقل من ${Math.max(0, Math.round(val * 0.5))}%`
-          } else if (k.Indicator.includes('أعطال')) {
-            realisticTarget = 'خفض معدل الأعطال إلى أقل من 3%'
-          } else {
-            realisticTarget = 'رفع نسبة الامتثال إلى 90%'
-          }
-        } else if (k.unit === 'أيام') {
-          realisticTarget = `خفض المعدل إلى أقل من ${Math.max(1, Math.round(val - 1))} أيام`
-        } else if (k.unit === 'عدد') {
-          realisticTarget = 'تفعيل مستمر وفق الخطة التشغيلية'
+        const val = Number.parseFloat(String(k.Value ?? '').replace(',', '.'))
+        const lowerIsBetter = getKpiPolarity(k.Indicator) === 'LOWER_IS_BETTER'
+        let realisticTarget = 'يُقاس خط الأساس خلال أول أسبوعين، ثم يعتمد الفريق هدفاً واقعياً موثقاً'
+        if (Number.isFinite(val) && k.unit === '%' && val >= 0 && val <= 100) {
+          const target = lowerIsBetter
+            ? Math.max(0, Math.floor(val * 0.8))
+            : Math.min(100, Math.ceil(val + ((100 - val) * 0.2)))
+          realisticTarget = target === val
+            ? 'التحقق من تعريف المؤشر وعتبة التنبيه ومصدر القيمة خلال أول أسبوعين قبل اعتماد هدف رقمي'
+            : (lowerIsBetter
+              ? `خفض المؤشر من ${k.formatted} إلى ≤ ${target}% خلال 12 أسبوعاً (هدف أولي للمراجعة)`
+              : `رفع المؤشر من ${k.formatted} إلى ≥ ${target}% خلال 12 أسبوعاً (هدف أولي للمراجعة)`)
+        } else if (Number.isFinite(val) && ['أيام', 'ساعات', 'دقيقة'].includes(k.unit) && val > 0) {
+          const target = Math.round(val * 0.9 * 10) / 10
+          realisticTarget = `خفض المؤشر من ${k.formatted} إلى ≤ ${target} ${k.unit} خلال 12 أسبوعاً (هدف أولي للمراجعة)`
+        } else if (Number.isFinite(val) && k.unit === 'عدد' && val > 0) {
+          realisticTarget = `خفض العدد من ${val} إلى ≤ ${Math.max(0, Math.floor(val * 0.8))} خلال 12 أسبوعاً، بعد التحقق من اكتمال المقام`
         }
         return {
           name: k.Indicator,
-          type: k.Indicator.includes('وفيات') || k.Indicator.includes('عدوى') ? 'outcome' : 'process',
+          type: /وفيات|وفاة|عدوى|سقوط|قرح|إصابة|اصابة/i.test(k.Indicator) ? 'outcome' : 'process',
           baseline: k.formatted,
           target: realisticTarget,
           frequency: 'شهري',
@@ -1352,23 +1430,13 @@ ${groundTruthDossier}
         }
       })
 
-      if (cluster.ovrs.length > 0) {
-        anchoredKpis.push({
-          name: `معدل إغلاق بلاغات OVR (${cluster.domain_name})`,
-          type: 'process',
-          baseline: `${cluster.ovrs.length} بلاغ فعلي مسجل`,
-          target: 'صفر أخطاء ضارة وحوادث جسيمة مع إغلاق 100% من البلاغات خلال 48 ساعة',
-          frequency: 'شهري'
-        })
-      }
-
       if (cluster.findings.length > 0) {
         anchoredKpis.push({
-          name: `نسبة إغلاق سلبيات المرور (${cluster.domain_name})`,
+          name: `تكرار الملاحظات النشطة ذات الصلة (${cluster.domain_name})`,
           type: 'process',
           baseline: `${cluster.findings.length} سلبية مرصودة`,
-          target: 'إغلاق وتصحيح 100% من السلبيات المرصودة',
-          frequency: 'شهري'
+          target: 'عدم تكرار الملاحظات المستهدفة في جولتي مرور متتاليتين بنهاية 12 أسبوعاً',
+          frequency: 'كل مرور'
         })
       }
 
@@ -1389,9 +1457,31 @@ ${groundTruthDossier}
       // 5. Sanitize leadership and team roles
       const projectLead = sanitizeClinicalLead(genProj.project_lead, deptName, category)
       const teamMembers = sanitizeClinicalTeamMembers(genProj.team_members, deptName, category)
+      const allowedFindingIds = new Set(cluster.findings.slice(0, 8).map(f => f.id))
+      const verifiedRootCauseHypotheses = (Array.isArray(genProj.root_cause_hypotheses) ? genProj.root_cause_hypotheses : [])
+        .filter(item => item && typeof item.hypothesis === 'string' && item.hypothesis.trim())
+        .map(item => ({
+          hypothesis: item.hypothesis.trim(),
+          supporting_finding_ids: Array.isArray(item.supporting_finding_ids)
+            ? [...new Set(item.supporting_finding_ids.filter(id => allowedFindingIds.has(id)))]
+            : [],
+          how_to_validate: typeof item.how_to_validate === 'string' ? item.how_to_validate.trim() : ''
+        }))
+        .filter(item => item.supporting_finding_ids.length > 0)
+      const rootCauseAnalysis = verifiedRootCauseHypotheses.length
+        ? 'الفرضيات المعروضة أدناه مرتبطة بسلبيات مرصودة، لكنها تحتاج إلى تحقق ميداني قبل اعتبارها أسباباً جذرية.'
+        : 'لا تثبت بيانات المرور وحدها سبباً جذرياً محدداً. يبدأ الفريق برسم مسار العمل وملاحظة التنفيذ وإجراء 5 Whys قبل اعتماد أي سبب.'
+      const rootCauseValidationPlan = 'خلال أول أسبوعين: رسم خطوات العملية كما تنفذ فعلياً، ملاحظة الحالات والمناوبات، مراجعة السجلات، ثم إجراء 5 Whys مع الفريق والتحقق من كل فرضية قبل اعتماد التدخل.'
 
       // 6. Sanitize interventions (no IT fantasies)
-      const sanitizedInterventions = (genProj.interventions || []).map(it => {
+      const generatedInterventions = Array.isArray(genProj.interventions)
+        ? genProj.interventions.filter(it => typeof it === 'string' || (it && typeof it === 'object'))
+        : []
+      const sanitizedInterventions = (generatedInterventions.length ? generatedInterventions : [
+        { step: 'رسم خطوات العملية الحالية وملاحظة تنفيذها في أكثر من مناوبة، وتوثيق نقاط التعطل كما حدثت فعلياً.', responsible: 'أخصائي سلامة المرضى وتوكيد الجودة', duration: 'الأسبوعان الأولان' },
+        { step: 'اختبار تدخل صغير يعالج السبب الذي تم التحقق منه، باستخدام دورة تخطيط وتنفيذ ودراسة وتعديل (PDSA).', responsible: `رئيس قسم ${deptName} بالمستشفى`, duration: 'أربعة أسابيع' },
+        { step: 'مراجعة المؤشرات والملاحظات في كل مرور وتعديل التدخل قبل تعميمه على القسم.', responsible: 'فريق التحسين متعدد التخصصات', duration: 'طوال مدة المشروع' }
+      ]).map(it => {
         let step = typeof it === 'string' ? it : (it.step || '')
         let responsible = typeof it === 'object' && it.responsible
           ? sanitizeResponsibleRole(it.responsible, deptName, category)
@@ -1407,7 +1497,10 @@ ${groundTruthDossier}
       })
 
       // 7. Calculate Target Completion Date
-      const durationWeeks = genProj.target_duration_weeks || 12
+      const durationWeeks = 12
+      const isHighPriority = cluster.deficient_kpis.some(k => normalizeClinicalText(k.Alert_Level || '') === 'critical') ||
+        cluster.findings.some(f => f.priority === 'high' || f.status === 'recurring')
+      const evidencePriority = isHighPriority ? 'high' : (cluster.score >= 40 ? 'medium' : 'low')
       const targetDate = new Date()
       targetDate.setDate(targetDate.getDate() + (durationWeeks * 7))
 
@@ -1417,45 +1510,44 @@ ${groundTruthDossier}
         hospital_id: hospital.id,
         hospital_name: hospital.name,
         problem_id: cluster.problem_id,
-        title: genProj.title || `مشروع تحسين: ${cluster.domain_name}`,
+        title: `تحسين ${cluster.domain_name} في ${deptName} بمستشفى ${hospital.name}`,
         department_name: deptName,
         category,
-        priority: genProj.priority || 'high',
+        priority: evidencePriority,
         status: 'draft',
-        problem_statement: genProj.problem_statement || `تحسين مسار ${cluster.domain_name} بناءً على المؤشرات والسلبيات المرصودة`,
+        problem_statement: `في ${hospital.name}، رُصدت ${cluster.findings.length} ملاحظة نشطة مرتبطة بـ ${cluster.domain_name}، في ${[...new Set(cluster.findings.map(f => f.departments?.name).filter(Boolean))].join('، ') || cluster.primary_department}. ${cluster.deficient_kpis.length ? `وتظهر مؤشرات الأداء التالية كإشارات تحتاج إلى تحسين: ${cluster.deficient_kpis.map(k => `${k.Indicator} ${k.formatted}`).join('؛ ')}.` : 'لا يتوفر مؤشر رقمي موثق لهذا المسار حالياً.'} هذه الأدلة تحدد فجوة الأداء، لكنها لا تثبت وحدها سببها الجذري.`,
         baseline_metrics: baselineMetricsText,
-        smart_goal: genProj.smart_goal || `تحسين مؤشرات ${cluster.domain_name} خلال ${durationWeeks} أسبوعاً`,
-        evidence_reference: genProj.evidence_reference || cluster.gahar_standard,
+        smart_goal: `خلال ${durationWeeks} أسبوعاً، يمنع الفريق تكرار الملاحظات الموثقة المرتبطة بهذا المشروع في جولتي مرور متتاليتين، بعد توثيق خط الأساس وآلية القياس خلال أول أسبوعين.`,
+        evidence_reference: `مرجع أولي للمراجعة مع مسؤول الاعتماد: ${cluster.gahar_standard}`,
         target_completion_date: targetDate.toISOString().split('T')[0],
         estimated_duration_weeks: durationWeeks,
         kpis: anchoredKpis,
         interventions: sanitizedInterventions,
         project_lead: projectLead,
         team_members: teamMembers,
+        linked_finding_ids: cluster.findings.map(f => f.id),
         linked_findings_summary: cluster.findings.slice(0, 8).map(f => f.original_text),
         prioritization_matrix: {
-          patient_safety_risk: Math.min(5, Math.max(3, Math.ceil(cluster.score / 25))),
-          volume_frequency: Math.min(5, Math.max(2, cluster.findings_count)),
-          process_complexity: 4,
-          strategic_alignment: 5,
-          total_score: Math.min(20, Math.max(14, Math.round(cluster.score / 10))),
-          eligibility_justification: `أولوية تحسين معتمدة مبنية على ${cluster.corroboration_level}.`
+          patient_safety_risk: cluster.deficient_kpis.some(k => normalizeClinicalText(k.Alert_Level || '') === 'critical') ? 5 : (isHighPriority ? 4 : 3),
+          volume_frequency: Math.min(5, Math.max(1, cluster.findings_count)),
+          process_complexity: 3,
+          strategic_alignment: 3,
+          total_score: Math.min(20, cluster.score),
+          eligibility_justification: `مسودة أولوية مبنية على الأدلة المتاحة (${cluster.corroboration_level})؛ يراجع الفريق درجة الخطورة والتعقيد قبل الاعتماد.`
         },
-        why_hard_to_solve: genProj.why_hard_to_solve || 'تتطلب معالجة السبب الجذري إعادة هندسة مسار العمل وضوابط فيزيائية وإجرائية مستمرة.',
-        root_cause_analysis: genProj.root_cause_analysis || 'تعدد خطوات الإجراء وضعف الرقابة المزدوجة أثناء تسليم الحالات وتنفيذ التدابير.',
+        why_hard_to_solve: `الملاحظات تثبت وجود فجوة في ${cluster.domain_name}، لكنها لا تحدد وحدها موضع التعطل أو سببه. يحدد الفريق تعقيد المسار بعد ملاحظة التنفيذ ومراجعة نقاط التسليم والمسؤوليات في الأقسام المعنية.`,
+        root_cause_analysis: rootCauseAnalysis,
+        root_cause_hypotheses: verifiedRootCauseHypotheses,
+        root_cause_validation_plan: rootCauseValidationPlan,
         forensic_corroboration: forensicCorroboration,
         evidence_references: evidenceReferences,
-        directorate_notes: `مشروع تحسين جودة مؤسسي معتمد ومبني على الأدلة (${cluster.corroboration_level})`
+        directorate_notes: `مسودة مشروع مبنية على الأدلة المتاحة (${cluster.corroboration_level})؛ يجب التحقق من فرضيات السبب واعتماد الأهداف والتدخلات قبل بدء التنفيذ.`
       }
 
-      if (!isDryRun) {
-        const saved = await this.saveProject(projectRecord)
-        anchoredProjects.push(saved)
-      } else {
-        anchoredProjects.push(projectRecord)
-      }
+      anchoredProjects.push(projectRecord)
     }
 
-    return anchoredProjects
+    if (isDryRun) return anchoredProjects
+    return this.saveProjects(anchoredProjects)
   }
 }
