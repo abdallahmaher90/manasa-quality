@@ -81,7 +81,7 @@ export async function callGroqWithRetry(payload, maxRetries = 5) {
 // -------------------------------------------------------------
 export function extractKpiUnit(indicatorName = '') {
   const norm = (indicatorName || '').toLowerCase()
-  if (norm.includes('أيام') || norm.includes('ايام') || norm.includes('بالأيام') || norm.includes('يوم')) {
+  if (norm.includes('دوران السرير') || norm.includes('مدة الإقامة') || norm.includes('مدة الاقامة') || norm.includes('أيام') || norm.includes('ايام') || norm.includes('بالأيام') || norm.includes('يوم')) {
     return 'أيام'
   }
   if (norm.includes('ساعات') || norm.includes('ساعة')) {
@@ -158,30 +158,28 @@ export function isDeficientKpi(k) {
   const val = hasValue ? Number.parseFloat(String(k.Value).replace(',', '.')) : Number.NaN
   const polarity = getKpiPolarity(k.Indicator)
 
-  // Explicit normal or OK
+  // 1. Explicit normal, good, or OK
   if (['normal', 'good', 'ok', 'target achieved'].includes(alert) ||
       ['normal', 'good', 'ok', 'target achieved'].includes(status)) {
     return false
   }
 
-  // An explicit risk state is useful evidence even when the source omitted a value.
-  if (['critical', 'alert'].includes(alert) || status === 'risk') return true
-
-  // Missing or malformed values are unknown, not zero. Treating them as zero
-  // used to create false crises for every higher-is-better indicator.
-  if (!Number.isFinite(val)) return false
-
-  // If LOWER_IS_BETTER and value is 0, it is TARGET ACHIEVED / EXCELLENT (not a deficiency)
-  if (polarity === 'LOWER_IS_BETTER' && val === 0) {
+  // 2. If LOWER_IS_BETTER and value is 0, it is TARGET ACHIEVED / EXCELLENT (never a deficiency)
+  if (Number.isFinite(val) && polarity === 'LOWER_IS_BETTER' && val === 0) {
     return false
   }
 
-  // If HIGHER_IS_BETTER and value is 0, it IS A SEVERE DEFICIENCY (e.g. 0% reporting, 0% verbal orders, 0% repair)
-  if (polarity === 'HIGHER_IS_BETTER' && val === 0) {
+  // 3. If HIGHER_IS_BETTER and value is 0, it IS A SEVERE DEFICIENCY (e.g. 0% compliance, 0% verbal orders, 0% repairs)
+  if (Number.isFinite(val) && polarity === 'HIGHER_IS_BETTER' && val === 0) {
     return true
   }
 
-  // For non-zero values, check alert levels and risk status
+  // 4. An explicit risk state from sheet source
+  if (['critical', 'alert'].includes(alert) || status === 'risk') return true
+
+  // 5. Missing or malformed values are unknown, not zero
+  if (!Number.isFinite(val)) return false
+
   return false
 }
 
@@ -744,41 +742,484 @@ const CLINICAL_DOMAINS = [
 
 // Split broad accreditation domains into the actual operational problem so a
 // single charter cannot combine unrelated workstreams just because they share
-// a GAHAR chapter.
-const ISSUE_TOPIC_RULES = [
-  { domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS', id: 'patient-identification', name: 'التحقق من هوية المريض', keywords: ['تعريف المريض', 'هوية المريض', 'بدون تعريف', 'رقم ملف طبي'] },
-  { domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS', id: 'critical-results', name: 'التعامل مع النتائج الحرجة', keywords: ['نتائج حرجة', 'النتائج الحرجة', 'انذارات حرجة', 'الإنذارات الحرجة'] },
-  { domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS', id: 'fall-prevention', name: 'الوقاية من سقوط المرضى', keywords: ['سقوط', 'السقوط'] },
-  { domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS', id: 'pressure-injury', name: 'تقييم مخاطر قرح الضغط', keywords: ['قرح فراش', 'قرح الضغط', 'قرح الفراش'] },
-  { domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION', id: 'prohibited-abbreviations', name: 'الحد من الاختصارات الطبية الممنوعة', keywords: ['اختصارات', 'اختصار'] },
-  { domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION', id: 'clinical-signatures', name: 'اكتمال التوقيعات والتوثيق السريري', keywords: ['توقيع', 'امضاء', 'إمضاء', 'فورمه'] },
-  { domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION', id: 'verbal-orders', name: 'توثيق الأوامر الشفهية', keywords: ['الاوامر الشفهية', 'الأوامر الشفهية', 'الأوامر الشفوية', 'الامر الشفهي'] },
-  { domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION', id: 'record-completeness', name: 'اكتمال السجلات والتذاكر الطبية', keywords: ['اكتمال الملف', 'استكمال الملف', 'تذكرة', 'غير مكتمل البيانات', 'غير مكتملة البيانات', 'نقص البيانات'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'crash-cart-readiness', name: 'جاهزية عربة الإنعاش ومراجعتها', keywords: ['كراش كار', 'كراش كارت', 'عربة الانعاش', 'عربة الإنعاش', 'cpr'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'vaccine-cold-chain', name: 'سلامة حفظ التطعيمات وسلسلة التبريد', keywords: ['تطعيم', 'لقاح', 'سلسلة التبريد', 'ثبات التطعيمات'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'medication-storage', name: 'التخزين الآمن للأدوية', keywords: ['تخزين الادوية', 'تخزين الأدوية', 'الثلاجة', 'الثلاجه', 'تكدس بالادويه', 'كراتين'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'prescribing-safety', name: 'سلامة كتابة وصرف الوصفات الدوائية', keywords: ['وصفة', 'الوصفة', 'وصفات', 'روشتة', 'روشت'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'medication-supply', name: 'توافر الأدوية وإدارة النواقص', keywords: ['نقص في الادوية', 'نقص في الأدوية', 'عدم توافر الادوية', 'عدم توافر الأدوية', 'عجز في ادوية'] },
-  { domainId: 'MEDICATION_SAFETY_MANAGEMENT', id: 'medication-administration', name: 'سلامة إعطاء الدواء', keywords: ['اعطاء الدواء', 'إعطاء الدواء', 'جرعة خاطئة', 'اخطاء الدواء', 'أخطاء الدواء'] }
+// -------------------------------------------------------------
+// Comprehensive, Fine-Grained Operational Problem Tracks (Strictly Unbundled)
+// Each problem is a cohesive clinical/operational challenge with a single focus
+// -------------------------------------------------------------
+export const OPERATIONAL_PROBLEMS = [
+  // --- Medication Safety Tracks (Strictly Unbundled) ---
+  {
+    id: 'crash-cart-readiness',
+    domainId: 'MEDICATION_SAFETY_MANAGEMENT',
+    name: 'جاهزية عربات الإنعاش القلبي الرئوي وأدوية الطوارئ',
+    category: 'إدارة واستخدام الدواء والرعاية الحرجة (MMU/ECC)',
+    gaharStandard: 'معايير إدارة واستخدام الدواء والرعاية الحرجة (GAHAR MMU.04 - ECC.03)',
+    findingKeywords: ['كراش كار', 'كراش كارت', 'عربة الانعاش', 'عربة الإنعاش', 'شيك ليست لمرور الصيدلي', 'مرور الصيدلي على الكراش', 'ادويه الكراش', 'أدوية الكراش', 'سجل سي بي ار', 'محاضر فتح للكراش'],
+    deptKeywords: ['غسيل كلوي', 'طوارئ', 'استقبال', 'عناية', 'باطنة', 'أطفال'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('عربات الإنعاش') || ind.includes('عربة الإنعاش') || ind.includes('كراش كارت')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return (t.includes('كراش') || t.includes('إنعاش') || t.includes('crash cart')) && !t.includes('سقوط')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة اكتمال وجاهزية عربات الإنعاش وسجلات التفتيش الدوري بوحدة الغسيل الكلوي',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'vaccine-cold-chain',
+    domainId: 'MEDICATION_SAFETY_MANAGEMENT',
+    name: 'حوكمة تواريخ فتح فايلات التطعيمات وضمان ثبات سلسلة التبريد',
+    category: 'إدارة واستخدام الدواء ومكافحة العدوى (MMU/IPC)',
+    gaharStandard: 'معايير إدارة واستخدام الدواء ومكافحة العدوى (GAHAR MMU.03 - IPC.04)',
+    findingKeywords: ['تاريخ الانتهاء بعد الفتح', 'فايلات التطعيمات', 'ثبات التطعيمات بعد الفتح', 'تطعيمات بعد الفتح', 'تطعيم بعد الفتح'],
+    deptKeywords: ['غسيل كلوي', 'أطفال', 'مبتسرين', 'صيدلية'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('تطعيمات فيروس b') || ind.includes('سلسلة التبريد للتطعيمات')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return (t.includes('تطعيم') || t.includes('لقاح') || t.includes('vaccine')) && (t.includes('فتح') || t.includes('صلاحية') || t.includes('تبريد'))
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة الالتزام بتدوين تاريخ وساعة الفتح على فايلات التطعيمات متعددة الجرعات (Open Vial Policy)',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'medication-storage-refrigeration',
+    domainId: 'MEDICATION_SAFETY_MANAGEMENT',
+    name: 'معايير التخزين الآمن للأدوية والثلاجات وسلسلة التبريد الدوائي',
+    category: 'إدارة واستخدام الدواء (MMU)',
+    gaharStandard: 'معايير سلامة التخزين الدوائي وسلسلة التبريد (GAHAR MMU.02)',
+    findingKeywords: ['تكدس بالادويه في الثلاجه', 'تكدس بالأدوية في الثلاجة', 'كراتين في الثلاجه', 'كراتين في الثلاجة', 'ثلاجة الادوية', 'ثلاجه الادويه', 'سلسلة التبريد', 'درجات حرارة الثلاجة'],
+    deptKeywords: ['صيدلية', 'كشك الادوية', 'تمريض'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('ثلاجات الأدوية') || ind.includes('سلسلة التبريد')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('ثلاجة أدوية') || t.includes('تلف دواء بالثلاجة') || t.includes('انقطاع تبريد')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة الالتزام بالمعايير القياسية لتخزين الأدوية بالثلاجات وفصل الكراتين ومتابعة درجات الحرارة',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'prescribing-dosage-safety',
+    domainId: 'MEDICATION_SAFETY_MANAGEMENT',
+    name: 'سلامة الوصفات الدوائية والحد من أخطاء الجرعات والبيانات الناقصة',
+    category: 'إدارة واستخدام الدواء (MMU)',
+    gaharStandard: 'إطار استرشادي: معايير كتابة ومراجعة وصرف الوصفات والجرعات (GAHAR MMU.04 - MMU.05 استرشادي)',
+    findingKeywords: [
+      'روشت', 'وصفات', 'وصفة', 'الوصفه الطبيه', 'الوصفة الطبية', 'جرعات الادوية غير مكتوبه',
+      'جرعات الأدوية غير مكتوبة', 'جرعة غير مكتوبة', 'نقص بيانات الوصفة', 'وصفة غير مكتملة',
+      'جرعات الادوية', 'جرعات الأدوية', 'الوصفه الطبيه في بعض التذاكر غير مكتمله'
+    ],
+    deptKeywords: ['صيدلية', 'عيادات', 'تذاكر العيادات', 'تذاكر الاستقبال', 'داخلي'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('أخطاء الوصفات') || ind.includes('الوصفات الدوائية') || ind.includes('الوصفات الطبية') || ind.includes('الوصفات')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return (t.includes('خطأ دوائي') || t.includes('جرعة') || t.includes('وصفة') || t.includes('صرف دواء') || t.includes('روشتة')) && !t.includes('كراش')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة أخطاء الوصفات الدوائية والجرعات في تذاكر المرضى والعيادات',
+      unit: '%',
+      defaultTarget: 'أقل من 5%'
+    }
+  },
+
+  // --- Patient Safety Tracks (Strictly Unbundled) ---
+  {
+    id: 'critical-results-reporting',
+    domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS',
+    name: 'حوكمة وسرعة إبلاغ النتائج الحرجة والإنذارات السريرية',
+    category: 'سلامة المرضى والأهداف الوطنية (NPSG)',
+    gaharStandard: 'إطار استرشادي: متطلبات السلامة الوطنية - التواصل الفعال والنتائج الحرجة (GAHAR NSR.02 / NPSG.02 استرشادي)',
+    findingKeywords: ['النتائج الحرجه', 'النتائج الحرجة', 'دفتر النتائج الحرجه', 'قائمه بالنتائج الحرجه', 'قائمة بالنتائج الحرجة', 'انذارات حرجه', 'إنذارات حرجة'],
+    deptKeywords: ['معمل', 'مختبر', 'غسيل كلوي', 'رعاية', 'طوارئ'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('النتائج الحرجة') || ind.includes('الإنذارات الحرجة')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      // Strict Evidence Rule: Incident must describe an actual breakdown in reporting, communication, or documentation,
+      // NOT a clinical complication or vital-sign variation managed normally (e.g. hypotension given saline)
+      const hasReportingBreakdown = t.includes('تأخر') || t.includes('تاخر') || t.includes('لم يتم إبلاغ') ||
+        t.includes('لم يتم ابلاغ') || t.includes('عدم إبلاغ') || t.includes('عدم ابلاغ') ||
+        t.includes('عدم توثيق') || t.includes('لم يتم توثيق') || t.includes('لم يخطر') ||
+        t.includes('تأخير في النتيجة') || t.includes('panic value') || t.includes('read back') ||
+        t.includes('فشل إبلاغ') || t.includes('سقوط اتصال')
+      const hasCriticalContext = t.includes('حرجة') || t.includes('حرجه') || t.includes('إنذار حرج') || t.includes('انذار حرج') || t.includes('critical result')
+      return hasCriticalContext && hasReportingBreakdown
+    },
+    primaryMetricTemplate: {
+      name: 'معدل إبلاغ وتوثيق النتائج الحرجة وإعادة التلاوة (Read-Back) خلال الإطار الزمني المعتمد',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'patient-identification-safety',
+    domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS',
+    name: 'التحقق الصارم من هوية المريض بالأساور والبيانات الثنائية',
+    category: 'سلامة المرضى والأهداف الوطنية (NPSG)',
+    gaharStandard: 'إطار استرشادي: متطلبات السلامة الوطنية - التعريف الصحيح للمريض (GAHAR NSR.01 / NPSG.01 استرشادي)',
+    findingKeywords: [
+      'تعريف المريض', 'اسوره', 'اساور', 'هويه المريض', 'هوية المريض', 'بدون تعريف للمريض',
+      'نماذج في الملف الطبي بدون تعريف', 'اسم المرضى على العينات', 'اسم المريض على العينة',
+      'كتابة اسم المرضى على العينات'
+    ],
+    deptKeywords: ['طوارئ', 'داخلي', 'غسيل كلوي', 'حضانات', 'عمليات', 'معمل', 'مختبر'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('التعريف الصحيح للمريض') || ind.includes('أخطاء في عناصر الرعاية المرتبطة بالتعريف')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('هوية المريض') || t.includes('اسورة') || t.includes('خطأ في اسم المريض') || t.includes('wrong patient')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل الالتزام بالتعريف الصحيح للمريض باستخدام معرّفين اثنين (الاسم الرباعي والرقم الطبي)',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'patient-fall-prevention',
+    domainId: 'PATIENT_SAFETY_GOVERNANCE_CRITICAL_RESULTS',
+    name: 'الوقاية من سقوط المرضى وتفعيل بروتوكول تقييم المخاطر',
+    category: 'سلامة المرضى والأهداف الوطنية (NPSG)',
+    gaharStandard: 'معايير الأهداف الوطنية لسلامة المرضى - خفض مخاطر السقوط (GAHAR NPSG.06)',
+    findingKeywords: ['سقوط المرضى', 'سقوط مريض', 'مقياس مورس', 'تقييم مخاطر السقوط', 'morse fall'],
+    deptKeywords: ['داخلي', 'مسنين', 'عظام', 'رعاية'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('سقوط المرضى') || ind.includes('معدل سقوط المرضى')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('سقوط مريض') || t.includes('سقوط من السرير') || t.includes('patient fall')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل تقييم مخاطر السقوط للمرضى الداخليين وتطبيق تدابير الحماية المعتمدة',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+
+  // --- Documentation & Medical Records Tracks (Strictly Unbundled) ---
+  {
+    id: 'prohibited-abbreviations',
+    domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION',
+    name: 'الحد من الاختصارات الطبية الممنوعة وغير المعتمدة في التوثيق السريري',
+    category: 'إدارة المعلومات والسجلات الطبية (MRM)',
+    gaharStandard: 'إطار استرشادي: معايير إدارة السجلات الطبية وحظر الاختصارات الخطرة (GAHAR MRM.03 استرشادي)',
+    findingKeywords: [
+      'قائمه الاختصارات', 'قائمة الاختصارات', 'اختصارات ورموز في الملف الطبي', 'اختصارات ف التذكره',
+      'اختصارات بالملف الطبي', 'اختصارات طبية ممنوعة', 'اختصارات ممنوعة', 'اختصارات غير معتمدة',
+      'اختصارات', 'اختصار'
+    ],
+    deptKeywords: ['غسيل كلوي', 'عيادات', 'تذاكر العيادات', 'حضانات', 'سجلات', 'داخلي'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('الاختصارات الطبية الممنوعة') || ind.includes('اختصارات طبية ممنوعة') || ind.includes('الاختصارات')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('اختصار ممنوع') || t.includes('غموض في الاختصار') || t.includes('prohibited abbreviation')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل خفض استخدام الاختصارات الطبية الممنوعة في التوثيق السريري',
+      unit: '%',
+      defaultTarget: 'أقل من 10%'
+    }
+  },
+  {
+    id: 'record-completeness-signatures',
+    domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION',
+    name: 'اكتمال توثيق الملفات الطبية المفتوحة والتوقيعات الطبية النظامية',
+    category: 'إدارة المعلومات والسجلات الطبية (MRM)',
+    gaharStandard: 'إطار استرشادي: معايير اكتمال التوثيق السريري والتوقيعات المعتمدة (GAHAR MRM.01 - MRM.02 استرشادي)',
+    findingKeywords: [
+      'بدون توقيع للطبيب', 'توقيع بعض الاطباء فورمه', 'توقيع ثنائي', 'استكمال الملف الطبي',
+      'الملف الطبي المفتوح', 'الملف الطبي المغلق', 'تذاكر بدون توقيع', 'بيانات ناقصة في التذكرة',
+      'توقيع بعض الاطباء فورمه او ثنائي', 'توقيع الاطباء', 'توقيع الطبيب'
+    ],
+    deptKeywords: ['غسيل كلوي', 'سجلات', 'داخلي', 'عيادات'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('استكمال الملف الطبي') || ind.includes('الملف الطبي المفتوح') || ind.includes('الملف الطبي المغلق')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('ملف غير مكتمل') || t.includes('تذكرة ناقصة') || t.includes('غياب توقيع الطبيب')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة اكتمال تدوين البيانات والتوقيعات الطبية الثلاثية في الملفات الطبية المفتوحة',
+      unit: '%',
+      defaultTarget: '95%'
+    }
+  },
+  {
+    id: 'verbal-orders-governance',
+    domainId: 'MEDICAL_RECORDS_CLINICAL_DOCUMENTATION',
+    name: 'حوكمة وتوثيق الأوامر الشفهية والهاتفية (Read-Back Policy)',
+    category: 'سلامة المرضى والتوثيق الطبي (NPSG/MRM)',
+    gaharStandard: 'معايير التواصل الفعال وتوثيق الأوامر الشفهية (GAHAR NPSG.02 / MRM.04)',
+    findingKeywords: ['اوامر شفهية', 'أوامر شفهية', 'اوامر شفوية', 'أمر هاتفي', 'أوامر هاتفية', 'read back'],
+    deptKeywords: ['طوارئ', 'رعاية', 'داخلي', 'حضانات'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('الالتزام بتسجيل الأوامر الشفهية') || ind.includes('الأوامر الشفهية')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('أمر شفهي') || t.includes('أمر هاتفي') || t.includes('telephone order')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة الالتزام بتسجيل وإعادة تلاوة وتوثيق الأوامر الشفهية والتوقيع عليها خلال 24 ساعة',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+
+  // --- Environmental, Electrical & Facility Safety Tracks (Strictly Unbundled) ---
+  {
+    id: 'electrical-safety-hazards',
+    domainId: 'FACILITY_ENVIRONMENTAL_ELECTRICAL_SAFETY',
+    name: 'إزالة المخاطر الكهربائية والأسلاك المكشوفة وتأمين بيئة العمل',
+    category: 'السلامة البيئية والمخاطر الهندسية (ENV)',
+    gaharStandard: 'معايير السلامة البيئية والمخاطر الفيزيائية والكهربائية (GAHAR FMS.01 - FMS.03)',
+    findingKeywords: ['اسلاك مكشوفه', 'أسلاك مكشوفة', 'كهرباء بعموم القسم', 'اسلاك على الارض', 'أسلاك على الأرض', 'خطر صعق', 'مفاتيح كهرباء مكشوفة', 'تمديدات كهربائية مكشوفة'],
+    deptKeywords: ['الأشعة', 'المرافق', 'الإدارة الهندسية', 'السلامة البيئية'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('مخاطر كهربائية') || ind.includes('بيئة العمل')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('ماس كهربائي') || t.includes('سلك مكشوف') || t.includes('صعق كهربائي') || t.includes('electrical')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة إزالة وتأمين التمديدات والأسلاك الكهربائية المكشوفة وفق الكود الهندسي والسلامة المهنية',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'life-fire-safety',
+    domainId: 'LIFE_AND_FIRE_SAFETY',
+    name: 'الجاهزية للسلامة وحماية الأرواح ومكافحة الحريق وخطط الإخلاء',
+    category: 'السلامة وحماية الأرواح (FMS - Life Safety)',
+    gaharStandard: 'معايير حماية الأرواح والسلامة من الحريق وخطط الطوارئ (GAHAR FMS.04 - FMS.06)',
+    findingKeywords: ['طفايه', 'طفاية', 'طفايات', 'حريق', 'حماية مدنية', 'اخلاء', 'إخلاء', 'كواشف دخان', 'معدات إطفاء', 'معدات الاطفاء', 'race & pass'],
+    deptKeywords: ['السلامة والصحة المهنية', 'الحماية المدنية', 'الأمن والسلامة'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('حريق') || ind.includes('إخلاء') || ind.includes('اخلاء') || ind.includes('معدات الإطفاء') || ind.includes('كواشف الدخان')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('حريق') || t.includes('إنذار حريق') || t.includes('طفاية') || t.includes('fire')
+    },
+    primaryMetricTemplate: {
+      name: 'نسبة الجاهزية التشغيلية لمعدات الإطفاء ومطابقة اشتراطات الحماية المدنية ومعدل التدريب على الإخلاء',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'biomedical-equipment-maintenance',
+    domainId: 'BIOMEDICAL_EQUIPMENT_MAINTENANCE',
+    name: 'الجاهزية التشغيلية وصيانة ومعايرة الأجهزة الطبية الحيوية',
+    category: 'تكنولوجيا وسلامة الأجهزة الطبية (BME)',
+    gaharStandard: 'معايير إدارة وصيانة ومعايرة الأجهزة الطبية (GAHAR FMS.07 - FMS.08)',
+    findingKeywords: ['أجهزة طبية', 'اجهزة طبية', 'صيانة أجهزة', 'معايرة أجهزة', 'عطل جهاز طبي', 'ترخيص أجهزة', 'عقود صيانة الأجهزة'],
+    deptKeywords: ['الأجهزة الطبية', 'الهندسة الطبية', 'الصيانة الطبية'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('الأجهزة الطبية') || ind.includes('الاجهزة والاقسام المرخصة') || ind.includes('الأجهزة والأقسام المغطاة بعقود الصيانة')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('عطل جهاز طبي') || t.includes('توقف جهاز') || t.includes('biomedical')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل إصلاح ومعايرة الأجهزة الطبية ونسبة التغطية بعقود الصيانة الوقائية والترخيص',
+      unit: '%',
+      defaultTarget: '90%'
+    }
+  },
+
+  // --- Infection Control Tracks ---
+  {
+    id: 'safe-injections-sharps-safety',
+    domainId: 'INFECTION_PREVENTION_CONTROL',
+    name: 'ممارسات الحقن الآمن والوقاية من حوادث وخز الإبر والمهام الحادة',
+    category: 'مكافحة ومنع انتشار العدوى (IPC)',
+    gaharStandard: 'معايير مكافحة العدوى - الحقن الآمن والسلامة المهنية (GAHAR IPC.05)',
+    findingKeywords: ['حقن امن', 'حقن آمن', 'وخز', 'صندوق امان', 'صندوق أمان', 'إعادة تغطية السن', 'recapping'],
+    deptKeywords: ['مكافحة العدوى', 'داخلي', 'طوارئ', 'غسيل كلوي', 'معمل'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('الحقن الآمن') || ind.includes('الوخز بالإبر')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('وخز إبرة') || t.includes('وخز سن') || t.includes('needle stick')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل الالتزام بمعايير الحقن الآمن وتفادي إعادة تغطية الإبر وخفض إصابات الوخز',
+      unit: '%',
+      defaultTarget: '95%'
+    }
+  },
+  {
+    id: 'ppe-compliance',
+    domainId: 'INFECTION_PREVENTION_CONTROL',
+    name: 'الالتزام بمهمات الوقاية الشخصية (PPE) والاحتياطات القياسية لمكافحة العدوى',
+    category: 'مكافحة ومنع انتشار العدوى (IPC)',
+    gaharStandard: 'معايير مكافحة العدوى - الاحتياطات القياسية ومهمات الوقاية (GAHAR IPC.02 - IPC.03)',
+    findingKeywords: ['واقيات شخصية', 'واقيات شخصيه', 'قفازات', 'كمامة', 'كمامه', 'جاون', 'مريلة بلاستيك', 'عدم ارتداء واقيات'],
+    deptKeywords: ['مكافحة العدوى', 'عزل', 'عمليات', 'غسيل كلوي', 'معمل'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('الواقيات الشخصية') || ind.includes('استخدام الواقيات الشخصية')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('عدم توفر واقيات') || t.includes('تعرض لغياب الواقيات') || t.includes('ppe')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل التزام الكوادر الطبية والتمريضية بارتداء مهمات الوقاية الشخصية المناسبة لكل إجراء',
+      unit: '%',
+      defaultTarget: '90%'
+    }
+  },
+
+  // --- Clinical Specialized Tracks ---
+  {
+    id: 'specialized-dialysis-care',
+    domainId: 'SPECIALIZED_DIALYSIS_RENAL',
+    name: 'مأمونية جلسات الغسيل الكلوي ومحطة معالجة المياه وتفادي المضاعفات',
+    category: 'الخدمات التخصصية - الغسيل الكلوي',
+    gaharStandard: 'المعايير التخصصية لوحدات الغسيل الكلوي ومحطات المعالجة (GAHAR DLS.01)',
+    findingKeywords: ['محطة المياه', 'محطه المياه', 'ماكينات الغسيل الكلوي', 'فلتر الغسيل', 'مأمونية جلسات الغسيل'],
+    deptKeywords: ['غسيل كلوي', 'كلى'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('غسيل كلوي') || ind.includes('الكلى')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('غسيل كلوي') || t.includes('جلطة وصلة وريدية') || t.includes('عطل محطة مياه')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل سلامة جلسات الغسيل ومطابقة تحاليل مياه المحطة الكيميائية والبكتريولوجية',
+      unit: '%',
+      defaultTarget: '100%'
+    }
+  },
+  {
+    id: 'patient-flow-bed-management',
+    domainId: 'PATIENT_FLOW_CAPACITY_MANAGEMENT',
+    name: 'إدارة التدفق السريري والخروج المعياري وكفاءة دوران الأسرة',
+    category: 'إدارة السعة والتدفق السريري (FLOW)',
+    gaharStandard: 'معايير إدارة تدفق المرضى وسعة المنشأة (GAHAR ACC.01 - ACC.04)',
+    findingKeywords: ['تكدس', 'ازدحام', 'تاخر خروج', 'تأخر خروج', 'اشغال الاسرة', 'إشغال الأسرة', 'دوران السرير'],
+    deptKeywords: ['داخلي', 'طوارئ', 'تذاكر', 'سجلات'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      return ind.includes('دوران السرير') || ind.includes('اشغال الأسرة') || ind.includes('إشغال الأسرة')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('تكدس') || t.includes('تأخير دخول الداخلي') || t.includes('bed delay')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل دوران الأسرة ومتوسط مدة الإقامة بالأيام',
+      unit: 'أيام',
+      defaultTarget: 'وفق المعدل المعياري للأقسام الداخلية'
+    }
+  },
+  {
+    id: 'critical-care-resuscitation',
+    domainId: 'CRITICAL_EMERGENCY_CARE_RESUSCITATION',
+    name: 'جاهزية إنعاش القلب وخفض وفيات الرعاية المركزة والاستجابة للتدهور السريري',
+    category: 'الرعاية الحرجة والطارئة (ECC)',
+    gaharStandard: 'معايير الرعاية الحرجة والطوارئ وفريق الاستجابة السريعة (GAHAR ECC.01 - ECC.07)',
+    findingKeywords: ['كود بلو', 'code blue', 'dc shock', 'جهاز صدمات', 'تفريغ جهاز dc', 'وفيات العناية', 'وفيات الرعاية'],
+    deptKeywords: ['طوارئ', 'عناية مركزه', 'عنايه مركزه', 'icu'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      const val = parseFloat(k.Value || 0)
+      return (ind.includes('وفيات العناية') || ind.includes('وفيات الرعاية')) && val > 0
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('وفاة مفاجئة') || t.includes('تأخر كود بلو') || t.includes('resuscitation failure')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل وفيات العناية المركزة وسرعة استجابة فريق الإنعاش القلبي',
+      unit: '%',
+      defaultTarget: 'خفض معدل الوفيات القابلة للتفادي'
+    }
+  },
+  {
+    id: 'specialized-nicu-care',
+    domainId: 'SPECIALIZED_NICU_NEONATAL',
+    name: 'رعاية حديثي الولادة والمبتسرين وخفض مضاعفات ووفيات الحضانات',
+    category: 'الخدمات التخصصية - الحضانات والأطفال',
+    gaharStandard: 'المعايير التخصصية لرعاية الأطفال وحديثي الولادة (GAHAR PED.01)',
+    findingKeywords: ['حضان', 'مبتسر', 'سيباب', 'ضائقة تنفسية', 'وفيات الحضان', 'دوران السرير في الحضان'],
+    deptKeywords: ['حضان', 'مبتسر'],
+    kpiMatch: k => {
+      const ind = (k.Indicator || '').toLowerCase()
+      const val = parseFloat(k.Value || 0)
+      return (ind.includes('وفيات الحضان') && val > 0) || ind.includes('دوران السرير في الحضان') || ind.includes('الاشغال في الحضان')
+    },
+    ovrMatch: o => {
+      const t = o.toLowerCase()
+      return t.includes('وفاة مبتسر') || t.includes('تدهور مبتسر') || t.includes('nicu')
+    },
+    primaryMetricTemplate: {
+      name: 'معدل خفض مضاعفات ووفيات المبتسرين ودوران أسرة الحضانات',
+      unit: '%',
+      defaultTarget: 'خفض الوفيات ومطابقة زمن دوران الحواضن'
+    }
+  }
 ]
 
-function classifyIssueTopic(domainId, text = '') {
-  const normalized = normalizeClinicalText(text)
-  const rule = ISSUE_TOPIC_RULES.find(item => item.domainId === domainId &&
-    item.keywords.some(keyword => normalized.includes(normalizeClinicalText(keyword))))
-  if (rule) return { ...rule, matched: true }
+export function findMatchingOperationalProblem(findingText = '') {
+  const norm = normalizeClinicalText(findingText)
+  let bestProblem = null
+  let maxKeywordLength = 0
 
-  // Unknown problems are kept separate by their normalized finding text.
-  // This intentionally favors a smaller, defensible project list over bundling.
-  let hash = 2166136261
-  for (const char of normalized) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
-  const shortText = String(text || '').trim().replace(/\s+/g, ' ').slice(0, 72)
-  return {
-    domainId,
-    id: `specific-${(hash >>> 0).toString(36)}`,
-    name: shortText ? `مشكلة محددة: ${shortText}` : 'مشكلة تشغيلية محددة',
-    matched: false
+  for (const prob of OPERATIONAL_PROBLEMS) {
+    for (const kw of prob.findingKeywords) {
+      const normKw = normalizeClinicalText(kw)
+      if (norm.includes(normKw) && normKw.length > maxKeywordLength) {
+        maxKeywordLength = normKw.length
+        bestProblem = prob
+      }
+    }
   }
+
+  return bestProblem
 }
 
 function getRecordDepartment(record = {}) {
@@ -1055,10 +1496,33 @@ export class ImprovementProjectsService {
 
     if (hospErr || !hospital) throw new Error('المستشفى غير موجود')
 
-    // 2. Fetch Findings: STRICTLY EXCLUDE RESOLVED / CLOSED FINDINGS!
+    // 2. Fetch All Findings to Compute MANASA Official Recurrence (count >= 2, review_status != 'pending_review')
+    const { data: allHospFindings, error: allFindingsError } = await this.supabase
+      .from('v_report_findings')
+      .select('id, recurrence_group_id, review_status')
+      .eq('hospital_id', hospitalId)
+
+    if (allFindingsError) {
+      console.warn(`[ImprovementProjectsService] Could not fetch all findings for recurrence calc: ${allFindingsError.message}`)
+    }
+
+    const recurrenceGroupCounts = new Map()
+    for (const f of allHospFindings || []) {
+      if (f.review_status === 'pending_review') continue
+      const grpKey = f.recurrence_group_id || f.id
+      recurrenceGroupCounts.set(grpKey, (recurrenceGroupCounts.get(grpKey) || 0) + 1)
+    }
+
+    const recurringGroupIds = new Set(
+      Array.from(recurrenceGroupCounts.entries())
+        .filter(([_, count]) => count >= 2)
+        .map(([id]) => id)
+    )
+
+    // 3. Fetch Active Findings: STRICTLY EXCLUDE RESOLVED / CLOSED FINDINGS!
     const { data: findings, error: findingsError } = await this.supabase
       .from('v_report_findings')
-      .select('id, department_id, original_text, priority, status, repeat_count, canonical_finding_id, departments(name)')
+      .select('id, department_id, original_text, priority, status, review_status, recurrence_group_id, canonical_finding_id, departments(name)')
       .eq('hospital_id', hospitalId)
       .not('status', 'in', '("resolved_confirmed","resolved_by_hospital","resolved")')
 
@@ -1086,13 +1550,20 @@ export class ImprovementProjectsService {
       hospitalFindings = hospitalFindings.filter(f => normalizeClinicalText(f.departments?.name || '') === normalizedFocus)
     }
 
-    const eligibleFindings = hospitalFindings.filter(f => !isTrivialNoise(f))
+    const eligibleFindings = (hospitalFindings || []).filter(f => !isTrivialNoise(f)).map(f => {
+      const grpKey = f.recurrence_group_id || f.id
+      const isConfirmedRecurring = f.review_status !== 'pending_review' && recurringGroupIds.has(grpKey)
+      return {
+        ...f,
+        is_confirmed_recurring: isConfirmedRecurring
+      }
+    })
 
-    // 3. Fetch Google Sheet KPIs
+    // 4. Fetch Google Sheet KPIs
     const { matchedName: matchedSheetName, kpis: sheetKpis } = await this.fetchHospitalKpisFromSheet(hospital.name)
     const activeDeficientKpis = sheetKpis.filter(k => isDeficientKpi(k))
 
-    // 4. Fetch Hospital OVR Incidents
+    // 5. Fetch Hospital OVR Incidents
     const rawOvrRecords = await ovrService.getHospitalOVR(hospitalId)
     let eligibleOvrRecords = (rawOvrRecords || []).filter(o =>
       !isTrivialNoise([o.subcategory, o.category, o.description].filter(Boolean).join(' ')))
@@ -1105,140 +1576,124 @@ export class ImprovementProjectsService {
     const scopedOvrRecords = eligibleOvrRecords.filter(isInFocusedDepartment)
     eligibleOvrRecords = matchedFocusDepartment ? scopedOvrRecords : eligibleOvrRecords
 
-    // 5. Dynamic Bottom-Up Thematic Clustering
+    // 6. Dynamic Bottom-Up Thematic Clustering on OPERATIONAL_PROBLEMS
     const clusters = []
 
-    for (const domain of CLINICAL_DOMAINS) {
+    for (const problem of OPERATIONAL_PROBLEMS) {
       // Semantic matching on finding text (Department is secondary context, NOT standalone evidence!)
-      const domainFindings = eligibleFindings.filter(f => {
+      const problemFindings = eligibleFindings.filter(f => {
         const normF = normalizeClinicalText(f.original_text || '')
-        const normD = normalizeClinicalText(f.departments?.name || '')
-        const matchingDomain = this.classifyDomain(f.original_text || '', '')
-        if (matchingDomain !== 'OTHER_GENERAL') return matchingDomain === domain.id
-        
-        // If department matches, require at least generic clinical keyword, never blind assignment
-        const deptMatched = domain.deptKeywords.some(kw => normD.includes(normalizeClinicalText(kw)))
-        if (deptMatched) {
-          const genericClinical = ['غير مطابق', 'غير مكتمل', 'لا يوجد', 'عدم توفر', 'نقص', 'خلل', 'تاخر']
-            .map(normalizeClinicalText)
-          return this.classifyDomain('', f.departments?.name || '') === domain.id &&
-            genericClinical.some(g => normF.includes(g))
-        }
-        return false
+        const bestMatch = findMatchingOperationalProblem(f.original_text || '')
+        if (bestMatch) return bestMatch.id === problem.id
+
+        // Fallback keyword check
+        return problem.findingKeywords.some(kw => normF.includes(normalizeClinicalText(kw)))
       })
-      const findingGroups = new Map()
-      for (const finding of domainFindings) {
-        const department = String(finding.departments?.name || '').trim()
-        const topic = classifyIssueTopic(domain.id, finding.original_text || '')
-        const groupKey = `${normalizeClinicalText(department)}|${topic.id}`
-        const group = findingGroups.get(groupKey) || { department, topic, findings: [] }
-        group.findings.push(finding)
-        findingGroups.set(groupKey, group)
+
+      // Grounding Rule: A project CANNOT be created without active field inspection findings!
+      if (problemFindings.length === 0) continue
+
+      const depts = [...new Set(problemFindings.map(f => f.departments?.name).filter(Boolean))]
+      const primaryDept = depts.length === 1 ? depts[0] : (depts.length > 0 ? `أقسام متعددة (${depts.join('، ')})` : 'عام')
+
+      // Attach matching Sheet KPIs that specifically correlate with this operational issue
+      const domainKpis = activeDeficientKpis.filter(k => problem.kpiMatch(k) && isInFocusedDepartment(k))
+
+      // Attach only issue-specific, verified OVR incidents
+      const domainOvrs = eligibleOvrRecords.filter(o => {
+        const full = `${o.subcategory || ''} ${o.category || ''} ${o.description || ''}`
+        return problem.ovrMatch(full)
+      })
+
+      const hasFinding = problemFindings.length > 0
+      const hasKpi = domainKpis.length > 0
+      const hasOvr = domainOvrs.length > 0
+      const sourceCount = (hasFinding ? 1 : 0) + (hasKpi ? 1 : 0) + (hasOvr ? 1 : 0)
+
+      // Strict Validation Threshold: Require at least 2 field findings OR (1 field finding + 1 verified KPI/OVR)
+      if (!hasFinding || (problemFindings.length < 2 && sourceCount < 2)) continue
+
+      let corroborationLevel = 'مبني على حصر المرور الميداني وسلبيات التفتيش الموثقة'
+      if (sourceCount === 3) {
+        corroborationLevel = 'تطابق ثلاثي موثق: سلبيات ميدانية + مؤشرات أداء رقمية + بلاغات أمان معتمدة'
+      } else if (sourceCount === 2 && hasKpi) {
+        corroborationLevel = 'تطابق ثنائي موثق: سلبيات ميدانية + مؤشر أداء رقمي معتمد'
+      } else if (sourceCount === 2 && hasOvr) {
+        corroborationLevel = 'تطابق ثنائي موثق: سلبيات ميدانية + بلاغات أمان محددة'
       }
 
-      for (const group of findingGroups.values()) {
-        const scopedFindings = group.findings
-        const scopedDepartment = normalizeClinicalText(group.department)
-        const belongsToScope = record => Boolean(scopedDepartment) &&
-          normalizeClinicalText(getRecordDepartment(record)) === scopedDepartment
+      const critKpis = domainKpis.filter(k => normalizeClinicalText(k.Alert_Level || '') === 'critical')
+      const alertKpis = domainKpis.filter(k =>
+        normalizeClinicalText(k.Alert_Level || '') === 'alert' || normalizeClinicalText(k.Status || '') === 'risk')
+      const recurringFindings = problemFindings.filter(f => f.is_confirmed_recurring)
+      const highFindings = problemFindings.filter(f => f.priority === 'high' && !f.is_confirmed_recurring)
+      const normalFindings = problemFindings.filter(f => f.priority !== 'high' && !f.is_confirmed_recurring)
+      const score = (critKpis.length * 40) + (alertKpis.length * 20) +
+        (recurringFindings.length * 25) + (highFindings.length * 20) +
+        (normalFindings.length * 10) + (Math.min(domainOvrs.length, 5) * 5) +
+        (sourceCount === 3 ? 15 : sourceCount === 2 ? 8 : 0)
 
-        // Hospital-level indicators and OVRs are not proof for one department.
-        // Attach them only when the source row explicitly names the same unit
-        // and the indicator/event belongs to the same operational issue.
-        const domainKpis = activeDeficientKpis.filter(k =>
-          domain.kpiMatch(k) && isInFocusedDepartment(k) && belongsToScope(k) &&
-          classifyIssueTopic(domain.id, k.Indicator || '').id === group.topic.id)
-        const domainOvrs = eligibleOvrRecords.filter(o => {
-          if (!belongsToScope(o)) return false
-          const full = `${o.subcategory || ''} ${o.category || ''} ${o.description || ''}`
-          return domain.ovrMatch(full) && classifyIssueTopic(domain.id, full).id === group.topic.id
-        })
+      if (score <= 0) continue
 
-        const hasFinding = scopedFindings.length > 0
-        const hasKpi = domainKpis.length > 0
-        const hasOvr = domainOvrs.length > 0
-        const sourceCount = (hasFinding ? 1 : 0) + (hasKpi ? 1 : 0) + (hasOvr ? 1 : 0)
+      const structuredKpis = domainKpis.map(k => ({
+        Indicator: k.Indicator,
+        Value: k.Value,
+        Target: getValidatedSourceTarget(
+          k.Indicator,
+          k.Value,
+          k.Target ?? k.Target_Value ?? k.TargetValue ?? k.target ?? k.target_value ?? null
+        ),
+        Frequency: k.Frequency ?? k.frequency ?? null,
+        unit: extractKpiUnit(k.Indicator),
+        Alert_Level: k.Alert_Level,
+        Status: k.Status,
+        Year: k.Year || null,
+        Month: k.Month || null,
+        formatted: formatKpiDisplay(k.Indicator, k.Value)
+      }))
 
-        // Require repeated field evidence or one issue-specific, department-
-        // scoped independent source. A lone finding cannot become a QIP by
-        // borrowing unrelated hospital-wide KPIs or OVRs.
-        if (!hasFinding || (scopedFindings.length < 2 && sourceCount < 2)) continue
+      const critKpisEvidence = structuredKpis.map(k => {
+        const dateStr = k.Year && k.Month ? ` [تاريخ: ${k.Year}/${k.Month}]` : ''
+        return `• ${k.Indicator}: ${k.formatted} (حالة الخطر: ${k.Alert_Level || k.Status})${dateStr}`
+      }).slice(0, 8)
 
-        let corroborationLevel = 'مبني على ملاحظات ميدانية محددة في القسم'
-        if (sourceCount === 3) {
-          corroborationLevel = 'تطابق ثلاثي موثق ومحدد للقسم والمسار'
-        } else if (sourceCount === 2 && hasKpi) {
-          corroborationLevel = 'تطابق بين الملاحظات الميدانية ومؤشر خاص بالقسم'
-        } else if (sourceCount === 2 && hasOvr) {
-          corroborationLevel = 'تطابق بين الملاحظات الميدانية وبلاغات خاصة بالقسم'
-        }
+      const findingsEvidence = [...problemFindings]
+        .sort((a, b) => (b.priority === 'high' ? 1 : 0) - (a.priority === 'high' ? 1 : 0))
+        .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (معرف: ${f.id})${f.is_confirmed_recurring ? ' [سلبية متكررة معتمدة]' : ''}`)
+        .slice(0, 8)
 
-        const critKpis = domainKpis.filter(k => normalizeClinicalText(k.Alert_Level || '') === 'critical')
-        const alertKpis = domainKpis.filter(k =>
-          normalizeClinicalText(k.Alert_Level || '') === 'alert' || normalizeClinicalText(k.Status || '') === 'risk')
-        const recurringFindings = scopedFindings.filter(f => f.status === 'recurring')
-        const highFindings = scopedFindings.filter(f => f.priority === 'high' && f.status !== 'recurring')
-        const normalFindings = scopedFindings.filter(f => f.priority !== 'high' && f.status !== 'recurring')
-        const score = (critKpis.length * 40) + (alertKpis.length * 20) +
-          (recurringFindings.length * 25) + (highFindings.length * 20) +
-          (normalFindings.length * 10) + (Math.min(domainOvrs.length, 5) * 5) +
-          (sourceCount === 3 ? 15 : sourceCount === 2 ? 8 : 0)
-        if (score <= 0) continue
+      const ovrsEvidence = domainOvrs.slice(0, 5).map(o => {
+        const description = String(o.description || o.subcategory || 'بلاغ دون وصف')
+        return `• [${o.date || 'بلاغ'} - ${o.subcategory || 'حدث'}]: ${description.length > 130 ? `${description.slice(0, 130)}...` : description}`
+      })
 
-        const structuredKpis = domainKpis.map(k => ({
-          Indicator: k.Indicator,
-          Value: k.Value,
-          Target: getValidatedSourceTarget(
-            k.Indicator,
-            k.Value,
-            k.Target ?? k.Target_Value ?? k.TargetValue ?? k.target ?? k.target_value ?? null
-          ),
-          Frequency: k.Frequency ?? k.frequency ?? null,
-          unit: extractKpiUnit(k.Indicator),
-          Alert_Level: k.Alert_Level,
-          Status: k.Status,
-          Year: k.Year || null,
-          Month: k.Month || null,
-          formatted: formatKpiDisplay(k.Indicator, k.Value)
-        }))
-        const critKpisEvidence = structuredKpis.map(k => {
-          const dateStr = k.Year && k.Month ? ` [تاريخ: ${k.Year}/${k.Month}]` : ''
-          return `• ${k.Indicator}: ${k.formatted} (حالة الخطر: ${k.Alert_Level || k.Status})${dateStr}`
-        }).slice(0, 8)
-        const findingsEvidence = [...scopedFindings]
-          .sort((a, b) => (b.priority === 'high' ? 1 : 0) - (a.priority === 'high' ? 1 : 0))
-          .map(f => `• [${f.departments?.name || 'عام'}]: ${f.original_text} (معرف: ${f.id})${f.status === 'recurring' ? ' [متكررة]' : ''}`)
-          .slice(0, 8)
-        const ovrsEvidence = domainOvrs.slice(0, 5).map(o => {
-          const description = String(o.description || o.subcategory || 'بلاغ دون وصف')
-          return `• [${o.date || 'بلاغ'} - ${o.subcategory || 'حدث'}]: ${description.length > 130 ? `${description.slice(0, 130)}...` : description}`
-        })
-        const slug = value => normalizeClinicalText(value).replace(/[^a-z0-9\u0600-\u06ff]+/g, '-').replace(/^-|-$/g, '')
-        const problemId = `prob-${hospital.code || 'hosp'}-${slug(group.department || 'department')}-${group.topic.id}`
-        clusters.push({
-          problem_id: problemId,
-          domain_id: domain.id,
-          issue_id: group.topic.id,
-          domain_name: group.topic.name,
-          category: domain.category,
-          primary_department: group.department || 'غير محدد',
-          gahar_standard: domain.gaharStandard,
-          score,
-          source_count: sourceCount,
-          is_triple_corroborated: sourceCount === 3,
-          corroboration_level: corroborationLevel,
-          project_scale: 'FOCUSED_TARGETED',
-          findings_count: scopedFindings.length,
-          kpis_count: domainKpis.length,
-          ovr_count: domainOvrs.length,
-          findings: scopedFindings,
-          deficient_kpis: structuredKpis,
-          ovrs: domainOvrs,
-          critical_kpis_evidence: critKpisEvidence,
-          correlating_findings_evidence: findingsEvidence,
-          ovr_incidents_evidence: ovrsEvidence
-        })
-      }
+      const problemId = `prob-${hospital.code || 'hosp'}-${problem.id}`
+
+      clusters.push({
+        problem_id: problemId,
+        domain_id: problem.domainId,
+        issue_id: problem.id,
+        domain_name: problem.name,
+        name: problem.name,
+        category: problem.category,
+        primary_department: primaryDept,
+        gahar_standard: problem.gaharStandard,
+        score,
+        source_count: sourceCount,
+        is_triple_corroborated: sourceCount === 3,
+        corroboration_level: corroborationLevel,
+        project_scale: 'FOCUSED_TARGETED',
+        findings_count: problemFindings.length,
+        kpis_count: domainKpis.length,
+        ovr_count: domainOvrs.length,
+        findings: problemFindings,
+        deficient_kpis: structuredKpis,
+        ovrs: domainOvrs,
+        critical_kpis_evidence: critKpisEvidence,
+        correlating_findings_evidence: findingsEvidence,
+        ovr_incidents_evidence: ovrsEvidence,
+        primaryMetricTemplate: problem.primaryMetricTemplate
+      })
     }
 
     // Sort by evidence score descending
@@ -1284,9 +1739,8 @@ export class ImprovementProjectsService {
     // Strictly generate up to 3 major projects, 1 per distinct problem cluster
     const requestedCount = Number.parseInt(options.count, 10)
     const count = Math.min(Number.isFinite(requestedCount) && requestedCount > 0 ? requestedCount : 3, 3, eligibleCrises.length)
-    // Prefer distinct accreditation domains among the top-ranked candidates,
-    // then fill any remaining slots by score. Each candidate is already scoped
-    // to one issue and one department, so diversity does not re-bundle issues.
+
+    // Select candidates prioritizing distinct accreditation domains among top-ranked candidates, then fill by score
     const selectedCrises = []
     const selectedDomains = new Set()
     for (const crisis of eligibleCrises) {
@@ -1303,12 +1757,28 @@ export class ImprovementProjectsService {
       }
     }
 
+    // Explicitly document selection status and rationale on ALL candidates for full auditability
+    for (let i = 0; i < eligibleCrises.length; i++) {
+      const crisis = eligibleCrises[i]
+      const rank = i + 1
+      crisis.rank = rank
+      const isSelected = selectedCrises.some(s => s.problem_id === crisis.problem_id)
+      crisis.selection_status = isSelected ? 'selected' : 'excluded'
+      if (isSelected) {
+        crisis.selection_rationale = `تم اختياره ضمن المشروعات المعتمدة (الرتبة ${rank} - ${crisis.score} نقطة) لتكامل أركان الإثبات وتوافر أدلة ميدانية متطابقة (${crisis.corroboration_level}).`
+      } else if (selectedDomains.has(crisis.domain_id)) {
+        crisis.selection_rationale = `استبعاد موثق: تم تمثيل مجال (${crisis.category}) بالمشروع الأعلى رتبة في هذا المجال، ولتأمين التوازن المؤسسي بين المجالات دون ازدواجية المشروعات في المجال نفسه.`
+      } else {
+        crisis.selection_rationale = `استبعاد موثق: شغل المشروعات الأعلى رتبة في المجموع التراكمي للمقاعد المتاحة (${count} مشروعات).`
+      }
+    }
+
     // Step B: Build verified ground-truth dossier with auditable IDs and genuine units
     const groundTruthDossier = selectedCrises.map((c, idx) => {
       const kpiLines = (c.critical_kpis_evidence || []).map(k => `  ${k}`)
       const ovrLines = c.ovr_count > 0
-        ? `  • إجمالي ${c.ovr_count} بلاغ فعلي مسجل لهذا المسار:\n${(c.ovr_incidents_evidence || []).join('\n')}`
-        : '  • لا توجد بلاغات OVR مسجلة لهذا المسار'
+        ? `  • إجمالي ${c.ovr_count} بلاغ فعلي مسجل لهذه المشكلة:\n${(c.ovr_incidents_evidence || []).join('\n')}`
+        : '  • لا توجد بلاغات OVR مسجلة لهذه المشكلة بالتحديد خلال فترة التقرير'
       const findingLines = c.findings_count > 0
         ? `  • إجمالي ${c.findings_count} ملاحظة وسلبية ميدانية مرصودة. المعرفات المتاحة للاستشهاد: ${c.findings.slice(0, 8).map(f => f.id).join(', ')}\n${(c.correlating_findings_evidence || []).join('\n')}`
         : '  • لا توجد سلبيات ميدانية مرصودة'
@@ -1320,7 +1790,7 @@ export class ImprovementProjectsService {
 - التصنيف: ${c.category}
 - القسم الأساسي: ${c.primary_department}
 - معيار الاعتماد: ${c.gahar_standard}
-- حجم ونطاق المشروع: ${c.project_scale === 'FLAGSHIP_INSTITUTIONAL' ? 'مشروع تحسين مؤسسي كبرى (Flagship QIP)' : 'مشروع تحسين مركّز ومحدد (Focused QIP)'}
+- حجم ونطاق المشروع: مشروع تحسين مركّز ومحدد (Focused QIP)
 - مستوى الإثبات: ${c.corroboration_level} (مجموع النقاط: ${c.score})
 
 أرقام ومؤشرات الأداء الثابتة (Ground Truth - احتفظ بالوحدة الحقيقية كما هي):
@@ -1421,35 +1891,32 @@ ${groundTruthDossier}
       throw new Error('لم يقم الذكاء الاصطناعي بتوليد أي مشروع تحسين مطابق لملف الأدلة.')
     }
 
-    // Never repair a bad model-to-evidence match by assigning it to another
-    // crisis. That can attach a plausible project to unrelated findings.
     const crisisById = new Map(selectedCrises.map(crisis => [crisis.problem_id, crisis]))
+    const validGeneratedProjects = []
     const seenProblemIds = new Set()
     for (const project of generatedProjects) {
-      if (!project || typeof project !== 'object' || !crisisById.has(project.problem_id)) {
-        throw new Error('تعذر ربط أحد المشاريع بالمشكلة والأدلة الصحيحة؛ لم يتم حفظ أي مشروع.')
-      }
-      if (seenProblemIds.has(project.problem_id)) {
-        throw new Error('أعاد النموذج أكثر من مشروع للمشكلة نفسها؛ لم يتم حفظ أي مشروع.')
-      }
+      if (!project || typeof project !== 'object' || !project.problem_id) continue
+      if (!crisisById.has(project.problem_id) || seenProblemIds.has(project.problem_id)) continue
       seenProblemIds.add(project.problem_id)
-    }
-    if (seenProblemIds.size !== selectedCrises.length) {
-      throw new Error('لم ينتج النموذج مشروعاً لكل مشكلة مختارة؛ لم يتم حفظ أي مشروع. أعد المحاولة أو قلل عدد المشاريع.')
+      validGeneratedProjects.push(project)
     }
 
-    console.log(`[ImprovementProjectsService] Generation successful. Anchoring ${generatedProjects.length} projects to ground-truth evidence...`)
+    if (validGeneratedProjects.length === 0) {
+      throw new Error('لم يقم الذكاء الاصطناعي بتوليد أي مشروع تحسين مطابق للمشكلات المعتمدة في ملف الأدلة.')
+    }
+
+    console.log(`[ImprovementProjectsService] Generation successful. Anchoring ${validGeneratedProjects.length} projects to ground-truth evidence...`)
 
     // Step D: Deterministic Post-Processing Anchor (Match by explicit problem_id, NEVER by index [idx])
     const anchoredProjects = []
 
-    for (const genProj of generatedProjects) {
+    for (const genProj of validGeneratedProjects) {
       const cluster = crisisById.get(genProj.problem_id)
-
       if (!cluster) continue
 
       const deptName = crisisAnalysis.stats.focusDepartment || cluster.primary_department || 'عام'
       const category = cluster.category || 'سلامة المرضى'
+      const durationWeeks = 12
 
       // 1. Anchor auditable evidence references
       const evidenceReferences = {
@@ -1478,41 +1945,106 @@ ${groundTruthDossier}
         }).join(' | ')}`)
       }
       if (cluster.ovrs.length > 0) {
-        baselineSnippets.push(`بلاغات OVR: ${cluster.ovrs.length} بلاغ فعلي مسجل`)
+        baselineSnippets.push(`بلاغات OVR: ${cluster.ovrs.length} بلاغ فعلي مسجل لهذه المشكلة`)
       }
       if (cluster.findings.length > 0) {
         baselineSnippets.push(`المرور الميداني: ${cluster.findings.length} سلبية مرصودة`)
       }
       const baselineMetricsText = baselineSnippets.join(' • ') || 'مبني على المرور الميداني وسلبيات التفتيش الموثقة'
 
-      // 3. Anchor KPIs with genuine values and realistic targets (No blind 95%!)
-      const anchoredKpis = cluster.deficient_kpis.map(k => {
-        const sourceTarget = k.Target
-        const hasSourceTarget = sourceTarget !== null && String(sourceTarget).trim() !== ''
-        return {
-          name: k.Indicator,
-          type: /وفيات|وفاة|عدوى|سقوط|قرح|إصابة|اصابة/i.test(k.Indicator) ? 'outcome' : 'process',
-          baseline: k.formatted,
-          target: hasSourceTarget
-            ? `الهدف المسجل في مصدر المؤشر: ${String(sourceTarget).trim()}`
-            : 'لا يوجد هدف موثق في مصدر البيانات؛ يُحدد بعد مراجعة تعريف المؤشر والبسط والمقام واعتماد خط الأساس من الفريق',
-          target_value: hasSourceTarget ? String(sourceTarget).trim() : null,
-          frequency: k.Frequency || k.frequency || 'أسبوعي بعد اعتماد طريقة أخذ العينة',
-          date: (k.Year && k.Month) ? `${k.Year}/${k.Month}` : null
-        }
-      })
+      // 3. Anchor Primary KPI and Secondary KPIs
+      let primaryKpi = null
+      const secondaryKpis = []
 
-      if (cluster.findings.length > 0) {
-        anchoredKpis.push({
-          name: `تكرار الملاحظات النشطة ذات الصلة (${cluster.domain_name})`,
+      if (cluster.deficient_kpis.length > 0) {
+        const primaryKpiObj = cluster.deficient_kpis[0]
+        const polarity = getKpiPolarity(primaryKpiObj.Indicator)
+        const sourceTarget = primaryKpiObj.Target
+        const hasSourceTarget = sourceTarget !== null && String(sourceTarget).trim() !== ''
+
+        let targetStr = ''
+        let targetVal = null
+        let targetType = ''
+        let targetRationale = ''
+
+        if (hasSourceTarget) {
+          targetStr = String(sourceTarget).trim()
+          targetVal = String(sourceTarget).trim()
+          targetType = 'منصوص عليه بمصدر المؤشر المعتمد'
+          targetRationale = `مستهدف رسمي منصوص عليه في بطاقة المؤشر بمصدر البيانات المعتمد (${String(sourceTarget).trim()}).`
+        } else if (polarity === 'LOWER_IS_BETTER') {
+          targetStr = primaryKpiObj.unit === '%' ? 'أقل من 10%' : '0'
+          targetVal = primaryKpiObj.unit === '%' ? '10' : '0'
+          targetType = 'مستهدف تحسيني مقترح يحتاج اعتماد الإدارة'
+          targetRationale = `مستهدف تحسيني مرحلي مقترح من فريق الجودة لتضييق فجوة خط الأساس (${primaryKpiObj.formatted}) إلى (${targetStr})، ويتطلب مراجعة واعتماد لجنة الدواء والجودة وإدارة المستشفى؛ ولا يُنسب هذا الرقم إلى معايير GAHAR كنسبة مئوية منصوص عليها بل كهدف تشغيلي مرحلي.`
+        } else {
+          targetStr = primaryKpiObj.unit === '%' ? '95% على الأقل' : 'تحقيق المستهدف القياسي'
+          targetVal = primaryKpiObj.unit === '%' ? '95' : '100'
+          targetType = 'مستهدف تحسيني مقترح يحتاج اعتماد الإدارة'
+          targetRationale = `مستهدف تحسيني مرحلي مقترح للوصول بالامتثال إلى مستوى آمن (${targetStr}) انطلاقاً من خط الأساس الموثق (${primaryKpiObj.formatted})؛ يخضع للاعتماد والمواءمة مع سياسة المستشفى قبل بدء التطبيق.`
+        }
+
+        primaryKpi = {
+          name: primaryKpiObj.Indicator,
+          type: /وفيات|وفاة|عدوى|سقوط|قرح|إصابة|اصابة/i.test(primaryKpiObj.Indicator) ? 'outcome' : 'process',
+          baseline: primaryKpiObj.formatted,
+          target: `${targetStr} (${targetType === 'منصوص عليه بمصدر المؤشر المعتمد' ? 'مستهدف معتمد بمصدر المؤشر' : 'مستهدف تحسيني مقترح يحتاج اعتماد الإدارة'})`,
+          target_value: targetVal,
+          target_type: targetType,
+          target_rationale: targetRationale,
+          unit: primaryKpiObj.unit,
+          frequency: primaryKpiObj.Frequency || 'شهري',
+          date: (primaryKpiObj.Year && primaryKpiObj.Month) ? `${primaryKpiObj.Year}/${primaryKpiObj.Month}` : null,
+          source: `مؤشرات الأداء الشهرية المعتمدة (Google Sheet${primaryKpiObj.Year ? ` - ${primaryKpiObj.Year}/${primaryKpiObj.Month}` : ''})`
+        }
+
+        // Additional sheet KPIs as secondary
+        for (let i = 1; i < cluster.deficient_kpis.length && secondaryKpis.length < 2; i++) {
+          const secKpiObj = cluster.deficient_kpis[i]
+          secondaryKpis.push({
+            name: secKpiObj.Indicator,
+            type: 'process',
+            baseline: secKpiObj.formatted,
+            target: secKpiObj.Target || (getKpiPolarity(secKpiObj.Indicator) === 'LOWER_IS_BETTER' ? 'أقل من 10%' : '90%'),
+            frequency: secKpiObj.Frequency || 'شهري',
+            source: 'مؤشرات الأداء الشهرية المعتمدة'
+          })
+        }
+      } else {
+        const tpl = cluster.primaryMetricTemplate || {
+          name: `معدل الالتزام بمعايير ${cluster.domain_name}`,
+          unit: '%',
+          defaultTarget: '100%'
+        }
+        primaryKpi = {
+          name: tpl.name,
           type: 'process',
-          baseline: `${cluster.findings.length} سلبية مرصودة`,
-          target: 'يُعتمد هدف خفض بعد تثبيت تعريف الحالة والعينة وخط أساس خاص بالقسم؛ لا تعتبر ملاحظة واحدة معدل تكرار',
-          frequency: 'أسبوعي'
+          baseline: `${cluster.findings.length} ملاحظات سلبية مرصودة بالمرور الميداني`,
+          target: `${tpl.defaultTarget} (مستهدف تحسيني مقترح يحتاج اعتماد الإدارة)`,
+          target_value: '100',
+          target_type: 'مستهدف تحسيني مقترح يحتاج اعتماد الإدارة',
+          target_rationale: 'مستهدف تحسيني مرحلي مقترح لمعالجة الملاحظات الميدانية بالكامل؛ يتطلب مراجعة واعتماد رئيس القسم ولجنة الجودة.',
+          unit: tpl.unit,
+          frequency: 'أسبوعي',
+          source: 'سجلات وقوائم المرور الميداني والتدقيق الداخلي'
+        }
+      }
+
+      // Add operational secondary KPI tracking process compliance if room exists
+      if (secondaryKpis.length === 0) {
+        secondaryKpis.push({
+          name: `نسبة التزام الطاقم بنموذج المتابعة والتدخل المعتمد (${cluster.domain_name})`,
+          type: 'process',
+          baseline: '0% (قيد التفعيل والتطبيق)',
+          target: '100%',
+          frequency: 'أسبوعي',
+          source: 'سجلات المتابعة والتدقيق الإكلينيكي بالقسم'
         })
       }
 
-      // 4. Anchor forensic corroboration (True existence only, no hallucinations)
+      const allAnchoredKpis = [primaryKpi, ...secondaryKpis].filter(Boolean)
+
+      // 4. Anchor forensic corroboration (True existence only, neutral wording for zero OVR)
       const forensicCorroboration = {
         corroboration_level: cluster.corroboration_level,
         source_1_field_finding: cluster.findings.length > 0
@@ -1523,7 +2055,7 @@ ${groundTruthDossier}
           : null,
         source_3_staff_ovr: cluster.ovrs.length > 0
           ? cluster.ovrs.slice(0, 2).map(o => `[${o.date || 'بلاغ'}]: ${o.description}`).join(' | ')
-          : null
+          : 'لا توجد بلاغات OVR مسجلة لهذه المشكلة بالتحديد خلال فترة التقرير'
       }
 
       // 5. Sanitize leadership and team roles
@@ -1543,6 +2075,7 @@ ${groundTruthDossier}
           !isNearRestatement(item.hypothesis, cluster.findings
             .filter(finding => item.supporting_finding_ids.includes(finding.id))
             .map(finding => finding.original_text || '')))
+
       const rootCauseAnalysis = verifiedRootCauseHypotheses.length
         ? 'الفرضيات المعروضة أدناه مرتبطة بسلبيات مرصودة، لكنها تحتاج إلى تحقق ميداني قبل اعتبارها أسباباً جذرية.'
         : 'لا تثبت بيانات المرور وحدها سبباً جذرياً محدداً. يبدأ الفريق برسم مسار العمل وملاحظة التنفيذ وإجراء 5 Whys قبل اعتماد أي سبب.'
@@ -1571,8 +2104,7 @@ ${groundTruthDossier}
         return typeof it === 'string' ? step : { ...it, step, responsible }
       })
 
-      // 7. Calculate Target Completion Date
-      const durationWeeks = 12
+      // 7. Calculate Target Completion Date & Priority Matrix
       const matrix = {
         patient_safety_risk: cluster.deficient_kpis.some(k => normalizeClinicalText(k.Alert_Level || '') === 'critical') ||
           cluster.findings.some(f => f.priority === 'high') ? 5 :
@@ -1585,10 +2117,9 @@ ${groundTruthDossier}
       const evidencePriority = matrix.total_score >= 16 ? 'high' : matrix.total_score >= 12 ? 'medium' : 'low'
       const targetDate = new Date()
       targetDate.setDate(targetDate.getDate() + (durationWeeks * 7))
-      const primaryTargetKpi = anchoredKpis.find(k => k.target_value)
-      const smartGoal = primaryTargetKpi
-        ? `خلال ${durationWeeks} أسبوعاً، يحقق الفريق الهدف المسجل لمؤشر «${primaryTargetKpi.name}» من خط أساس ${primaryTargetKpi.baseline}، مع متابعة ${primaryTargetKpi.frequency}. يعتمد الهدف بعد مراجعة تعريف المؤشر ومصدره.`
-        : `خلال أول أسبوعين، يعتمد الفريق تعريف المشكلة ومقام القياس وخط أساس خاصاً بقسم ${deptName}؛ ثم يقر هدف تحسن رقمي ومقياس متابعة أسبوعي قبل اختبار أي تدخل، وتتم مراجعة النتائج بنهاية ${durationWeeks} أسبوعاً.`
+
+      const smartGoal = `خلال ${durationWeeks} أسبوعاً، يتم تحقيق المستهدف لمؤشر «${primaryKpi.name}» بالوصول إلى ${primaryKpi.target} (انطلاقاً من خط الأساس الموثق: ${primaryKpi.baseline}) في ${deptName}، مع المتابعة الدورية بصفة ${primaryKpi.frequency} واعتماد الإجراءات التصحيحية الميدانية.`
+
       const hospitalLabel = String(hospital.name || '').replace(/^\s*مستشفى\s+/u, '').trim()
 
       // 8. Assemble Full Project Record
@@ -1597,6 +2128,7 @@ ${groundTruthDossier}
         hospital_id: hospital.id,
         hospital_name: hospital.name,
         problem_id: cluster.problem_id,
+        primary_problem: cluster.domain_name,
         title: `تحسين ${cluster.domain_name} في ${deptName} بمستشفى ${hospitalLabel}`,
         department_name: deptName,
         category,
@@ -1605,10 +2137,12 @@ ${groundTruthDossier}
         problem_statement: `في ${hospital.name}، رُصدت ${cluster.findings.length} ملاحظة نشطة مرتبطة بـ ${cluster.domain_name}، في ${[...new Set(cluster.findings.map(f => f.departments?.name).filter(Boolean))].join('، ') || cluster.primary_department}. ${cluster.deficient_kpis.length ? `وتظهر مؤشرات الأداء التالية كإشارات تحتاج إلى تحسين: ${cluster.deficient_kpis.map(k => `${k.Indicator} ${k.formatted}`).join('؛ ')}.` : 'لا يتوفر مؤشر رقمي موثق لهذا المسار حالياً.'} هذه الأدلة تحدد فجوة الأداء، لكنها لا تثبت وحدها سببها الجذري.`,
         baseline_metrics: baselineMetricsText,
         smart_goal: smartGoal,
-        evidence_reference: `مرجع أولي للمراجعة مع مسؤول الاعتماد: ${cluster.gahar_standard}`,
+        primary_kpi: primaryKpi,
+        secondary_kpis: secondaryKpis,
+        kpis: allAnchoredKpis,
+        evidence_reference: `مرجع استرشادي للمراجعة مع مسؤول الاعتماد: ${cluster.gahar_standard} (إطار استرشادي يخضع للمواءمة مع دليل سياسات المنشأة المعتمد)`,
         target_completion_date: targetDate.toISOString().split('T')[0],
         estimated_duration_weeks: durationWeeks,
-        kpis: anchoredKpis,
         interventions: sanitizedInterventions,
         project_lead: projectLead,
         team_members: teamMembers,

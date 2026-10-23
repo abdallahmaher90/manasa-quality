@@ -173,22 +173,50 @@ async function runScenarioTests() {
     assert(envCrisis, 'يجب العثور على أزمة السلامة البيئية والمخاطر الكهربائية بسبب الأسلاك المكشوفة')
     assert(envCrisis.findings.some(f => f.original_text.includes('اسلاك')), 'يجب أن تحتوي الأزمة على سلبيات الأسلاك')
 
-    // Check Medication Safety
-    const medCrisis = analysis.eligible_crises.find(c => c.domain_id === 'MEDICATION_SAFETY_MANAGEMENT')
-    assert(medCrisis, 'يجب العثور على أزمة مأمونية الدواء بالرياض')
-    assert(medCrisis.deficient_kpis.some(k => k.Indicator.includes('الوصفات') && k.Value === 46), 'يجب أن ترتبط بمؤشر أخطاء الوصفات 46%')
+    // Check Medication Safety unbundling (prescribing vs crash cart vs vaccine vs storage)
+    const presCrisis = analysis.eligible_crises.find(c => c.issue_id === 'prescribing-dosage-safety')
+    assert(presCrisis, 'يجب العثور على أزمة مأمونية الوصفات الدوائية بالرياض كمشروع مستقل')
+    assert(presCrisis.deficient_kpis.some(k => k.Indicator.includes('الوصفات') && k.Value === 46), 'يجب أن ترتبط بمؤشر أخطاء الوصفات 46%')
+
+    const crashCrisis = analysis.eligible_crises.find(c => c.issue_id === 'crash-cart-readiness')
+    assert(crashCrisis, 'يجب العثور على أزمة جاهزية عربات الإنعاش كمشروع مستقل')
+
+    const vaccineCrisis = analysis.eligible_crises.find(c => c.issue_id === 'vaccine-cold-chain')
+    assert(vaccineCrisis, 'يجب العثور على أزمة تواريخ فتح التطعيمات كمشروع مستقل')
+
+    // Check Patient Safety unbundling (critical results vs patient ID)
+    const critResults = analysis.eligible_crises.find(c => c.issue_id === 'critical-results-reporting')
+    const patientId = analysis.eligible_crises.find(c => c.issue_id === 'patient-identification-safety')
+    assert(critResults, 'يجب العثور على النتائج الحرجة كمشروع مستقل')
+    assert(patientId, 'يجب العثور على تعريف وهوية المريض كمشروع مستقل')
+    assert.notStrictEqual(critResults.issue_id, patientId.issue_id, 'ممنوع دمج النتائج الحرجة مع هوية المريض')
+
+    // Check Documentation unbundling (record completeness vs prohibited abbreviations)
+    const recordDoc = analysis.eligible_crises.find(c => c.issue_id === 'record-completeness-signatures')
+    const abbrevDoc = analysis.eligible_crises.find(c => c.issue_id === 'prohibited-abbreviations')
+    assert(recordDoc, 'يجب العثور على اكتمال الملفات والتوقيعات كمشروع مستقل')
+    assert(abbrevDoc, 'يجب العثور على الاختصارات الممنوعة كمشروع مستقل')
+    assert.notStrictEqual(recordDoc.issue_id, abbrevDoc.issue_id, 'ممنوع دمج الاختصارات مع اكتمال السجلات')
   })
 
-  // Real Hospital 2: Fooh Central Hospital (Multi-Source with ICU and Patient Flow)
+  // Real Hospital 2: Fooh Central Hospital (Multi-Source with ICU and NICU Bed Turnover)
   await test('بيانات حقيقية: مستشفى فوه المركزي (دوران السرير بالأيام ووفيات العناية 23%)', async () => {
     const foohId = 'ee4dc1f4-1602-482e-a235-554dc72c4e67'
     const analysis = await service.analyzeHospitalCrisis(foohId)
     assert(analysis && analysis.eligible_crises.length > 0, 'يجب العثور على أزمات مؤكدة بأدلة فوه')
 
-    const flowCrisis = analysis.eligible_crises.find(c => c.domain_id === 'PATIENT_FLOW_CAPACITY_MANAGEMENT')
-    assert(flowCrisis, 'يجب العثور على أزمة التدفق السريري ودوران الأسرة')
-    const turnoverKpi = flowCrisis.deficient_kpis.find(k => k.Indicator.includes('دوران السرير'))
-    assert(turnoverKpi, 'يجب أن ترتبط بمؤشر دوران السرير')
+    // Check ICU Resuscitation with mortality KPI
+    const icuCrisis = analysis.eligible_crises.find(c => c.issue_id === 'critical-care-resuscitation')
+    assert(icuCrisis, 'يجب العثور على أزمة رعاية الحالات الحرجة وإنعاش القلب')
+    const mortKpi = icuCrisis.deficient_kpis.find(k => k.Indicator.includes('وفيات العناية'))
+    assert(mortKpi, 'يجب أن ترتبط بمؤشر وفيات العناية المركزة')
+    assert.strictEqual(mortKpi.Value, 23, 'نسبة وفيات العناية المركزة يجب أن تكون 23%')
+
+    // Check NICU Care with bed turnover KPI
+    const nicuCrisis = analysis.eligible_crises.find(c => c.issue_id === 'specialized-nicu-care')
+    assert(nicuCrisis, 'يجب العثور على أزمة رعاية حديثي الولادة والمبتسرين')
+    const turnoverKpi = nicuCrisis.deficient_kpis.find(k => k.Indicator.includes('دوران السرير'))
+    assert(turnoverKpi, 'يجب أن ترتبط بمؤشر دوران السرير في الحضان')
     assert.strictEqual(turnoverKpi.unit, 'أيام', 'وحدة دوران السرير في فوه يجب أن تكون أيام')
     assert(!turnoverKpi.formatted.includes('%'), 'يجب ألا يحتوي دوران السرير على علامة %')
   })
@@ -221,9 +249,12 @@ async function runScenarioTests() {
     const drafts = await service.generateProjectsForHospital(riyadhId, { count: 2, dryRun: true })
     assert(Array.isArray(drafts) && drafts.length > 0, 'يجب إرجاع مسودات المشاريع في الذاكرة')
 
-    // Verify each draft has auditable evidence references
+    // Verify each draft has auditable evidence references, single primary problem, single SMART goal, and primary KPI
     for (const d of drafts) {
       assert(d.problem_id, 'المشروع يجب أن يرتبط بـ problem_id محدد')
+      assert(d.primary_problem, 'المشروع يجب أن يحتوي على primary_problem محدد')
+      assert(d.smart_goal, 'المشروع يجب أن يحتوي على smart_goal رئيسي واحد')
+      assert(d.primary_kpi, 'المشروع يجب أن يحتوي على primary_kpi محدد')
       assert(d.evidence_references, 'المشروع يجب أن يحتوي على evidence_references')
       assert(Array.isArray(d.kpis) && d.kpis.length > 0, 'المشروع يجب أن يحتوي على مؤشرات KPIs مؤصلة')
     }
