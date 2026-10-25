@@ -17,6 +17,7 @@ const pageTitles = {
   '/cross-report': 'تقرير مقارن',
   '/statistics': 'الإحصائيات',
   '/improvement-projects': 'مشاريع التحسين (QIPs)',
+  '/kpi-tracking': 'متابعة تسجيل المؤشرات الشهرية',
   '/ovr': 'بلاغات الحوادث العارضة (OVR)',
 }
 

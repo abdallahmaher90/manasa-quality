@@ -28,6 +28,7 @@ const navItems = [
     roles: ['directorate_admin', 'directorate_member'],
     items: [
       { href: '/improvement-projects', icon: <SparklesIcon className="w-5 h-5" />, label: 'مشاريع التحسين (QIPs)', roles: ['directorate_admin'] },
+      { href: '/kpi-tracking', icon: <ChartIcon className="w-5 h-5" />, label: 'متابعة تسجيل المؤشرات', roles: ['directorate_admin'] },
       { href: '/cross-report', icon: <ClipboardIcon className="w-5 h-5" />, label: 'تقرير مقارن بالأقسام' },
       { href: '/statistics', icon: <ChartIcon className="w-5 h-5" />, label: 'الإحصائيات' },
     ]
