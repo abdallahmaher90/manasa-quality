@@ -6,148 +6,128 @@
 export const INDICATOR_DOMAINS = [
   {
     id: 'ipsg',
-    name: 'أهداف سلامة المرضى الدولية (IPSG)',
+    name: 'أهداف سلامة المرضى (IPSG)',
     icon: '🛡️',
     color: '#0284c7',
     bgColor: 'rgba(2, 132, 199, 0.1)',
-    description: 'معايير الأمان السريري، التعريف الصحيح، الأوامر الشفهية، السقوط، قرح الفراش، والجلطات الوريدية'
   },
   {
     id: 'surgery',
-    name: 'الجراحة والتخدير والعمليات',
+    name: 'الجراحة والعمليات',
     icon: '✂️',
     color: '#0d9488',
     bgColor: 'rgba(13, 148, 136, 0.1)',
-    description: 'سلامة الجراحة، قائمة التحقق، الوقت المستقطع، العمليات الكبرى، ونسب الإحالة الجراحية'
   },
   {
     id: 'medication',
-    name: 'إدارة وسلامة الأدوية',
+    name: 'سلامة الأدوية',
     icon: '💊',
     color: '#8b5cf6',
     bgColor: 'rgba(139, 92, 246, 0.1)',
-    description: 'أخطاء الوصفات، أدوية الخطورة العالية، الأدوية المتشابهة (LASA)، والآثار الدوائية العكسية'
   },
   {
     id: 'infection_control',
-    name: 'مكافحة العدوى والوقاية',
+    name: 'مكافحة العدوى',
     icon: '🦠',
     color: '#10b981',
     bgColor: 'rgba(16, 185, 129, 0.1)',
-    description: 'نظافة الأيدي، عدوى القساطر البولية (CAUTI)، القساطر المركزية (CLABSI)، والتنفس الصناعي (VAP)'
   },
   {
     id: 'occupational_health',
-    name: 'السلامة المهنية والأشعة وصحة العاملين',
+    name: 'السلامة المهنية والأشعة',
     icon: '☢️',
     color: '#f59e0b',
     bgColor: 'rgba(245, 158, 11, 0.1)',
-    description: 'قياس الجرعات الإشعاعية، الكشف الدوري للعاملين، وحوادث الوخز والتعامل الآمن معها'
   },
   {
     id: 'hr_staff',
-    name: 'الموارد البشرية وشؤون العاملين',
+    name: 'الموارد البشرية',
     icon: '👥',
     color: '#6366f1',
     bgColor: 'rgba(99, 102, 241, 0.1)',
-    description: 'معدلات رضا الكوادر الطبية والإدارية واستكمال الملفات الوظيفية'
   },
   {
     id: 'patient_experience',
-    name: 'تجربة المريض ورضا المنتفعين والتثقيف',
+    name: 'تجربة ورضا المريض',
     icon: '🤝',
     color: '#0ea5e9',
     bgColor: 'rgba(14, 165, 233, 0.1)',
-    description: 'قياس رضا المرضى وذويهم، إدارة والرد على الشكاوى، حماية حقوق المريض، والتثقيف الصحي'
   },
   {
     id: 'medical_records',
-    name: 'السجلات الطبية والحوكمة وإدارة المخاطر',
+    name: 'السجلات الطبية والمخاطر',
     icon: '📋',
     color: '#475569',
     bgColor: 'rgba(71, 85, 105, 0.1)',
-    description: 'اكتمال الملفات الطبية المفتوحة والمغلقة، الالتزام بالبروتوكولات، ومعدلات الإبلاغ عن الحوادث العارضة'
   },
   {
     id: 'fms',
-    name: 'السلامة وإدارة المرافق والأجهزة (FMS)',
+    name: 'المرافق والأجهزة (FMS)',
     icon: '⚙️',
     color: '#ea580c',
     bgColor: 'rgba(234, 88, 12, 0.1)',
-    description: 'أنظمة ومعدات الإطفاء، كواشف الدخان، الانسكابات، وصيانة وتراخيص الأجهزة الطبية وغير الطبية'
   },
   {
     id: 'critical_care',
-    name: 'الرعاية المركزة والحضانات والعزل',
+    name: 'العنايات والحضانات',
     icon: '🫀',
     color: '#dc2626',
     bgColor: 'rgba(220, 38, 38, 0.1)',
-    description: 'معدلات الوفيات والإشغال ودوران الأسرة في العناية المركزة (كبار/أطفال)، عناية العزل، والحضانات'
   },
   {
     id: 'operations',
-    name: 'الكفاءة التشغيلية والمعدلات الحيوية',
+    name: 'الكفاءة التشغيلية',
     icon: '📊',
     color: '#334155',
     bgColor: 'rgba(51, 65, 85, 0.1)',
-    description: 'معدل الوفيات العام، إشغال الداخلي، دوران السرير، الانتظار بالطوارئ، والعيادات المسائية'
   }
 ]
 
 export const REQUIREMENTS_MAP = {
   'Has_Surgery': {
     code: 'Has_Surgery',
-    label: 'أقسام الجراحة والعمليات',
-    description: 'يطبق فقط على المستشفيات التي تحتوي على أقسام جراحة وغرف عمليات',
-    badgeClass: 'badge-surgery'
+    label: 'أقسام الجراحة',
+    description: 'خاص بالمستشفيات التي تحتوي على أقسام جراحة وغرف عمليات',
   },
   'Has_Major_Surgery': {
     code: 'Has_Major_Surgery',
     label: 'جراحات كبرى',
-    description: 'يطبق على المستشفيات التي تجرى بها عمليات جراحية كبرى ومتقدمة',
-    badgeClass: 'badge-surgery'
+    description: 'خاص بالمستشفيات التي تجرى بها عمليات جراحية كبرى',
   },
   'Has_Icu': {
     code: 'Has_Icu',
-    label: 'عناية مركزة (كبار)',
-    description: 'يطبق على المستشفيات التي تتوفر بها وحدات رعاية مركزة للكبار',
-    badgeClass: 'badge-icu'
+    label: 'عناية كبار',
+    description: 'خاص بالمستشفيات التي بها وحدة رعاية مركزة للكبار',
   },
   'Has_Picu': {
     code: 'Has_Picu',
-    label: 'عناية مركزة (أطفال)',
-    description: 'يطبق على المستشفيات التي تتوفر بها وحدة رعاية مركزة للأطفال (PICU)',
-    badgeClass: 'badge-icu'
+    label: 'عناية أطفال',
+    description: 'خاص بالمستشفيات التي بها وحدة رعاية مركزة للأطفال (PICU)',
   },
   'Has_Nicu': {
     code: 'Has_Nicu',
-    label: 'حضانات مبتسرين (NICU)',
-    description: 'يطبق على المستشفيات التي تحتوي على أقسام حضانات الأطفال المبتسرين',
-    badgeClass: 'badge-icu'
+    label: 'حضانات مبتسرين',
+    description: 'خاص بالمستشفيات التي بها حضانات أطفال مبتسرين',
   },
   'Has_Vap': {
     code: 'Has_Vap',
-    label: 'أجهزة تنفس صناعي',
-    description: 'يطبق على الأقسام التي تتوفر بها أجهزة تنفس صناعي ميكانيكي',
-    badgeClass: 'badge-equipment'
+    label: 'تنفس صناعي',
+    description: 'خاص بالأقسام التي تتوفر بها أجهزة تنفس صناعي',
   },
   'Has_Rad': {
     code: 'Has_Rad',
     label: 'خدمات الأشعة',
-    description: 'يطبق على المستشفيات التي تتوفر بها أقسام وخدمات الأشعة التشخيصية',
-    badgeClass: 'badge-rad'
+    description: 'خاص بالمستشفيات التي تتوفر بها خدمات الأشعة',
   },
   'Has_In_Patient': {
     code: 'Has_In_Patient',
-    label: 'أقسام الحجز الداخلي',
-    description: 'يطبق على المستشفيات التي تحتوي على أقسام تنويم داخلي',
-    badgeClass: 'badge-general'
+    label: 'أقسام الداخلي',
+    description: 'خاص بالمستشفيات ذات أقسام التنويم الداخلي',
   },
   'Has_Evening_Clinics': {
     code: 'Has_Evening_Clinics',
     label: 'عيادات مسائية',
-    description: 'يطبق على المستشفيات التي تفعل العيادات الخارجية المسائية',
-    badgeClass: 'badge-general'
+    description: 'خاص بالمستشفيات التي تشغل عيادات مسائية',
   }
 }
 
@@ -155,17 +135,17 @@ export const REQUIREMENTS_MAP = {
  * Assign an indicator index to its clinical/administrative domain
  */
 export function getDomainForIndicator(index) {
-  if (index >= 1 && index <= 17) return INDICATOR_DOMAINS[0] // ipsg
-  if ((index >= 18 && index <= 20) || index === 49 || index === 80 || index === 81) return INDICATOR_DOMAINS[1] // surgery
-  if (index >= 21 && index <= 25) return INDICATOR_DOMAINS[2] // medication
-  if (index >= 26 && index <= 33) return INDICATOR_DOMAINS[3] // infection_control
-  if (index >= 34 && index <= 38) return INDICATOR_DOMAINS[4] // occupational_health
-  if (index === 39 || index === 40) return INDICATOR_DOMAINS[5] // hr_staff
-  if (index >= 41 && index <= 46) return INDICATOR_DOMAINS[6] // patient_experience
-  if ((index >= 47 && index <= 48) || (index >= 50 && index <= 52)) return INDICATOR_DOMAINS[7] // medical_records
-  if (index >= 53 && index <= 64) return INDICATOR_DOMAINS[8] // fms
-  if ((index >= 66 && index <= 70) || index === 71 || index === 74 || (index >= 82 && index <= 84)) return INDICATOR_DOMAINS[9] // critical_care
-  if (index === 65 || index === 72 || index === 73 || (index >= 75 && index <= 79)) return INDICATOR_DOMAINS[10] // operations
+  if (index >= 1 && index <= 17) return INDICATOR_DOMAINS[0]
+  if ((index >= 18 && index <= 20) || index === 49 || index === 80 || index === 81) return INDICATOR_DOMAINS[1]
+  if (index >= 21 && index <= 25) return INDICATOR_DOMAINS[2]
+  if (index >= 26 && index <= 33) return INDICATOR_DOMAINS[3]
+  if (index >= 34 && index <= 38) return INDICATOR_DOMAINS[4]
+  if (index === 39 || index === 40) return INDICATOR_DOMAINS[5]
+  if (index >= 41 && index <= 46) return INDICATOR_DOMAINS[6]
+  if ((index >= 47 && index <= 48) || (index >= 50 && index <= 52)) return INDICATOR_DOMAINS[7]
+  if (index >= 53 && index <= 64) return INDICATOR_DOMAINS[8]
+  if ((index >= 66 && index <= 70) || index === 71 || index === 74 || (index >= 82 && index <= 84)) return INDICATOR_DOMAINS[9]
+  if (index === 65 || index === 72 || index === 73 || (index >= 75 && index <= 79)) return INDICATOR_DOMAINS[10]
   return INDICATOR_DOMAINS[0]
 }
 
@@ -220,51 +200,47 @@ export function processIndicatorRuleRow(row, index) {
   const reqCode = (row.Requires || '').trim()
   const requirement = reqCode && REQUIREMENTS_MAP[reqCode] ? REQUIREMENTS_MAP[reqCode] : null
 
-  // Format human-readable thresholds
-  let targetSummary = ''
+  // Clean, concise, short values
   let greenBand = ''
   let yellowBand = ''
   let redBand = ''
 
   if (direction === 'higher') {
-    targetSummary = `المستهدف ≥ ${minOk}${unit}`
-    greenBand = `≥ ${minOk}${unit} (مطابق للمستهدف)`
+    greenBand = `≥ ${minOk}${unit}`
     if (critThresh !== null && critThresh !== undefined) {
       if (critThresh < minOk) {
-        yellowBand = `${critThresh}${unit} إلى أقل من ${minOk}${unit} (منطقة تحذير)`
-        redBand = `< ${critThresh}${unit} (خطر حرج)`
+        yellowBand = `${critThresh}${unit} - ${minOk - 1}${unit}`
+        redBand = `< ${critThresh}${unit}`
       } else {
-        yellowBand = `أقل من ${minOk}${unit}`
+        yellowBand = `< ${minOk}${unit}`
         redBand = `< ${critThresh}${unit}`
       }
     } else {
-      yellowBand = `أقل من ${minOk}${unit}`
-      redBand = `انحراف كبير`
+      yellowBand = `< ${minOk}${unit}`
+      redBand = `< ${minOk}${unit}`
     }
   } else if (direction === 'lower') {
-    targetSummary = `المستهدف ≤ ${maxOk}${unit}`
-    greenBand = `≤ ${maxOk}${unit} (مطابق للمستهدف)`
+    greenBand = `≤ ${maxOk}${unit}`
     if (critThresh !== null && critThresh !== undefined) {
       if (critThresh > maxOk) {
-        yellowBand = `أعلى من ${maxOk}${unit} وحتى ${critThresh}${unit} (منطقة تحذير)`
-        redBand = `> ${critThresh}${unit} (خطر حرج)`
+        yellowBand = `${maxOk + 1}${unit} - ${critThresh}${unit}`
+        redBand = `> ${critThresh}${unit}`
       } else {
-        yellowBand = `أعلى من ${maxOk}${unit}`
+        yellowBand = `> ${maxOk}${unit}`
         redBand = `> ${critThresh}${unit}`
       }
     } else {
-      yellowBand = `أعلى من ${maxOk}${unit}`
-      redBand = `انحراف كبير`
+      yellowBand = `> ${maxOk}${unit}`
+      redBand = `> ${maxOk}${unit}`
     }
   } else {
     // Range
-    targetSummary = `النطاق المثالي: ${minOk} - ${maxOk} ${unit}`
-    greenBand = `بين ${minOk} و ${maxOk} ${unit} (مطابق)`
-    yellowBand = `انحراف طفيف عن النطاق الموصى به`
+    greenBand = `${minOk} - ${maxOk} ${unit}`
+    yellowBand = `خارج النطاق`
     if (critThresh !== null && critThresh !== undefined) {
-      redBand = `تجاوز الحد الحرج (${critThresh} ${unit}) أو انحراف شديد`
+      redBand = `> ${critThresh} ${unit}`
     } else {
-      redBand = `انحراف حرج عن النطاق الموصى به`
+      redBand = `انحراف حرج`
     }
   }
 
@@ -280,21 +256,19 @@ export function processIndicatorRuleRow(row, index) {
     domainColor: domain.color,
     domainBgColor: domain.bgColor,
     direction,
-    directionLabel: direction === 'higher' ? 'تصاعدي (الزيادة أفضل)' : (direction === 'lower' ? 'تنازلي (الانخفاض أفضل)' : 'نطاق محدد (Range)'),
+    directionLabel: direction === 'higher' ? 'تصاعدي' : (direction === 'lower' ? 'تنازلي' : 'نطاق'),
     directionIcon: direction === 'higher' ? '📈' : (direction === 'lower' ? '📉' : '🎯'),
     minOk,
     maxOk,
     criticalThreshold: critThresh,
-    frequency: row.Frequency?.trim() || 'شهري (Monthly)',
+    frequency: 'شهري',
     active: (row.Active?.trim().toLowerCase() === 'yes' || row.Active === true),
     requirementCode: reqCode || null,
-    requirementLabel: requirement ? requirement.label : 'عام لجميع المستشفيات',
-    requirementDescription: requirement ? requirement.description : 'يطبق على كافة المستشفيات بدون استثناء',
+    requirementLabel: requirement ? requirement.label : 'عام',
+    requirementDescription: requirement ? requirement.description : 'يطبق على كافة المستشفيات',
     isGeneral: !requirement,
-    targetSummary,
     greenBand,
     yellowBand,
     redBand
   }
 }
-
