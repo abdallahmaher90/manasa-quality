@@ -35,13 +35,11 @@ export async function POST(request) {
     const userRole = profile?.role || ''
     const userHospitalId = profile?.hospital_id || ''
 
-    const { text, fileHash } = await request.json()
+    const { text, fileHash, skipDuplicateError } = await request.json()
 
     if (!text || text.trim().length < 50) {
       return Response.json({ error: 'النص قصير جداً أو فارغ' }, { status: 400 })
     }
-
-    // Note: file_hash column is not present in reports schema; duplicate detection is enforced via hospital_id + inspection_date below
 
     const result = await parseReport(text)
 
@@ -63,14 +61,36 @@ export async function POST(request) {
     }
 
     if (hospitalId && result.inspection_date) {
-      const { data: existingReport } = await supabase
+      const { data: existingReports } = await supabase
         .from('reports')
         .select('id')
         .eq('hospital_id', hospitalId)
         .eq('inspection_date', result.inspection_date)
-        .maybeSingle()
+
+      let existingReport = null
+      if (existingReports && existingReports.length > 0) {
+        for (const er of existingReports) {
+          const { count } = await supabase
+            .from('findings')
+            .select('id', { count: 'exact', head: true })
+            .eq('report_id', er.id)
+          if (count > 0) {
+            existingReport = er
+            break
+          }
+        }
+      }
       
       if (existingReport) {
+        if (skipDuplicateError) {
+          return Response.json({ 
+            result, 
+            hospitalId, 
+            isDuplicate: true, 
+            existingReportId: existingReport.id,
+            message: `تم العثور على تقرير مكرر لنفس المستشفى (${result.hospital_name}) في نفس التاريخ (${result.inspection_date}).` 
+          })
+        }
         return Response.json({ 
           error: `تم العثور على تقرير مكرر لنفس المستشفى (${result.hospital_name}) في نفس التاريخ (${result.inspection_date}). يرجى التحقق من الأرشيف.` 
         }, { status: 409 })
@@ -78,7 +98,6 @@ export async function POST(request) {
     }
 
     // Check if the current user has permission for this hospital
-
     if (hospitalId && userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
       if (userHospitalId !== hospitalId) {
         return Response.json({ 
@@ -87,7 +106,7 @@ export async function POST(request) {
       }
     }
 
-    return Response.json({ result, hospitalId })
+    return Response.json({ result, hospitalId, isDuplicate: false })
   } catch (error) {
     console.error('Parse report error:', error)
     return Response.json({ error: error.message }, { status: 500 })

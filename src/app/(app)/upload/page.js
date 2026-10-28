@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
+import BulkUpload from './BulkUpload'
 
 const STEPS = ['رفع الملف', 'تحليل AI', 'مراجعة وتأكيد', 'تم الحفظ']
 
@@ -52,6 +53,16 @@ export default function UploadPage() {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
   const [hospitalsList, setHospitalsList] = useState([])
+  const [uploadMode, setUploadMode] = useState('single') // 'single' | 'bulk'
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('mode') === 'bulk') {
+        setUploadMode('bulk')
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const fetchHospitals = async () => {
@@ -455,6 +466,79 @@ export default function UploadPage() {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
 
+      {/* Mode Switcher Tabs */}
+      <div 
+        style={{ 
+          display: 'flex', 
+          background: 'var(--bg-secondary)', 
+          padding: 4, 
+          borderRadius: 'var(--radius-lg)', 
+          border: '1px solid var(--border)',
+          marginBottom: 'var(--space-xl)',
+          gap: 6
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setUploadMode('single')}
+          style={{
+            flex: 1,
+            padding: '10px 16px',
+            fontSize: 14,
+            fontWeight: 700,
+            borderRadius: 'var(--radius-md)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            background: uploadMode === 'single' ? 'var(--bg-card)' : 'transparent',
+            color: uploadMode === 'single' ? 'var(--primary-light)' : 'var(--text-muted)',
+            boxShadow: uploadMode === 'single' ? 'var(--shadow-sm)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
+          }}
+        >
+          <span>📄</span>
+          <span>رفع تقرير فردي (مراجعة وتعديل)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setUploadMode('bulk')}
+          style={{
+            flex: 1,
+            padding: '10px 16px',
+            fontSize: 14,
+            fontWeight: 700,
+            borderRadius: 'var(--radius-md)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            background: uploadMode === 'bulk' ? 'var(--bg-card)' : 'transparent',
+            color: uploadMode === 'bulk' ? 'var(--primary-light)' : 'var(--text-muted)',
+            boxShadow: uploadMode === 'bulk' ? 'var(--shadow-sm)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
+          }}
+        >
+          <span>⚡</span>
+          <span>رفع جماعي (كشف النواقص وإضافة تلقائية)</span>
+          <span 
+            className="badge badge-primary" 
+            style={{ fontSize: 11, padding: '2px 6px', fontWeight: 600 }}
+          >
+            بدون مراجعة
+          </span>
+        </button>
+      </div>
+
+      {uploadMode === 'bulk' ? (
+        <BulkUpload hospitalsList={hospitalsList} />
+      ) : (
+        <>
       {/* Step Indicator */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 'var(--space-2xl)', gap: 0 }}>
         {STEPS.map((s, i) => (
@@ -957,6 +1041,8 @@ export default function UploadPage() {
           </p>
           <div className="loading-spinner" style={{ margin: 'var(--space-xl) auto 0' }} />
         </div>
+      )}
+        </>
       )}
 
       {/* Safe Finding Deletion Confirmation Modal (Phase 3 Step 2) */}
