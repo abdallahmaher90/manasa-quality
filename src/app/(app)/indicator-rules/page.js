@@ -742,10 +742,7 @@ export default function IndicatorRulesPage() {
               </div>
             )}
 
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
-              <div><strong>نطاق التطبيق:</strong> {selectedIndicatorModal.requirementDescription}</div>
-              <div><strong>الدورية:</strong> شهرياً</div>
-            </div>
+
 
             <button
               onClick={() => setSelectedIndicatorModal(null)}
