@@ -263,6 +263,16 @@ export default function KpiTrackingPage() {
 
         {/* Action Controls */}
         <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link
+            href="/indicator-rules"
+            className="btn btn-outline btn-sm"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+            title="دليل وقواعد حدود الـ 84 مؤشراً"
+          >
+            <span>📘</span>
+            <span>دليل حدود المؤشرات</span>
+          </Link>
+
           <button
             onClick={() => window.print()}
             className="btn btn-outline btn-sm"

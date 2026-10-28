@@ -4,9 +4,15 @@ import Papa from 'papaparse'
 const sheetCache = new Map()
 const CACHE_TTL_MS = 10 * 60 * 1000 // 10 minutes
 
-export function invalidateGoogleSheetCache(url = null) {
-  if (url) {
-    sheetCache.delete(url)
+export function invalidateGoogleSheetCache(url = null, sheetName = null) {
+  if (url && sheetName) {
+    sheetCache.delete(`${url}:::${sheetName}`)
+  } else if (url) {
+    for (const key of sheetCache.keys()) {
+      if (key.startsWith(url)) {
+        sheetCache.delete(key)
+      }
+    }
   } else {
     sheetCache.clear()
   }
@@ -16,14 +22,16 @@ export function invalidateGoogleSheetCache(url = null) {
  * Fetches and parses a published Google Sheet CSV URL with memory caching.
  * @param {string} url 
  * @param {boolean} forceRefresh
+ * @param {string} sheetName (default 'Processed_Data')
  * @returns {Promise<Array>}
  */
-export async function fetchGoogleSheetData(url, forceRefresh = false) {
+export async function fetchGoogleSheetData(url, forceRefresh = false, sheetName = 'Processed_Data') {
   if (!url) return []
   
+  const cacheKey = `${url}:::${sheetName || 'Processed_Data'}`
   const now = Date.now()
-  if (!forceRefresh && sheetCache.has(url)) {
-    const cached = sheetCache.get(url)
+  if (!forceRefresh && sheetCache.has(cacheKey)) {
+    const cached = sheetCache.get(cacheKey)
     if (now - cached.timestamp < CACHE_TTL_MS) {
       return cached.data
     }
@@ -33,8 +41,10 @@ export async function fetchGoogleSheetData(url, forceRefresh = false) {
     let csvUrl = url
     // If it's a standard google sheets link, convert it to an export CSV link
     const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/)
-    if (match && match[1] && !url.includes('pub?output=csv') && !url.includes('export?format=csv') && !url.includes('gviz/tq')) {
-      csvUrl = `https://docs.google.com/spreadsheets/d/${match[1]}/gviz/tq?tqx=out:csv&sheet=Processed_Data`
+    if (match && match[1]) {
+      if (!url.includes('pub?output=csv') && !url.includes('export?format=csv')) {
+        csvUrl = `https://docs.google.com/spreadsheets/d/${match[1]}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName || 'Processed_Data')}`
+      }
     }
 
     const res = await fetch(csvUrl)
@@ -55,12 +65,12 @@ export async function fetchGoogleSheetData(url, forceRefresh = false) {
       })
     })
 
-    sheetCache.set(url, { timestamp: now, data: parsedData })
+    sheetCache.set(cacheKey, { timestamp: now, data: parsedData })
     return parsedData
   } catch (error) {
     console.error('Error fetching Google Sheet:', error)
-    if (sheetCache.has(url)) {
-      return sheetCache.get(url).data // Fallback to stale cache if network fails
+    if (sheetCache.has(cacheKey)) {
+      return sheetCache.get(cacheKey).data // Fallback to stale cache if network fails
     }
     return []
   }

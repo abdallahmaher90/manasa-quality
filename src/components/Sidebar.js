@@ -21,6 +21,7 @@ const navItems = [
       { href: '/upload', icon: <UploadIcon className="w-5 h-5" />, label: 'رفع تقرير جديد', roles: ['directorate_admin', 'directorate_member'] },
       { href: '/archive', icon: <ArchiveIcon className="w-5 h-5" />, label: 'أرشيف التقارير' },
       { href: '/ovr', icon: <ExclamationCircleIcon className="w-5 h-5" />, label: 'بلاغات الحوادث العارضة (OVR)' },
+      { href: '/indicator-rules', icon: <ChartIcon className="w-5 h-5" />, label: 'دليل حدود المؤشرات' },
     ]
   },
   {

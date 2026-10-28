@@ -700,6 +700,22 @@ export default function HospitalPage() {
         </div>
         {showKpi && (
           <div style={{ padding: '16px', borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+              <Link
+                href="/indicator-rules"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  color: 'var(--primary)',
+                  textDecoration: 'none'
+                }}
+              >
+                <span>📘 دليل وقواعد حدود المؤشرات (84 مؤشراً) ↗</span>
+              </Link>
+            </div>
             <DynamicKPI data={kpiData} hospitalName={hospital.name} />
           </div>
         )}

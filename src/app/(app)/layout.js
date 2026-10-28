@@ -18,6 +18,7 @@ const pageTitles = {
   '/statistics': 'الإحصائيات',
   '/improvement-projects': 'مشاريع التحسين (QIPs)',
   '/kpi-tracking': 'متابعة تسجيل المؤشرات الشهرية',
+  '/indicator-rules': 'دليل وحدود المؤشرات المعتمدة',
   '/ovr': 'بلاغات الحوادث العارضة (OVR)',
 }
 
@@ -57,7 +58,7 @@ export default function AppLayout({ children }) {
     if (!profile) return
     if (profile.role === 'hospital_member') {
       const allowedPath = `/hospitals/${profile.hospital_id}`
-      if (!pathname.startsWith(allowedPath) && !pathname.startsWith('/archive') && !pathname.startsWith('/ovr')) {
+      if (!pathname.startsWith(allowedPath) && !pathname.startsWith('/archive') && !pathname.startsWith('/ovr') && !pathname.startsWith('/indicator-rules')) {
         router.push(allowedPath)
       }
     }
