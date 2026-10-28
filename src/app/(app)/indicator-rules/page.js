@@ -75,6 +75,7 @@ export default function IndicatorRulesPage() {
         r.rawName.toLowerCase().includes(q) ||
         r.title.toLowerCase().includes(q) ||
         r.domainName.toLowerCase().includes(q) ||
+        (r.formula && r.formula.toLowerCase().includes(q)) ||
         (r.requirementLabel && r.requirementLabel.toLowerCase().includes(q))
       )
     }
@@ -656,7 +657,7 @@ export default function IndicatorRulesPage() {
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16, fontSize: '0.84rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14, fontSize: '0.84rem' }}>
               <div style={{ padding: 10, borderRadius: 6, backgroundColor: 'var(--success-bg)', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--success)', fontWeight: 700 }}>المستهدف (الأخضر):</span>
                 <span style={{ fontWeight: 800, color: 'var(--success)', direction: 'ltr' }}>{selectedIndicatorModal.greenBand}</span>
@@ -670,6 +671,76 @@ export default function IndicatorRulesPage() {
                 <span style={{ fontWeight: 800, color: 'var(--danger)', direction: 'ltr' }}>{selectedIndicatorModal.redBand}</span>
               </div>
             </div>
+
+            {/* Calculation Formula Box */}
+            {selectedIndicatorModal.formula && (
+              <div style={{
+                padding: '12px 14px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: 'var(--bg-input)',
+                border: '1px solid var(--border)',
+                marginBottom: 14
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  color: 'var(--primary)',
+                  marginBottom: 8
+                }}>
+                  <span>📐</span>
+                  <span>معادلة وطريقة حساب المؤشر:</span>
+                </div>
+
+                {selectedIndicatorModal.numerator && selectedIndicatorModal.denominator ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                    backgroundColor: 'var(--bg-card)',
+                    padding: '10px 12px',
+                    borderRadius: 6,
+                    border: '1px solid var(--border)',
+                    fontSize: '0.8rem'
+                  }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                      <strong style={{ color: 'var(--primary-dark)', whiteSpace: 'nowrap' }}>البسط:</strong>
+                      <span style={{ color: 'var(--text-primary)', lineHeight: 1.45 }}>{selectedIndicatorModal.numerator}</span>
+                    </div>
+                    <div style={{ height: 1, backgroundColor: 'var(--border)', margin: '2px 0' }}></div>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                      <strong style={{ color: 'var(--text-title)', whiteSpace: 'nowrap' }}>المقام:</strong>
+                      <span style={{ color: 'var(--text-secondary)', lineHeight: 1.45 }}>{selectedIndicatorModal.denominator}</span>
+                    </div>
+                    <div style={{
+                      fontSize: '0.74rem',
+                      color: 'var(--neutral)',
+                      marginTop: 4,
+                      textAlign: 'left',
+                      direction: 'ltr',
+                      fontFamily: 'monospace',
+                      fontWeight: 600
+                    }}>
+                      = (البسط ÷ المقام) {selectedIndicatorModal.formula.includes('100') ? '× 100' : ''}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{
+                    backgroundColor: 'var(--bg-card)',
+                    padding: '10px 12px',
+                    borderRadius: 6,
+                    border: '1px solid var(--border)',
+                    fontSize: '0.8rem',
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.5
+                  }}>
+                    {selectedIndicatorModal.formula}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
               <div><strong>نطاق التطبيق:</strong> {selectedIndicatorModal.requirementDescription}</div>
