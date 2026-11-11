@@ -710,3 +710,4 @@ export default function BulkUpload({ hospitalsList = [] }) {
     </div>
   )
 }
+

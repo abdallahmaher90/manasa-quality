@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Fragment } from 'react'
+import { useState, Fragment, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/components/Toast'
 import { generateReportDocxBlob } from '@/lib/docx-generator'
@@ -8,10 +8,63 @@ import { generateReportDocxBlob } from '@/lib/docx-generator'
 
 export default function ReportAssistantPage() {
   const { showToast } = useToast()
+  const fileInputRef = useRef(null)
   const [rawText, setRawText] = useState('')
+  const [uploadedFileName, setUploadedFileName] = useState('')
+  const [extractingFile, setExtractingFile] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [reportData, setReportData] = useState(null)
+
+  const handleFileUpload = async (file) => {
+    if (!file) return
+    setExtractingFile(true)
+    setUploadedFileName(file.name)
+    try {
+      const ext = file.name.split('.').pop().toLowerCase()
+      let extracted = ''
+
+      if (ext === 'txt') {
+        extracted = await file.text()
+      } else if (ext === 'docx' || ext === 'pdf') {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/extract-text', { method: 'POST', body: formData })
+        const json = await res.json()
+        if (!res.ok || json.error) throw new Error(json.error || 'فشل في قراءة نصوص الملف')
+        extracted = json.text
+      } else {
+        throw new Error('نوع الملف غير مدعوم. يرجى اختيار ملف Word (.docx) أو PDF أو TXT.')
+      }
+
+      if (!extracted || extracted.trim().length < 20) {
+        throw new Error('الملف فارغ أو لا يحتوي على نصوص قابلة للقراءة')
+      }
+
+      setRawText(extracted)
+      showToast(`تم استخراج نصوص الملف بنجاح (${file.name})`, 'success')
+    } catch (err) {
+      console.error('File extract error:', err)
+      showToast(err.message, 'error')
+      setUploadedFileName('')
+    } finally {
+      setExtractingFile(false)
+    }
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    setDragOver(false)
+    const file = e.dataTransfer?.files?.[0]
+    if (file) handleFileUpload(file)
+  }
+
+  const handleClear = () => {
+    setRawText('')
+    setUploadedFileName('')
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   const handleFormatReport = async () => {
     if (!rawText || rawText.trim().length < 15) {
@@ -191,21 +244,88 @@ export default function ReportAssistantPage() {
         </div>
       </div>
 
-      {/* Step 1: Input Box */}
+      {/* Step 1: Input Box & File Upload */}
       {!reportData && (
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ marginBottom: 12 }}>
-            <label className="form-label" style={{ fontWeight: 700, fontSize: 15, margin: 0 }}>
-              📝 الصق نص أو مسودة التقرير هنا:
+          {/* File Upload Zone */}
+          <div
+            className={`upload-zone ${dragOver ? 'drag-over' : ''}`}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => !extractingFile && !loading && fileInputRef.current?.click()}
+            style={{
+              border: dragOver ? '2px dashed var(--primary)' : '2px dashed var(--border)',
+              borderRadius: 'var(--radius-md)',
+              padding: '24px 20px',
+              textAlign: 'center',
+              background: dragOver ? 'rgba(59, 130, 246, 0.05)' : 'var(--bg-secondary)',
+              cursor: extractingFile || loading ? 'wait' : 'pointer',
+              marginBottom: 20,
+              transition: 'all 0.2s'
+            }}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".docx,.pdf,.txt"
+              style={{ display: 'none' }}
+              disabled={extractingFile || loading}
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  handleFileUpload(e.target.files[0])
+                  e.target.value = ''
+                }
+              }}
+            />
+
+            <div style={{ fontSize: 36, marginBottom: 8 }}>
+              {extractingFile ? '⏳' : uploadedFileName ? '📄' : '📎'}
+            </div>
+
+            {extractingFile ? (
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary-light)' }}>
+                جاري قراءة محتوى الملف واستخراج النصوص...
+              </div>
+            ) : uploadedFileName ? (
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--success-light)' }}>
+                  ✅ تم استخراج نص الملف: {uploadedFileName}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+                  تم تحميل {rawText.length} حرف — يمكنك مراجعة النص بالأسفل أو الضغط مباشرة على زر التوليد
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+                  اضغط هنا لاختيار ملف التقرير (Word أو PDF) أو اسحبه إلى هنا
+                </div>
+                <div style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
+                  يدعم النظام استخراج السلبيات من ملفات Word (.docx) وPDF والنصوص (.txt) بأي حجم ومهما كان عدد السلبيات
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <label className="form-label" style={{ fontWeight: 700, fontSize: 14, margin: 0 }}>
+              📝 أو الصق نص التقرير والملاحظات يدوياً:
             </label>
+            {rawText && (
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                {rawText.length} حرف
+              </span>
+            )}
           </div>
 
           <textarea
             className="form-textarea"
             placeholder="الصق نص أو مسودة التقرير هنا..."
-            rows={14}
+            rows={12}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
+            disabled={extractingFile || loading}
             style={{
               width: '100%',
               fontSize: 14,
@@ -220,28 +340,32 @@ export default function ReportAssistantPage() {
             }}
           />
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
-            {rawText && (
-              <button
-                type="button"
-                className="btn btn-outline"
-                onClick={() => setRawText('')}
-                disabled={loading}
-              >
-                مسح النص
-              </button>
-            )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginTop: 16 }}>
+            <div>
+              {rawText && (
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={handleClear}
+                  disabled={loading || extractingFile}
+                  style={{ color: 'var(--danger-light)' }}
+                >
+                  ✕ مسح المحتوى والبدء من جديد
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
               className="btn btn-primary"
               onClick={handleFormatReport}
-              disabled={loading || !rawText.trim()}
+              disabled={loading || extractingFile || !rawText.trim()}
               style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px', fontSize: 15, fontWeight: 800 }}
             >
               {loading ? (
                 <>
                   <div className="loading-spinner" style={{ width: 16, height: 16 }} />
-                  <span>جاري قراءة الملاحظات وصياغة الجدول...</span>
+                  <span>جاري تحليل التقرير واستخراج كافة السلبيات بالكامل...</span>
                 </>
               ) : (
                 <>
