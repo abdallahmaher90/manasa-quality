@@ -1,21 +1,11 @@
 import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
 import { VectorMatchingService } from '@/services/vector-matching.service'
 import { RecurrenceMatcherService, normalizeRecurrenceKey } from '@/services/recurrence-matcher.service'
-import { getCategory, sanitizeInspectionDate, getCanonicalDepartment } from '@/lib/utils'
+import { getCategory, sanitizeInspectionDate, getCanonicalDepartment, resolveHospital, normalizeArabicName } from '@/lib/utils'
 import { sendNewReportEmail } from '@/lib/email'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
-
-function normalizeArabicName(name) {
-  if (!name) return ''
-  return name
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ي/g, 'ى')
-    .replace(/\s+/g, ' ') // just normalize spaces
-    .trim()
-}
 
 export async function POST(request) {
   let report = null
@@ -49,24 +39,37 @@ export async function POST(request) {
       parsedData.inspection_date = sanitizeInspectionDate(parsedData.inspection_date || rawText)
     }
 
-    // 1. Find or create hospital
-    let hospitalId = explicitHospitalId || null
-    if (!hospitalId) {
-      const targetNorm = normalizeArabicName(parsedData.hospital_name)
-      
-      // Fetch all hospitals to do a smart match
-      const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
-      
-      let existingHospital = null
-      if (allHospitals) {
-        existingHospital = allHospitals.find(h => {
-          const dbNorm = normalizeArabicName(h.name)
-          return dbNorm === targetNorm
-        })
-      }
+    // 1. Fast duplicate check: by exact fileName
+    if (fileName && typeof fileName === 'string') {
+      const cleanFileName = fileName.trim()
+      const { data: fileMatches } = await supabase
+        .from('reports')
+        .select('id, hospital_id, inspection_date, hospitals(name)')
+        .eq('file_name', cleanFileName)
 
-      if (existingHospital) {
-        hospitalId = existingHospital.id
+      if (fileMatches && fileMatches.length > 0) {
+        for (const fm of fileMatches) {
+          const { count } = await supabase
+            .from('report_findings')
+            .select('id', { count: 'exact', head: true })
+            .eq('report_id', fm.id)
+          if (count > 0) {
+            return Response.json({
+              error: `تم العثور على تقرير محفوظ مسبقاً بنفس اسم الملف (${cleanFileName}) لمستشفى ${fm.hospitals?.name || ''} بتاريخ (${fm.inspection_date}). يرجى التحقق من الأرشيف.`
+            }, { status: 409 })
+          }
+        }
+      }
+    }
+
+    // 2. Find or resolve hospital
+    const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
+    let hospitalId = explicitHospitalId || null
+    
+    if (!hospitalId) {
+      const resolved = resolveHospital(parsedData.hospital_name, allHospitals, fileName, rawText)
+      if (resolved) {
+        hospitalId = resolved.id
       } else {
         // Only directorate admin can create a new hospital implicitly
         if (userRole !== 'directorate_admin' && userRole !== 'directorate_member') {
@@ -92,7 +95,7 @@ export async function POST(request) {
       }
     }
 
-    // 2. Prevent duplicate reports for the same hospital & date
+    // 3. Prevent duplicate reports for the same hospital & date
     if (hospitalId && parsedData.inspection_date) {
       const { data: existingReports } = await supabase
         .from('reports')

@@ -1,16 +1,6 @@
 import { parseReport } from '@/lib/ai-parser'
-import { sanitizeInspectionDate } from '@/lib/utils'
+import { sanitizeInspectionDate, resolveHospital, normalizeArabicName } from '@/lib/utils'
 import { createServiceClient, supabase as supabaseClient } from '@/lib/supabase'
-
-function normalizeArabicName(name) {
-  if (!name) return ''
-  return name
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ي/g, 'ى')
-    .replace(/\s+/g, ' ') // just normalize spaces
-    .trim()
-}
 
 export async function POST(request) {
   try {
@@ -35,35 +25,71 @@ export async function POST(request) {
     const userRole = profile?.role || ''
     const userHospitalId = profile?.hospital_id || ''
 
-    const { text, fileHash, skipDuplicateError } = await request.json()
+    const { text, fileName, fileHash, skipDuplicateError } = await request.json()
 
     if (!text || text.trim().length < 50) {
       return Response.json({ error: 'النص قصير جداً أو فارغ' }, { status: 400 })
     }
 
+    const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
+
+    // 1. Fast Pre-check: Check if a report with this exact file name already exists in archive
+    if (fileName && typeof fileName === 'string') {
+      const cleanFileName = fileName.trim()
+      const { data: fileMatches } = await supabase
+        .from('reports')
+        .select('id, hospital_id, inspection_date, file_name, hospitals(id, name)')
+        .eq('file_name', cleanFileName)
+
+      if (fileMatches && fileMatches.length > 0) {
+        for (const fm of fileMatches) {
+          const { count } = await supabase
+            .from('report_findings')
+            .select('id', { count: 'exact', head: true })
+            .eq('report_id', fm.id)
+          if (count > 0) {
+            const hospName = fm.hospitals?.name || 'المستشفى'
+            const dateStr = fm.inspection_date || ''
+            if (skipDuplicateError) {
+              return Response.json({
+                result: {
+                  hospital_name: hospName,
+                  inspection_date: dateStr,
+                  departments: []
+                },
+                hospitalId: fm.hospital_id,
+                isDuplicate: true,
+                existingReportId: fm.id,
+                message: `موجود مسبقاً في الأرشيف بنفس اسم الملف (${cleanFileName}) - ${hospName} (${dateStr})`
+              })
+            }
+            return Response.json({
+              error: `تم العثور على تقرير محفوظ مسبقاً بنفس اسم الملف (${cleanFileName}) لمستشفى ${hospName} في تاريخ ${dateStr}. يرجى التحقق من الأرشيف.`
+            }, { status: 409 })
+          }
+        }
+      }
+    }
+
+    // 2. Parse report using AI
     const result = await parseReport(text)
 
     if (result) {
       result.inspection_date = sanitizeInspectionDate(result.inspection_date || text)
     }
 
-    // Check for duplicate report and resolve hospital ID
-    const targetNorm = normalizeArabicName(result.hospital_name)
-    const { data: allHospitals } = await supabase.from('hospitals').select('id, name')
-    
-    let hospitalId = null
-    if (allHospitals) {
-      const existing = allHospitals.find(h => {
-        const dbNorm = normalizeArabicName(h.name)
-        return dbNorm === targetNorm
-      })
-      if (existing) hospitalId = existing.id
+    // 3. Resolve Hospital ID with smart resolution rules
+    const resolvedHosp = resolveHospital(result?.hospital_name, allHospitals, fileName, text)
+    let hospitalId = resolvedHosp ? resolvedHosp.id : null
+    if (resolvedHosp) {
+      result.hospital_name = resolvedHosp.name
     }
 
+    // 4. Duplicate Check: Hospital + Inspection Date
     if (hospitalId && result.inspection_date) {
       const { data: existingReports } = await supabase
         .from('reports')
-        .select('id')
+        .select('id, file_name, inspection_date')
         .eq('hospital_id', hospitalId)
         .eq('inspection_date', result.inspection_date)
 
@@ -82,17 +108,18 @@ export async function POST(request) {
       }
       
       if (existingReport) {
+        const hospTitle = resolvedHosp?.name || result.hospital_name || 'المستشفى'
         if (skipDuplicateError) {
           return Response.json({ 
             result, 
             hospitalId, 
             isDuplicate: true, 
             existingReportId: existingReport.id,
-            message: `تم العثور على تقرير مكرر لنفس المستشفى (${result.hospital_name}) في نفس التاريخ (${result.inspection_date}).` 
+            message: `موجود مسبقاً في الأرشيف لنفس المستشفى (${hospTitle}) في نفس التاريخ (${result.inspection_date}).` 
           })
         }
         return Response.json({ 
-          error: `تم العثور على تقرير مكرر لنفس المستشفى (${result.hospital_name}) في نفس التاريخ (${result.inspection_date}). يرجى التحقق من الأرشيف.` 
+          error: `تم العثور على تقرير مكرر لنفس المستشفى (${hospTitle}) في نفس التاريخ (${result.inspection_date}). يرجى التحقق من الأرشيف.` 
         }, { status: 409 })
       }
     }

@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 export default function BulkUpload({ hospitalsList = [] }) {
   const [fileList, setFileList] = useState([])
+  const [existingReportsList, setExistingReportsList] = useState([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [isCancelled, setIsCancelled] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(-1)
@@ -14,6 +15,21 @@ export default function BulkUpload({ hospitalsList = [] }) {
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef(null)
   const cancelRef = useRef(false)
+
+  // Fetch already existing reports for instant duplicate pre-detection
+  useEffect(() => {
+    const fetchExistingReports = async () => {
+      try {
+        const { data } = await supabase
+          .from('reports')
+          .select('id, file_name, inspection_date, hospital_id, hospitals(name)')
+        if (data) setExistingReportsList(data)
+      } catch (err) {
+        console.warn('Failed to pre-fetch existing reports:', err)
+      }
+    }
+    fetchExistingReports()
+  }, [])
 
   // Handle files selection
   const handleFilesAdded = (newFiles) => {
@@ -30,21 +46,28 @@ export default function BulkUpload({ hospitalsList = [] }) {
       // Avoid adding exact duplicate file in current queue
       const alreadyInList = fileList.some(item => item.name === file.name && item.size === file.size)
       if (!alreadyInList) {
+        // Instant check against already archived reports by exact file name
+        const cleanName = file.name.trim()
+        const existingInArchive = existingReportsList.find(r => r.file_name && r.file_name.trim() === cleanName)
+        const isPreDetectedDuplicate = !!existingInArchive
+
         addedItems.push({
           id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
           file,
           name: file.name,
           size: file.size,
           ext,
-          status: 'pending', // 'pending' | 'extracting' | 'parsing' | 'saving' | 'saved' | 'skipped' | 'error'
-          hospitalName: '',
-          inspectionDate: '',
-          hospitalId: null,
+          status: isPreDetectedDuplicate ? 'skipped' : 'pending', // 'pending' | 'extracting' | 'parsing' | 'saving' | 'saved' | 'skipped' | 'error'
+          hospitalName: existingInArchive?.hospitals?.name || '',
+          inspectionDate: existingInArchive?.inspection_date || '',
+          hospitalId: existingInArchive?.hospital_id || null,
           reportId: null,
-          existingReportId: null,
+          existingReportId: existingInArchive?.id || null,
           findingsCount: 0,
           departmentsCount: 0,
-          message: 'في انتظار البدء',
+          message: isPreDetectedDuplicate 
+            ? `موجود مسبقاً في الأرشيف (${existingInArchive.hospitals?.name || ''} - ${existingInArchive.inspection_date || ''})` 
+            : 'في انتظار البدء',
           error: null
         })
       }
@@ -120,6 +143,7 @@ export default function BulkUpload({ hospitalsList = [] }) {
       },
       body: JSON.stringify({
         text,
+        fileName: item.name,
         skipDuplicateError: true // Tells API to return duplicate status cleanly instead of throwing 409
       })
     })
@@ -130,6 +154,7 @@ export default function BulkUpload({ hospitalsList = [] }) {
       // Duplicate report
       item.status = 'skipped'
       item.message = parseData.error || 'موجود مسبقاً في الأرشيف (تم تخطيه تلقائياً)'
+      setFileList(prev => prev.map(f => f.id === item.id ? { ...item } : f))
       return
     }
 
@@ -137,16 +162,16 @@ export default function BulkUpload({ hospitalsList = [] }) {
       throw new Error(parseData.error || 'فشل في تحليل التقرير بالذكاء الاصطناعي')
     }
 
-    const { result, hospitalId, isDuplicate, existingReportId } = parseData
-    item.hospitalName = result?.hospital_name || 'غير محدد'
-    item.inspectionDate = result?.inspection_date || 'غير محدد'
-    item.hospitalId = hospitalId
-    item.existingReportId = existingReportId
+    const { result, hospitalId, isDuplicate, existingReportId, message: duplicateMsg } = parseData
+    item.hospitalName = result?.hospital_name || item.hospitalName || 'غير محدد'
+    item.inspectionDate = result?.inspection_date || item.inspectionDate || 'غير محدد'
+    item.hospitalId = hospitalId || item.hospitalId
+    item.existingReportId = existingReportId || item.existingReportId
 
     // Check if duplicate was detected
     if (isDuplicate) {
       item.status = 'skipped'
-      item.message = `موجود مسبقاً في الأرشيف (${item.hospitalName} - ${item.inspectionDate})`
+      item.message = duplicateMsg || `موجود مسبقاً في الأرشيف (${item.hospitalName} - ${item.inspectionDate})`
       setFileList(prev => prev.map(f => f.id === item.id ? { ...item } : f))
       return
     }
@@ -162,11 +187,11 @@ export default function BulkUpload({ hospitalsList = [] }) {
     // Optional upload file to storage
     let fileUrl = null
     try {
-      if (hospitalId) {
+      if (item.hospitalId || hospitalId) {
         const fileExt = item.file.name.split('.').pop()
         const reportId = crypto.randomUUID()
         const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-        const filePath = `${hospitalId}/${reportId}/${uniqueName}`
+        const filePath = `${item.hospitalId || hospitalId}/${reportId}/${uniqueName}`
         const { error: uploadError } = await supabase.storage
           .from('reports_files')
           .upload(filePath, item.file)
@@ -184,9 +209,9 @@ export default function BulkUpload({ hospitalsList = [] }) {
       },
       body: JSON.stringify({
         parsedData: result,
-        hospitalId,
+        hospitalId: item.hospitalId || hospitalId,
         rawText: text,
-        fileName: item.file.name,
+        fileName: item.name,
         fileUrl
       })
     })
@@ -194,9 +219,10 @@ export default function BulkUpload({ hospitalsList = [] }) {
     const saveData = await saveRes.json()
 
     if (!saveRes.ok) {
-      if (saveRes.status === 409 || saveData.error?.includes('مسبقاً')) {
+      if (saveRes.status === 409 || saveData.error?.includes('مسبقاً') || saveData.error?.includes('مكرر')) {
         item.status = 'skipped'
-        item.message = saveData.error || 'موجود مسبقاً في الأرشيف'
+        item.message = saveData.error || 'موجود مسبقاً في الأرشيف (تم تخطيه تلقائياً)'
+        setFileList(prev => prev.map(f => f.id === item.id ? { ...item } : f))
         return
       }
       throw new Error(saveData.error || 'فشل في حفظ التقرير في قاعدة البيانات')
@@ -207,11 +233,23 @@ export default function BulkUpload({ hospitalsList = [] }) {
 
     item.status = 'saved'
     item.reportId = saveData.reportId
-    item.hospitalId = saveData.hospitalId || hospitalId
+    item.hospitalId = saveData.hospitalId || item.hospitalId || hospitalId
     item.findingsCount = findingsCount
     item.departmentsCount = deptsCount
     item.message = `تمت الإضافة بنجاح (${deptsCount} قسم، ${findingsCount} سلبية)`
     setFileList(prev => prev.map(f => f.id === item.id ? { ...item } : f))
+
+    // Update existingReportsList cache
+    setExistingReportsList(prev => [
+      ...prev,
+      {
+        id: saveData.reportId,
+        file_name: item.name,
+        inspection_date: item.inspectionDate,
+        hospital_id: item.hospitalId,
+        hospitals: { name: item.hospitalName }
+      }
+    ])
   }
 
   // Start processing all pending files sequentially

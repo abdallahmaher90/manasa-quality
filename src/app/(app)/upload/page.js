@@ -192,7 +192,7 @@ export default function UploadPage() {
           'Content-Type': 'application/json',
           'Authorization': session ? `Bearer ${session.access_token}` : ''
         },
-        body: JSON.stringify({ text: rawText, fileHash }),
+        body: JSON.stringify({ text: rawText, fileName: fileName || fileObj?.name, fileHash }),
       })
 
       setProgress(70)
