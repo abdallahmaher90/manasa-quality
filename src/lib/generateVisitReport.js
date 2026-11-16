@@ -57,7 +57,15 @@ const createFindingsTable = (findings, includeDept = true, actionColumnTitle = '
     }),
   ]
 
-  findings.forEach((f, idx) => {
+  // Sort findings so all items of each department appear consecutively
+  const sortedFindings = [...(findings || [])].sort((a, b) => {
+    const deptA = a.departments?.name || a.department_name || a.deptId || 'عام'
+    const deptB = b.departments?.name || b.department_name || b.deptId || 'عام'
+    if (deptA !== deptB) return deptA.localeCompare(deptB, 'ar')
+    return 0
+  })
+
+  sortedFindings.forEach((f, idx) => {
     let text = f.resolvedAction
     if (!text && actionColumnTitle.includes('تلافي')) {
       text = formatResolvedAction(f)

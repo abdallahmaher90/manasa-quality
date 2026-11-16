@@ -83,18 +83,48 @@ export default function VisitReportPage() {
 
       if (unresolvedErr) throw unresolvedErr
 
-      const processedResolved = (resolvedData || []).map(f => ({
-        ...f,
-        resolvedAction: formatResolvedAction(f)
-      }))
+      const getDeptName = (f) => f.departments?.name || f.department_name || 'عام'
+
+      const processedResolved = (resolvedData || [])
+        .map(f => ({
+          ...f,
+          resolvedAction: formatResolvedAction(f)
+        }))
+        .sort((a, b) => {
+          const deptA = getDeptName(a)
+          const deptB = getDeptName(b)
+          if (deptA !== deptB) return deptA.localeCompare(deptB, 'ar')
+          return (a.original_text || '').localeCompare(b.original_text || '', 'ar')
+        })
+
+      const sortedUnresolved = (unresolvedData || []).sort((a, b) => {
+        const deptA = getDeptName(a)
+        const deptB = getDeptName(b)
+        if (deptA !== deptB) return deptA.localeCompare(deptB, 'ar')
+        return (b.priority === 'high' ? 1 : 0) - (a.priority === 'high' ? 1 : 0)
+      })
+
       setResolvedFindings(processedResolved)
-      setUnresolvedFindings(unresolvedData || [])
+      setUnresolvedFindings(sortedUnresolved)
       // Default to empty selection for unresolved
       setSelectedUnresolved(new Set())
     } catch (err) {
       console.error(err)
       showToast('حدث خطأ أثناء جلب السلبيات', 'error')
     }
+  }
+
+  // Group findings by department preserving original array index
+  const groupFindingsByDept = (findingsList) => {
+    const groups = {}
+    findingsList.forEach((f, idx) => {
+      const deptName = f.departments?.name || f.department_name || 'عام'
+      if (!groups[deptName]) {
+        groups[deptName] = []
+      }
+      groups[deptName].push({ ...f, originalIndex: idx })
+    })
+    return groups
   }
 
   const updateResolvedAction = (index, value) => {
@@ -229,43 +259,61 @@ export default function VisitReportPage() {
                 2. ما تم تلافيه وإنجازه (خلال آخر 48 ساعة)
               </h2>
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                تُصاغ بصيغة إنجاز إيجابية (تم...) بدلاً من السلبية، ويمكنك تعديل الصياغة مباشرة قبل الطباعة.
+                مرتبة ومجمعة حسب الأقسام بصيغة إنجاز إيجابية (تم...)، مع إمكانية تعديل الصياغة مباشرة قبل الطباعة.
               </span>
             </div>
             {resolvedFindings.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>لا توجد سلبيات تم تأكيد حلها في آخر يومين لهذه الأقسام.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {resolvedFindings.map((finding, idx) => (
-                  <div key={finding.id} style={{ padding: '14px 16px', background: 'var(--bg-primary)', borderRadius: '8px', borderLeft: '4px solid var(--success)', border: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: '8px' }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--success)' }}>
-                        {finding.departments?.name || 'عام'}
-                      </span>
-                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }} title={finding.original_text}>
-                        (السلبية السابقة: {finding.original_text || finding.canonical_text})
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {Object.entries(groupFindingsByDept(resolvedFindings)).map(([deptName, items]) => (
+                  <div key={deptName} style={{ background: 'var(--bg-primary)', borderRadius: '10px', padding: '16px', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: 16 }}>🏢</span>
+                        <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{deptName}</span>
+                      </div>
+                      <span style={{ 
+                        fontSize: 12, 
+                        background: 'var(--success-light)', 
+                        color: 'var(--success-dark)', 
+                        padding: '2px 10px', 
+                        borderRadius: '12px', 
+                        fontWeight: 700 
+                      }}>
+                        {items.length} {items.length === 1 ? 'إنجاز محلول' : 'إنجازات محلولة'}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--success)', fontWeight: 'bold', fontSize: 16 }}>✓</span>
-                      <input
-                        type="text"
-                        value={finding.resolvedAction || ''}
-                        onChange={(e) => updateResolvedAction(idx, e.target.value)}
-                        className="form-input"
-                        style={{
-                          flex: 1,
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: 'var(--text-main)',
-                          background: 'var(--bg-card)',
-                          border: '1px solid var(--border)',
-                          borderRadius: '6px',
-                          padding: '8px 12px'
-                        }}
-                        placeholder="ما تم إنجازه (مثال: تم الالتزام بـ...)"
-                        title="يمكنك تعديل صياغة الإجراء المنجز هنا قبل تصدير التقرير"
-                      />
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {items.map((finding) => (
+                        <div key={finding.id} style={{ padding: '12px 14px', background: 'var(--bg-card)', borderRadius: '8px', borderLeft: '4px solid var(--success)', border: '1px solid var(--border)' }}>
+                          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }} title={finding.original_text}>
+                            <span style={{ fontWeight: 600 }}>السلبية السابقة:</span> {finding.original_text || finding.canonical_text}
+                          </div>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <span style={{ color: 'var(--success)', fontWeight: 'bold', fontSize: 16 }}>✓</span>
+                            <input
+                              type="text"
+                              value={finding.resolvedAction || ''}
+                              onChange={(e) => updateResolvedAction(finding.originalIndex, e.target.value)}
+                              className="form-input"
+                              style={{
+                                flex: 1,
+                                fontSize: 14,
+                                fontWeight: 600,
+                                color: 'var(--text-main)',
+                                background: 'var(--bg-primary)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '6px',
+                                padding: '8px 12px'
+                              }}
+                              placeholder="ما تم إنجازه (مثال: تم الالتزام بـ...)"
+                              title="يمكنك تعديل صياغة الإجراء المنجز هنا قبل تصدير التقرير"
+                            />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -275,50 +323,89 @@ export default function VisitReportPage() {
 
           {/* Step 3: Unresolved Findings */}
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 className="card-title" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ color: 'var(--warning)' }}>⚠️</span>
-              3. سلبيات من مرورات سابقة لم تحل
-            </h2>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: '16px' }}>اختر السلبيات التي تود إضافتها للتقرير (التي لا تزال موجودة).</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <h2 className="card-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'var(--warning)' }}>⚠️</span>
+                3. سلبيات من مرورات سابقة لم تحل
+              </h2>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                مرتبة ومجمعة حسب الأقسام. اختر السلبيات التي تود إضافتها للتقرير (التي لا تزال قائمة).
+              </span>
+            </div>
             
             {unresolvedFindings.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>لا توجد سلبيات مفتوحة لهذه الأقسام.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {unresolvedFindings.map(finding => {
-                  const isSelected = selectedUnresolved.has(finding.id)
-                  return (
-                    <div 
-                      key={finding.id} 
-                      onClick={() => toggleUnresolved(finding.id)}
-                      style={{ 
-                        padding: '12px', 
-                        background: isSelected ? 'var(--bg-primary)' : 'var(--bg-card)', 
-                        borderRadius: '8px', 
-                        border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        gap: '12px',
-                        alignItems: 'flex-start'
-                      }}
-                    >
-                      <input 
-                        type="checkbox" 
-                        checked={isSelected} 
-                        onChange={() => {}} 
-                        style={{ marginTop: 4, width: 16, height: 16, accentColor: 'var(--primary)' }}
-                      />
-                      <div>
-                        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
-                          {finding.departments?.name} | <span style={{ color: finding.priority === 'high' ? 'var(--danger)' : 'inherit'}}>{finding.priority === 'high' ? 'عالية الأهمية' : 'عادية'}</span>
-                        </div>
-                        <div style={{ fontSize: 14, color: isSelected ? 'var(--text-main)' : 'var(--text-secondary)' }}>
-                          {finding.original_text || finding.canonical_text}
-                        </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {Object.entries(groupFindingsByDept(unresolvedFindings)).map(([deptName, items]) => (
+                  <div key={deptName} style={{ background: 'var(--bg-primary)', borderRadius: '10px', padding: '16px', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: 16 }}>🏢</span>
+                        <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-main)' }}>{deptName}</span>
                       </div>
+                      <span style={{ 
+                        fontSize: 12, 
+                        background: 'rgba(234, 179, 8, 0.15)', 
+                        color: '#b45309', 
+                        padding: '2px 10px', 
+                        borderRadius: '12px', 
+                        fontWeight: 700 
+                      }}>
+                        {items.length} {items.length === 1 ? 'سلبية مفتوحة' : 'سلبيات مفتوحة'}
+                      </span>
                     </div>
-                  )
-                })}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {items.map(finding => {
+                        const isSelected = selectedUnresolved.has(finding.id)
+                        return (
+                          <div 
+                            key={finding.id} 
+                            onClick={() => toggleUnresolved(finding.id)}
+                            style={{ 
+                              padding: '12px 14px', 
+                              background: isSelected ? 'var(--bg-primary)' : 'var(--bg-card)', 
+                              borderRadius: '8px', 
+                              border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              gap: '12px',
+                              alignItems: 'flex-start'
+                            }}
+                          >
+                            <input 
+                              type="checkbox" 
+                              checked={isSelected} 
+                              onChange={() => {}} 
+                              style={{ marginTop: 4, width: 16, height: 16, accentColor: 'var(--primary)' }}
+                            />
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4, display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <span style={{ 
+                                  fontSize: '11px', 
+                                  padding: '1px 6px', 
+                                  borderRadius: '4px',
+                                  background: finding.priority === 'high' ? '#fee2e2' : '#f1f5f9',
+                                  color: finding.priority === 'high' ? 'var(--danger)' : 'var(--text-muted)',
+                                  fontWeight: 600
+                                }}>
+                                  {finding.priority === 'high' ? 'عالية الأهمية' : 'عادية'}
+                                </span>
+                                {finding.corrective_action && (
+                                  <span>الإجراء المقترح: {finding.corrective_action}</span>
+                                )}
+                              </div>
+                              <div style={{ fontSize: 14, color: isSelected ? 'var(--text-main)' : 'var(--text-secondary)', fontWeight: 500 }}>
+                                {finding.original_text || finding.canonical_text}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
