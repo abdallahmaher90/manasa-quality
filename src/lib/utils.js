@@ -386,5 +386,72 @@ export function resolveHospital(inputName, hospitalsList = [], fileName = '', ra
   return found || null
 }
 
+/**
+ * Formulates a resolved finding into a positive, completed action statement
+ * (e.g. "تم عمل...", "تم الالتزام بـ...", "تم توفير...").
+ */
+export function formatResolvedAction(finding) {
+  if (!finding) return ''
+  if (typeof finding === 'string') return finding
+
+  // 1. If hospital provided a custom descriptive note (and not just generic checklist msg)
+  const hospNote = (finding.hospital_resolution_note || '').trim()
+  if (hospNote && !hospNote.includes('قائمة المراجعة') && hospNote.length > 5) {
+    if (/^(تم|تمت|بالفعل|جاري|يتم)/.test(hospNote)) {
+      return hospNote.replace(/^بالفعل\s*/, 'تم تلافي السلبية: ')
+    }
+    return 'تم ' + hospNote
+  }
+
+  // 2. Base on corrective action if available
+  let action = (finding.corrective_action || '').trim()
+  if (action) {
+    // Clean leading prefixes like ضرورة / يجب / يلزم / سرعة
+    action = action.replace(/^(ضرورة|يجب|يلزم|سرعة|برجاء|رجاء|مطلوب)\s*(أن يتم\s*|عمل\s*|توفير\s*|الالتزام بـ\s*|الالتزام ب\s*|)/, '').trim()
+
+    // If already starts with تم / تمت
+    if (/^(تم|تمت)\s+/.test(action)) {
+      return action
+    }
+
+    // If starts with الالتزام or التزام
+    if (/^(الالتزام|التزام)\b/.test(action)) {
+      return 'تم ' + action
+    }
+
+    // If starts with common action verbal nouns (مصادر)
+    const verbalNounRegex = /^(عمل|توفير|إصلاح|اصلاح|تفعيل|استكمال|توحيد|تحديث|صيانة|صيانه|تنظيف|تدريب|تركيب|تطبيق|معايرة|معايره|شراء|إزالة|ازالة|رفع|تعليق|تفريغ|كتابة|كتابه|وضع|ترقيم|مراجعة|مراجعه|فصل|تأمين|تامين|تغيير|حصر|تعقيم|توزيع|إعادة|اعادة|إرسال|ارسال|اعتماد|استبدال|معالجة|معالجه|إبلاغ|ابلاغ|تسجيل|تثبيت|تطهير|فرز|ترتيب|إلزام|الزام|ارتداء|حفظ)\b/
+    if (verbalNounRegex.test(action)) {
+      return 'تم ' + action
+    }
+
+    // Specific medical forms & signatures patterns
+    if (/^توقيع\b/.test(action)) {
+      return 'تم الالتزام بـ ' + action
+    }
+
+    // Otherwise prefix with 'تم '
+    return 'تم ' + action
+  }
+
+  // 3. Fallback: Transform original negative text
+  let orig = (finding.original_text || finding.canonical_text || '').trim()
+  if (/^عدم\s+(الالتزام|اتباع|تطبيق)/.test(orig)) {
+    return orig.replace(/^عدم\s+/, 'تم ')
+  }
+  if (/^عدم\s+(توفير|وجود)/.test(orig)) {
+    return orig.replace(/^عدم\s+(توفير|وجود)\s*/, 'تم توفير ')
+  }
+  if (/^لا\s+يوجد\s+/.test(orig)) {
+    return orig.replace(/^لا\s+يوجد\s+/, 'تم توفير ')
+  }
+  if (/^لا\s+يتم\s+/.test(orig)) {
+    return orig.replace(/^لا\s+يتم\s+/, 'تم ')
+  }
+
+  return 'تم تلافي: ' + orig
+}
+
+
 
 

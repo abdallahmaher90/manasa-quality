@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { formatResolvedAction } from '@/lib/utils'
 const PRIORITY_CONFIG = {
   high: { label: 'خطورة عالية', class: 'badge-danger' },
   medium: { label: 'متوسطة', class: 'badge-warning' },
@@ -145,6 +146,11 @@ export default function ResolvedFindingsPage() {
                       🔁 مكررة × {finding.totalOccurrences}
                     </span>
                   )}
+                </div>
+
+                <div style={{ fontSize: 13, color: '#15803d', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 12px', borderRadius: '6px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontWeight: 700 }}>✅ ما تم إنجازه:</span>
+                  <span>{formatResolvedAction(finding)}</span>
                 </div>
                 
                 {finding.resolution_note && (

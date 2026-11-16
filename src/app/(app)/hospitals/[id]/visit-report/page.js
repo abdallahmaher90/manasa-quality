@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useToast } from '@/components/Toast'
 import { generateVisitReport } from '@/lib/generateVisitReport'
+import { formatResolvedAction } from '@/lib/utils'
 
 export default function VisitReportPage() {
   const { id } = useParams()
@@ -82,7 +83,11 @@ export default function VisitReportPage() {
 
       if (unresolvedErr) throw unresolvedErr
 
-      setResolvedFindings(resolvedData || [])
+      const processedResolved = (resolvedData || []).map(f => ({
+        ...f,
+        resolvedAction: formatResolvedAction(f)
+      }))
+      setResolvedFindings(processedResolved)
       setUnresolvedFindings(unresolvedData || [])
       // Default to empty selection for unresolved
       setSelectedUnresolved(new Set())
@@ -90,6 +95,14 @@ export default function VisitReportPage() {
       console.error(err)
       showToast('حدث خطأ أثناء جلب السلبيات', 'error')
     }
+  }
+
+  const updateResolvedAction = (index, value) => {
+    setResolvedFindings(prev => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], resolvedAction: value }
+      return updated
+    })
   }
 
   const toggleDept = (deptId) => {
@@ -210,18 +223,50 @@ export default function VisitReportPage() {
         <>
           {/* Step 2: Resolved Findings */}
           <div className="card" style={{ marginBottom: '24px' }}>
-            <h2 className="card-title" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ color: 'var(--success)' }}>✅</span>
-              2. سلبيات تم حلها (آخر 48 ساعة)
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <h2 className="card-title" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: 'var(--success)' }}>✅</span>
+                2. ما تم تلافيه وإنجازه (خلال آخر 48 ساعة)
+              </h2>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                تُصاغ بصيغة إنجاز إيجابية (تم...) بدلاً من السلبية، ويمكنك تعديل الصياغة مباشرة قبل الطباعة.
+              </span>
+            </div>
             {resolvedFindings.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>لا توجد سلبيات تم تأكيد حلها في آخر يومين لهذه الأقسام.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {resolvedFindings.map(finding => (
-                  <div key={finding.id} style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '8px', borderLeft: '4px solid var(--success)' }}>
-                    <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>{finding.departments?.name}</div>
-                    <div style={{ fontSize: 14 }}>{finding.original_text || finding.canonical_text}</div>
+                {resolvedFindings.map((finding, idx) => (
+                  <div key={finding.id} style={{ padding: '14px 16px', background: 'var(--bg-primary)', borderRadius: '8px', borderLeft: '4px solid var(--success)', border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: '8px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--success)' }}>
+                        {finding.departments?.name || 'عام'}
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--text-muted)' }} title={finding.original_text}>
+                        (السلبية السابقة: {finding.original_text || finding.canonical_text})
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--success)', fontWeight: 'bold', fontSize: 16 }}>✓</span>
+                      <input
+                        type="text"
+                        value={finding.resolvedAction || ''}
+                        onChange={(e) => updateResolvedAction(idx, e.target.value)}
+                        className="form-input"
+                        style={{
+                          flex: 1,
+                          fontSize: 14,
+                          fontWeight: 600,
+                          color: 'var(--text-main)',
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '6px',
+                          padding: '8px 12px'
+                        }}
+                        placeholder="ما تم إنجازه (مثال: تم الالتزام بـ...)"
+                        title="يمكنك تعديل صياغة الإجراء المنجز هنا قبل تصدير التقرير"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

@@ -1,5 +1,6 @@
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, AlignmentType, HeadingLevel, ShadingType } from 'docx'
 import { saveAs } from 'file-saver'
+import { formatResolvedAction } from '@/lib/utils'
 
 // Helper to create a styled table cell
 const createCell = (text, isHeader = false, width = null) => {
@@ -31,7 +32,7 @@ const createCell = (text, isHeader = false, width = null) => {
 }
 
 // Helper to create a table for findings
-const createFindingsTable = (findings, includeDept = true) => {
+const createFindingsTable = (findings, includeDept = true, actionColumnTitle = 'السلبية') => {
   if (!findings || findings.length === 0) {
     return new Paragraph({
       children: [
@@ -51,13 +52,19 @@ const createFindingsTable = (findings, includeDept = true) => {
       children: [
         createCell('م', true, 10),
         ...(includeDept ? [createCell('القسم', true, 20)] : []),
-        createCell('السلبية', true, includeDept ? 70 : 90),
+        createCell(actionColumnTitle, true, includeDept ? 70 : 90),
       ],
     }),
   ]
 
   findings.forEach((f, idx) => {
-    const text = f.original_text || f.canonical_text || f.text || ''
+    let text = f.resolvedAction
+    if (!text && actionColumnTitle.includes('تلافي')) {
+      text = formatResolvedAction(f)
+    }
+    if (!text) {
+      text = f.original_text || f.canonical_text || f.text || ''
+    }
     const dept = f.departments?.name || f.department_name || 'عام'
     
     rows.push(
@@ -154,7 +161,7 @@ export const generateVisitReport = async ({ hospitalName, resolvedFindings, unre
 
           // Section 1: Resolved Findings
           createSectionHeader('أولاً: سلبيات تم الإفادة بحلها مؤخراً (خلال آخر 48 ساعة)'),
-          createFindingsTable(resolvedFindings),
+          createFindingsTable(resolvedFindings, true, 'ما تم تلافيه وإنجازه (الإجراء المتخذ)'),
 
           // Section 2: New Findings
           createSectionHeader('ثانياً: سلبيات جديدة تم رصدها خلال المرور الحالي'),
