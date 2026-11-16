@@ -84,8 +84,32 @@ export default function OpenFindingsPage() {
 
       if (hospRes.data) setHospital(hospRes.data)
       if (findingsRes.data && deptsRes.data) {
-        setFindings(findingsRes.data)
-        const hospDeptIds = [...new Set(findingsRes.data.map(f => f.department_id))]
+        // Group recurring findings per department
+        const groupMap = new Map()
+        findingsRes.data.forEach(f => {
+          const grpKey = `${f.department_id}___` + (f.recurrence_group_id ? `rg_${f.recurrence_group_id}` : `txt_${f.original_text.trim()}`)
+          if (!groupMap.has(grpKey)) groupMap.set(grpKey, [])
+          groupMap.get(grpKey).push(f)
+        })
+
+        const consolidated = Array.from(groupMap.values()).map(groupItems => {
+          const sorted = [...groupItems].sort((a, b) => new Date(a.first_seen_date || 0) - new Date(b.first_seen_date || 0))
+          const latest = sorted[sorted.length - 1]
+          const uniqueDates = [...new Set(sorted.map(it => it.last_seen_date || it.first_seen_date).filter(Boolean))].sort()
+          return {
+            ...latest,
+            id: latest.id,
+            allIds: groupItems.map(it => it.id),
+            totalOccurrences: groupItems.length,
+            allDates: uniqueDates,
+            first_seen_date: uniqueDates[0] || latest.first_seen_date,
+            last_seen_date: uniqueDates[uniqueDates.length - 1] || latest.last_seen_date,
+            hospital_resolution_note: [...sorted].reverse().find(it => it.hospital_resolution_note)?.hospital_resolution_note || null,
+          }
+        })
+
+        setFindings(consolidated)
+        const hospDeptIds = [...new Set(consolidated.map(f => f.department_id))]
         const hospDepts = deptsRes.data.filter(d => hospDeptIds.includes(d.id))
         setDepartments(hospDepts)
         setSelectedDepts(new Set(hospDeptIds))
@@ -133,10 +157,22 @@ export default function OpenFindingsPage() {
       
       if (reviewStatus) payload.review_status = reviewStatus
 
+      // Expand checked items to include all historical occurrences in the same recurrence group
+      const allTargetIds = []
+      checkedItems.forEach(checkedId => {
+        const item = findings.find(f => f.id === checkedId)
+        if (item?.allIds?.length) {
+          allTargetIds.push(...item.allIds)
+        } else {
+          allTargetIds.push(checkedId)
+        }
+      })
+      const uniqueTargetIds = [...new Set(allTargetIds)]
+
       const { error } = await supabase
         .from('report_findings')
         .update(payload)
-        .in('id', Array.from(checkedItems))
+        .in('id', uniqueTargetIds)
         
       if (error) throw error
       
@@ -446,6 +482,21 @@ export default function OpenFindingsPage() {
                         <td style={{ padding: '4px 8px', border: '1px solid #333', verticalAlign: 'top' }}>
                           <div style={{ fontSize: '12.5px', fontWeight: 600, display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
                             <span>{finding.original_text}</span>
+                            {finding.totalOccurrences > 1 && (
+                              <span style={{ 
+                                display: 'inline-block', 
+                                padding: '1px 6px', 
+                                background: '#eff6ff', 
+                                color: '#1d4ed8', 
+                                border: '1px solid #bfdbfe',
+                                fontSize: '10px', 
+                                borderRadius: '4px', 
+                                fontWeight: 'bold',
+                                whiteSpace: 'nowrap'
+                              }} title={`تكررت ${finding.totalOccurrences} مرات`}>
+                                🔁 مكررة × {finding.totalOccurrences}
+                              </span>
+                            )}
                             {finding.status === 'resolved_by_hospital' && (
                               <span style={{ 
                                 display: 'inline-block', 
@@ -461,6 +512,12 @@ export default function OpenFindingsPage() {
                               </span>
                             )}
                           </div>
+                          {finding.allDates && finding.allDates.length > 1 && (
+                            <div style={{ fontSize: '10.5px', color: '#666', marginTop: '3px' }}>
+                              <span>📅 تواريخ الرصد: </span>
+                              {finding.allDates.map(d => new Date(d).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })).join(' ⬅️ ')}
+                            </div>
+                          )}
                         </td>
                         
                         {/* Notes Column */}

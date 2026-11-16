@@ -45,7 +45,30 @@ export default function ResolvedFindingsPage() {
 
       if (hospRes.data) setHospital(hospRes.data)
       if (deptsRes.data) setDepartments(deptsRes.data)
-      if (findingsRes.data) setFindings(findingsRes.data)
+      if (findingsRes.data) {
+        // Group recurring resolved findings per department
+        const groupMap = new Map()
+        findingsRes.data.forEach(f => {
+          const grpKey = `${f.department_id}___` + (f.recurrence_group_id ? `rg_${f.recurrence_group_id}` : `txt_${f.original_text.trim()}`)
+          if (!groupMap.has(grpKey)) groupMap.set(grpKey, [])
+          groupMap.get(grpKey).push(f)
+        })
+
+        const consolidated = Array.from(groupMap.values()).map(groupItems => {
+          const sorted = [...groupItems].sort((a, b) => new Date(a.first_seen_date || 0) - new Date(b.first_seen_date || 0))
+          const latest = sorted[sorted.length - 1]
+          const uniqueDates = [...new Set(sorted.map(it => it.last_seen_date || it.first_seen_date).filter(Boolean))].sort()
+          return {
+            ...latest,
+            totalOccurrences: groupItems.length,
+            allDates: uniqueDates,
+            first_seen_date: uniqueDates[0] || latest.first_seen_date,
+            last_seen_date: uniqueDates[uniqueDates.length - 1] || latest.last_seen_date,
+            resolution_note: [...sorted].reverse().find(it => it.resolution_note)?.resolution_note || null,
+          }
+        })
+        setFindings(consolidated)
+      }
     } catch (err) {
       console.error('Error fetching resolved findings:', err)
     } finally {
@@ -107,8 +130,21 @@ export default function ResolvedFindingsPage() {
                 <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: '4px' }}>
                   {deptMap.get(finding.department_id) || 'قسم غير معروف'}
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5, marginBottom: '8px' }}>
-                  {finding.original_text}
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span>{finding.original_text}</span>
+                  {finding.totalOccurrences > 1 && (
+                    <span style={{ 
+                      fontSize: '11px', 
+                      padding: '2px 8px', 
+                      background: '#eff6ff', 
+                      color: '#1d4ed8', 
+                      border: '1px solid #bfdbfe',
+                      borderRadius: '4px', 
+                      fontWeight: 'bold' 
+                    }}>
+                      🔁 مكررة × {finding.totalOccurrences}
+                    </span>
+                  )}
                 </div>
                 
                 {finding.resolution_note && (
@@ -119,6 +155,9 @@ export default function ResolvedFindingsPage() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', fontSize: 12, color: 'var(--text-secondary)' }}>
                   <span>تم الحل: <strong>{formatDate(finding.resolved_date)}</strong></span>
+                  {finding.allDates && finding.allDates.length > 1 && (
+                    <span>تواريخ المرور: <strong>{finding.allDates.map(d => formatDate(d)).join(' ⬅️ ')}</strong></span>
+                  )}
                 </div>
               </div>
             </div>
