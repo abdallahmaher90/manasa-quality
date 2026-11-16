@@ -129,49 +129,109 @@ export default function DepartmentPage() {
     setHospital(hospRes.data)
 
     if (findingsRes.data) {
-      // Calculate true total occurrences (N) per recurrence group in this hospital
-      const groupTotalMap = new Map()
+      // 1. Group findings by recurrence_group_id or normalized text
+      const groupMap = new Map()
+
       findingsRes.data.forEach(f => {
-        const grpKey = f.recurrence_group_id || f.id
-        // Exclude pending_review from confirmed recurrence count
-        const isPendingReview = f.review_status === 'pending_review'
-        if (!isPendingReview) {
-          groupTotalMap.set(grpKey, (groupTotalMap.get(grpKey) || 0) + 1)
+        const grpKey = f.recurrence_group_id 
+          ? `rg_${f.recurrence_group_id}` 
+          : (f.canonical_finding_id 
+              ? `cf_${f.canonical_finding_id}` 
+              : `txt_${normalizeArabic(f.original_text || '')}`)
+        
+        if (!groupMap.has(grpKey)) {
+          groupMap.set(grpKey, [])
         }
+        groupMap.get(grpKey).push(f)
       })
 
-      const withTotals = findingsRes.data.map(f => {
-        const grpKey = f.recurrence_group_id || f.id
-        const totalOccurrences = groupTotalMap.get(grpKey) || 1
+      // 2. Build one consolidated item per unique finding group
+      const consolidatedFindings = Array.from(groupMap.values()).map(groupItems => {
+        // Sort items chronologically: oldest first, newest last
+        const sortedItems = [...groupItems].sort((a, b) => {
+          const dateA = new Date(a.last_seen_date || a.first_seen_date || a.created_at || 0).getTime()
+          const dateB = new Date(b.last_seen_date || b.first_seen_date || b.created_at || 0).getTime()
+          return dateA - dateB
+        })
+
+        const latestItem = sortedItems[sortedItems.length - 1]
+        const earliestItem = sortedItems[0]
+
+        // Unique inspection/seen dates in chronological order
+        const uniqueDates = [...new Set(
+          sortedItems.map(it => it.last_seen_date || it.first_seen_date).filter(Boolean)
+        )].sort((a, b) => new Date(a) - new Date(b))
+
+        const totalOccurrences = groupItems.length
+
+        // Consolidated status:
+        // - If any occurrence is open or recurring, the issue is still active
+        // - Else if any occurrence is resolved_by_hospital, it's pending review
+        // - Else if all are resolved_confirmed, it's resolved
+        let consolidatedStatus = latestItem.status
+        const hasOpen = groupItems.some(it => ['open', 'recurring'].includes(it.status))
+        const hasPending = groupItems.some(it => it.status === 'resolved_by_hospital')
+        const allResolved = groupItems.every(it => it.status === 'resolved_confirmed')
+
+        if (hasOpen) {
+          consolidatedStatus = totalOccurrences > 1 ? 'recurring' : 'open'
+        } else if (hasPending) {
+          consolidatedStatus = 'resolved_by_hospital'
+        } else if (allResolved) {
+          consolidatedStatus = 'resolved_confirmed'
+        }
+
+        // Notes: take the latest available note
+        const latestHospitalNote = [...sortedItems].reverse().find(it => it.hospital_resolution_note)?.hospital_resolution_note || null
+        const latestDirectorateNote = [...sortedItems].reverse().find(it => it.resolution_note)?.resolution_note || null
+
+        // All IDs in group
+        const allIds = groupItems.map(it => it.id)
+
         return {
-          ...f,
+          ...latestItem,
+          id: latestItem.id,
+          allIds,
+          status: consolidatedStatus,
           totalOccurrences,
-          isPendingReview: f.review_status === 'pending_review'
+          allDates: uniqueDates,
+          first_seen_date: uniqueDates[0] || earliestItem.first_seen_date,
+          last_seen_date: uniqueDates[uniqueDates.length - 1] || latestItem.last_seen_date,
+          hospital_resolution_note: latestHospitalNote,
+          resolution_note: latestDirectorateNote,
+          occurrences: sortedItems,
+          isPendingReview: groupItems.some(it => it.review_status === 'pending_review')
         }
       })
 
       // Sort: recurring first, then open, then pending confirm, then resolved
-      const sorted = withTotals.sort((a, b) => {
+      const sorted = consolidatedFindings.sort((a, b) => {
         const order = { recurring: 0, open: 1, resolved_by_hospital: 2, resolved_confirmed: 3 }
         if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status]
-        return (b.totalOccurrences || b.repeat_count) - (a.totalOccurrences || a.repeat_count)
+        return (b.totalOccurrences || 1) - (a.totalOccurrences || 1)
       })
       setFindings(sorted)
     }
     setLoading(false)
   }
 
-  const updateFinding = async (findingId, action, noteText = '') => {
+  const updateFinding = async (findingId, action, noteText = '', targetIds = null) => {
     setUpdatingId(findingId)
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      const payload = { 
+        findingId, 
+        action, 
+        note: noteText,
+        findingIds: targetIds && targetIds.length > 0 ? targetIds : [findingId]
+      }
       const res = await fetch('/api/update-finding', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': session ? `Bearer ${session.access_token}` : ''
         },
-        body: JSON.stringify({ findingId, action, note: noteText }),
+        body: JSON.stringify(payload),
       })
       
       if (!res.ok) {
@@ -232,13 +292,13 @@ export default function DepartmentPage() {
     })
   }
 
-  const handleRejectHospital = (findingId) => {
+  const handleRejectHospital = (findingId, targetIds = null) => {
     setConfirmModal({
       title: 'رفض إفادة المستشفى وإعادة السلبية',
       message: 'هل أنت متأكد من رفض إفادة المستشفى؟ ستتم إعادة فتح السلبية وطلب إفادة تصحيحية جديدة.',
       actionText: 'رفض وإعادة الفتح',
       actionType: 'danger',
-      onConfirm: () => updateFinding(findingId, 'reject_hospital')
+      onConfirm: () => updateFinding(findingId, 'reject_hospital', '', targetIds)
     })
   }
 
@@ -667,30 +727,36 @@ export default function DepartmentPage() {
                     <td style={{ padding: '10px 12px', verticalAlign: 'top', fontWeight: 700, color: 'var(--text-muted)' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
                         {startIndex + idx + 1}
-                        {finding.totalOccurrences > 1 && !finding.isPendingReview ? (
-                          <span className="badge badge-repeat" style={{ padding: '2px 6px', fontSize: 10 }} title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}>
-                            🔁 متكررة ×{finding.totalOccurrences}
-                          </span>
-                        ) : finding.isPendingReview ? (
+                        {finding.isPendingReview && (
                           <span className="badge badge-warning" style={{ padding: '2px 6px', fontSize: 10 }} title="سلبية قيد مراجعة الجودة">
                             ⏳ قيد المراجعة
                           </span>
-                        ) : null}
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: '8px 10px', verticalAlign: 'top' }}>
                       {/* PRIMARY TITLE: report_findings.original_text (Immutable Truth) */}
-                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5 }}>
-                        {finding.original_text}
-                      </div>
-
-                      {finding.repeat_count > 1 && (
-                        <div style={{ marginTop: 4 }}>
-                          <span style={{ fontSize: 12, color: 'var(--warning-dark)', fontWeight: 800 }}>
-                            🔁 مكررة × {finding.repeat_count}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.5 }}>
+                          {finding.original_text}
+                        </span>
+                        {finding.totalOccurrences > 1 && (
+                          <span style={{ 
+                            fontSize: 11, 
+                            fontWeight: 700, 
+                            color: '#1d4ed8', 
+                            backgroundColor: '#eff6ff', 
+                            border: '1px solid #bfdbfe', 
+                            padding: '1px 8px', 
+                            borderRadius: 4, 
+                            display: 'inline-flex', 
+                            alignItems: 'center', 
+                            gap: 3 
+                          }} title={`تكررت ${finding.totalOccurrences} مرات في هذا القسم`}>
+                            🔁 مكررة × {finding.totalOccurrences}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {finding.status === 'resolved_by_hospital' && finding.hospital_resolution_note && (
                         <CollapsibleNote label="المستشفى" text={finding.hospital_resolution_note} type="warning" />
@@ -700,9 +766,19 @@ export default function DepartmentPage() {
                       )}
                     </td>
                     <td style={{ padding: '8px 10px', verticalAlign: 'top', color: 'var(--text-secondary)', fontSize: 12 }}>
-                      <div>{formatDate(finding.first_seen_date)}</div>
-                      {finding.totalOccurrences > 1 && (
-                        <div style={{ marginTop: 2, color: 'var(--warning-dark)', fontSize: 11 }}>🔁 {formatDate(finding.last_seen_date)}</div>
+                      {finding.allDates && finding.allDates.length > 1 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                          <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>
+                            {formatDate(finding.allDates[0])}
+                          </div>
+                          {finding.allDates.slice(1).map((dt, dIdx) => (
+                            <div key={dIdx} style={{ color: 'var(--warning-dark)', fontSize: 11, fontWeight: 600 }}>
+                              🔁 {formatDate(dt)}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div>{formatDate(finding.first_seen_date)}</div>
                       )}
                     </td>
 
@@ -715,7 +791,7 @@ export default function DepartmentPage() {
                             type="button"
                             className="btn btn-success btn-desktop-resolve"
                             disabled={updatingId === finding.id}
-                            onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                            onClick={() => setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_directorate' })}
                           >
                             <span style={{ fontSize: 11, lineHeight: 1 }}>✓</span>
                             <span>تأكيد الإغلاق</span>
@@ -729,7 +805,7 @@ export default function DepartmentPage() {
                               className="btn btn-success btn-sm"
                               disabled={updatingId === finding.id}
                               style={{ padding: '5px 10px', fontSize: 12 }}
-                              onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                              onClick={() => setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_directorate' })}
                             >
                               <CheckIcon className="w-3.5 h-3.5" />
                               <span>قبول</span>
@@ -739,7 +815,7 @@ export default function DepartmentPage() {
                               className="btn btn-outline btn-sm"
                               disabled={updatingId === finding.id}
                               style={{ padding: '5px 8px', fontSize: 12, borderColor: 'var(--danger)', color: 'var(--danger)' }}
-                              onClick={() => handleRejectHospital(finding.id)}
+                              onClick={() => handleRejectHospital(finding.id, finding.allIds)}
                             >
                               <XMarkIcon className="w-3.5 h-3.5" />
                               <span>رفض</span>
@@ -756,7 +832,7 @@ export default function DepartmentPage() {
                             style={{ padding: '5px 10px', fontSize: 12 }}
                             onClick={() => {
                               setNote(finding.hospital_resolution_note || '')
-                              setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                              setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_hospital' })
                             }}
                           >
                             <ChatBubbleIcon className="w-3.5 h-3.5" />
@@ -825,7 +901,9 @@ export default function DepartmentPage() {
                     </span>
 
                     <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap', lineHeight: 1.2 }}>
-                      📅 {formatDate(finding.first_seen_date)}
+                      📅 {finding.allDates && finding.allDates.length > 1 
+                          ? `${formatDate(finding.allDates[0])} 🔁 ${formatDate(finding.allDates[finding.allDates.length - 1])}`
+                          : formatDate(finding.first_seen_date)}
                     </span>
                   </div>
 
@@ -843,6 +921,23 @@ export default function DepartmentPage() {
                     }}
                   >
                     {finding.original_text}
+                    {finding.totalOccurrences > 1 && (
+                      <span style={{ 
+                        marginRight: 6,
+                        fontSize: 10.5, 
+                        fontWeight: 700, 
+                        color: '#1d4ed8', 
+                        backgroundColor: '#eff6ff', 
+                        border: '1px solid #bfdbfe', 
+                        padding: '1px 6px', 
+                        borderRadius: 4, 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: 3 
+                      }}>
+                        🔁 مكررة × {finding.totalOccurrences}
+                      </span>
+                    )}
                   </div>
 
                   {/* Notes if applicable */}
@@ -853,36 +948,8 @@ export default function DepartmentPage() {
                     <CollapsibleNote label="المديرية" text={finding.resolution_note} type="success" />
                   )}
 
-                  {/* 3. METADATA ROW: [الحالة] [الخطورة] [🔁 متكررة ×N عند الحاجة] in one compact row */}
+                  {/* 3. METADATA ROW */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap', margin: 0, padding: 0 }}>
-
-
-                    {/* Priority Removed */}
-
-                    {/* Recurrence Badge (only if truly recurring) */}
-                    {finding.totalOccurrences > 1 && !finding.isPendingReview && (
-                      <span
-                        className="badge badge-repeat"
-                        style={{
-                          fontSize: 10,
-                          padding: '2px 6px',
-                          fontWeight: 700,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          lineHeight: 1.2,
-                        }}
-                        title={`تكررت ${finding.totalOccurrences} مرات في هذا المستشفى`}
-                      >
-                        🔁 متكررة ×{finding.totalOccurrences}
-                        {finding.repeat_count > 1 && (
-                          <span style={{ fontSize: 9.5, opacity: 0.85, marginRight: 2 }}>
-                            (الظهور {finding.repeat_count})
-                          </span>
-                        )}
-                      </span>
-                    )}
-
                     {finding.isPendingReview && (
                       <span className="badge badge-warning" style={{ fontSize: 10, padding: '2px 5px', lineHeight: 1.2 }}>
                         ⏳ قيد المراجعة
@@ -899,7 +966,7 @@ export default function DepartmentPage() {
                           className="btn btn-success btn-sm"
                           disabled={updatingId === finding.id}
                           style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
-                          onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                          onClick={() => setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_directorate' })}
                         >
                           <CheckIcon className="w-3.5 h-3.5" />
                           <span>تأكيد الإغلاق</span>
@@ -913,7 +980,7 @@ export default function DepartmentPage() {
                             className="btn btn-success btn-sm"
                             disabled={updatingId === finding.id}
                             style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
-                            onClick={() => setNoteModal({ findingId: finding.id, action: 'resolve_directorate' })}
+                            onClick={() => setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_directorate' })}
                           >
                             <CheckIcon className="w-3.5 h-3.5" />
                             <span>قبول</span>
@@ -923,7 +990,7 @@ export default function DepartmentPage() {
                             className="btn btn-outline btn-sm"
                             disabled={updatingId === finding.id}
                             style={{ padding: '4px 8px', fontSize: 11.5, borderColor: 'var(--danger)', color: 'var(--danger)', borderRadius: 5 }}
-                            onClick={() => handleRejectHospital(finding.id)}
+                            onClick={() => handleRejectHospital(finding.id, finding.allIds)}
                           >
                             <XMarkIcon className="w-3.5 h-3.5" />
                             <span>رفض</span>
@@ -939,7 +1006,7 @@ export default function DepartmentPage() {
                           style={{ padding: '4px 10px', fontSize: 11.5, fontWeight: 700, borderRadius: 5 }}
                           onClick={() => {
                             setNote(finding.hospital_resolution_note || '')
-                            setNoteModal({ findingId: finding.id, action: 'resolve_hospital' })
+                            setNoteModal({ findingId: finding.id, findingIds: finding.allIds, action: 'resolve_hospital' })
                           }}
                         >
                           <ChatBubbleIcon className="w-3.5 h-3.5" />
@@ -1056,7 +1123,7 @@ export default function DepartmentPage() {
               <button
                 id="confirm-action-btn"
                 className={`btn ${noteModal.action === 'resolve_directorate' ? 'btn-success' : 'btn-accent'}`}
-                onClick={() => updateFinding(noteModal.findingId, noteModal.action, note)}
+                onClick={() => updateFinding(noteModal.findingId, noteModal.action, note, noteModal.findingIds)}
                 disabled={updatingId === noteModal.findingId}
               >
                 {updatingId === noteModal.findingId ? (

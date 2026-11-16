@@ -71,7 +71,7 @@ export async function POST(request) {
       if (existingReports && existingReports.length > 0) {
         for (const er of existingReports) {
           const { count } = await supabase
-            .from('findings')
+            .from('report_findings')
             .select('id', { count: 'exact', head: true })
             .eq('report_id', er.id)
           if (count > 0) {

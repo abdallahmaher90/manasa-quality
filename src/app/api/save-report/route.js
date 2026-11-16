@@ -104,7 +104,7 @@ export async function POST(request) {
         let hasReportWithFindings = false
         for (const er of existingReports) {
           const { count } = await supabase
-            .from('findings')
+            .from('report_findings')
             .select('id', { count: 'exact', head: true })
             .eq('report_id', er.id)
           if (count > 0) {
@@ -118,8 +118,9 @@ export async function POST(request) {
             error: `تم العثور على تقرير محفوظ مسبقاً لهذا المستشفى في نفس التاريخ (${parsedData.inspection_date}). يرجى التحقق من الأرشيف.`
           }, { status: 409 })
         } else {
-          // If existing reports are empty shells from previous failed timeout attempts, clean them up
+          // If existing reports are empty shells from previous failed timeout attempts, clean them up safely
           for (const er of existingReports) {
+            await supabase.from('report_findings').delete().eq('report_id', er.id)
             await supabase.from('reports').delete().eq('id', er.id)
           }
         }
@@ -343,17 +344,12 @@ export async function POST(request) {
     return Response.json({ success: true, hospitalId, reportId: report.id })
   } catch (error) {
     console.error('Save report error:', error)
-    // Rollback / cleanup newly created empty report if save failed mid-way
+    // Rollback / cleanup newly created empty or partial report if save failed mid-way
     if (report?.id && supabase) {
       try {
-        const { count } = await supabase
-          .from('findings')
-          .select('id', { count: 'exact', head: true })
-          .eq('report_id', report.id)
-        if (count === 0) {
-          console.warn(`[Save Report Rollback]: Deleted orphaned report shell ${report.id}`)
-          await supabase.from('reports').delete().eq('id', report.id)
-        }
+        await supabase.from('report_findings').delete().eq('report_id', report.id)
+        await supabase.from('reports').delete().eq('id', report.id)
+        console.warn(`[Save Report Rollback]: Rolled back report ${report.id} and its partial findings`)
       } catch (rollbackErr) {
         console.error('Failed to rollback empty report:', rollbackErr)
       }

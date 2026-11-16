@@ -31,8 +31,16 @@ export async function POST(request) {
       }
     }
 
-    const { findingId, action, note } = await request.json()
+    const { findingId, findingIds, action, note } = await request.json()
     // action: 'resolve_directorate' | 'resolve_hospital' | 'reject_hospital' | 'mark_recurring'
+
+    const targetIds = (findingIds && Array.isArray(findingIds) && findingIds.length > 0)
+      ? findingIds
+      : (findingId ? [findingId] : [])
+
+    if (targetIds.length === 0) {
+      return Response.json({ error: 'لم يتم تحديد أي سلبية' }, { status: 400 })
+    }
 
     let updateData = {}
 
@@ -76,12 +84,10 @@ export async function POST(request) {
     let query = supabaseAdmin
       .from('report_findings')
       .update(updateData)
-      .eq('id', findingId)
+      .in('id', targetIds)
 
     // Manually enforce hospital boundary since we bypass RLS
-    if (isDirectorate) {
-      query = query.eq('id', findingId)
-    } else {
+    if (!isDirectorate) {
       query = query.eq('hospital_id', userHospitalId)
     }
 
