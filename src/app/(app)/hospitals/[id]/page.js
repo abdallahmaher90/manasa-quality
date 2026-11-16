@@ -62,7 +62,7 @@ export default function HospitalPage() {
   const fetchHospital = async () => {
     const [hospRes, deptRes, allFindingsRes, reportsRes, criticalFindingsRes] = await Promise.all([
       supabase.from('hospitals').select('*').eq('id', id).single(),
-      supabase.from('departments').select('id, name').order('name'),
+      supabase.from('departments').select('id, name').eq('hospital_id', id).order('name'),
       supabase.from('v_report_findings').select('id, department_id, status, priority, review_status, recurrence_group_id').eq('hospital_id', id),
       supabase.from('reports').select('id, inspection_date, inspector_name').eq('hospital_id', id).order('inspection_date', { ascending: false }).limit(5),
       supabase.from('v_report_findings').select('id, original_text, canonical_text, priority, repeat_count, status, departments(name, id)').eq('hospital_id', id).in('status', ['open', 'recurring']).or('priority.eq.high,repeat_count.gte.3').order('repeat_count', { ascending: false }).limit(5)

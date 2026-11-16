@@ -40,13 +40,21 @@ export default function VisitReportPage() {
 
   const fetchInitialData = async () => {
     try {
-      const [hospRes, deptRes] = await Promise.all([
+      const [hospRes, deptRes, activeFindingsRes] = await Promise.all([
         supabase.from('hospitals').select('*').eq('id', id).single(),
-        supabase.from('departments').select('*').eq('hospital_id', id).order('name')
+        supabase.from('departments').select('*').eq('hospital_id', id).order('name'),
+        supabase.from('report_findings').select('department_id').eq('hospital_id', id)
       ])
       
       if (hospRes.data) setHospital(hospRes.data)
-      if (deptRes.data) setDepartments(deptRes.data)
+      if (deptRes.data) {
+        const activeDeptIds = new Set((activeFindingsRes.data || []).map(f => f.department_id))
+        // Show departments that have active findings or all if hospital has none yet
+        const filteredDepts = activeDeptIds.size > 0 
+          ? deptRes.data.filter(d => activeDeptIds.has(d.id))
+          : deptRes.data
+        setDepartments(filteredDepts)
+      }
     } catch (err) {
       console.error(err)
       showToast('حدث خطأ أثناء جلب البيانات', 'error')

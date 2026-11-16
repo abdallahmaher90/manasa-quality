@@ -73,7 +73,7 @@ export default function OpenFindingsPage() {
 
       const [hospRes, deptsRes, findingsRes] = await Promise.all([
         supabase.from('hospitals').select('id, name, governorate').eq('id', id).single(),
-        supabase.from('departments').select('id, name'),
+        supabase.from('departments').select('id, name').eq('hospital_id', id),
         supabase.from('v_report_findings')
           .select('*')
           .eq('hospital_id', id)
