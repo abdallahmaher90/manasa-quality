@@ -40,62 +40,28 @@ export async function generateReportDocxBlob(data) {
       tableHeader: true,
       children: [
         new TableCell({
-          width: { size: 12, type: WidthType.PERCENTAGE },
+          width: { size: 8, type: WidthType.PERCENTAGE },
           verticalAlign: VerticalAlign.CENTER,
           shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              bidirectional: true,
-              children: [new TextRun({ text: 'مدة التنفيذ', bold: true, size: 22, font: 'Arial' })]
-            })
-          ]
-        }),
-        new TableCell({
-          width: { size: 18, type: WidthType.PERCENTAGE },
-          verticalAlign: VerticalAlign.CENTER,
-          shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              bidirectional: true,
-              children: [new TextRun({ text: 'المسئول عنة', bold: true, size: 22, font: 'Arial' })]
-            })
-          ]
-        }),
-        new TableCell({
-          width: { size: 32, type: WidthType.PERCENTAGE },
-          verticalAlign: VerticalAlign.CENTER,
-          shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              bidirectional: true,
-              children: [new TextRun({ text: 'الاجراء التصحيحي', bold: true, size: 22, font: 'Arial' })]
-            })
-          ]
-        }),
-        new TableCell({
-          width: { size: 33, type: WidthType.PERCENTAGE },
-          verticalAlign: VerticalAlign.CENTER,
-          shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              bidirectional: true,
-              children: [new TextRun({ text: 'بيان عدم التطابق', bold: true, size: 22, font: 'Arial' })]
-            })
-          ]
-        }),
-        new TableCell({
-          width: { size: 5, type: WidthType.PERCENTAGE },
-          verticalAlign: VerticalAlign.CENTER,
-          shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
+          margins: { top: 120, bottom: 120, left: 100, right: 100 },
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
               bidirectional: true,
               children: [new TextRun({ text: 'م', bold: true, size: 22, font: 'Arial' })]
+            })
+          ]
+        }),
+        new TableCell({
+          width: { size: 92, type: WidthType.PERCENTAGE },
+          verticalAlign: VerticalAlign.CENTER,
+          shading: { fill: 'F8FAFC', type: ShadingType.CLEAR },
+          margins: { top: 120, bottom: 120, left: 140, right: 140 },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.RIGHT,
+              bidirectional: true,
+              children: [new TextRun({ text: 'السلبيات (بيان عدم التطابق)', bold: true, size: 22, font: 'Arial' })]
             })
           ]
         })
@@ -107,12 +73,12 @@ export async function generateReportDocxBlob(data) {
 
   // Loop through departments
   departments.forEach((dept) => {
-    // Merged Department Header Row (colSpan: 5)
+    // Merged Department Header Row (colSpan: 2)
     tableRows.push(
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 5,
+            columnSpan: 2,
             shading: { fill: 'E2E8F0', type: ShadingType.CLEAR },
             margins: { top: 120, bottom: 120, left: 160, right: 160 },
             children: [
@@ -140,61 +106,9 @@ export async function generateReportDocxBlob(data) {
       tableRows.push(
         new TableRow({
           children: [
-            // مدة التنفيذ
-            new TableCell({
-              width: { size: 12, type: WidthType.PERCENTAGE },
-              verticalAlign: VerticalAlign.CENTER,
-              margins: { top: 100, bottom: 100, left: 100, right: 100 },
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  bidirectional: true,
-                  children: [new TextRun({ text: f.deadline || 'يوم', bold: true, size: 20, font: 'Arial' })]
-                })
-              ]
-            }),
-            // المسئول عنه
-            new TableCell({
-              width: { size: 18, type: WidthType.PERCENTAGE },
-              verticalAlign: VerticalAlign.CENTER,
-              margins: { top: 100, bottom: 100, left: 100, right: 100 },
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.CENTER,
-                  bidirectional: true,
-                  children: [new TextRun({ text: f.responsible || 'الفريق الطبي', bold: true, size: 20, font: 'Arial' })]
-                })
-              ]
-            }),
-            // الاجراء التصحيحي
-            new TableCell({
-              width: { size: 32, type: WidthType.PERCENTAGE },
-              verticalAlign: VerticalAlign.CENTER,
-              margins: { top: 100, bottom: 100, left: 100, right: 100 },
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.RIGHT,
-                  bidirectional: true,
-                  children: [new TextRun({ text: f.corrective_action || '-', bold: true, size: 20, font: 'Arial' })]
-                })
-              ]
-            }),
-            // بيان عدم التطابق
-            new TableCell({
-              width: { size: 33, type: WidthType.PERCENTAGE },
-              verticalAlign: VerticalAlign.CENTER,
-              margins: { top: 100, bottom: 100, left: 100, right: 100 },
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.RIGHT,
-                  bidirectional: true,
-                  children: [new TextRun({ text: f.defect || '-', bold: true, size: 20, font: 'Arial' })]
-                })
-              ]
-            }),
             // م
             new TableCell({
-              width: { size: 5, type: WidthType.PERCENTAGE },
+              width: { size: 8, type: WidthType.PERCENTAGE },
               verticalAlign: VerticalAlign.CENTER,
               margins: { top: 100, bottom: 100, left: 100, right: 100 },
               children: [
@@ -202,6 +116,19 @@ export async function generateReportDocxBlob(data) {
                   alignment: AlignmentType.CENTER,
                   bidirectional: true,
                   children: [new TextRun({ text: String(globalSerial++), bold: true, size: 20, font: 'Arial' })]
+                })
+              ]
+            }),
+            // بيان عدم التطابق (السلبيات)
+            new TableCell({
+              width: { size: 92, type: WidthType.PERCENTAGE },
+              verticalAlign: VerticalAlign.CENTER,
+              margins: { top: 100, bottom: 100, left: 140, right: 140 },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  bidirectional: true,
+                  children: [new TextRun({ text: f.defect || f.original_text || f.text || '-', bold: true, size: 20, font: 'Arial' })]
                 })
               ]
             })
